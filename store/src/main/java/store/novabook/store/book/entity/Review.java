@@ -1,6 +1,5 @@
-package store.novabook.store.book.book.entity;
+package store.novabook.store.book.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -10,18 +9,24 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.user.member.entity.Member;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class BookDiscountRate {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class Review {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "member_id")
+	private Member member;
 
 	@NotNull
 	@ManyToOne
@@ -29,11 +34,16 @@ public class BookDiscountRate {
 	private Book book;
 
 	@NotNull
-	private BigDecimal rate;
+	private String content;
+
+	private String image;
+
+	@NotNull
+	private int score;
 
 	@NotNull
 	private LocalDateTime createdAt;
 
-	@Null
 	private LocalDateTime updatedAt;
+
 }
