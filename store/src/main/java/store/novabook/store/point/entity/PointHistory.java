@@ -6,6 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,10 +24,14 @@ public class PointHistory {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Long ordersId;
+	//TODO: Orders테이블 만들면 주석해제
+	// @ManyToOne()
+	// private Orders orders;
 
 	@NotNull
-	private Long pointPolicyId;
+	@OneToOne
+	@JoinColumn(name = "id")
+	private PointPolicy pointPolicy;
 
 	@NotNull
 	private String pointContent;
