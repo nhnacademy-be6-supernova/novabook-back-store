@@ -1,4 +1,4 @@
-package store.novabook.store.book.book.entity;
+package store.novabook.store.book.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,10 +34,8 @@ public class Book {
 	@NotNull
 	private String title;
 
-	@Null
 	private String subTitle;
 
-	@Null
 	private String engTitle;
 
 	@NotNull
@@ -63,7 +60,7 @@ public class Book {
 	private BigDecimal price;
 
 	@NotNull
-	boolean bookPakageingAvailable;
+	boolean bookPackagingAvailable;
 
 	@NotNull
 	private String image;
@@ -71,7 +68,6 @@ public class Book {
 	@NotNull
 	private LocalDateTime createdAt;
 
-	@Null
 	private LocalDateTime updatedAt;
 
 }

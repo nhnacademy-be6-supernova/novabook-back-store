@@ -1,4 +1,4 @@
-package store.novabook.store.book.book.entity;
+package store.novabook.store.book.entity;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Likes {
+public class AuthorBook {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -27,15 +27,13 @@ public class Likes {
 	@JoinColumn(name = "book_id")
 	private Book book;
 
-	// TODO user 테이블 작성
-	// @NotNull
-	// @ManyToOne
-	// @JoinColumn(name = "user_id")
-	// private User user;
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "author_id")
+	private Author author;
 
 	@NotNull
 	private LocalDateTime createdAt;
 
-	@Null
 	private LocalDateTime updatedAt;
 }

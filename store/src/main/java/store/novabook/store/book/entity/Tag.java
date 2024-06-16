@@ -1,4 +1,4 @@
-package store.novabook.store.book.book.entity;
+package store.novabook.store.book.entity;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Author {
+public class Tag {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -24,15 +24,7 @@ public class Author {
 	private String name;
 
 	@NotNull
-	private String description;
-
-	@NotNull
-	private String role;
-
-	@NotNull
 	private LocalDateTime createdAt;
 
-	@Null
 	private LocalDateTime updatedAt;
-
 }

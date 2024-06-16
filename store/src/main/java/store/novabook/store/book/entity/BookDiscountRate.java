@@ -1,5 +1,6 @@
-package store.novabook.store.category.entity;
+package store.novabook.store.book.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -13,27 +14,25 @@ import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.book.entity.Book;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class BookCategory {
+public class BookDiscountRate {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "category_id")
-	private Category category;
-
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
 
 	@NotNull
+	private BigDecimal rate;
+
+	@NotNull
 	private LocalDateTime createdAt;
 
-	@Null
 	private LocalDateTime updatedAt;
 }
