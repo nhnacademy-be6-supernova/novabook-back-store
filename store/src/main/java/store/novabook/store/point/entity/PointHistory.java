@@ -30,7 +30,7 @@ public class PointHistory {
 
 	@NotNull
 	@OneToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "point_policy_id")
 	private PointPolicy pointPolicy;
 
 	@NotNull
