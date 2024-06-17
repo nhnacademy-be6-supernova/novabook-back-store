@@ -22,7 +22,7 @@ public class MemberAddress {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-
+	@NotNull
 	private String nickName;
 
 	@NotNull
@@ -45,4 +45,3 @@ public class MemberAddress {
 	private Member member;
 
 }
-
