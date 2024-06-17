@@ -29,8 +29,7 @@ public class CartBook {
 	@JoinColumn(name = "cart_id")
 	private Cart cart;
 
-	// TODO:
-	// @NotNull
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;

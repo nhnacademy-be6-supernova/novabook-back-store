@@ -15,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -38,6 +37,7 @@ public class PointHistory {
 	@NotNull
 	private String pointContent;
 
+	@NotNull
 	private BigDecimal pointAmount;
 
 	@NotNull
