@@ -1,5 +1,6 @@
 package store.novabook.store.point.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -24,8 +25,9 @@ public class PointHistory {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	//TODO: Orders테이블 만들면 주석해제
-	// @ManyToOne()
+	//todo
+	// @ManyToOne
+	// @JoinColumn(name = "id")
 	// private Orders orders;
 
 	@NotNull
@@ -36,7 +38,7 @@ public class PointHistory {
 	@NotNull
 	private String pointContent;
 
-	private Long pointAmount;
+	private BigDecimal pointAmount;
 
 	@NotNull
 	private LocalDateTime createdAt;

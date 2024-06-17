@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class BookDiscountRate {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull

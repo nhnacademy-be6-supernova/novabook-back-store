@@ -13,14 +13,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Book {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@NotNull
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
@@ -29,7 +29,7 @@ public class Book {
 	private BookStatus bookStatus;
 
 	@NotNull
-	private String ISBM;
+	private String isbn;
 
 	@NotNull
 	private String title;
@@ -60,7 +60,7 @@ public class Book {
 	private BigDecimal price;
 
 	@NotNull
-	boolean bookPackagingAvailable;
+	boolean isPackaged;
 
 	@NotNull
 	private String image;

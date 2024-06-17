@@ -23,7 +23,7 @@ public class MemberAddress {
 	private Long id;
 
 
-	private String nickName;
+	private String nickname;
 
 	@NotNull
 	private String memberAddressDetail;
@@ -35,12 +35,12 @@ public class MemberAddress {
 
 
 	@NotNull
-	@ManyToOne(optional = false)
+	@ManyToOne
 	@JoinColumn(name = "street_address_id")
 	private StreetAddress streetAddress;
 
 	@NotNull
-	@ManyToOne(optional = false)
+	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
 

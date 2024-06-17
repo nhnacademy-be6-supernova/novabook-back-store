@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.entity.User;
 
 @Getter
@@ -20,7 +21,7 @@ import store.novabook.store.user.member.entity.User;
 @Entity
 public class Likes {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
@@ -30,8 +31,8 @@ public class Likes {
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(name = "member_id")
+	private Member member;
 
 	@NotNull
 	private LocalDateTime createdAt;
