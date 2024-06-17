@@ -1,44 +1,30 @@
-package store.novabook.store.point.entity;
+package store.novabook.store.payment.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.order.entity.Orders;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class PointHistory {
-
+public class Payment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "orders_id")
-	private Orders orders;
+	private Long ordersId;
 
 	@NotNull
-	@OneToOne
-	@JoinColumn(name = "point_policy_id")
-	private PointPolicy pointPolicy;
-
-	@NotNull
-	private String pointContent;
-
-	@NotNull
-	private BigDecimal pointAmount;
+	private String provider;
+	
+	private String paymentKey;
 
 	@NotNull
 	private LocalDateTime createdAt;

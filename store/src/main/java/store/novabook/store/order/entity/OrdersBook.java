@@ -1,4 +1,4 @@
-package store.novabook.store.point.entity;
+package store.novabook.store.order.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,18 +9,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.order.entity.Orders;
+import store.novabook.store.book.entity.Book;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class PointHistory {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 
+public class OrdersBook {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -29,19 +28,19 @@ public class PointHistory {
 	@JoinColumn(name = "orders_id")
 	private Orders orders;
 
-	@NotNull
-	@OneToOne
-	@JoinColumn(name = "point_policy_id")
-	private PointPolicy pointPolicy;
+	@ManyToOne
+	@JoinColumn(name = "book_id")
+	private Book book;
 
 	@NotNull
-	private String pointContent;
+	private int quantity;
 
 	@NotNull
-	private BigDecimal pointAmount;
+	private BigDecimal price;
 
 	@NotNull
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
 }

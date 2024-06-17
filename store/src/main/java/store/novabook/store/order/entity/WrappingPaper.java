@@ -1,5 +1,6 @@
-package store.novabook.store.user.member.entity;
+package store.novabook.store.order.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -14,14 +15,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class User {
-
+public class WrappingPaper {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
-	private boolean type;
+	private String name;
+
+	@NotNull
+	private BigDecimal price;
+
+	@NotNull
+	private String status;
 
 	@NotNull
 	private LocalDateTime createdAt;

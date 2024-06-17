@@ -59,7 +59,6 @@ public class Member {
 	@NotNull
 	private LocalDateTime updatedAt;
 
-
 	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "member_grade_id")
@@ -73,7 +72,6 @@ public class Member {
 	@NotNull
 	@OneToOne(optional = false)
 	@JoinColumn(name = "user_id")
-	private User user;
-
+	private Users users;
 
 }
