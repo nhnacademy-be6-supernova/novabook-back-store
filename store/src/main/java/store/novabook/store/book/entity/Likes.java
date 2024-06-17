@@ -25,12 +25,12 @@ public class Likes {
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "book_id")
 	private Book book;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "user_id")
 	private User user;
 
 	@NotNull

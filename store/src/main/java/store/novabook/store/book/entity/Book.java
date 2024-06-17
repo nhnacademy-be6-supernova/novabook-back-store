@@ -13,9 +13,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 @Entity
 public class Book {
 	@Id
@@ -57,7 +59,7 @@ public class Book {
 	int inventory;
 
 	@NotNull
-	private BigDecimal price;
+	private Long price;
 
 	@NotNull
 	boolean isPackaging;

@@ -24,7 +24,7 @@ public class Category {
 
 	@Null
 	@ManyToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "top_category_id")
 	private Category topCategory;
 
 	@NotNull

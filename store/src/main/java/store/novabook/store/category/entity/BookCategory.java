@@ -24,11 +24,11 @@ public class BookCategory {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "category_id")
 	private Category category;
 
 	@ManyToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "book_id")
 	private Book book;
 
 	@NotNull

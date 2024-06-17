@@ -25,12 +25,12 @@ public class Review {
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "user_id")
 	private Member member;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "book_id")
 	private Book book;
 
 	@NotNull
