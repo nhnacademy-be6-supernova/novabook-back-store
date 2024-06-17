@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Tag {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull

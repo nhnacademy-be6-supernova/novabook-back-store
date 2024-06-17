@@ -20,17 +20,17 @@ import store.novabook.store.user.member.entity.User;
 @Entity
 public class Likes {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "book_id")
+	@JoinColumn(name = "id")
 	private Book book;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "id")
 	private User user;
 
 	@NotNull

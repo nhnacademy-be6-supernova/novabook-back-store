@@ -20,15 +20,15 @@ import store.novabook.store.book.entity.Book;
 @Entity
 public class BookCategory {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "category_id")
+	@JoinColumn(name = "id")
 	private Category category;
 
 	@ManyToOne
-	@JoinColumn(name = "book_id")
+	@JoinColumn(name = "id")
 	private Book book;
 
 	@NotNull

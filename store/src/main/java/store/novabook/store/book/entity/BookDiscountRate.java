@@ -20,12 +20,12 @@ import lombok.NoArgsConstructor;
 @Entity
 public class BookDiscountRate {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "book_id")
+	@JoinColumn(name = "id")
 	private Book book;
 
 	@NotNull

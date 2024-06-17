@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Book {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotNull
 	private Long id;
 
@@ -29,7 +29,7 @@ public class Book {
 	private BookStatus bookStatus;
 
 	@NotNull
-	private String ISBM;
+	private String isbn;
 
 	@NotNull
 	private String title;
@@ -60,7 +60,7 @@ public class Book {
 	private BigDecimal price;
 
 	@NotNull
-	boolean bookPackagingAvailable;
+	boolean isPackaging;
 
 	@NotNull
 	private String image;

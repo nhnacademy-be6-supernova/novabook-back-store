@@ -8,7 +8,7 @@ spring:
     name: 'store'
 
   datasource:
-    url: jdbc:mysql://133.186.241.167:3306/be6_supernova
+    url: jdbc:mysql://133.186.241.167:3306/be6_supernova_dev
     username: be6_supernova
     password: Hv-]JRIyCw[[9O18
     driver-class-name: com.mysql.cj.jdbc.Driver

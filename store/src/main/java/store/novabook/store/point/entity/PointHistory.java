@@ -24,13 +24,14 @@ public class PointHistory {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	//TODO: Orders테이블 만들면 주석해제
-	// @ManyToOne()
+	//todo
+	// @ManyToOne
+	// @JoinColumn(name = "id")
 	// private Orders orders;
 
 	@NotNull
 	@OneToOne
-	@JoinColumn(name = "point_policy_id")
+	@JoinColumn(name = "id")
 	private PointPolicy pointPolicy;
 
 	@NotNull
