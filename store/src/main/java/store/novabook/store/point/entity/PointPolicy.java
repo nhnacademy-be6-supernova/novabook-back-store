@@ -1,6 +1,7 @@
 package store.novabook.store.point.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,9 +23,6 @@ public class PointPolicy {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne(mappedBy = "pointPolicy")
-	private PointHistory pointHistory;
-
 	@NotNull
 	@Column(precision = 10, scale = 2)
 	private BigDecimal reviewPointRate;
@@ -36,5 +34,10 @@ public class PointPolicy {
 	@NotNull
 	@Column(precision = 10, scale = 2)
 	private BigDecimal registerPoint;
+
+	@NotNull
+	private LocalDateTime createdAt;
+
+	private LocalDateTime updatedAt;
 
 }
