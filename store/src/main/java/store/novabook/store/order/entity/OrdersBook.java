@@ -1,5 +1,6 @@
-package store.novabook.store.user.member.entity;
+package store.novabook.store.order.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -12,36 +13,34 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.book.entity.Book;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class MemberAddress {
 
+public class OrdersBook {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
-	private String nickname;
+	@ManyToOne
+	@JoinColumn(name = "orders_id")
+	private Orders orders;
+
+	@ManyToOne
+	@JoinColumn(name = "book_id")
+	private Book book;
 
 	@NotNull
-	private String memberAddressDetail;
+	private int quantity;
+
+	@NotNull
+	private BigDecimal price;
 
 	@NotNull
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
 
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "street_address_id")
-	private StreetAddress streetAddress;
-
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "member_id")
-	private Member member;
-
 }
-

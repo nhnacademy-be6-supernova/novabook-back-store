@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.entity;
+package store.novabook.store.book.entity;
 
 import java.time.LocalDateTime;
 
@@ -12,36 +12,28 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.user.member.entity.Member;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class MemberAddress {
-
+public class Likes {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
-	private String nickname;
-
-	@NotNull
-	private String memberAddressDetail;
-
-	@NotNull
-	private LocalDateTime createdAt;
-
-	private LocalDateTime updatedAt;
-
-	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "street_address_id")
-	private StreetAddress streetAddress;
+	@JoinColumn(name = "book_id")
+	private Book book;
 
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-}
+	@NotNull
+	private LocalDateTime createdAt;
 
+	private LocalDateTime updatedAt;
+}
