@@ -1,6 +1,5 @@
 package store.novabook.store.point.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -12,12 +11,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.order.entity.Orders;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 public class PointHistory {
 
@@ -38,7 +39,7 @@ public class PointHistory {
 	private String pointContent;
 
 	@NotNull
-	private BigDecimal pointAmount;
+	private long pointAmount;
 
 	@NotNull
 	private LocalDateTime createdAt;
