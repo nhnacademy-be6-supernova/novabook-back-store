@@ -35,13 +35,13 @@ public class MemberAddress {
 
 
 	@NotNull
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "address_id")
+	@ManyToOne
+	@JoinColumn(name = "street_address_id")
 	private StreetAddress streetAddress;
 
 	@NotNull
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "user_id")
+	@ManyToOne
+	@JoinColumn(name = "member_id")
 	private Member member;
 
 }

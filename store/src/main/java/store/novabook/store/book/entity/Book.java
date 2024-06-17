@@ -17,12 +17,10 @@ import lombok.Setter;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Setter
 @Entity
 public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotNull
 	private Long id;
 
 	@NotNull
@@ -59,10 +57,10 @@ public class Book {
 	int inventory;
 
 	@NotNull
-	private Long price;
+	private BigDecimal price;
 
 	@NotNull
-	boolean isPackaging;
+	boolean isPackaged;
 
 	@NotNull
 	private String image;

@@ -25,7 +25,7 @@ public class BookDiscountRate {
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "book_id", referencedColumnName = "id")
+	@JoinColumn(name = "book_id")
 	private Book book;
 
 	@NotNull

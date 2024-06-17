@@ -1,5 +1,6 @@
 package store.novabook.store.point.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -31,13 +32,13 @@ public class PointHistory {
 
 	@NotNull
 	@OneToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "point_policy_id")
 	private PointPolicy pointPolicy;
 
 	@NotNull
 	private String pointContent;
 
-	private Long pointAmount;
+	private BigDecimal pointAmount;
 
 	@NotNull
 	private LocalDateTime createdAt;
