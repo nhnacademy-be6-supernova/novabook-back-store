@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.order.entity.Orders;
+import store.novabook.store.user.member.entity.Member;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,6 +35,10 @@ public class PointHistory {
 	@OneToOne
 	@JoinColumn(name = "point_policy_id")
 	private PointPolicy pointPolicy;
+
+	@ManyToOne
+	@JoinColumn(name = "member_id")
+	private Member member;
 
 	@NotNull
 	private String pointContent;
