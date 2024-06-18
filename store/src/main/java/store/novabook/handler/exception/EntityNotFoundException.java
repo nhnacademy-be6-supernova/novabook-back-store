@@ -1,8 +1,20 @@
 package store.novabook.handler.exception;
 
-public class EntityNotFoundException extends ApplicationException {
+import java.time.LocalDateTime;
 
-	public EntityNotFoundException(ErrorStatus errorStatus) {
-		super(errorStatus);
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+public class EntityNotFoundException extends RuntimeException {
+	private final ErrorStatus errorStatus;
+	public EntityNotFoundException(Class<?> entity) {
+		String message = String.format("%s를 찾을 수 없습니다.", entity.getSimpleName());
+		errorStatus = ErrorStatus.from(message, 404, LocalDateTime.now());
+	}
+
+	public EntityNotFoundException(Class<?> entity, Long id) {
+		String message = String.format("아이디가 %s인 %s를 찾을 수 없습니다.", id, entity.getSimpleName());
+		errorStatus = ErrorStatus.from(message, 404, LocalDateTime.now());
 	}
 }
