@@ -1,4 +1,4 @@
-package store.novabook.handler.exception;
+package store.novabook.store.exception;
 
 import java.time.LocalDateTime;
 

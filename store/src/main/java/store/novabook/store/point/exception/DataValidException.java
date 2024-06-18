@@ -3,7 +3,7 @@ package store.novabook.store.point.exception;
 import java.time.LocalDateTime;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.handler.exception.ErrorStatus;
+import store.novabook.store.exception.ErrorStatus;
 
 @RequiredArgsConstructor
 public class DataValidException extends RuntimeException {
