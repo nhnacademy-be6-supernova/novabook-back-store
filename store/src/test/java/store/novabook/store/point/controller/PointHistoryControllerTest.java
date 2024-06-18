@@ -23,43 +23,45 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import store.novabook.store.point.dto.CreatePointPolicyRequest;
-import store.novabook.store.point.dto.GetPointPolicyResponse;
-import store.novabook.store.point.service.PointPolicyService;
+import store.novabook.store.point.dto.CreatePointHistoryRequest;
+import store.novabook.store.point.dto.GetPointHistoryResponse;
+import store.novabook.store.point.service.PointHistoryService;
 
-@WebMvcTest(PointPolicyController.class)
-@ContextConfiguration(classes = {PointPolicyService.class})
+@WebMvcTest(PointHistoryController.class)
+@ContextConfiguration(classes = {PointHistoryService.class})
 @EnableSpringDataWebSupport
-public class PointPolicyControllerTest {
+public class PointHistoryControllerTest {
 
 	@Autowired
 	protected MockMvc mockMvc;
 
 	@MockBean
-	private PointPolicyService pointPolicyService;
+	private PointHistoryService pointHistoryService;
 
 	@BeforeEach
 	void setup() {
-		PointPolicyController controller = new PointPolicyController(pointPolicyService);
+		PointHistoryController controller = new PointHistoryController(pointHistoryService);
 		mockMvc = MockMvcBuilders.standaloneSetup(controller)
 			.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 			.build();
 	}
 
 	@Test
-	void getPointPoliciesTest() throws Exception {
-		GetPointPolicyResponse getPointPolicyResponse = GetPointPolicyResponse.builder()
-			.reviewPointRate(1000)
-			.basicPoint(1000)
-			.registerPoint(3000)
+	void getPointHistoriesTest() throws Exception {
+
+		GetPointHistoryResponse getPointPolicyResponse = GetPointHistoryResponse.builder()
+			.pointPolicy(null)
+			.pointContent("pointContent")
+			.pointAmount(1000)
 			.build();
-		List<GetPointPolicyResponse> getPointPolicyResponseList = Collections.singletonList(getPointPolicyResponse);
-		Page<GetPointPolicyResponse> page = new PageImpl<>(getPointPolicyResponseList, PageRequest.of(0, 10),
-			getPointPolicyResponseList.size());
 
-		Mockito.when(pointPolicyService.getPointPolicyList(Mockito.any(Pageable.class))).thenReturn(page);
+		List<GetPointHistoryResponse> getPointHistoryResponseList = Collections.singletonList(getPointPolicyResponse);
+		Page<GetPointHistoryResponse> page = new PageImpl<>(getPointHistoryResponseList, PageRequest.of(0, 10),
+			getPointHistoryResponseList.size());
 
-		mockMvc.perform(get("/point/policies")
+		Mockito.when(pointHistoryService.getPointHistoryList(Mockito.any(Pageable.class))).thenReturn(page);
+
+		mockMvc.perform(get("/point/histories")
 				.param("page", "0")
 				.param("size", "10")
 				.param("sort", "id,desc"))
@@ -68,21 +70,16 @@ public class PointPolicyControllerTest {
 	}
 
 	@Test
-	void getLatestPointPolicyTest() throws Exception {
-		mockMvc.perform(get("/point/policies/latest"))
-			.andExpect(status().isOk());
-	}
-
-	@Test
 	void createPointPolicyTest() throws Exception {
-		CreatePointPolicyRequest createPointPolicyRequest = CreatePointPolicyRequest.builder()
-			.reviewPointRate(1000L)
-			.basicPoint(1000L)
-			.registerPoint(3000L)
+		CreatePointHistoryRequest createPointHistoryRequest = CreatePointHistoryRequest.builder()
+			.pointPolicy(null)
+			.pointContent("pointContent")
+			.pointAmount(1000)
 			.build();
 
-		mockMvc.perform(post("/point/policies")
-				.flashAttr("createPointPolicyRequest", createPointPolicyRequest))
+		mockMvc.perform(post("/point/histories")
+				.flashAttr("createPointHistoryRequest", createPointHistoryRequest))
 			.andExpect(status().isCreated());
 	}
+
 }

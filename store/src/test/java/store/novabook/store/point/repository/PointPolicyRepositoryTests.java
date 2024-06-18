@@ -1,6 +1,9 @@
 package store.novabook.store.point.repository;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,21 +28,24 @@ public class PointPolicyRepositoryTests {
 	private EntityManager entityManager;
 
 	@Test
-	void createTest() {
-		PointPolicy pointPolicy = pointPolicyRepository.save(PointPolicy.builder().id(null)
+	void createPointPolicyTest() {
+		PointPolicy pointPolicy = PointPolicy.builder()
 			.reviewPointRate(1000)
 			.basicPoint(1000)
 			.registerPoint(3000)
-			.build());
+			.build();
 
-		assertThat(pointPolicy).isNotNull();
+		PointPolicy savedPointPolicy = pointPolicyRepository.save(pointPolicy);
+
+		assertThat(savedPointPolicy).isNotNull();
+		assertThat(savedPointPolicy).isEqualTo(pointPolicy);
 
 		entityManager.flush();
 		entityManager.clear();
 	}
 
 	@Test
-	void getTest() {
+	void getPointPolicyTest() {
 		PointPolicy pointPolicy = pointPolicyRepository.save(PointPolicy.builder().id(null)
 			.reviewPointRate(1000)
 			.basicPoint(1000)
@@ -52,10 +58,12 @@ public class PointPolicyRepositoryTests {
 		assertThat(foundPointPolicy.getReviewPointRate()).isEqualTo(1000);
 		assertThat(foundPointPolicy.getBasicPoint()).isEqualTo(1000);
 		assertThat(foundPointPolicy.getRegisterPoint()).isEqualTo(3000);
+		entityManager.flush();
+		entityManager.clear();
 	}
 
 	@Test
-	void getAllTest() {
+	void getAllPolicyTest() {
 
 		for (int i = 0; i < 10; i++) {
 			pointPolicyRepository.save(PointPolicy.builder().id(null)
@@ -69,10 +77,12 @@ public class PointPolicyRepositoryTests {
 		Page<PointPolicy> pointPolicyList = pointPolicyRepository.findAll(pageable);
 
 		assertThat(pointPolicyList).hasSize(10);
+		entityManager.flush();
+		entityManager.clear();
 	}
 
 	@Test
-	void getLatestTest() {
+	void getLatestPointPolicyTest() {
 		for (int i = 0; i < 10; i++) {
 			pointPolicyRepository.save(PointPolicy.builder().id(null)
 				.reviewPointRate(1000)
@@ -91,5 +101,23 @@ public class PointPolicyRepositoryTests {
 
 		assertThat(latestPointPolicy).isNotNull();
 		assertThat(latestPointPolicy.getId()).isEqualTo(pointPolicy.getId());
+		entityManager.flush();
+		entityManager.clear();
+	}
+
+	@Test
+	public void auditingTest() {
+		PointPolicy pointPolicy = PointPolicy.builder()
+			.reviewPointRate(1000)
+			.basicPoint(1000)
+			.registerPoint(3000)
+			.build();
+
+		PointPolicy savedPointPolicy = pointPolicyRepository.save(pointPolicy);
+
+		assertNotNull(savedPointPolicy.getCreatedAt());
+		assertNotNull(savedPointPolicy.getUpdatedAt());
+		assertTrue(savedPointPolicy.getCreatedAt().isBefore(LocalDateTime.now()));
+		assertTrue(savedPointPolicy.getUpdatedAt().isBefore(LocalDateTime.now()));
 	}
 }

@@ -1,18 +1,17 @@
 package store.novabook.store.cart.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.cart.dto.CreateCartRequest;
+import store.novabook.store.cart.dto.CreateCartResponse;
+import store.novabook.store.cart.dto.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.repository.CartRepository;
+import store.novabook.store.exception.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +19,28 @@ import store.novabook.store.cart.repository.CartRepository;
 public class CartService {
 	private final CartRepository cartRepository;
 
-	@GetMapping("/carts")
-	public ResponseEntity<List<Cart>> getCarts(Pageable pageable) {
-		Page<Cart> cartPage = cartRepository.findAll(pageable);
-		return new ResponseEntity<>(cartPage.getContent(), HttpStatus.OK);
+	@Transactional(readOnly = true)
+	public Page<CreateCartResponse> getCartList(Pageable pageable) {
+		Page<Cart> cartList = cartRepository.findAll(pageable);
+
+		return cartList.map(cart -> new CreateCartResponse(
+			cart.getUsers(),
+			cart.getIsExposed()
+		));
+	}
+
+	public void createCart(CreateCartRequest createCartRequest) {
+		cartRepository.save(
+			Cart.builder().users(createCartRequest.users()).isExposed(createCartRequest.isExposed()).build());
+	}
+
+	public GetCartResponse getCartByUserId(Long userId) {
+		Cart cart = cartRepository.findByUsers_Id(userId)
+			.orElseThrow(() -> new EntityNotFoundException(Cart.class, userId));
+
+		return new GetCartResponse(
+			cart.getUsers(),
+			cart.getIsExposed()
+		);
 	}
 }

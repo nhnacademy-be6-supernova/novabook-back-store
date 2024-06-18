@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import store.novabook.store.exception.EntityNotFoundException;
 import store.novabook.store.point.dto.CreatePointPolicyRequest;
 import store.novabook.store.point.dto.GetPointPolicyResponse;
 import store.novabook.store.point.entity.PointPolicy;
@@ -36,6 +37,15 @@ public class PointPolicyServiceTests {
 		MockitoAnnotations.openMocks(this);
 	}
 
+	@AfterEach
+	void tearDown() {
+		try {
+			MockitoAnnotations.openMocks(this).close();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Test
 	void createPointPolicyTest() {
 		PointPolicy pointPolicy = PointPolicy.builder()
@@ -46,7 +56,7 @@ public class PointPolicyServiceTests {
 
 		when(pointPolicyRepository.save(any(PointPolicy.class))).thenReturn(pointPolicy);
 
-		pointPolicyService.savePointPolicy(CreatePointPolicyRequest.builder()
+		pointPolicyService.createPointPolicy(CreatePointPolicyRequest.builder()
 			.reviewPointRate(1000L)
 			.basicPoint(1000L)
 			.registerPoint(3000L)
@@ -98,5 +108,23 @@ public class PointPolicyServiceTests {
 
 		assertNotNull(latestPointPolicy);
 
+	}
+
+	@Test
+	void getPointPolicyListTest_EntityNotFoundException() {
+		when(pointPolicyRepository.findAll(any(Pageable.class))).thenReturn(Page.empty());
+
+		assertThrows(EntityNotFoundException.class, () -> {
+			pointPolicyService.getPointPolicyList(PageRequest.of(0, 10));
+		});
+	}
+
+	@Test
+	void getLatestPointPolicyTest_EntityNotFoundException() {
+		when(pointPolicyRepository.findAll(any(Pageable.class))).thenReturn(Page.empty());
+
+		assertThrows(EntityNotFoundException.class, () -> {
+			pointPolicyService.getLatestPointPolicy();
+		});
 	}
 }

@@ -33,7 +33,7 @@ public class PointHistoryController {
 	public ResponseEntity<PointHistory> createPointHistory(
 		@ModelAttribute CreatePointHistoryRequest createPointHistoryRequest) {
 
-		pointHistoryService.savePointHistory(createPointHistoryRequest);
+		pointHistoryService.createPointHistory(createPointHistoryRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 }

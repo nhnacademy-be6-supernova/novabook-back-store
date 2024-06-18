@@ -39,7 +39,7 @@ public class PointPolicyController {
 	public ResponseEntity<Void> createPointPolicy(
 		@ModelAttribute CreatePointPolicyRequest createPointPolicyRequest) {
 
-		pointPolicyService.savePointPolicy(createPointPolicyRequest);
+		pointPolicyService.createPointPolicy(createPointPolicyRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
