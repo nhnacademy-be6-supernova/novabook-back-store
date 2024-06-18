@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.entity;
+package store.novabook.store.admin.entity;
 
 import java.time.LocalDateTime;
 
@@ -11,9 +11,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,11 +24,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class Member {
+public class Admin {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private int id;
 
 	@NotNull
 	private String loginId;
@@ -49,21 +46,6 @@ public class Member {
 	private String email;
 
 	@NotNull
-	private LocalDateTime birth;
-
-	@NotNull
-	private Long point;
-
-	@NotNull
-	private LocalDateTime latestLoginAt;
-
-	@NotNull
-	private Long totalAmount;
-
-	@NotNull
-	private int authentication;
-
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -71,19 +53,5 @@ public class Member {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "member_grade_id")
-	private MemberGrade memberGrade;
-
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "member_status_id")
-	private MemberStatus memberStatus;
-
-	@NotNull
-	@OneToOne
-	@JoinColumn(name = "user_id")
-	private Users users;
 
 }
