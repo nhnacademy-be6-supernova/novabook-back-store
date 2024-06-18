@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApplicationGlobalControllerAdvice {
 
-	@ExceptionHandler(ApplicationException.class)
-	public ResponseEntity<ErrorStatus> handleApplicationException(ApplicationException e) {
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<ErrorStatus> handleApplicationException(EntityNotFoundException e) {
 		ErrorStatus errorStatus = e.getErrorStatus();
-
 		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
 	}
 }

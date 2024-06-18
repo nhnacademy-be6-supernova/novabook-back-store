@@ -36,7 +36,7 @@ public class PointService {
 	public PointPolicy getLatestPointPolicy() {
 		return pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(
-				() -> new EntityNotFoundException(new ErrorStatus("최신 포인트 정책이 존재하지 않습니다.", 404, LocalDateTime.now())));
+				() -> new EntityNotFoundException(PointPolicy.class));
 	}
 
 	public PointPolicy savePointPolicy(CreatePointPolicyRequest createPointPolicyRequest) {
