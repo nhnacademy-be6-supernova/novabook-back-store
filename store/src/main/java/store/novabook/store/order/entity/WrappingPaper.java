@@ -24,7 +24,7 @@ public class WrappingPaper {
 	private String name;
 
 	@NotNull
-	private BigDecimal price;
+	private Long price;
 
 	@NotNull
 	private String status;
