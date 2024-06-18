@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto2.AuthorBookDto;
-import store.novabook.store.book.dto2.AuthorResponse;
-import store.novabook.store.book.dto2.BookResponse;
+import store.novabook.store.book.dto.AuthorBookDto;
+import store.novabook.store.book.dto.AuthorResponse;
+import store.novabook.store.book.dto.BookResponse;
 import store.novabook.store.book.entity.Author;
 import store.novabook.store.book.entity.AuthorBook;
 import store.novabook.store.book.entity.Book;
@@ -21,14 +21,14 @@ import store.novabook.store.book.repository.BookRepository;
 @Service
 @RequiredArgsConstructor
 public class AuthorService {
-	private final AuthorBookRepository repository;
+	private final AuthorBookRepository authorBookrepository;
 	private final AuthorRepository authorRepository;
 	private final BookRepository bookRepository;
 
 
 	//책으로 book 안에 저자들 AuthorBookDto list로 리턴
 	public List<AuthorBookDto> getAuthorByBookId(Long bookId) {
-		List<AuthorBook> authorBooks = repository.findByBookId(bookId);
+		List<AuthorBook> authorBooks = authorBookrepository.findByBookId(bookId);
 		return authorBooks.stream()
 			.map(authorBook -> new AuthorBookDto(authorBook.getAuthor().getId(), authorBook.getBook().getId()))
 			.collect(Collectors.toList());
@@ -55,7 +55,7 @@ public class AuthorService {
 
 	// 저자가 작성한 한 책들 AuthorBookDto list로 리턴
 	public List<AuthorBookDto> getBooksByAuthorId(Long authorId) {
-		List<AuthorBook> authorBooks = repository.findByAuthorId(authorId);
+		List<AuthorBook> authorBooks = authorBookrepository.findByAuthorId(authorId);
 		return authorBooks.stream()
 			.map(authorBook -> new AuthorBookDto(authorBook.getAuthor().getId(), authorBook.getBook().getId()))
 			.collect(Collectors.toList());
@@ -94,13 +94,13 @@ public class AuthorService {
 
 	//작가 등록
 	public AuthorBook save(AuthorBook authorBook) {
-		return repository.save(authorBook);
+		return authorBookrepository.save(authorBook);
 	}
 
 
 	//작가 업데이트
 	public void updateAuthor(AuthorBook authorBook) {
-		repository.save(authorBook);
+		authorBookrepository.save(authorBook);
 	}
 
 

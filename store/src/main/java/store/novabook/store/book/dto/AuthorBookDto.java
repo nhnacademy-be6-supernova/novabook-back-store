@@ -1,4 +1,4 @@
-package store.novabook.store.book.dto2;
+package store.novabook.store.book.dto;
 
 import lombok.Builder;
 

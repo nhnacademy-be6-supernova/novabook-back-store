@@ -7,12 +7,9 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.service.BookService;
 
 @RestController
-@RequestMapping()
+@RequestMapping("/books")
 @RequiredArgsConstructor
 public class AuthorBookController {
 	private final BookService bookService;
-
-
-
 
 }
