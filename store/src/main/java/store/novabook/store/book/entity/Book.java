@@ -40,7 +40,7 @@ public class Book {
 
 
 	@NotNull
-	private String index;
+	private String bookIndex;
 
 	@NotNull
 	private String description;
@@ -65,6 +65,9 @@ public class Book {
 	private Long price;
 
 	@NotNull
+	private Long discountPrice;
+
+	@NotNull
 	boolean isPackaged;
 
 	@NotNull
@@ -80,7 +83,7 @@ public class Book {
 	public Book(BookStatus bookStatus,
 				String isbn,
 				String title,
-				String index,
+				String bookIndex,
 				String description,
 				String descriptionDetail,
 				String author,
@@ -88,12 +91,13 @@ public class Book {
 				LocalDateTime publicationDate,
 				int inventory,
 				Long price,
+				Long discountPrice,
 				boolean isPackaged,
 				String image) {
 		this.bookStatus = bookStatus;
 		this.isbn = isbn;
 		this.title = title;
-		this.index = index;
+		this.bookIndex = bookIndex;
 		this.description = description;
 		this.descriptionDetail = descriptionDetail;
 		this.author = author;
@@ -101,19 +105,21 @@ public class Book {
 		this.publicationDate = publicationDate;
 		this.inventory = inventory;
 		this.price = price;
+		this.discountPrice = discountPrice;
 		this.isPackaged = isPackaged;
 		this.image = image;
 		this.createdAt = LocalDateTime.now();
+		this.updatedAt = null;
 
 	}
 
 
-	public static Book of(CreateBookRequest request) {
+	public static Book of(CreateBookRequest request, BookStatus bookStatus) {
 		return Book.builder()
-			.bookStatus(request.bookStatus())
+			.bookStatus(bookStatus)
 			.isbn(request.isbn())
 			.title(request.title())
-			.index(request.index())
+			.bookIndex(request.bookIndex())
 			.description(request.description())
 			.descriptionDetail(request.descriptionDetail())
 			.author(request.author())
@@ -121,6 +127,7 @@ public class Book {
 			.publicationDate(request.publicationDate())
 			.inventory(request.inventory())
 			.price(request.price())
+			.discountPrice(request.discountPrice())
 			.isPackaged(request.isPackaged())
 			.image(request.image())
 			.build();
