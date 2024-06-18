@@ -1,11 +1,11 @@
-package store.novabook.handler.exception;
+package store.novabook.store.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class ApplicationGlobalControllerAdvice {
+public class ApplicationGlobalControllerAdvice  {
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<ErrorStatus> handleApplicationException(EntityNotFoundException e) {
