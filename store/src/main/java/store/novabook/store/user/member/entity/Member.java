@@ -83,7 +83,17 @@ public class Member {
 
 	@NotNull
 	@OneToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "users_id")
 	private Users users;
+
+
+	public void update(String loginId, String loginPassword, String name, String number, String email, LocalDateTime birth) {
+		this.loginId = loginId;
+		this.loginPassword = loginPassword;
+		this.name = name;
+		this.number = number;
+		this.email = email;
+		this.birth = birth;
+	}
 
 }
