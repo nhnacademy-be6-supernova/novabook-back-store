@@ -53,5 +53,13 @@ public class Admin {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
+	public void update(String loginId, String loginPassword, String name, String number, String email) {
+		this.loginId = loginId;
+		this.loginPassword = loginPassword;
+		this.name = name;
+		this.number = number;
+		this.email = email;
+		this.updatedAt = LocalDateTime.now();
+	}
 
 }

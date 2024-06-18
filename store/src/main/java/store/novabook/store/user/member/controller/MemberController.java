@@ -29,7 +29,7 @@ public class MemberController {
 	@PostMapping
 	public ResponseEntity<Void> createMember(@RequestBody CreateMemberRequest createMemberRequest) {
 		Member createdMember = memberService.createMember(createMemberRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).body(null);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@GetMapping
@@ -47,13 +47,13 @@ public class MemberController {
 	@PutMapping("/{memberId}")
 	public ResponseEntity<Void> updateMember(@PathVariable Long memberId, @RequestBody CreateMemberRequest createMemberRequest) {
 		memberService.updateMember(memberId, createMemberRequest);
-		return ResponseEntity.ok().body(null);
+		return ResponseEntity.ok().build();
 	}
 
 	@DeleteMapping("/{memberId}")
 	public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
 		memberService.deleteMember(memberId);
-		return ResponseEntity.ok().body(null);
+		return ResponseEntity.ok().build();
 	}
 
 

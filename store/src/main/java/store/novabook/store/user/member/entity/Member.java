@@ -94,6 +94,7 @@ public class Member {
 		this.number = number;
 		this.email = email;
 		this.birth = birth;
+		this.updatedAt = LocalDateTime.now();
 	}
 
 }
