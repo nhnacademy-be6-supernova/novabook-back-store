@@ -1,33 +1,24 @@
 package store.novabook.store.book.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Builder;
-import store.novabook.store.book.entity.Author;
-import store.novabook.store.book.entity.AuthorBook;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.BookDiscountRate;
-import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.book.entity.BookTag;
-import store.novabook.store.book.entity.Likes;
-import store.novabook.store.book.entity.Tag;
 import store.novabook.store.category.entity.BookCategory;
-import store.novabook.store.category.entity.Category;
 
 @Builder
 public record GetBookResponse(Long id,
 							  String bookStatus,
 							  String isbn,
 							  String title,
-							  String subTitle,
-							  String engTitle,
 							  String index,
-							  String explanation,
+							  String description,
+							  String descriptionDetail,
 							  String author,
-							  String translator,
 							  String publisher,
 							  LocalDateTime publicationDate,
 							  int inventory,
@@ -41,21 +32,19 @@ public record GetBookResponse(Long id,
 	//description 필요?
 	public static GetBookResponse fromEntity(
 		Book book,
-		List<AuthorBook> authorBooks, //작가 번역가 모두 들어있음
 		BookDiscountRate discountRate,
 		List<BookTag> tags,
 		List<BookCategory> categories,
 		int likes) {
 		return GetBookResponse.builder()
 			.id(book.getId())
+			.isbn(book.getIsbn())
 			.bookStatus(book.getBookStatus().getName())
 			.title(book.getTitle())
-			.subTitle(book.getSubTitle())
-			.engTitle(book.getEngTitle())
+			.description(book.getDescription())
+			.descriptionDetail(book.getDescriptionDetail())
 			.index(book.getIndex())
-			.explanation(book.getExplanation())
-			.author(getAuthorBookName(authorBooks, "작가"))
-			.translator(getAuthorBookName(authorBooks, "번역가"))
+			.author(book.getAuthor())
 			.publisher(book.getPublisher())
 			.publicationDate(book.getPublicationDate())
 			.inventory(book.getInventory())
@@ -69,15 +58,6 @@ public record GetBookResponse(Long id,
 			.build();
 	}
 
-	public static String getAuthorBookName(List<AuthorBook> authorBooks, String roleName) {
-		for (AuthorBook authorBook : authorBooks) {
-			String role = authorBook.getAuthor().getRole();
-			if (role.equals(roleName)) {
-				return authorBook.getAuthor().getName();
-			}
-		}
-		return null;
-	}
 
 	public static List<String> tagNames(List<BookTag> bookTags) {
 		List<String> tagNames = new ArrayList<>();
