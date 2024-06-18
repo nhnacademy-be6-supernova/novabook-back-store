@@ -36,7 +36,7 @@ public class OrdersBook {
 	private int quantity;
 
 	@NotNull
-	private BigDecimal price;
+	private Long price;
 
 	@NotNull
 	private LocalDateTime createdAt;

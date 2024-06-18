@@ -33,15 +33,15 @@ public class MemberGrade {
 
 	@NotNull
 	@Column(precision =10, scale = 2)
-	private BigDecimal minRange;
+	private Long minRange;
 
 	@NotNull
 	@Column(precision =10, scale = 2)
-	private BigDecimal maxRange;
+	private Long maxRange;
 
 	@NotNull
 	@Column(precision =10, scale = 2)
-	private BigDecimal discountRate;
+	private Long discountRate;
 
 	@NotNull
 	@CreatedDate
