@@ -1,20 +1,19 @@
 package store.novabook.store.point.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class PointPolicy {
@@ -24,16 +23,13 @@ public class PointPolicy {
 	private Long id;
 
 	@NotNull
-	@Column(precision = 10, scale = 2)
-	private BigDecimal reviewPointRate;
+	private long reviewPointRate;
 
 	@NotNull
-	@Column(precision = 10, scale = 2)
-	private BigDecimal basicPoint;
+	private long basicPoint;
 
 	@NotNull
-	@Column(precision = 10, scale = 2)
-	private BigDecimal registerPoint;
+	private long registerPoint;
 
 	@NotNull
 	private LocalDateTime createdAt;
