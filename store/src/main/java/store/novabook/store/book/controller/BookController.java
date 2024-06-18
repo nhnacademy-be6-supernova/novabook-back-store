@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.AuthorBookDto;
 import store.novabook.store.book.dto.AuthorResponse;
 import store.novabook.store.book.dto.CreateBookRequest;
 import store.novabook.store.book.dto.GetBookResponse;
@@ -37,12 +36,10 @@ public class BookController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(null);
 	}
 
-
 	//책의 저자들
 	@GetMapping("/book/{id}/authors")
 	public ResponseEntity<List<AuthorResponse>> getBookAuthors(@PathVariable Long id) {
-		List<AuthorBookDto> authorBookDtos = authorService.getAuthorByBookId(id);
-		ResponseEntity<List<AuthorResponse>> authorResponses = authorService.toAuthorResponses(authorBookDtos);
-		return ResponseEntity.ok().body(authorResponses.getBody());
+		List<AuthorResponse> authorResponses = authorService.getAuthorByBookId(id);
+		return ResponseEntity.ok().body(authorResponses);
 	}
 }
