@@ -39,7 +39,6 @@ public class BookController {
 		return ResponseEntity.ok().body(bookService.getBookAll(pageable));
 	}
 
-
 	@PostMapping
 	public ResponseEntity<Void> createBook(@RequestBody CreateBookRequest createBookRequest) {
 		bookService.create(createBookRequest);
