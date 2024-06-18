@@ -25,13 +25,6 @@ public class AuthorService {
 	private final AuthorRepository authorRepository;
 	private final BookRepository bookRepository;
 
-	// 저자가 작성한 한 책들 AuthorBookDto list로 리턴
-	public List<AuthorBookDto> getBooksByAuthorId(Long authorId) {
-		List<AuthorBook> authorBooks = repository.findByAuthorId(authorId);
-		return authorBooks.stream()
-			.map(authorBook -> new AuthorBookDto(authorBook.getAuthor().getId(), authorBook.getBook().getId()))
-			.collect(Collectors.toList());
-	}
 
 	//책으로 book 안에 저자들 AuthorBookDto list로 리턴
 	public List<AuthorBookDto> getAuthorByBookId(Long bookId) {
@@ -58,6 +51,14 @@ public class AuthorService {
 			})
 			.collect(Collectors.toList());
 		return ResponseEntity.ok(authorResponses);
+	}
+
+	// 저자가 작성한 한 책들 AuthorBookDto list로 리턴
+	public List<AuthorBookDto> getBooksByAuthorId(Long authorId) {
+		List<AuthorBook> authorBooks = repository.findByAuthorId(authorId);
+		return authorBooks.stream()
+			.map(authorBook -> new AuthorBookDto(authorBook.getAuthor().getId(), authorBook.getBook().getId()))
+			.collect(Collectors.toList());
 	}
 
 	//bookAuthor에서 책들을 받아옴
@@ -91,12 +92,17 @@ public class AuthorService {
 
 	}
 
+	//작가 등록
 	public AuthorBook save(AuthorBook authorBook) {
 		return repository.save(authorBook);
 	}
 
-	public AuthorBook findById(Long id) {
-		return repository.findById(id).orElse(null);
+
+	//작가 업데이트
+	public void updateAuthor(AuthorBook authorBook) {
+		repository.save(authorBook);
 	}
+
+
 
 }
