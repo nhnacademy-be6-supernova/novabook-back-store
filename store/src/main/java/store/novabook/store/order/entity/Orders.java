@@ -25,7 +25,7 @@ public class Orders {
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "users_id")
 	private Users users;
 
 	@NotNull
@@ -52,13 +52,13 @@ public class Orders {
 	private LocalDateTime ordersDate;
 
 	@NotNull
-	private BigDecimal totalAmount;
+	private Long totalAmount;
 
 	@NotNull
 	private LocalDateTime deliveryDate;
 
 	@NotNull
-	private BigDecimal bookPurchaseAmount;
+	private Long bookPurchaseAmount;
 
 	@NotNull
 	private String deliveryAddress;

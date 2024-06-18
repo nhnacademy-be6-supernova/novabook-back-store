@@ -21,7 +21,7 @@ public class DeliveryFee {
 	private Long id;
 
 	@NotNull
-	private BigDecimal fee;
+	private Long fee;
 
 	@NotNull
 	private LocalDateTime createdAt;

@@ -29,7 +29,8 @@ public class BookDiscountRate {
 	private Book book;
 
 	@NotNull
-	private BigDecimal rate;
+	private Long rate;
+	//todo : 할인율은 걍 int 해도 되지 않나요
 
 	@NotNull
 	private LocalDateTime createdAt;

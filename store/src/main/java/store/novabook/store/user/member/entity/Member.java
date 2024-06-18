@@ -83,7 +83,7 @@ public class Member {
 
 	@NotNull
 	@OneToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "users_id")
 	private Users users;
 
 }
