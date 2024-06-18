@@ -6,7 +6,7 @@ public record GetMemberResponse(
 	Long id,
 	String loginId,
 	String name,
-	String emial
+	String email
 ) {
 	public static GetMemberResponse fromEntity(Member member) {
 		return new GetMemberResponse(
