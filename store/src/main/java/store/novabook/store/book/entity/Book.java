@@ -36,21 +36,25 @@ public class Book {
 	@NotNull
 	private String title;
 
-	private String subTitle;
-
-	private String engTitle;
 
 	@NotNull
 	private String index;
 
 	@NotNull
-	private String explanation;
+	private String description;
+
+	@NotNull
+	private String descriptionDetail;
+
+	@NotNull
+	private String author;
 
 	@NotNull
 	private String translator;
 
 	@NotNull
 	private String publisher;
+
 
 	@NotNull
 	private LocalDateTime publicationDate;
@@ -77,10 +81,10 @@ public class Book {
 	public Book(BookStatus bookStatus,
 				String isbn,
 				String title,
-				String subTitle,
-				String engTitle,
 				String index,
-				String explanation,
+				String description,
+				String descriptionDetail,
+				String author,
 				String publisher,
 				LocalDateTime publicationDate,
 				int inventory,
@@ -90,10 +94,10 @@ public class Book {
 		this.bookStatus = bookStatus;
 		this.isbn = isbn;
 		this.title = title;
-		this.subTitle = subTitle;
-		this.engTitle = engTitle;
 		this.index = index;
-		this.explanation = explanation;
+		this.description = description;
+		this.descriptionDetail = descriptionDetail;
+		this.author = author;
 		this.publisher = publisher;
 		this.publicationDate = publicationDate;
 		this.inventory = inventory;
@@ -110,10 +114,10 @@ public class Book {
 			.bookStatus(request.bookStatus())
 			.isbn(request.isbn())
 			.title(request.title())
-			.subTitle(request.subTitle())
-			.engTitle(request.engTitle())
 			.index(request.index())
-			.explanation(request.explanation())
+			.description(request.description())
+			.descriptionDetail(request.descriptionDetail())
+			.author(request.author())
 			.publisher(request.publisher())
 			.publicationDate(request.publicationDate())
 			.inventory(request.inventory())
