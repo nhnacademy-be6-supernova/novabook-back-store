@@ -1,6 +1,5 @@
-package store.novabook.store.book.dto;
+package store.novabook.store.tag.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateTagRequest(

@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.category.dto.CreateCategoryRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,11 +23,6 @@ public class Category {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Null
-	@ManyToOne
-	@JoinColumn(name = "top_category_id")
-	private Category topCategory;
-
 	@NotNull
 	private String name;
 
@@ -35,4 +31,9 @@ public class Category {
 
 	@Null
 	private LocalDateTime updatedAt;
+
+	public Category(String name) {
+		this.name = name;
+		this.createdAt = LocalDateTime.now();
+	}
 }
