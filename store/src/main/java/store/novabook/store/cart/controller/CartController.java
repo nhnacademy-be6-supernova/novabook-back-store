@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.cart.dto.CreateCartRequest;
 import store.novabook.store.cart.dto.CreateCartResponse;
@@ -32,7 +33,7 @@ public class CartController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> createCart(@RequestBody CreateCartRequest createCartRequest) {
+	public ResponseEntity<Void> createCart(@Valid @RequestBody CreateCartRequest createCartRequest) {
 
 		cartService.createCart(createCartRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();

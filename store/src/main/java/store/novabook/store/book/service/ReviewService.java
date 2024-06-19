@@ -49,7 +49,7 @@ public class ReviewService {
 		Page<Review> reviews = reviewRepository.findByMemberId(memberId, pageable);
 		List<GetReviewResponse> reviewResponses = new ArrayList<>();
 		for (Review review : reviews) {
-			reviewResponses.add(GetReviewResponse.form(review));
+			reviewResponses.add(GetReviewResponse.from(review));
 		}
 		return new PageImpl<>(reviewResponses, pageable, reviewResponses.size());
 	}
@@ -60,7 +60,7 @@ public class ReviewService {
 		Page<Review> reviews = reviewRepository.findByBookId(bookId, pageable);
 		List<GetReviewResponse> reviewResponses = new ArrayList<>();
 		for (Review review : reviews) {
-			reviewResponses.add(GetReviewResponse.form(review));
+			reviewResponses.add(GetReviewResponse.from(review));
 		}
 		return new PageImpl<>(reviewResponses, pageable, reviewResponses.size());
 	}

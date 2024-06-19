@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.point.dto.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.GetPointHistoryResponse;
@@ -31,7 +32,7 @@ public class PointHistoryController {
 
 	@PostMapping("/histories")
 	public ResponseEntity<PointHistory> createPointHistory(
-		@RequestBody CreatePointHistoryRequest createPointHistoryRequest) {
+		@Valid @RequestBody CreatePointHistoryRequest createPointHistoryRequest) {
 
 		pointHistoryService.createPointHistory(createPointHistoryRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();

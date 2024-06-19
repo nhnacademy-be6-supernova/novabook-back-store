@@ -8,6 +8,7 @@ import store.novabook.store.user.member.entity.Users;
 public record CreateCartRequest(
 	@NotNull
 	Users users,
+
 	@NotNull
 	boolean isExposed) {
 }

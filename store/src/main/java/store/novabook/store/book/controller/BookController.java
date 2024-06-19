@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateBookRequest;
 import store.novabook.store.book.dto.GetBookAllResponse;
@@ -40,13 +41,13 @@ public class BookController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> createBook(@RequestBody CreateBookRequest createBookRequest) {
+	public ResponseEntity<Void> createBook(@Valid @RequestBody CreateBookRequest createBookRequest) {
 		bookService.create(createBookRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PutMapping
-	public ResponseEntity<Void> updateBook(@RequestBody UpdateBookRequest updateBookRequest) {
+	public ResponseEntity<Void> updateBook(@Valid @RequestBody UpdateBookRequest updateBookRequest) {
 		bookService.update(updateBookRequest);
 		return ResponseEntity.ok().build();
 	}

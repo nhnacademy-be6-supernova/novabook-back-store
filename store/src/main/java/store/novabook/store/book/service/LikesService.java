@@ -41,8 +41,6 @@ public class LikesService {
 		return new PageImpl<>(searchBookResponses, pageable, searchBookResponses.size());
 	}
 
-	//없으면 좋아요 생성 아니면 좋아요 제거
-
 	//생성
 	public CreateLikesResponse createLikes(CreateLikesRequest request) {
 		Book book = bookRepository.findById(request.bookId())
@@ -55,7 +53,6 @@ public class LikesService {
 
 	// 삭제
 	public HttpStatus deleteLikes(Long likesId) {
-
 		likesRepository.deleteById(likesId);
 		return HttpStatus.NO_CONTENT;
 	}
