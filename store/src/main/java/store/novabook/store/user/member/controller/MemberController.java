@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
+import store.novabook.store.user.member.dto.CreateMemberResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
 import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.service.MemberService;
@@ -27,9 +29,9 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@PostMapping
-	public ResponseEntity<Void> createMember(@RequestBody CreateMemberRequest createMemberRequest) {
-		Member createdMember = memberService.createMember(createMemberRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	public ResponseEntity<CreateMemberResponse> createMember(@RequestBody @Valid CreateMemberRequest createMemberRequest) {
+		Member saved = memberService.createMember(createMemberRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).body(CreateMemberResponse.fromEntity(saved));
 	}
 
 	@GetMapping

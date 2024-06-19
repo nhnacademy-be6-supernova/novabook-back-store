@@ -1,3 +1,4 @@
+/*
 package store.novabook.store.user.member.service;
 
 import java.util.List;
@@ -7,13 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.exception.EntityNotFoundException;
 import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
 import store.novabook.store.user.member.dto.GetMemberAddressResponse;
+import store.novabook.store.user.member.dto.UpdateMemberAddressRequest;
+import store.novabook.store.user.member.dto.UpdateMemberAddressResponse;
 import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.entity.MemberAddress;
 import store.novabook.store.user.member.entity.StreetAddress;
 import store.novabook.store.user.member.exception.MemberAddressAlreadyExistException;
-import store.novabook.store.user.member.exception.MemberAddressNotFoundException;
 import store.novabook.store.user.member.exception.MemberAlreadyExistsException;
 import store.novabook.store.user.member.repository.MemberAddressRepository;
 import store.novabook.store.user.member.repository.MemberRepository;
@@ -60,7 +63,7 @@ public class MemberAddressService {
 	@Transactional(readOnly = true)
 	public GetMemberAddressResponse getMemberAddress(Long id) {
 		MemberAddress memberAddress = memberAddressRepository.findById(id)
-			.orElseThrow(() -> new MemberAddressNotFoundException());
+			.orElseThrow(() -> new EntityNotFoundException(id));
 		return new GetMemberAddressResponse(
 			memberAddress.getId(),
 			memberAddress.getStreetAddress().getId(),
@@ -70,26 +73,30 @@ public class MemberAddressService {
 		);
 	}
 
-	public MemberAddress updateMemberAddress(Long id, CreateMemberAddressRequest createMemberAddressRequest) {
+	public UpdateMemberAddressResponse updateMemberAddress(Long id, UpdateMemberAddressRequest updateMemberAddressRequest) {
 		MemberAddress memberAddress = memberAddressRepository.findById(id)
-			.orElseThrow(() -> new MemberAddressNotFoundException());
-		StreetAddress streetAddress = getOrCreateStreetAddress(createMemberAddressRequest);
+			.orElseThrow(() -> new EntityNotFoundException(id));
+		StreetAddress streetAddress = getOrCreateStreetAddress(updateMemberAddressRequest);
 
-		memberAddress.update(streetAddress, createMemberAddressRequest.nickName(), createMemberAddressRequest.memberAddressDetail());
-		return memberAddressRepository.save(memberAddress);
+		memberAddress.update(
+			updateMemberAddressRequest.streetAddress(),
+			updateMemberAddressRequest.nickname(),
+			updateMemberAddressRequest.memberAddressDetail()
+
+		);
 	}
 
 	public void deleteMemberAddress(Long id) {
 		MemberAddress memberAddress = memberAddressRepository.findById(id)
-			.orElseThrow(() -> new MemberAddressNotFoundException());
+			.orElseThrow(() -> new EntityNotFoundException(id));
 		memberAddressRepository.delete(memberAddress);
 	}
 
 
-	private StreetAddress getOrCreateStreetAddress(CreateMemberAddressRequest createMemberAddressRequest) {
+	private StreetAddress getOrCreateStreetAddress(UpdateMemberAddressRequest updateMemberAddressRequest) {
 		StreetAddress existingStreetAddress = streetAddressRepository.findByZipcodeAndStreetAddress(
-			createMemberAddressRequest.zipcode(),
-			createMemberAddressRequest.streetAddress()
+			updateMemberAddressRequest.zipcode(),
+			updateMemberAddressRequest.streetAddress()
 		);
 
 		if (existingStreetAddress != null) {
@@ -111,3 +118,4 @@ public class MemberAddressService {
 	}
 
 }
+*/
