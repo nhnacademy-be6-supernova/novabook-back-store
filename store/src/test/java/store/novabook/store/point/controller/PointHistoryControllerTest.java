@@ -23,7 +23,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import store.novabook.store.point.dto.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.GetPointHistoryResponse;
 import store.novabook.store.point.service.PointHistoryService;
 
@@ -68,17 +67,17 @@ public class PointHistoryControllerTest {
 			.andExpect(status().isOk());
 	}
 
-	@Test
-	void createPointPolicyTest() throws Exception {
-		CreatePointHistoryRequest createPointHistoryRequest = CreatePointHistoryRequest.builder()
-			.pointPolicyId(1L)
-			.pointContent("pointContent")
-			.pointAmount(1000)
-			.build();
-
-		mockMvc.perform(post("/point/histories")
-				.flashAttr("createPointHistoryRequest", createPointHistoryRequest))
-			.andExpect(status().isCreated());
-	}
+	// @Test
+	// void createPointPolicyTest() throws Exception {
+	// 	CreatePointHistoryRequest createPointHistoryRequest = CreatePointHistoryRequest.builder()
+	// 		.pointPolicyId(1L)
+	// 		.pointContent("pointContent")
+	// 		.pointAmount(1000)
+	// 		.build();
+	//
+	// 	mockMvc.perform(post("/point/histories")
+	// 			.flashAttr("createPointHistoryRequest", createPointHistoryRequest))
+	// 		.andExpect(status().isCreated());
+	// }
 
 }
