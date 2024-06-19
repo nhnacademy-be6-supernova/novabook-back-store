@@ -12,6 +12,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.book.dto.CreateReviewRequest;
+import store.novabook.store.book.dto.UpdateReviewRequest;
 import store.novabook.store.user.member.entity.Member;
 
 @Entity
@@ -46,4 +48,33 @@ public class Review {
 
 	private LocalDateTime updatedAt;
 
+	public static Review toEntity(CreateReviewRequest request, Member member, Book book) {
+		Review review = new Review();
+		review.member = member;
+		review.book = book;
+		review.content = request.content();
+		review.image = request.image();
+		review.score = request.score();
+		review.createdAt = LocalDateTime.now();
+		review.updatedAt = null;  // 생성 시점에는 업데이트 시간이 없으므로 null로 설정
+
+		return review;
+	}
+	public static Review toEntity(UpdateReviewRequest request, Member member, Book book) {
+		Review review = new Review();
+		review.member = member;
+		review.book = book;
+		review.content = request.content();
+		review.image = request.image();
+		review.score = request.score();
+		review.updatedAt = LocalDateTime.now();  // 생성 시점에는 업데이트 시간이 없으므로 null로 설정
+
+		return review;
+	}
+	public void updateEntity(UpdateReviewRequest request) {
+		this.updatedAt = LocalDateTime.now();
+		this.content = request.content();
+		this.image = request.image();
+		this.score = request.score();
+	}
 }

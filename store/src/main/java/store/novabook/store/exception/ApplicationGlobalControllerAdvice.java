@@ -12,4 +12,9 @@ public class ApplicationGlobalControllerAdvice  {
 		ErrorStatus errorStatus = e.getErrorStatus();
 		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
 	}
+	@ExceptionHandler(AlreadyExistException.class)
+	public ResponseEntity<ErrorStatus> handleApplicationException(AlreadyExistException e) {
+		ErrorStatus errorStatus = e.getErrorStatus();
+		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
+	}
 }

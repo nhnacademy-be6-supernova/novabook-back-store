@@ -1,7 +1,4 @@
-package store.novabook.store.book.service;
-
-import java.util.ArrayList;
-import java.util.List;
+package store.novabook.store.tag.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -10,14 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.CreateTagRequest;
-import store.novabook.store.book.dto.GetBookAllResponse;
-import store.novabook.store.book.dto.GetTagAllResponse;
-import store.novabook.store.book.dto.UpdateTagRequest;
-import store.novabook.store.book.entity.BookStatus;
-import store.novabook.store.book.entity.Tag;
-import store.novabook.store.book.repository.TagRepository;
 import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.tag.dto.CreateTagRequest;
+import store.novabook.store.tag.dto.GetTagAllResponse;
+import store.novabook.store.tag.dto.UpdateTagRequest;
+import store.novabook.store.tag.entity.Tag;
+import store.novabook.store.tag.repository.TagRepository;
 
 @Service
 @RequiredArgsConstructor
