@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateReviewRequest;
+import store.novabook.store.book.dto.CreateReviewResponse;
 import store.novabook.store.book.dto.GetReviewResponse;
 import store.novabook.store.book.dto.SearchBookResponse;
 import store.novabook.store.book.dto.UpdateReviewRequest;
@@ -47,10 +48,10 @@ public class ReviewController {
 
 	//생성
 	@PostMapping("/reviews")
-	public ResponseEntity<Void> createReviewed(@RequestBody CreateReviewRequest request) {
-		reviewService.createReview(request);
+	public ResponseEntity<CreateReviewResponse> createReviewed(@RequestBody CreateReviewRequest request) {
+		CreateReviewResponse createReviewResponse = reviewService.createReview(request);
 		//todo 포인트 증가  내역에 남고 멤버에 직접 증가
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(createReviewResponse);
 	}
 
 	//수정

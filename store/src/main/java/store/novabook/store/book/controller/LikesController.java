@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateLikesRequest;
+import store.novabook.store.book.dto.CreateLikesResponse;
 import store.novabook.store.book.dto.SearchBookResponse;
 import store.novabook.store.book.service.LikesService;
 
@@ -33,9 +34,9 @@ public class LikesController {
 
 	//좋아요 누르면 하기 ( 프론트에서 좋아요를 눌렀었는지 아닌지 판단
 	@PostMapping
-	public ResponseEntity<Void> createLikes(@RequestBody CreateLikesRequest createLikesRequest) {
-		HttpStatus status = likesService.createLikes(createLikesRequest);
-		return ResponseEntity.status(status).build();
+	public ResponseEntity<CreateLikesResponse> createLikes(@RequestBody CreateLikesRequest createLikesRequest) {
+		CreateLikesResponse createLikesResponse = likesService.createLikes(createLikesRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createLikesResponse);
 	}
 
 	//좋아요 삭제

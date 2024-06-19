@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateReviewRequest;
+import store.novabook.store.book.dto.CreateReviewResponse;
 import store.novabook.store.book.dto.GetReviewResponse;
 import store.novabook.store.book.dto.SearchBookResponse;
 import store.novabook.store.book.dto.UpdateReviewRequest;
@@ -65,7 +66,7 @@ public class ReviewService {
 	}
 
 	// 생성
-	public void createReview(CreateReviewRequest request) {
+	public CreateReviewResponse createReview(CreateReviewRequest request) {
 		if (existsByBookIdAndMemberId(request)) {
 			throw new AlreadyExistException(Review.class);
 		}
@@ -74,7 +75,9 @@ public class ReviewService {
 		Member member = memberRepository.findById(request.memberId())
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
 
-		reviewRepository.save(Review.toEntity(request, member, book));
+		Review review = reviewRepository.save(Review.toEntity(request, member, book));
+
+		return CreateReviewResponse.from(review);
 	}
 
 	public boolean existsByBookIdAndMemberId(CreateReviewRequest request) {
