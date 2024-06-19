@@ -6,7 +6,7 @@ import java.util.List;
 
 import lombok.Builder;
 import store.novabook.store.book.entity.Book;
-import store.novabook.store.book.entity.BookTag;
+import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.category.entity.BookCategory;
 
 @Builder

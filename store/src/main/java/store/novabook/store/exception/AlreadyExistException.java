@@ -17,8 +17,8 @@ public class AlreadyExistException extends RuntimeException {
 		errorStatus = ErrorStatus.from(message, 404, LocalDateTime.now());
 	}
 
-	public AlreadyExistException(Long id) {
-		String message = String.format("아이디 %s가 이미 존재합니다.", id);
+	public AlreadyExistException(String name) {
+		String message = String.format("%s 이/가 이미 존재합니다.", name);
 		this.errorStatus = ErrorStatus.from(message, 404, LocalDateTime.now());
 	}
 }
