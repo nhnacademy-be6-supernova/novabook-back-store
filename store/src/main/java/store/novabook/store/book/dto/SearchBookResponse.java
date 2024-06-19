@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import lombok.Builder;
 import store.novabook.store.book.entity.Book;
+import store.novabook.store.book.entity.BookStatus;
 
 @Builder
 public record SearchBookResponse(
@@ -11,14 +12,15 @@ public record SearchBookResponse(
 	Long bookStatusId,
 	String isbn,
 	String title,
-	String index,
+	String bookIndex,
 	String description,
 	String descriptionDetail,
-	String translator,
+	String author,
 	String publisher,
-	LocalDateTime publicationDate,
 	int inventory,
-	long price,
+	LocalDateTime publicationDate,
+	Long price,
+	Long discountPrice,
 	boolean isPackaged,
 	String image,
 	LocalDateTime createdAt,
@@ -30,15 +32,15 @@ public record SearchBookResponse(
 			.bookStatusId(book.getBookStatus().getId())
 			.isbn(book.getIsbn())
 			.title(book.getTitle())
+			.bookIndex(book.getBookIndex())
 			.description(book.getDescription())
 			.descriptionDetail(book.getDescriptionDetail())
-			.index(book.getIndex())
-			.translator(book.getTranslator())
+			.author(book.getAuthor())
 			.publisher(book.getPublisher())
-			.publicationDate(book.getPublicationDate())
 			.inventory(book.getInventory())
 			.price(book.getPrice())
 			.isPackaged(book.isPackaged())
+			.publicationDate(book.getPublicationDate())
 			.image(book.getImage())
 			.createdAt(book.getCreatedAt())
 			.updatedAt(book.getUpdatedAt())

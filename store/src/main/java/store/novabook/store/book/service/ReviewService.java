@@ -46,7 +46,6 @@ public class ReviewService {
 		reviewRepository.save(Review.toEntity(request,member,book));
 	}
 
-	@Transactional(readOnly = true)
 	public boolean existsByBookIdAndMemberId(CreateReviewRequest request) {
  		return false;
 	}

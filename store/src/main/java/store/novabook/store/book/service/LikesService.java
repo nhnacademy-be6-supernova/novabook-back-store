@@ -1,16 +1,13 @@
 package store.novabook.store.book.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.CreateLikesRequest;
-import store.novabook.store.book.dto.DeleteLikesRequest;
+import store.novabook.store.book.dto.PushLikesRequest;
 import store.novabook.store.book.dto.SearchBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Likes;
@@ -40,26 +37,29 @@ public class LikesService {
 		return searchBookResponses;
 	}
 
+	//없으면 좋아요 생성 아니면 좋아요 제거
+	public void pushedLikes(PushLikesRequest request) {
+		if(likesRepository.existsByMemberIdAndBookId(request.memberId(),request.bookId())){
+			deleteLikes(request);
+		}
+		createLikes(request);
+	}
+
 	//생성
-	//todo 이미 눌렀을때 , 없는 아이디일 때 , 예외 처리
-	public void createLikes(CreateLikesRequest request) {
+	public void createLikes(PushLikesRequest request) {
 		Book book = bookRepository.findById(request.bookId())
 			.orElseThrow(()->new EntityNotFoundException(Book.class,request.bookId()));
 		Member member = memberRepository.findById(request.memberId())
 			.orElseThrow(()->new EntityNotFoundException(Member.class, request.memberId()));
-
 		likesRepository.save(Likes.of(book,member));
+	}
+
+	// 삭제
+	public void deleteLikes(PushLikesRequest request) {
+		Likes likes = likesRepository.findByMemberIdAndBookId(request.memberId(),request.bookId());
+		likesRepository.delete(likes);
 	}
 
 	//수정은 필요 없을듯
 
-	// 삭제
-
-	public void deleteLikes(DeleteLikesRequest request) {
-		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(()->new EntityNotFoundException(Book.class,request.bookId()));
-		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(()->new EntityNotFoundException(Member.class, request.memberId()));
-		likesRepository.delete(Likes.of(book,member));
-	}
 }
