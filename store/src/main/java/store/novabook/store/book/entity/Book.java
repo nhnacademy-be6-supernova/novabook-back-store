@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import store.novabook.store.book.dto.CreateBookRequest;
+import store.novabook.store.book.dto.UpdateBookRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -133,8 +134,17 @@ public class Book {
 			.build();
 	}
 
-	public void update() {
-
+	public void update(BookStatus bookStatus, UpdateBookRequest request) {
+		this.bookStatus = bookStatus;
+		this.bookIndex = request.bookIndex();
+		this.inventory = request.inventory();
+		this.price = request.price();
+		this.discountPrice = request.discountPrice();
+		this.isPackaged = request.isPackaged();
+		this.updatedAt = LocalDateTime.now();
 	}
 
+	public void updateBookStatus(BookStatus bookStatus) {
+		this.bookStatus = bookStatus;
+	}
 }
