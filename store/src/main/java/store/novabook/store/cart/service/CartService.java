@@ -35,7 +35,7 @@ public class CartService {
 	}
 
 	public GetCartResponse getCartByUserId(Long userId) {
-		Cart cart = cartRepository.findByUsers_Id(userId)
+		Cart cart = cartRepository.findByUsersId(userId)
 			.orElseThrow(() -> new EntityNotFoundException(Cart.class, userId));
 
 		return new GetCartResponse(

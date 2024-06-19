@@ -8,5 +8,5 @@ import store.novabook.store.cart.entity.Cart;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
-	Optional<Cart> findByUsers_Id(Long userId);
+	Optional<Cart> findByUsersId(Long userId);
 }

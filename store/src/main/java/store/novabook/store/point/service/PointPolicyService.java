@@ -46,8 +46,12 @@ public class PointPolicyService {
 	}
 
 	public void createPointPolicy(CreatePointPolicyRequest createPointPolicyRequest) {
-		PointPolicy pointPolicy = new PointPolicy(null, createPointPolicyRequest.reviewPointRate(),
-			createPointPolicyRequest.basicPoint(), createPointPolicyRequest.registerPoint(), LocalDateTime.now(), null);
+		PointPolicy pointPolicy = new PointPolicy(null,
+			createPointPolicyRequest.reviewPointRate(),
+			createPointPolicyRequest.basicPoint(),
+			createPointPolicyRequest.registerPoint(),
+			LocalDateTime.now(),
+			null);
 		pointPolicyRepository.save(pointPolicy);
 	}
 

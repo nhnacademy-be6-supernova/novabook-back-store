@@ -1,11 +1,15 @@
 package store.novabook.store.cart.service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.book.entity.Book;
+import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.cart.dto.CreateCartBookRequest;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
@@ -20,40 +24,45 @@ public class CartBookService {
 
 	private final CartRepository cartRepository;
 	private final CartBookRepository cartBookRepository;
+	private final BookRepository bookRepository;
 
-	// CartBook cartBook = cartBookRepository.findByCart_IdAndBook_Id(
-	// 		createCartBookRequest.cart().getId(), createCartBookRequest.book().getId())
-	// 	.orElse(null);
-	//
-	// if (Objects.nonNull(cartBook)) {
-	// 	cartBookRepository.updateQuantityById(cartBook.getId(), createCartBookRequest.quantity());
-	// 	return;
-	// }
-	/*
-	 * 1. 회원당 장바구니 여러개
-	 * 2. 장바구니 안에 물건이 있는데 물건이 둘어옴
-	 * 3. 장바구니가 있을 수 있음.
-	 * */
+
 	public void createCartBook(CreateCartBookRequest createCartBookRequest) {
+		cartBookRepository.findByCartIdAndBookId(
+				createCartBookRequest.cartId(),
+				createCartBookRequest.bookId())
+			.ifPresentOrElse(
+				cartBook -> {
+					cartBookRepository.save(
+						CartBook.builder()
+							.id(cartBook.getId())
+							.cart(cartBook.getCart())
+							.book(cartBook.getBook())
+							.quantity(cartBook.getQuantity() + createCartBookRequest.quantity())
+							.createdAt(cartBook.getCreatedAt())
+							.updatedAt(LocalDateTime.now())
+							.build());
+				},
+				() -> {
+					Cart cart = cartRepository.findById(createCartBookRequest.cartId())
+						.orElseThrow(() -> new EntityNotFoundException(Cart.class, createCartBookRequest.cartId()));
 
-		// Optional<CartBook> cartBookOptional = cartBookRepository.findByCart_IdAndBook_Id(
-		// 	createCartBookRequest.cart().getId(), createCartBookRequest.book().getId()).orElseGet(() -> Optional.empty();
+					Book book = bookRepository.findById(createCartBookRequest.bookId())
+						.orElseThrow(() -> new EntityNotFoundException(Book.class, createCartBookRequest.bookId()));
 
-		// if (cartBookOptional.isPresent()) {
-		// 	cartBookRepository.updateQuantityById(cartBookOptional.get().getId(), createCartBookRequest.quantity());
-		// 	return;
-		// }
-
-		cartBookRepository.save(
-			CartBook.builder()
-				.cart(createCartBookRequest.cart())
-				.book(createCartBookRequest.book())
-				.quantity(createCartBookRequest.quantity())
-				.build());
+					cartBookRepository.save(
+						CartBook.builder()
+							.cart(cart)
+							.book(book)
+							.quantity(createCartBookRequest.quantity())
+							.createdAt(LocalDateTime.now())
+							.build());
+				}
+			);
 	}
 
-	public List<CartBook> getCartBookListByCartId(Long cartId) {
-		return cartBookRepository.findAllByCart_Id(cartId)
+	public Page<CartBook> getCartBookListByCartId(Long cartId, Pageable pageable) {
+		return cartBookRepository.findAllByCartId(cartId, pageable)
 			.orElseThrow(() -> new EntityNotFoundException(Cart.class, cartId));
 	}
 

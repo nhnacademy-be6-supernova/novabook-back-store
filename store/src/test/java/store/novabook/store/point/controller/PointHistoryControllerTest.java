@@ -50,7 +50,6 @@ public class PointHistoryControllerTest {
 	void getPointHistoriesTest() throws Exception {
 
 		GetPointHistoryResponse getPointPolicyResponse = GetPointHistoryResponse.builder()
-			.pointPolicy(null)
 			.pointContent("pointContent")
 			.pointAmount(1000)
 			.build();
@@ -72,7 +71,7 @@ public class PointHistoryControllerTest {
 	@Test
 	void createPointPolicyTest() throws Exception {
 		CreatePointHistoryRequest createPointHistoryRequest = CreatePointHistoryRequest.builder()
-			.pointPolicy(null)
+			.pointPolicyId(1L)
 			.pointContent("pointContent")
 			.pointAmount(1000)
 			.build();

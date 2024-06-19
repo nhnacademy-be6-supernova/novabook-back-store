@@ -108,6 +108,7 @@ public class PointPolicyRepositoryTests {
 	@Test
 	public void auditingTest() {
 		PointPolicy pointPolicy = PointPolicy.builder()
+			.id(null)
 			.reviewPointRate(1000)
 			.basicPoint(1000)
 			.registerPoint(3000)

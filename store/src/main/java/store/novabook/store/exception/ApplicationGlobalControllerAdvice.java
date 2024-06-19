@@ -17,4 +17,5 @@ public class ApplicationGlobalControllerAdvice  {
 		ErrorStatus errorStatus = e.getErrorStatus();
 		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
 	}
+
 }

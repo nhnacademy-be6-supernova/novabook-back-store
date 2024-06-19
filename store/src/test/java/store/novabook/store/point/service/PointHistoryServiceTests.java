@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 
 import store.novabook.store.exception.EntityNotFoundException;
 import store.novabook.store.order.entity.Orders;
+import store.novabook.store.order.repository.OrdersRepository;
 import store.novabook.store.point.dto.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;
@@ -27,6 +28,7 @@ import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
 import store.novabook.store.point.repository.PointPolicyRepository;
 import store.novabook.store.user.member.entity.Member;
+import store.novabook.store.user.member.repository.MemberRepository;
 
 public class PointHistoryServiceTests {
 
@@ -38,6 +40,12 @@ public class PointHistoryServiceTests {
 
 	@Mock
 	private PointHistoryRepository pointHistoryRepository;
+
+	@Mock
+	private MemberRepository memberRepository;
+
+	@Mock
+	private OrdersRepository ordersRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -55,31 +63,18 @@ public class PointHistoryServiceTests {
 
 	@Test
 	void createPointHistoryTest() {
+		PointPolicy mockPointPolicy = mock(PointPolicy.class);
 		Orders mockOrders = mock(Orders.class);
 		Member mockMember = mock(Member.class);
 
-		PointPolicy pointPolicy = PointPolicy.builder()
-			.reviewPointRate(1000)
-			.basicPoint(1000)
-			.registerPoint(3000)
-			.build();
-		PointPolicy savedPointPolicy = pointPolicyRepository.save(pointPolicy);
-
-		PointHistory pointHistory = PointHistory.builder()
-			.id(null)
-			.orders(mockOrders)
-			.pointPolicy(savedPointPolicy)
-			.member(mockMember)
-			.pointContent("pointContent")
-			.pointAmount(1000)
-			.build();
-
-		when(pointHistoryRepository.save(any(PointHistory.class))).thenReturn(pointHistory);
+		when(pointPolicyRepository.findById(anyLong())).thenReturn(java.util.Optional.of(mockPointPolicy));
+		when(ordersRepository.findById(anyLong())).thenReturn(java.util.Optional.of(mockOrders));
+		when(memberRepository.findById(anyLong())).thenReturn(java.util.Optional.of(mockMember));
 
 		pointHistoryService.createPointHistory(CreatePointHistoryRequest.builder()
-			.orders(mockOrders)
-			.pointPolicy(savedPointPolicy)
-			.member(mockMember)
+			.ordersId(mockOrders.getId())
+			.pointPolicyId(mockPointPolicy.getId())
+			.memberId(mockMember.getId())
 			.pointContent("pointContent")
 			.pointAmount(1000)
 			.build());
