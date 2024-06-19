@@ -105,7 +105,6 @@ public class Book {
 		this.isPackaged = isPackaged;
 		this.image = image;
 		this.createdAt = LocalDateTime.now();
-
 	}
 
 

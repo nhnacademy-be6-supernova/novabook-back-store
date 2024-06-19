@@ -6,15 +6,14 @@ import lombok.Builder;
 import store.novabook.store.book.entity.Book;
 
 @Builder
-public record MiniBookResponse(
+public record SearchBookResponse(
 	Long id,
 	Long bookStatusId,
 	String isbn,
 	String title,
-	String subTitle,
-	String engTitle,
 	String index,
-	String explanation,
+	String description,
+	String descriptionDetail,
 	String translator,
 	String publisher,
 	LocalDateTime publicationDate,
@@ -25,16 +24,15 @@ public record MiniBookResponse(
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
 ) {
-	public static MiniBookResponse from(Book book) {
-		return MiniBookResponse.builder()
+	public static SearchBookResponse from(Book book) {
+		return SearchBookResponse.builder()
 			.id(book.getId())
 			.bookStatusId(book.getBookStatus().getId())
 			.isbn(book.getIsbn())
 			.title(book.getTitle())
-			.subTitle(book.getSubTitle())
-			.engTitle(book.getEngTitle())
+			.description(book.getDescription())
+			.descriptionDetail(book.getDescriptionDetail())
 			.index(book.getIndex())
-			.explanation(book.getExplanation())
 			.translator(book.getTranslator())
 			.publisher(book.getPublisher())
 			.publicationDate(book.getPublicationDate())

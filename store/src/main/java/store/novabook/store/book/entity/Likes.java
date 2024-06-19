@@ -36,4 +36,12 @@ public class Likes {
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
+	public static Likes of(@NotNull Book book, @NotNull Member member) {
+		Likes likes = new Likes();
+		likes.book = book;
+		likes.member = member;
+		likes.createdAt = LocalDateTime.now();
+		return likes;
+	}
 }
