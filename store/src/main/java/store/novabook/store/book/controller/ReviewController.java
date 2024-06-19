@@ -2,6 +2,8 @@ package store.novabook.store.book.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +29,8 @@ public class ReviewController {
 
 	private final ReviewService reviewService;
 	@GetMapping("/members/{id}/reviews")
-	public ResponseEntity<List<SearchBookResponse>> getReviewedBooks(@PathVariable Long id) {
-		List<SearchBookResponse> searchBookResponses = reviewService.myReviews(id);
+	public ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(@PathVariable Long id, Pageable pageable) {
+		Page<SearchBookResponse> searchBookResponses = reviewService.myReviews(id,pageable);
 		return ResponseEntity.ok(searchBookResponses);
 	}
 

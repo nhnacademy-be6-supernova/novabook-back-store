@@ -3,6 +3,9 @@ package store.novabook.store.book.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +32,13 @@ public class LikesService {
 
 	//내가 좋아요 누른 책 목록 불러오기
 	@Transactional(readOnly = true)
-	public List<SearchBookResponse> myLikes(Long memberId) {
-		List<Likes> likesList = likesRepository.findAllByMemberId(memberId);
+	public Page<SearchBookResponse> myLikes(Long memberId, Pageable pageable) {
+		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId,pageable);
 		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
 		for (Likes like : likesList) {
 			searchBookResponses.add(SearchBookResponse.from(like.getBook()));
 		}
-		return searchBookResponses;
+		return new PageImpl<>(searchBookResponses, pageable, searchBookResponses.size());
 	}
 
 	//없으면 좋아요 생성 아니면 좋아요 제거

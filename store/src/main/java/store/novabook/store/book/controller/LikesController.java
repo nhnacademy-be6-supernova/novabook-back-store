@@ -2,6 +2,8 @@ package store.novabook.store.book.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +25,8 @@ public class LikesController {
 	private final LikesService likesService;
 	//member id 가 좋아요 누른 책들
 	@GetMapping("/{memberId}")
-	public ResponseEntity<List<SearchBookResponse>> getLikes(@PathVariable Long memberId) {
-		List<SearchBookResponse> searchBookResponses = likesService.myLikes(memberId);
+	public ResponseEntity<Page<SearchBookResponse>> getLikes(@PathVariable Long memberId, Pageable pageable) {
+		Page<SearchBookResponse> searchBookResponses = likesService.myLikes(memberId,pageable);
 		return ResponseEntity.ok().body(searchBookResponses);
 	}
 

@@ -3,6 +3,9 @@ package store.novabook.store.book.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +32,13 @@ public class ReviewService {
 
 	//member id 내가 쓴 책 목록 보기
 	@Transactional(readOnly = true)
-	public List<SearchBookResponse> myReviews(Long memberId) {
-		List<Review> ReviewList = reviewRepository.findByMemberId(memberId);
+	public Page<SearchBookResponse> myReviews(Long memberId, Pageable pageable) {
+		Page<Review> ReviewList = reviewRepository.findByMemberId(memberId,pageable);
 		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
 		for (Review review : ReviewList) {
 			searchBookResponses.add(SearchBookResponse.from(review.getBook()));
 		}
-		return searchBookResponses;
+		return new PageImpl<>(searchBookResponses, pageable, searchBookResponses.size());
 	}
 
 	// 생성
