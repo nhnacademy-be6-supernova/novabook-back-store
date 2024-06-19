@@ -71,8 +71,6 @@ public class BookService {
 		return new CreateBookResponse(book.getId());
 	}
 
-
-
 	public GetBookResponse getBook(Long id) {
 		Book book = bookRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(Book.class, id));

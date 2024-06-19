@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.point.dto.CreatePointPolicyRequest;
 import store.novabook.store.point.dto.GetPointPolicyResponse;
@@ -37,7 +38,7 @@ public class PointPolicyController {
 
 	@PostMapping("/policies")
 	public ResponseEntity<Void> createPointPolicy(
-		@RequestBody CreatePointPolicyRequest createPointPolicyRequest) {
+		@Valid @RequestBody CreatePointPolicyRequest createPointPolicyRequest) {
 
 		pointPolicyService.createPointPolicy(createPointPolicyRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();

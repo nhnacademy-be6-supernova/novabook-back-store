@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.GetMemberResponse;
@@ -27,7 +28,7 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@PostMapping
-	public ResponseEntity<Void> createMember(@RequestBody CreateMemberRequest createMemberRequest) {
+	public ResponseEntity<Void> createMember(@Valid @RequestBody CreateMemberRequest createMemberRequest) {
 		Member createdMember = memberService.createMember(createMemberRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(null);
 	}
@@ -45,7 +46,8 @@ public class MemberController {
 	}
 
 	@PutMapping("/{memberId}")
-	public ResponseEntity<Void> updateMember(@PathVariable Long memberId, @RequestBody CreateMemberRequest createMemberRequest) {
+	public ResponseEntity<Void> updateMember(@PathVariable Long memberId,
+		@Valid @RequestBody CreateMemberRequest createMemberRequest) {
 		memberService.updateMember(memberId, createMemberRequest);
 		return ResponseEntity.ok().body(null);
 	}
@@ -55,6 +57,5 @@ public class MemberController {
 		memberService.deleteMember(memberId);
 		return ResponseEntity.ok().body(null);
 	}
-
 
 }

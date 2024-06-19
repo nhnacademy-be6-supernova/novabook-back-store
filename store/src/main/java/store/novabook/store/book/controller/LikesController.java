@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateLikesRequest;
 import store.novabook.store.book.dto.CreateLikesResponse;
@@ -34,7 +35,7 @@ public class LikesController {
 
 	//좋아요 누르면 하기 ( 프론트에서 좋아요를 눌렀었는지 아닌지 판단
 	@PostMapping
-	public ResponseEntity<CreateLikesResponse> createLikes(@RequestBody CreateLikesRequest createLikesRequest) {
+	public ResponseEntity<CreateLikesResponse> createLikes(@Valid @RequestBody CreateLikesRequest createLikesRequest) {
 		CreateLikesResponse createLikesResponse = likesService.createLikes(createLikesRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createLikesResponse);
 	}
