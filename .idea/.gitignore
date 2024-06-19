@@ -1,0 +1,51 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+.idea/**
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+/sonarlint/**
+/checkstyle-idea.xml
+/compiler.xml
+/dataSources.local.xml
+/dataSources.xml
+/encodings.xml
+/jarRepositories.xml
+/misc.xml
+/modules.xml
+/sqldialects.xml
+/vcs.xml
+/workspace.xml
+/dataSources/14435d27-6a2e-43ce-9af4-05089378c32e.xml
+/dataSources/14435d27-6a2e-43ce-9af4-05089378c32e/storage_v2/_src_/schema/be6_supernova.O1XyUg.meta
+/uiDesigner.xml
+/dataSources/68843bea-844c-4f03-8456-99e459d2f9e3.xml
+/dataSources/68843bea-844c-4f03-8456-99e459d2f9e3/storage_v2/_src_/schema/be6_supernova_dev.EfMrOw.meta
