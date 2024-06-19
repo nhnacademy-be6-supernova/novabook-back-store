@@ -29,11 +29,10 @@ public class LikesService {
 	private final BookRepository bookRepository;
 	private final MemberRepository memberRepository;
 
-
 	//내가 좋아요 누른 책 목록 불러오기
 	@Transactional(readOnly = true)
 	public Page<SearchBookResponse> myLikes(Long memberId, Pageable pageable) {
-		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId,pageable);
+		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId, pageable);
 		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
 		for (Likes like : likesList) {
 			searchBookResponses.add(SearchBookResponse.from(like.getBook()));
@@ -43,14 +42,13 @@ public class LikesService {
 
 	//없으면 좋아요 생성 아니면 좋아요 제거
 
-
 	//생성
 	public HttpStatus createLikes(CreateLikesRequest request) {
 		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(()->new EntityNotFoundException(Book.class,request.bookId()));
+			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
 		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(()->new EntityNotFoundException(Member.class, request.memberId()));
-		likesRepository.save(Likes.of(book,member));
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
+		likesRepository.save(Likes.of(book, member));
 		return HttpStatus.CREATED;
 	}
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,14 +27,14 @@ public class ReviewController {
 
 	private final ReviewService reviewService;
 
-	@GetMapping("/reviews/members/{id}")
-	public ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(@PathVariable Long id, Pageable pageable) {
-		Page<SearchBookResponse> searchBookResponses = reviewService.myReviews(id, pageable);
+	@GetMapping("/reviews/members/books")
+	public ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(@RequestHeader Long memberId, Pageable pageable) {
+		Page<SearchBookResponse> searchBookResponses = reviewService.myReviews(memberId, pageable);
 		return ResponseEntity.ok(searchBookResponses);
 	}
 
-	@GetMapping("/reviews/members/{memberId}")
-	public ResponseEntity<Page<GetReviewResponse>> getReviewByMember(@PathVariable Long memberId, Pageable pageable) {
+	@GetMapping("/reviews/members")
+	public ResponseEntity<Page<GetReviewResponse>> getReviewByMember(@RequestHeader Long memberId, Pageable pageable) {
 		Page<GetReviewResponse> getReviewResponses = reviewService.membersReviews(memberId, pageable);
 		return ResponseEntity.ok(getReviewResponses);
 	}
