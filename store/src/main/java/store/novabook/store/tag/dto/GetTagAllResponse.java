@@ -1,10 +1,7 @@
-package store.novabook.store.book.dto;
-
-import java.util.ArrayList;
-import java.util.List;
+package store.novabook.store.tag.dto;
 
 import lombok.Builder;
-import store.novabook.store.book.entity.Tag;
+import store.novabook.store.tag.entity.Tag;
 @Builder
 public record GetTagAllResponse(String name) {
 	public static GetTagAllResponse fromEntity(Tag tag) {

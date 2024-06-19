@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateBookRequest;
 import store.novabook.store.book.dto.GetBookAllResponse;
@@ -33,6 +33,7 @@ public class BookController {
 	public ResponseEntity<GetBookResponse> getBook(@PathVariable Long id) {
 		return ResponseEntity.ok().body(bookService.getBook(id));
 	}
+
 	@Transactional(readOnly = true)
 	@GetMapping
 	public ResponseEntity<Page<GetBookAllResponse>> getBookAll(Pageable pageable) {
@@ -40,13 +41,13 @@ public class BookController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> createBook(@RequestBody CreateBookRequest createBookRequest) {
+	public ResponseEntity<Void> createBook(@Valid @RequestBody CreateBookRequest createBookRequest) {
 		bookService.create(createBookRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PutMapping
-	public ResponseEntity<Void> updateBook(@RequestBody UpdateBookRequest updateBookRequest) {
+	public ResponseEntity<Void> updateBook(@Valid @RequestBody UpdateBookRequest updateBookRequest) {
 		bookService.update(updateBookRequest);
 		return ResponseEntity.ok().build();
 	}

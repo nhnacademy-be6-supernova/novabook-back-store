@@ -29,7 +29,7 @@ public class MemberService {
 
 	@Transactional
 	public Member createMember(CreateMemberRequest createMemberRequest) {
-		Users user = Users.builder().type(true).build();
+		Users user = Users.builder().type(1).build();
 		usersRepository.save(user);
 
 		Member member = Member.builder()

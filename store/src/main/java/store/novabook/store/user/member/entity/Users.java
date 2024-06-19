@@ -31,7 +31,7 @@ public class Users {
 	private Long id;
 
 	@NotNull
-	private boolean type;
+	private int type;
 
 	@NotNull
 	@CreatedDate

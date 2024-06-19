@@ -63,7 +63,7 @@ public class Book {
 	int inventory;
 
 	@NotNull
-	private Long price;
+	private long price;
 
 	@NotNull
 	private Long discountPrice;
