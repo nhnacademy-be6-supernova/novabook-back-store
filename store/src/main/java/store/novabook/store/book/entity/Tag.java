@@ -27,4 +27,14 @@ public class Tag {
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
+	public Tag(String Name) {
+		this.name = Name;
+		this.createdAt = LocalDateTime.now();
+	}
+
+	public void update(String name) {
+		this.name = name;
+		this.updatedAt = LocalDateTime.now();
+	}
 }

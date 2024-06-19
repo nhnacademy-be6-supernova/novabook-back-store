@@ -6,16 +6,15 @@ import java.util.List;
 
 import lombok.Builder;
 import store.novabook.store.book.entity.Book;
-import store.novabook.store.book.entity.BookDiscountRate;
 import store.novabook.store.book.entity.BookTag;
 import store.novabook.store.category.entity.BookCategory;
 
 @Builder
 public record GetBookResponse(Long id,
-							  String bookStatus,
+							  Long bookStatusId,
 							  String isbn,
 							  String title,
-							  String index,
+							  String bookIndex,
 							  String description,
 							  String descriptionDetail,
 							  String author,
@@ -23,27 +22,27 @@ public record GetBookResponse(Long id,
 							  LocalDateTime publicationDate,
 							  int inventory,
 							  Long price,
+							  Long discountPrice,
 							  boolean isPackaged,
 							  String image,
 							  List<String> tags,
 							  List<String> categories,
-							  int likes,
-							  Long discount) {
+							  int likes
+							  ) {
 	//description 필요?
 	public static GetBookResponse fromEntity(
 		Book book,
-		BookDiscountRate discountRate,
 		List<BookTag> tags,
 		List<BookCategory> categories,
 		int likes) {
 		return GetBookResponse.builder()
 			.id(book.getId())
 			.isbn(book.getIsbn())
-			.bookStatus(book.getBookStatus().getName())
+			.bookStatusId(book.getBookStatus().getId())
 			.title(book.getTitle())
 			.description(book.getDescription())
 			.descriptionDetail(book.getDescriptionDetail())
-			.index(book.getIndex())
+			.bookIndex(book.getBookIndex())
 			.author(book.getAuthor())
 			.publisher(book.getPublisher())
 			.publicationDate(book.getPublicationDate())
@@ -54,7 +53,7 @@ public record GetBookResponse(Long id,
 			.tags(tagNames(tags))
 			.categories(categoryNames(categories))
 			.likes(likes)
-			.discount(discountRate.getRate())
+			.discountPrice(book.getDiscountPrice())
 			.build();
 	}
 
