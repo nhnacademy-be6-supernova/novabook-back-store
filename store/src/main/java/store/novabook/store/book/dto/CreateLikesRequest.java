@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record PushLikesRequest(
+public record CreateLikesRequest(
 	@NotNull
 	Long bookId,
 	@NotNull

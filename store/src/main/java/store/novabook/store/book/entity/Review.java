@@ -71,4 +71,10 @@ public class Review {
 
 		return review;
 	}
+	public void updateEntity(UpdateReviewRequest request) {
+		this.updatedAt = LocalDateTime.now();
+		this.content = request.content();
+		this.image = request.image();
+		this.score = request.score();
+	}
 }

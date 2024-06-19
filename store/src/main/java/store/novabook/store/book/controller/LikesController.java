@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.PushLikesRequest;
+import store.novabook.store.book.dto.CreateLikesRequest;
 import store.novabook.store.book.dto.SearchBookResponse;
 import store.novabook.store.book.service.LikesService;
 
@@ -30,11 +30,10 @@ public class LikesController {
 
 	//좋아요 누르면 하기
 	@PostMapping
-	public ResponseEntity<Void> pushLikes(@RequestBody PushLikesRequest pushLikesRequest) {
-		likesService.createLikes(pushLikesRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	public ResponseEntity<Void> pushLikes(@RequestBody CreateLikesRequest createLikesRequest) {
+		HttpStatus status = likesService.pushedLikes(createLikesRequest);
+		return ResponseEntity.status(status).build();
 	}
 
 	//좋아요 삭제
-
 }
