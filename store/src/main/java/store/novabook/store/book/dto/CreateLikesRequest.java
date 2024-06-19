@@ -5,9 +5,9 @@ import lombok.Builder;
 
 @Builder
 public record CreateLikesRequest(
-	@NotNull
+	@NotNull(message = "bookId 값은 필수 입니다 ")
 	Long bookId,
-	@NotNull
+	@NotNull(message = "memberId 값은 필수 입니다 ")
 	Long memberId
 ) {
 }

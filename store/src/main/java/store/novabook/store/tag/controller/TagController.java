@@ -49,7 +49,7 @@ public class TagController {
 	}
 
 	@PutMapping
-	public ResponseEntity<Void> updateTag(@RequestBody UpdateTagRequest updateTagRequest) {
+	public ResponseEntity<Void> updateTag(@Valid @RequestBody UpdateTagRequest updateTagRequest) {
 		tagService.updateTag(updateTagRequest);
 		return ResponseEntity.ok().build();
 	}

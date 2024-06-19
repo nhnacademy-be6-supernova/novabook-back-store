@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.category.dto.CreateCategoryRequest;
 import store.novabook.store.category.entity.GetCategoryResponse;
@@ -23,7 +24,7 @@ public class CategoryController {
 	private final CategoryService categoryService;
 
 	@PostMapping
-	public ResponseEntity<Void> createCategory(@RequestBody CreateCategoryRequest category) {
+	public ResponseEntity<Void> createCategory(@Valid @RequestBody CreateCategoryRequest category) {
 		categoryService.create(category);
 		return ResponseEntity.ok().build();
 	}
@@ -43,6 +44,5 @@ public class CategoryController {
 		categoryService.delete(id);
 		return ResponseEntity.ok().build();
 	}
-
 
 }

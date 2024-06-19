@@ -17,7 +17,7 @@ public record GetReviewResponse(
 	String image,
 	int score
 ) {
-	public static GetReviewResponse form(Review review) {
+	public static GetReviewResponse from(Review review) {
 		return GetReviewResponse.builder()
 			.id(review.getId())
 			.bookId(review.getBook().getId())
