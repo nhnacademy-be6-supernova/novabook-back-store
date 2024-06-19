@@ -1,4 +1,4 @@
-package store.novabook.store.book.dto;
+package store.novabook.store.tag.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
