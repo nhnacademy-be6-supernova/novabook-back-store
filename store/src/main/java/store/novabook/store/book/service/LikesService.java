@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateLikesRequest;
+import store.novabook.store.book.dto.CreateLikesResponse;
 import store.novabook.store.book.dto.SearchBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Likes;
@@ -29,11 +30,10 @@ public class LikesService {
 	private final BookRepository bookRepository;
 	private final MemberRepository memberRepository;
 
-
 	//내가 좋아요 누른 책 목록 불러오기
 	@Transactional(readOnly = true)
 	public Page<SearchBookResponse> myLikes(Long memberId, Pageable pageable) {
-		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId,pageable);
+		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId, pageable);
 		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
 		for (Likes like : likesList) {
 			searchBookResponses.add(SearchBookResponse.from(like.getBook()));
@@ -42,27 +42,21 @@ public class LikesService {
 	}
 
 	//없으면 좋아요 생성 아니면 좋아요 제거
-	public HttpStatus pushedLikes(CreateLikesRequest request) {
-		if(likesRepository.existsByMemberIdAndBookId(request.memberId(),request.bookId())){
-			return deleteLikes(request);
-		}
-		return createLikes(request);
-	}
 
 	//생성
-	public HttpStatus createLikes(CreateLikesRequest request) {
+	public CreateLikesResponse createLikes(CreateLikesRequest request) {
 		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(()->new EntityNotFoundException(Book.class,request.bookId()));
+			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
 		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(()->new EntityNotFoundException(Member.class, request.memberId()));
-		likesRepository.save(Likes.of(book,member));
-		return HttpStatus.CREATED;
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
+		Likes likes = likesRepository.save(Likes.of(book, member));
+		return CreateLikesResponse.from(likes);
 	}
 
 	// 삭제
-	public HttpStatus deleteLikes(CreateLikesRequest request) {
-		Likes likes = likesRepository.findByMemberIdAndBookId(request.memberId(),request.bookId());
-		likesRepository.delete(likes);
+	public HttpStatus deleteLikes(Long likesId) {
+
+		likesRepository.deleteById(likesId);
 		return HttpStatus.NO_CONTENT;
 	}
 

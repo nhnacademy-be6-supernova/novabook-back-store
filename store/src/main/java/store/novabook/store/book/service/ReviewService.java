@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateReviewRequest;
+import store.novabook.store.book.dto.CreateReviewResponse;
+import store.novabook.store.book.dto.GetReviewResponse;
 import store.novabook.store.book.dto.SearchBookResponse;
 import store.novabook.store.book.dto.UpdateReviewRequest;
 import store.novabook.store.book.entity.Book;
@@ -33,44 +35,60 @@ public class ReviewService {
 	//member id 내가 쓴 책 목록 보기
 	@Transactional(readOnly = true)
 	public Page<SearchBookResponse> myReviews(Long memberId, Pageable pageable) {
-		Page<Review> ReviewList = reviewRepository.findByMemberId(memberId,pageable);
+		Page<Review> reviewList = reviewRepository.findByMemberId(memberId, pageable);
 		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
-		for (Review review : ReviewList) {
+		for (Review review : reviewList) {
 			searchBookResponses.add(SearchBookResponse.from(review.getBook()));
 		}
 		return new PageImpl<>(searchBookResponses, pageable, searchBookResponses.size());
 	}
 
+	//내가쓴 리뷰 보기
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> membersReviews(Long memberId, Pageable pageable) {
+		Page<Review> reviews = reviewRepository.findByMemberId(memberId, pageable);
+		List<GetReviewResponse> reviewResponses = new ArrayList<>();
+		for (Review review : reviews) {
+			reviewResponses.add(GetReviewResponse.form(review));
+		}
+		return new PageImpl<>(reviewResponses, pageable, reviewResponses.size());
+	}
+
+	//책의 리뷰 보기
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> bookReviews(Long bookId, Pageable pageable) {
+		Page<Review> reviews = reviewRepository.findByBookId(bookId, pageable);
+		List<GetReviewResponse> reviewResponses = new ArrayList<>();
+		for (Review review : reviews) {
+			reviewResponses.add(GetReviewResponse.form(review));
+		}
+		return new PageImpl<>(reviewResponses, pageable, reviewResponses.size());
+	}
+
 	// 생성
-	public void createReview(CreateReviewRequest request) {
-		if(existsByBookIdAndMemberId(request)){
+	public CreateReviewResponse createReview(CreateReviewRequest request) {
+		if (existsByBookIdAndMemberId(request)) {
 			throw new AlreadyExistException(Review.class);
 		}
 		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(()->new EntityNotFoundException(Book.class,request.bookId()));
+			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
 		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(()->new EntityNotFoundException(Member.class, request.memberId()));
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
 
-		reviewRepository.save(Review.toEntity(request,member,book));
+		Review review = reviewRepository.save(Review.toEntity(request, member, book));
+
+		return CreateReviewResponse.from(review);
 	}
 
 	public boolean existsByBookIdAndMemberId(CreateReviewRequest request) {
- 		return reviewRepository.existsByMemberIdAndBookId(request.bookId(), request.memberId());
-	}
-	public boolean existsByBookIdAndMemberId(UpdateReviewRequest request) {
 		return reviewRepository.existsByMemberIdAndBookId(request.bookId(), request.memberId());
 	}
 
-
 	// 수정
-	public void updateReview(UpdateReviewRequest request) {
-		if(!existsByBookIdAndMemberId(request)){
-			throw new EntityNotFoundException(Review.class);
-		}
-		Review review= reviewRepository.findByMemberIdAndBookId(request.memberId(), request.bookId());
-
+	public void updateReview(UpdateReviewRequest request, Long reviewId) {
+		Review review = reviewRepository.findById(reviewId)
+			.orElseThrow(() -> new EntityNotFoundException(Review.class, reviewId));
 		review.updateEntity(request);
 	}
-
 
 }
