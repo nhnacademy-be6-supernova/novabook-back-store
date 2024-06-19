@@ -1,7 +1,4 @@
 package store.novabook.store.category.service;
-
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.GetBookAllResponse;
-import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.category.dto.CreateCategoryRequest;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.entity.GetCategoryResponse;

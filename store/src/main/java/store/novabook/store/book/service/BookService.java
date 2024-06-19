@@ -47,31 +47,24 @@ public class BookService {
 
 
 	public void create(CreateBookRequest request) {
-		// BookStatus 조회
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
 			.orElseThrow(() -> new EntityNotFoundException(BookStatus.class, request.bookStatusId()));
 
-		// Book 저장
 		Book book = bookRepository.save(Book.of(request, bookStatus));
 
-		// Tag 조회 및 BookTag 생성 후 저장
 		List<Tag> tags = tagRepository.findByIdIn(request.tags());
 		List<BookTag> bookTags = tags.stream()
 			.map(tag -> new BookTag(book, tag))
 			.collect(Collectors.toList());
 		bookTagRepository.saveAll(bookTags);
 
-		// Category 조회 및 BookCategory 생성 후 저장
 		List<BookCategory> bookCategories = new ArrayList<>();
 		for (Map.Entry<Integer, Long> entry : request.category().entrySet()) {
 			Integer depth = entry.getKey();
 			Long categoryId = entry.getValue();
 
-			// Category 조회
 			Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new EntityNotFoundException(Category.class, categoryId));
-
-			// BookCategory 생성
 			BookCategory bookCategory = new BookCategory(book, category, depth);
 			bookCategories.add(bookCategory);
 		}
