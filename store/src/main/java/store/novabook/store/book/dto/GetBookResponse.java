@@ -11,7 +11,7 @@ import store.novabook.store.category.entity.BookCategory;
 
 @Builder
 public record GetBookResponse(Long id,
-							  String bookStatus,
+							  Long bookStatusId,
 							  String isbn,
 							  String title,
 							  String bookIndex,
@@ -38,7 +38,7 @@ public record GetBookResponse(Long id,
 		return GetBookResponse.builder()
 			.id(book.getId())
 			.isbn(book.getIsbn())
-			.bookStatus(book.getBookStatus().getName())
+			.bookStatusId(book.getBookStatus().getId())
 			.title(book.getTitle())
 			.description(book.getDescription())
 			.descriptionDetail(book.getDescriptionDetail())
