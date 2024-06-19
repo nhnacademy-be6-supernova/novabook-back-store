@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -60,6 +61,15 @@ public class MemberAddress {
 		this.nickname = nickname;
 		this.memberAddressDetail = memberAddressDetail;
 		this.updatedAt = LocalDateTime.now();
+	}
+
+	public static MemberAddress of(CreateMemberAddressRequest createMemberAddressRequest, Member member, StreetAddress streetAddress) {
+		return MemberAddress.builder()
+			.streetAddress(streetAddress)
+			.member(member)
+			.nickname(createMemberAddressRequest.nickname())
+			.memberAddressDetail(createMemberAddressRequest.memberAddressDetail())
+			.build();
 	}
 
 }

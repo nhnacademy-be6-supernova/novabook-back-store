@@ -1,4 +1,3 @@
-/*
 package store.novabook.store.user.member.controller;
 
 import java.util.List;
@@ -18,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
 import store.novabook.store.user.member.dto.CreateMemberAddressResponse;
 import store.novabook.store.user.member.dto.GetMemberAddressResponse;
-import store.novabook.store.user.member.entity.MemberAddress;
+import store.novabook.store.user.member.dto.UpdateMemberAddressRequest;
 import store.novabook.store.user.member.service.MemberAddressService;
 
 @RestController
@@ -29,13 +28,14 @@ public class MemberAddressController {
 	private final MemberAddressService memberAddressService;
 
 	@PostMapping
-	public ResponseEntity<CreateMemberAddressResponse> createMemberAddress(@RequestBody CreateMemberAddressRequest createMemberAddressRequest) {
-		MemberAddress saved = memberAddressService.createMemberAddress(createMemberAddressRequest);
-		return  ResponseEntity.status(HttpStatus.CREATED).body(CreateMemberAddressResponse.fromEntity(saved));
+	public ResponseEntity<CreateMemberAddressResponse> createMemberAddress(
+		@RequestBody CreateMemberAddressRequest createMemberAddressRequest) {
+		CreateMemberAddressResponse saved = memberAddressService.createMemberAddress(createMemberAddressRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
 	@GetMapping
-	public ResponseEntity<GetMemberAddressResponse> getMemberAddressAll() {
+	public ResponseEntity<List<GetMemberAddressResponse>> getMemberAddressAll() {
 		List<GetMemberAddressResponse> memberAddressAll = memberAddressService.getMemberAddressAll();
 		return ResponseEntity.ok(memberAddressAll);
 	}
@@ -47,18 +47,16 @@ public class MemberAddressController {
 	}
 
 	@PutMapping("/{memberAddressId}")
-	public ResponseEntity<MemberAddress> updateMemberAddress(@PathVariable Long memberAddressId, @RequestBody CreateMemberAddressRequest createMemberAddressRequest) {
-		memberAddressService.updateMemberAddress(memberAddressId, createMemberAddressRequest);
+	public ResponseEntity<Void> updateMemberAddress(@PathVariable Long memberAddressId,
+		@RequestBody UpdateMemberAddressRequest updateMemberAddressRequest) {
+		memberAddressService.updateMemberAddress(memberAddressId, updateMemberAddressRequest);
 		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/{memeberAddressId}")
-	public ResponseEntity<Void> deleteMemberAddress(@PathVariable Long memeberAddressId) {
-		memberAddressService.deleteMemberAddress(memeberAddressId);
+	@DeleteMapping("/{memberAddressId}")
+	public ResponseEntity<Void> deleteMemberAddress(@PathVariable Long memberAddressId) {
+		memberAddressService.deleteMemberAddress(memberAddressId);
 		return ResponseEntity.ok().build();
 	}
-
-
 
 }
-*/

@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
-import store.novabook.store.user.member.entity.Member;
+import store.novabook.store.user.member.dto.UpdateMemberRequest;
 import store.novabook.store.user.member.service.MemberService;
 
 @RestController
@@ -29,9 +29,10 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@PostMapping
-	public ResponseEntity<CreateMemberResponse> createMember(@RequestBody @Valid CreateMemberRequest createMemberRequest) {
-		Member saved = memberService.createMember(createMemberRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).body(CreateMemberResponse.fromEntity(saved));
+	public ResponseEntity<CreateMemberResponse> createMember(
+		@RequestBody @Valid CreateMemberRequest createMemberRequest) {
+		CreateMemberResponse saved = memberService.createMember(createMemberRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
 	@GetMapping
@@ -47,8 +48,9 @@ public class MemberController {
 	}
 
 	@PutMapping("/{memberId}")
-	public ResponseEntity<Void> updateMember(@PathVariable Long memberId, @RequestBody CreateMemberRequest createMemberRequest) {
-		memberService.updateMember(memberId, createMemberRequest);
+	public ResponseEntity<Void> updateMember(@PathVariable Long memberId,
+		@RequestBody UpdateMemberRequest updateMemberRequest) {
+		memberService.updateMember(memberId, updateMemberRequest);
 		return ResponseEntity.ok().build();
 	}
 
@@ -57,6 +59,5 @@ public class MemberController {
 		memberService.deleteMember(memberId);
 		return ResponseEntity.ok().build();
 	}
-
 
 }
