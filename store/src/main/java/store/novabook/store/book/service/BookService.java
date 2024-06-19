@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateBookRequest;
+import store.novabook.store.book.dto.CreateBookResponse;
 import store.novabook.store.book.dto.GetBookAllResponse;
 import store.novabook.store.book.dto.GetBookResponse;
 import store.novabook.store.book.dto.UpdateBookRequest;
@@ -43,7 +44,7 @@ public class BookService {
 	private final TagRepository tagRepository;
 	private final BookCategoryRepository bookCategoryRepository;
 
-	public void create(CreateBookRequest request) {
+	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
 			.orElseThrow(() -> new EntityNotFoundException(BookStatus.class, request.bookStatusId()));
 
@@ -66,6 +67,8 @@ public class BookService {
 			bookCategories.add(bookCategory);
 		}
 		bookCategoryRepository.saveAll(bookCategories);
+
+		return new CreateBookResponse(book.getId());
 	}
 
 

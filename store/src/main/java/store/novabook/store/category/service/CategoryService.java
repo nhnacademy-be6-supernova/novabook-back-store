@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.category.dto.CreateCategoryRequest;
+import store.novabook.store.category.dto.CreateCategoryResponse;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.entity.GetCategoryResponse;
 import store.novabook.store.category.repository.CategoryRepository;
@@ -19,12 +20,13 @@ import store.novabook.store.exception.EntityNotFoundException;
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
 
-	public void create(CreateCategoryRequest category) {
+	public CreateCategoryResponse create(CreateCategoryRequest category) {
 		if (categoryRepository.existsByName(category.name())) {
 			throw new AlreadyExistException(category.name());
 		}
 
-		categoryRepository.save(new Category(category.name()));
+		Category newCategory = categoryRepository.save(new Category(category.name()));
+		return new CreateCategoryResponse(newCategory.getId());
 	}
 
 	@Transactional(readOnly = true)

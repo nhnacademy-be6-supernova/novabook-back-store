@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.category.dto.CreateCategoryRequest;
+import store.novabook.store.category.dto.CreateCategoryResponse;
 import store.novabook.store.category.entity.GetCategoryResponse;
 import store.novabook.store.category.service.CategoryService;
 
@@ -23,9 +24,8 @@ public class CategoryController {
 	private final CategoryService categoryService;
 
 	@PostMapping
-	public ResponseEntity<Void> createCategory(@RequestBody CreateCategoryRequest category) {
-		categoryService.create(category);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<CreateCategoryResponse> createCategory(@RequestBody CreateCategoryRequest category) {
+		return ResponseEntity.ok().body(categoryService.create(category));
 	}
 
 	@GetMapping("/{id}")
