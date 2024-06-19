@@ -42,12 +42,7 @@ public class LikesService {
 	}
 
 	//없으면 좋아요 생성 아니면 좋아요 제거
-	public HttpStatus pushedLikes(CreateLikesRequest request) {
-		if(likesRepository.existsByMemberIdAndBookId(request.memberId(),request.bookId())){
-			return deleteLikes(request);
-		}
-		return createLikes(request);
-	}
+
 
 	//생성
 	public HttpStatus createLikes(CreateLikesRequest request) {
@@ -60,9 +55,9 @@ public class LikesService {
 	}
 
 	// 삭제
-	public HttpStatus deleteLikes(CreateLikesRequest request) {
-		Likes likes = likesRepository.findByMemberIdAndBookId(request.memberId(),request.bookId());
-		likesRepository.delete(likes);
+	public HttpStatus deleteLikes(Long likesId) {
+
+		likesRepository.deleteById(likesId);
 		return HttpStatus.NO_CONTENT;
 	}
 
