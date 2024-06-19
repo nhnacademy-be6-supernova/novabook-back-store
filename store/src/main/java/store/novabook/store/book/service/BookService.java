@@ -1,10 +1,8 @@
 package store.novabook.store.book.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -14,22 +12,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.GetBookAllResponse;
-import store.novabook.store.book.entity.BookStatus;
-import store.novabook.store.tag.entity.Tag;
-import store.novabook.store.book.repository.BookStatusRepository;
-import store.novabook.store.category.entity.Category;
-import store.novabook.store.category.repository.CategoryRepository;
-import store.novabook.store.exception.EntityNotFoundException;
 import store.novabook.store.book.dto.CreateBookRequest;
+import store.novabook.store.book.dto.GetBookAllResponse;
 import store.novabook.store.book.dto.GetBookResponse;
 import store.novabook.store.book.dto.UpdateBookRequest;
 import store.novabook.store.book.entity.Book;
-import store.novabook.store.tag.entity.BookTag;
+import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.book.repository.BookRepository;
+import store.novabook.store.book.repository.BookStatusRepository;
 import store.novabook.store.book.repository.LikesRepository;
 import store.novabook.store.category.entity.BookCategory;
+import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
+import store.novabook.store.category.repository.CategoryRepository;
+import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.tag.entity.BookTag;
+import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.BookTagRepository;
 import store.novabook.store.tag.repository.TagRepository;
 
@@ -44,7 +42,6 @@ public class BookService {
 	private final CategoryRepository categoryRepository;
 	private final TagRepository tagRepository;
 	private final BookCategoryRepository bookCategoryRepository;
-
 
 	public void create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
