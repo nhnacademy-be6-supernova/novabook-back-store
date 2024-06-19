@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.cart.dto.CreateCartBookRequest;
 import store.novabook.store.cart.entity.CartBook;
@@ -30,8 +31,8 @@ public class CartBookController {
 		return ResponseEntity.status(HttpStatus.OK).body(cartBookPage);
 	}
 
-	@PostMapping()
-	public ResponseEntity<Void> createCartBook(@RequestBody CreateCartBookRequest createCartBookRequest) {
+	@PostMapping
+	public ResponseEntity<Void> createCartBook(@Valid @RequestBody CreateCartBookRequest createCartBookRequest) {
 		cartBookService.createCartBook(createCartBookRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}

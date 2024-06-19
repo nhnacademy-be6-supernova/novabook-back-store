@@ -68,8 +68,6 @@ public class BookService {
 		bookCategoryRepository.saveAll(bookCategories);
 	}
 
-
-
 	public GetBookResponse getBook(Long id) {
 		Book book = bookRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(Book.class, id));
