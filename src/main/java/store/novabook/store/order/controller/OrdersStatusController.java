@@ -16,8 +16,6 @@ import store.novabook.store.order.dto.CreateOrdersStatusRequest;
 import store.novabook.store.order.dto.CreateResponse;
 import store.novabook.store.order.dto.GetOrdersStatusResponse;
 import store.novabook.store.order.dto.UpdateOrdersStatusRequest;
-import store.novabook.store.order.entity.OrdersStatus;
-import store.novabook.store.order.repository.OrdersStatusRepository;
 import store.novabook.store.order.service.OrdersStatusService;
 
 @RestController
@@ -28,14 +26,14 @@ public class OrdersStatusController {
 
 	//생성
 	@PostMapping
-	public ResponseEntity<CreateResponse> create(@RequestBody CreateOrdersStatusRequest request) {
+	public ResponseEntity<CreateResponse> createOrdersStatus(@RequestBody CreateOrdersStatusRequest request) {
 		CreateResponse response = ordersStatusService.save(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	//전체 조회
 	@GetMapping
-	public ResponseEntity<Page<GetOrdersStatusResponse>> getOrdersStatus(){
+	public ResponseEntity<Page<GetOrdersStatusResponse>> getOrdersStatusAll(){
 		Page<GetOrdersStatusResponse> response = ordersStatusService.getOrdersStatus();
 		return ResponseEntity.ok(response);
 	}
@@ -48,7 +46,7 @@ public class OrdersStatusController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody UpdateOrdersStatusRequest request) {
+	public ResponseEntity<Void> updateOrdersStatus(@PathVariable Long id, @RequestBody UpdateOrdersStatusRequest request) {
 		ordersStatusService.updateOrdersStatus(id,request);
 		return ResponseEntity.noContent().build();
 	}

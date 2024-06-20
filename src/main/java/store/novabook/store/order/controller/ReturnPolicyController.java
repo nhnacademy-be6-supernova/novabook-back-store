@@ -32,7 +32,7 @@ public class ReturnPolicyController {
 
 	//전체 조회
 	@GetMapping
-	public ResponseEntity<Page<GetReturnPolicyResponse>> getReturnPolicies(){
+	public ResponseEntity<Page<GetReturnPolicyResponse>> getReturnPolicyAll(){
 		Page<GetReturnPolicyResponse> response = returnPolicyService.getReturnPolicies();
 		return ResponseEntity.ok(response);
 	}

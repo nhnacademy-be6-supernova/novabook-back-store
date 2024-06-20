@@ -25,7 +25,7 @@ public class WrappingPaperController {
 	private final WrappingPaperService wrappingPaperService;
 
 	@PostMapping
-	public ResponseEntity<CreateResponse> wrapPaper(@RequestBody CreateWrappingPaperRequest request) {
+	public ResponseEntity<CreateResponse> createWrappingPaper(@RequestBody CreateWrappingPaperRequest request) {
 		return ResponseEntity.ok(wrappingPaperService.createWrappingPaper(request));
 	}
 

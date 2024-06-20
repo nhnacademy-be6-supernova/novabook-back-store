@@ -22,7 +22,7 @@ import store.novabook.store.order.repository.DeliveryFeeRepository;
 public class DeliveryFeeService {
 	private final DeliveryFeeRepository deliveryFeeRepository;
 
-	//create
+	//createOrders
 	public CreateResponse createFee(CreateDeliveryFeeRequest request) {
 		DeliveryFee deliveryFee = new DeliveryFee(request);
 		deliveryFeeRepository.save(deliveryFee);
