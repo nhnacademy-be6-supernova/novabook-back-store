@@ -30,7 +30,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
+import java.util.List;
 
+import store.novabook.store.point.dto.GetPointHistoryResponse;
 import store.novabook.store.tag.dto.CreateTagRequest;
 import store.novabook.store.tag.dto.CreateTagResponse;
 import store.novabook.store.tag.dto.GetTagResponse;
@@ -59,46 +61,48 @@ public class TagControllerTest {
 			.build();
 	}
 
-	// @Test
-	// public void testGetTagAll() throws Exception {
-	// 	Pageable pageable = PageRequest.of(0, 10);
-	// 	GetTagResponse response = new GetTagResponse( "Tag1");
-	// 	Page<GetTagResponse> page = new PageImpl<>(Collections.singletonList(response));
-	//
-	// 	when(tagService.getTagAll(pageable)).thenReturn(page);
-	//
-	// 	mockMvc.perform(get("/tags")
-	// 			.contentType(MediaType.APPLICATION_JSON)
-	// 			.param("page", "0")
-	// 			.param("size", "10"))
-	// 		.andExpect(status().isCreated())
-	// 		.andExpect(jsonPath("$.content[0].name").value("Tag1"));
-	// }
+	@Test
+	public void testGetTagAll() throws Exception {
+		GetTagResponse response = new GetTagResponse( 1L,"Tag1");
+		Pageable pageable = PageRequest.of(0, 10);
+		List<GetTagResponse> getTagResponse = Collections.singletonList(response);
+		Page<GetTagResponse> page = new PageImpl<>(getTagResponse, pageable, 1);
+
+		when(tagService.getTagAll(pageable)).thenReturn(page);
+
+		mockMvc.perform(get("/tags")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("page", "0")
+				.param("size", "10"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content[0].id").value(1L))
+			.andExpect(jsonPath("$.content[0].name").value("Tag1"));
+	}
 
 	@Test
 	public void testGetTag() throws Exception {
-		GetTagResponse response = new GetTagResponse( "Tag1");
+		GetTagResponse response = new GetTagResponse( 1L,"Tag1");
 		when(tagService.getTag(1L)).thenReturn(response);
 
 		mockMvc.perform(get("/tags/1")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(1L))
 			.andExpect(jsonPath("$.name").value("Tag1"));
 	}
 
-	// @Test
-	// public void testCreateTag() throws Exception {
-	// 	CreateTagRequest request = new CreateTagRequest("Tag1");
-	// 	CreateTagResponse response = new CreateTagResponse(1L);
-	// 	when(tagService.createTag(any(CreateTagRequest.class))).thenReturn(response);
-	//
-	// 	mockMvc.perform(post("/tags")
-	// 			.contentType(MediaType.APPLICATION_JSON)
-	// 			.content(objectMapper.writeValueAsString(request)))
-	// 		.andExpect(status().isOk())
-	// 		.andExpect(jsonPath("$.id").value(1L))
-	// 		.andExpect(jsonPath("$.name").value("Tag1"));
-	// }
+	@Test
+	public void testCreateTag() throws Exception {
+		CreateTagRequest request = new CreateTagRequest("Tag1");
+		CreateTagResponse response = new CreateTagResponse(1L);
+		when(tagService.createTag(any(CreateTagRequest.class))).thenReturn(response);
+
+		mockMvc.perform(post("/tags")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(1L));
+	}
 
 	@Test
 	public void testUpdateTag() throws Exception {
