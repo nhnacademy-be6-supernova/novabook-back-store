@@ -8,5 +8,5 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
-public class OrderController {
+public class OrdersController {
 }

@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.order.dto.CreateOrdersStatusRequest;
+import store.novabook.store.order.dto.UpdateOrdersStatusRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,4 +28,14 @@ public class OrdersStatus {
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
+	public OrdersStatus(CreateOrdersStatusRequest request){
+		this.name = request.name();
+		this.createdAt = LocalDateTime.now();
+	}
+
+	public void update(UpdateOrdersStatusRequest request){
+		this.updatedAt = LocalDateTime.now();
+		this.name = request.name();
+	}
 }
