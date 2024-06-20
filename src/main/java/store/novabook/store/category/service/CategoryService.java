@@ -11,8 +11,8 @@ import store.novabook.store.category.dto.CreateCategoryResponse;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.entity.GetCategoryResponse;
 import store.novabook.store.category.repository.CategoryRepository;
-import store.novabook.store.exception.AlreadyExistException;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.AlreadyExistException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor

@@ -15,7 +15,7 @@ import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
 import store.novabook.store.cart.repository.CartRepository;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor

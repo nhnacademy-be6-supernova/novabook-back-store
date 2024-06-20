@@ -26,7 +26,7 @@ import store.novabook.store.category.entity.BookCategory;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.BookTagRepository;
