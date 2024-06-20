@@ -18,6 +18,7 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 
 	//조회
+	@Transactional(readOnly = true)
 	public GetPaymentResponse getPayment(Long paymentId) {
 		Payment payment = paymentRepository.findById(paymentId)
 			.orElseThrow(() -> new EntityNotFoundException(Payment.class, paymentId));
@@ -32,6 +33,7 @@ public class PaymentService {
 	}
 
 	//주문 번호로 조회
+	@Transactional(readOnly = true)
 	public GetPaymentResponse getPaymentByOrderId(Long ordersId) {
 		Payment payment = paymentRepository.findByOrdersId(ordersId);
 		if (payment == null) {

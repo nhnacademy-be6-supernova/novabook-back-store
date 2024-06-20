@@ -35,7 +35,7 @@ public class CategoryController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Page<GetCategoryResponse>> getCategoryAll(@RequestBody Pageable pageable) {
+	public ResponseEntity<Page<GetCategoryResponse>> getCategoryAll(Pageable pageable) {
 		return ResponseEntity.ok().body(categoryService.getCategoryAll(pageable));
 	}
 
