@@ -1,15 +1,18 @@
 package store.novabook.store.order.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateOrdersBookRequest(
-	@NotNull
+	@NotNull(message = "ordersId 값은 필수 입니다")
 	Long ordersId,
-	@NotNull
+	@NotNull(message = "bookId 값은 필수 입니다")
 	Long bookId,
-	@NotNull
+	@NotNull(message = "quantity 값은 필수 입니다")
+	@Min(value = 0,message = "0보다 커야 합니다 ")
 	int quantity,
-	@NotNull
+	@NotNull(message = "price 값은 필수 입니다")
+	@Min(value = 0,message = "0보다 커야 합니다 ")
 	long price
 ) {
 }

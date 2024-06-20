@@ -2,35 +2,35 @@ package store.novabook.store.order.dto;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateOrdersRequest(
-	@NotNull
+	@NotNull(message = "userId은 필수 값입니다 ")
 	Long userId,
-	@NotNull
+	@NotNull(message = "deliveryFeeId은 필수 값입니다 ")
 	Long deliveryFeeId,
-	@NotNull
+	@NotNull(message = "wrappingPaperId은 필수 값입니다 ")
 	Long wrappingPaperId,
-	@NotNull
+	@NotNull(message = "ordersStatusId은 필수 값입니다 ")
 	Long ordersStatusId,
-	@NotNull
+	@NotNull(message = "returnPolicyId은 필수 값입니다 ")
 	Long returnPolicyId,
-	@NotNull
+	@NotNull(message = "ordersDate은 필수 값입니다 ")
 	LocalDateTime ordersDate,
-	@NotNull
+	@NotNull(message = "totalAmount은 필수 값입니다 ")
 	Long totalAmount,
-	@NotNull
+	@NotNull(message = "deliveryDate은 필수 값입니다 ")
 	LocalDateTime deliveryDate,
-	@NotNull
+	@NotNull(message = "bookPurchaseAmount은 필수 값입니다 ")
+	@Min(value = 0,message = "0보다 커야 합니다 ")
 	long bookPurchaseAmount,
-	@NotNull
+	@NotNull(message = "deliveryAddress은 필수 값입니다 ")
 	String deliveryAddress,
-	@NotNull
-	@NotBlank
+	@NotBlank(message = "recieverName은 필수 값입니다 ")
 	String recieverName,
-	@NotNull
-	@NotBlank
+	@NotBlank(message = "recieverNumber은 필수 값입니다 ")
 	String recieverNumber
 ){
 }

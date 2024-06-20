@@ -6,7 +6,6 @@ import lombok.Builder;
 
 @Builder
 public record UpdateOrdersStatusRequest(
-	@NotNull(message = "이름은 필수 값입니다 ")
 	@NotBlank(message = "값이 비어 있습니다")
 	String name
 ){
