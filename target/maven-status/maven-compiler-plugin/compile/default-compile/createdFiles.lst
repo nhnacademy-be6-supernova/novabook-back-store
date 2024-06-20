@@ -1,0 +1,8 @@
+store/novabook/store/review/controller/ReviewController.class
+store/novabook/store/order/controller/OrderController.class
+store/novabook/store/book/controller/BookController.class
+store/novabook/store/cart/controller/CartController.class
+store/novabook/store/category/controller/CategoryController.class
+store/novabook/store/StoreApplication.class
+store/novabook/store/point/controller/PointController.class
+store/novabook/store/user/member/controller/MemberController.class
