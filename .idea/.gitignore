@@ -49,3 +49,6 @@ build/
 /uiDesigner.xml
 /dataSources/68843bea-844c-4f03-8456-99e459d2f9e3.xml
 /dataSources/68843bea-844c-4f03-8456-99e459d2f9e3/storage_v2/_src_/schema/be6_supernova_dev.EfMrOw.meta
+
+target/**
+/target
