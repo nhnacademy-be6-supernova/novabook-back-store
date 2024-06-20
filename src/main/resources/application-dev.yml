@@ -20,8 +20,6 @@ spring:
       ddl-auto: validate
 
 
-
-
 logging:
   level:
     org.hibernate.SQL: debug
