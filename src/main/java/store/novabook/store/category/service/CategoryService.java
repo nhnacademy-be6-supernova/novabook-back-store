@@ -1,4 +1,5 @@
 package store.novabook.store.category.service;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,6 @@ import store.novabook.store.category.dto.CreateCategoryResponse;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.entity.GetCategoryResponse;
 import store.novabook.store.category.repository.CategoryRepository;
-import store.novabook.store.exception.AlreadyExistException;
 import store.novabook.store.exception.EntityNotFoundException;
 
 @Service
@@ -21,10 +21,6 @@ public class CategoryService {
 	private final CategoryRepository categoryRepository;
 
 	public CreateCategoryResponse create(CreateCategoryRequest category) {
-		if (categoryRepository.existsByName(category.name())) {
-			throw new AlreadyExistException(category.name());
-		}
-
 		Category newCategory = categoryRepository.save(new Category(category.name()));
 		return new CreateCategoryResponse(newCategory.getId());
 	}
