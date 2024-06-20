@@ -1,6 +1,5 @@
 package store.novabook.store.order.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -11,6 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.order.dto.CreateWrappingPaperRequest;
+import store.novabook.store.order.dto.UpdateWrappingPaperRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,7 +25,7 @@ public class WrappingPaper {
 	private String name;
 
 	@NotNull
-	private Long price;
+	private long price;
 
 	@NotNull
 	private String status;
@@ -33,4 +34,17 @@ public class WrappingPaper {
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
+	public WrappingPaper(CreateWrappingPaperRequest request) {
+		this.name = request.name();
+		this.price = request.price();
+		this.status = request.status();
+		this.createdAt = LocalDateTime.now();
+	}
+
+	public void updated(UpdateWrappingPaperRequest request) {
+		this.updatedAt = LocalDateTime.now();
+		this.price = request.price();
+		this.status = request.status();
+	}
 }

@@ -1,6 +1,5 @@
 package store.novabook.store.order.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -11,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.order.dto.CreateDeliveryFeeRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,11 +21,16 @@ public class DeliveryFee {
 	private Long id;
 
 	@NotNull
-	private Long fee;
+	private long fee;
 
 	@NotNull
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
+	public DeliveryFee(CreateDeliveryFeeRequest createDeliveryFeeRequest) {
+		this.fee = createDeliveryFeeRequest.fee();
+		createdAt = LocalDateTime.now();
+	}
 
 }
