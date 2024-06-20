@@ -46,6 +46,7 @@ public class DeliveryFeeService {
 		return new PageImpl<>(responses);
 	}
 
+	//단건 조회
 	@Transactional(readOnly = true)
 	public GetDeliveryFeeResponse getDeliveryFee(Long id) {
 		return GetDeliveryFeeResponse.from(
