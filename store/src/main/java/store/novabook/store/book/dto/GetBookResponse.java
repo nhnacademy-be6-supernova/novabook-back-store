@@ -10,26 +10,26 @@ import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.category.entity.BookCategory;
 
 @Builder
-public record GetBookResponse(Long id,
-							  Long bookStatusId,
-							  String isbn,
-							  String title,
-							  String bookIndex,
-							  String description,
-							  String descriptionDetail,
-							  String author,
-							  String publisher,
-							  LocalDateTime publicationDate,
-							  int inventory,
-							  Long price,
-							  Long discountPrice,
-							  boolean isPackaged,
-							  String image,
-							  List<String> tags,
-							  List<String> categories,
-							  int likes
-							  ) {
-	//description 필요?
+public record GetBookResponse(
+	Long id,
+	Long bookStatusId,
+	String isbn,
+	String title,
+	String bookIndex,
+	String description,
+	String descriptionDetail,
+	String author,
+	String publisher,
+	LocalDateTime publicationDate,
+	int inventory,
+	Long price,
+	Long discountPrice,
+	boolean isPackaged,
+	String image,
+	List<String> tags,
+	List<String> categories,
+	int likes
+) {
 	public static GetBookResponse fromEntity(
 		Book book,
 		List<BookTag> tags,
@@ -56,7 +56,6 @@ public record GetBookResponse(Long id,
 			.discountPrice(book.getDiscountPrice())
 			.build();
 	}
-
 
 	public static List<String> tagNames(List<BookTag> bookTags) {
 		List<String> tagNames = new ArrayList<>();
