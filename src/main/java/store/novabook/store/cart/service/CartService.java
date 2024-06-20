@@ -1,5 +1,7 @@
 package store.novabook.store.cart.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +28,11 @@ public class CartService {
 			.orElseThrow(() -> new EntityNotFoundException(Cart.class, createCartRequest.userId()));
 
 		cartRepository.save(
-			Cart.builder().users(users).isExposed(createCartRequest.isExposed()).build());
+			Cart.builder()
+				.users(users)
+				.isExposed(createCartRequest.isExposed())
+				.createdAt(LocalDateTime.now())
+				.build());
 	}
 
 	// 이건 필요한지 필요없는지 모르겠어서 그냥 주석만 해둘게요(무지성으로 만들어버림..)

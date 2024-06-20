@@ -52,7 +52,7 @@ public class CartControllerTest {
 	void getCartByUserIDTest() throws Exception {
 		Users usersMock = mock(Users.class);
 		GetCartResponse getCartResponse = new GetCartResponse(usersMock, true);
-		when(cartService.getCartByUserId(1L)).thenReturn(getCartResponse);
+		when(cartService.getCartByUserId(anyLong())).thenReturn(getCartResponse);
 
 		mockMvc.perform(get("/carts/1"))
 			.andDo(print())
@@ -62,7 +62,7 @@ public class CartControllerTest {
 
 	@Test
 	void createCartTest() throws Exception {
-		Users user = new Users(null,
+		Users user = new Users(1L,
 			1,
 			LocalDateTime.now()
 			, LocalDateTime.now()); // Add necessary arguments or setters if needed

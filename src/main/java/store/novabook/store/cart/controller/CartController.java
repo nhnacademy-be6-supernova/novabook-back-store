@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.cart.dto.CreateCartRequest;
 import store.novabook.store.cart.dto.GetCartResponse;
 import store.novabook.store.cart.service.CartService;
-import store.novabook.store.common.response.ApiResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,10 +31,10 @@ public class CartController {
 	// }
 
 	@GetMapping("/{userId}")
-	public ApiResponse<GetCartResponse> getCartByUserID(@PathVariable Long userId) {
+	public ResponseEntity<GetCartResponse> getCartByUserID(@PathVariable Long userId) {
 
 		GetCartResponse getCartResponse = cartService.getCartByUserId(userId);
-		return new ApiResponse<>(getCartResponse);
+		return ResponseEntity.status(HttpStatus.OK).body(getCartResponse);
 	}
 
 	@PostMapping
