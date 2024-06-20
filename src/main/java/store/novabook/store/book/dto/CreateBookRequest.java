@@ -8,9 +8,10 @@ import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record CreateBookRequest(
-	@NotBlank(message = "책 상태는 필수 입력값입니다.")
+	@NotNull(message = "책 상태는 필수 입력값입니다.")
 	Long bookStatusId,
 	@NotBlank(message = "ISBN는 필수 입력값입니다.")
 	String isbn,
@@ -26,16 +27,16 @@ public record CreateBookRequest(
 	String author,
 	@NotBlank(message = "책 출판사는 필수 입력값입니다.")
 	String publisher,
-	@NotBlank(message = "책 발행일는 필수 입력값입니다.")
+	@NotNull(message = "책 발행일는 필수 입력값입니다.")
 	LocalDateTime publicationDate,
-	@NotBlank(message = "책 재고는 필수 입력값입니다.")
+	@NotNull(message = "책 재고는 필수 입력값입니다.")
 	int inventory,
-	@NotBlank(message = "책 가격은 필수 입력값입니다.")
+	@NotNull(message = "책 가격은 필수 입력값입니다.")
 	Long price,
-	@NotBlank(message = "책 할인가격은 필수 입력값입니다.")
+	@NotNull(message = "책 할인가격은 필수 입력값입니다.")
 	Long discountPrice,
-	@NotBlank(message = "책 상태는 필수 입력값입니다.")
-	boolean isPackaged,
+	@NotNull(message = "책 상태는 필수 입력값입니다.")
+	Boolean isPackaged,
 	String image,
 	Set<Long> tags,
 	HashMap<Integer, Long> category
