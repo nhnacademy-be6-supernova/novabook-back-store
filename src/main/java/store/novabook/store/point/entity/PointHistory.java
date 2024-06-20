@@ -1,5 +1,6 @@
 package store.novabook.store.point.entity;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -60,4 +61,12 @@ public class PointHistory {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+	public static PointHistory of(PointPolicy pointPolicy, Member member, String pointContent, long pointAmount) {
+		return PointHistory.builder()
+			.pointPolicy(pointPolicy)
+			.member(member)
+			.pointContent(pointContent)
+			.pointAmount(pointAmount).build();
+	}
 }

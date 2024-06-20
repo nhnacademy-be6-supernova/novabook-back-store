@@ -9,4 +9,6 @@ import store.novabook.store.point.entity.PointPolicy;
 public interface PointPolicyRepository extends JpaRepository<PointPolicy, Long> {
 
 	Optional<PointPolicy> findTopByOrderByCreatedAtDesc();
+
+
 }

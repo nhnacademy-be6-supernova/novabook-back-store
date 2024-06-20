@@ -35,15 +35,12 @@ public class MemberGrade {
 	private String name;
 
 	@NotNull
-	@Column(precision =10, scale = 2)
 	private Long minRange;
 
 	@NotNull
-	@Column(precision =10, scale = 2)
 	private Long maxRange;
 
 	@NotNull
-	@Column(precision =10, scale = 2)
 	private Long discountRate;
 
 	@NotNull

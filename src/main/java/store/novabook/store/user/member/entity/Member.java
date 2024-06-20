@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.user.member.dto.CreateMemberRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -86,14 +87,33 @@ public class Member {
 	@JoinColumn(name = "users_id")
 	private Users users;
 
-
-	public void update(String loginId, String loginPassword, String name, String number, String email, LocalDateTime birth) {
-		this.loginId = loginId;
+	public void update(String loginPassword, String name, String number, String email) {
 		this.loginPassword = loginPassword;
 		this.name = name;
 		this.number = number;
 		this.email = email;
-		this.birth = birth;
+		this.updatedAt = LocalDateTime.now();
 	}
 
+	public void updateMemberStatus(MemberStatus memberStatus) {
+		this.memberStatus = memberStatus;
+	}
+
+	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, MemberGrade memberGrade,
+		Users user) {
+		return Member.builder()
+			.users(user)
+			.memberGrade(memberGrade)
+			.memberStatus(memberStatus)
+			.loginId(createMemberRequest.loginId())
+			.loginPassword(createMemberRequest.loginPassword())
+			.name(createMemberRequest.name())
+			.number(createMemberRequest.number())
+			.email(createMemberRequest.email())
+			.birth(createMemberRequest.birth())
+			.point(5000L)
+			.totalAmount(0L)
+			.latestLoginAt(LocalDateTime.now())
+			.build();
+	}
 }
