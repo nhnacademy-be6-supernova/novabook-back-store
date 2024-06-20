@@ -19,6 +19,7 @@ import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
+import store.novabook.store.user.member.entity.MemberStatus;
 import store.novabook.store.user.member.service.MemberService;
 
 @RestController
@@ -54,9 +55,15 @@ public class MemberController {
 		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/{memberId}")
-	public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
-		memberService.deleteMember(memberId);
+	@PutMapping("/{memberId}/dormant")
+	public ResponseEntity<Void> updateMemberStatusToDormant(@PathVariable Long memberId) {
+		memberService.updateMemberStatusToDormant(memberId);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/{memberId}/withdrawn")
+	public ResponseEntity<Void> updateMemberStatusToWithdrawn(@PathVariable Long memberId) {
+		memberService.updateMemberStatusToWithdrawn(memberId);
 		return ResponseEntity.ok().build();
 	}
 

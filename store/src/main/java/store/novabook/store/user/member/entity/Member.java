@@ -87,25 +87,20 @@ public class Member {
 	@JoinColumn(name = "users_id")
 	private Users users;
 
-
-	public void update(String loginId, String loginPassword, String name, String number, String email, LocalDateTime birth) {
-		this.loginId = loginId;
-		this.loginPassword = loginPassword;
-		this.name = name;
-		this.number = number;
-		this.email = email;
-		this.birth = birth;
-		this.updatedAt = LocalDateTime.now();
-	}
-
 	public void update(String loginPassword, String name, String number, String email) {
 		this.loginPassword = loginPassword;
 		this.name = name;
 		this.number = number;
 		this.email = email;
+		this.updatedAt = LocalDateTime.now();
 	}
 
-	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, MemberGrade memberGrade, Users user) {
+	public void updateMemberStatus(MemberStatus memberStatus) {
+		this.memberStatus = memberStatus;
+	}
+
+	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, MemberGrade memberGrade,
+		Users user) {
 		return Member.builder()
 			.users(user)
 			.memberGrade(memberGrade)

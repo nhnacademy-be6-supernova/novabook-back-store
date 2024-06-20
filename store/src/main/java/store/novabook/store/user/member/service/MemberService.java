@@ -30,8 +30,10 @@ import store.novabook.store.user.member.repository.UsersRepository;
 @Transactional
 public class MemberService {
 
-	public static final String COMMON = "일반";
-	public static final String ACTIVE = "활동";
+	public static final String GRADE_COMMON = "일반";
+	public static final String STATUS_ACTIVE = "활동";
+	public static final String STATUS_DORMANT = "휴면";
+	public static final String STATUS_WITHDRAWN = "탈퇴";
 	public static final int TYPE = 1;
 	public static final long ID = 1L;
 	public static final String REGISTER_POINT = "회원가입 적립금";
@@ -49,10 +51,10 @@ public class MemberService {
 		Users user = Users.builder().type(TYPE).build();
 		usersRepository.save(user);
 
-		MemberGrade memberGrade = memberGradeRepository.findByName(COMMON)
+		MemberGrade memberGrade = memberGradeRepository.findByName(GRADE_COMMON)
 			.orElseThrow(() -> new EntityNotFoundException(MemberGrade.class));
 
-		MemberStatus memberStatus = memberStatusRepository.findByName(ACTIVE)
+		MemberStatus memberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
 			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class));
 
 		Member member = Member.of(createMemberRequest, memberStatus, memberGrade, user);
@@ -103,10 +105,24 @@ public class MemberService {
 
 	}
 
-	public void deleteMember(Long memberId) {
+	public void updateMemberStatusToDormant(Long memberId) {
+		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_DORMANT)
+			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class, memberId));
+
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		memberRepository.delete(member);
+		member.updateMemberStatus(newMemberStatus);
+		memberRepository.save(member);
+	}
+
+	public void updateMemberStatusToWithdrawn(Long memberId) {
+		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_WITHDRAWN)
+			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class, memberId));
+
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+		member.updateMemberStatus(newMemberStatus);
+		memberRepository.save(member);
 	}
 
 }
