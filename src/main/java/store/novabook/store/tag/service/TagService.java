@@ -1,5 +1,8 @@
 package store.novabook.store.tag.service;
 
+import java.sql.SQLException;
+
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +24,6 @@ import store.novabook.store.tag.repository.TagRepository;
 public class TagService {
 
 	private final TagRepository tagRepository;
-
-	public Tag save(Tag tag) {
-		return tagRepository.save(tag);
-	}
 
 	@Transactional(readOnly = true)
 	public Page<GetTagResponse> getTagAll(Pageable pageable) {

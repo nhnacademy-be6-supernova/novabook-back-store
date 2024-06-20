@@ -2,6 +2,7 @@ package store.novabook.store.category.entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,6 +22,7 @@ public class Category {
 	private Long id;
 
 	@NotNull
+	@Column(unique = true)
 	private String name;
 
 	@NotNull
