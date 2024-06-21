@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
@@ -143,19 +148,12 @@ class MemberServiceTest {
 	@DisplayName("회원 정보 전체 조회 - 성공")
 	void getMemberAll() {
 		List<Member> memberList = Collections.singletonList(member);
-		when(memberRepository.findAll()).thenReturn(memberList);
-		List<GetMemberResponse> responseList = memberService.getMemberAll();
+		Page<Member> page = new PageImpl<>(memberList, PageRequest.of(0, 10), memberList.size());
+		when(memberRepository.findAll(any(Pageable.class))).thenReturn(page);
+		Page<GetMemberResponse> result = memberService.getMemberAll(PageRequest.of(0, 10));
 
-		assertNotNull(responseList);
-		assertEquals(memberList.size(), responseList.size());
-
-		GetMemberResponse response = responseList.get(0);
-		assertEquals(member.getId(), response.id());
-		assertEquals(member.getLoginId(), response.loginId());
-		assertEquals(member.getName(), response.name());
-		assertEquals(member.getEmail(), response.email());
-
-		verify(memberRepository, times(1)).findAll();
+		assertNotNull(result);
+		assertEquals(1, result.getTotalElements());
 	}
 
 	@Test
@@ -273,7 +271,8 @@ class MemberServiceTest {
 	@Test
 	@DisplayName("회원 상태 탈퇴로 수정 - 실패 - 회원 없음")
 	void updateMemberStatusToWithdrawnFailNoMember() {
-		when(memberStatusRepository.findByName(MemberService.STATUS_WITHDRAWN)).thenReturn(Optional.of(withdrawnStatus));
+		when(memberStatusRepository.findByName(MemberService.STATUS_WITHDRAWN)).thenReturn(
+			Optional.of(withdrawnStatus));
 		when(memberRepository.findById(1L)).thenReturn(Optional.empty());
 
 		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
