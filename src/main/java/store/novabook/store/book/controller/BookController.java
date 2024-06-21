@@ -28,13 +28,12 @@ import store.novabook.store.book.service.BookService;
 public class BookController {
 	private final BookService bookService;
 
-	@Transactional(readOnly = true)
 	@GetMapping("/book/{id}")
 	public ResponseEntity<GetBookResponse> getBook(@PathVariable Long id) {
+
 		return ResponseEntity.ok().body(bookService.getBook(id));
 	}
 
-	@Transactional(readOnly = true)
 	@GetMapping
 	public ResponseEntity<Page<GetBookAllResponse>> getBookAll(Pageable pageable) {
 		return ResponseEntity.ok().body(bookService.getBookAll(pageable));

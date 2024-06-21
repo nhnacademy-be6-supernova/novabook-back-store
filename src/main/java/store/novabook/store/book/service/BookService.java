@@ -70,7 +70,7 @@ public class BookService {
 
 		return new CreateBookResponse(book.getId());
 	}
-
+	@Transactional(readOnly = true)
 	public GetBookResponse getBook(Long id) {
 		Book book = bookRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(Book.class, id));
@@ -82,7 +82,7 @@ public class BookService {
 
 		return GetBookResponse.fromEntity(book, bookTags, bookCategories, likes);
 	}
-
+	@Transactional(readOnly = true)
 	public Page<GetBookAllResponse> getBookAll(Pageable pageable) {
 		Page<Book> books = bookRepository.findAll(pageable);
 		Page<GetBookAllResponse> booksResponse = books.map(GetBookAllResponse::fromEntity);
