@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.order.dto.CreateReturnPolicyRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,4 +27,9 @@ public class ReturnPolicy {
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
+	public ReturnPolicy(CreateReturnPolicyRequest request) {
+		this.content = request.content();
+		this.createdAt = LocalDateTime.now();
+	}
 }
