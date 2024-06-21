@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.orders.dto.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.CreateResponse;
 import store.novabook.store.orders.dto.GetOrdersBookResponse;
