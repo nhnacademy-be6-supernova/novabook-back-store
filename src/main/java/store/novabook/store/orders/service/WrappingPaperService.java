@@ -1,4 +1,4 @@
-package store.novabook.store.order.service;
+package store.novabook.store.orders.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.orders.dto.CreateResponse;
 import store.novabook.store.orders.dto.CreateWrappingPaperRequest;
 import store.novabook.store.orders.dto.GetWrappingPaperResponse;
 import store.novabook.store.orders.dto.UpdateWrappingPaperRequest;
 import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
-import store.novabook.store.common.exception.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor
