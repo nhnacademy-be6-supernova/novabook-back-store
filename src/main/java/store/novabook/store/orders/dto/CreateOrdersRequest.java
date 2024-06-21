@@ -15,8 +15,6 @@ public record CreateOrdersRequest(
 	Long wrappingPaperId,
 	@NotNull(message = "ordersStatusId 값은 필수 입니다")
 	Long ordersStatusId,
-	@NotNull(message = "returnPolicyId 값은 필수 입니다")
-	Long returnPolicyId,
 	@NotNull(message = "ordersDate 값은 필수 입니다")
 	LocalDateTime ordersDate,
 	@NotNull(message = "totalAmount 값은 필수 입니다")
@@ -26,14 +24,11 @@ public record CreateOrdersRequest(
 	@NotNull(message = "bookPurchaseAmount 값은 필수 입니다")
 	@Min(value = 0, message = "0보다 커야 합니다 ")
 	long bookPurchaseAmount,
-	@NotNull(message = "deliveryAddress 값은 필수 입니다")
 	@NotBlank(message = "deliveryAddress 값은 필수 입니다")
 	String deliveryAddress,
-	@NotNull(message = "recieverName 값은 필수 입니다")
 	@NotBlank(message = "recieverName 값은 필수 입니다")
-	String recieverName,
-	@NotNull(message = "recieverNumber 값은 필수 입니다")
+	String receiverName,
 	@NotBlank(message = "recieverNumber 값은 필수 입니다")
-	String recieverNumber
+	String receiverNumber
 ) {
 }

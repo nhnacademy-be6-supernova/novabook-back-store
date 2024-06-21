@@ -86,7 +86,6 @@ class TagServiceTest {
 		when(tagRepository.findById(1L)).thenReturn(Optional.ofNullable(tag));
 		tagService.updateTag(updateTagRequest);
 		assertEquals(tag.getName(), updateTagRequest.name());
-
 	}
 
 	@Test

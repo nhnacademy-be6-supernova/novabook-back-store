@@ -29,8 +29,8 @@ public record UpdateOrdersRequest(
 	@NotNull(message = "deliveryAddress은 필수 값입니다 ")
 	String deliveryAddress,
 	@NotBlank(message = "recieverName은 필수 값입니다 ")
-	String recieverName,
+	String receiverName,
 	@NotBlank(message = "recieverNumber은 필수 값입니다 ")
-	String recieverNumber
+	String receiverNumber
 ) {
 }

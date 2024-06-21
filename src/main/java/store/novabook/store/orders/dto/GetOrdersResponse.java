@@ -11,7 +11,6 @@ public record GetOrdersResponse(
 	Long deliveryFeeId,
 	Long wrappingPaperId,
 	Long ordersStatusId,
-	Long returnPolicyId,
 	LocalDateTime ordersDate,
 	Long totalAmount,
 	LocalDateTime deliveryDate,

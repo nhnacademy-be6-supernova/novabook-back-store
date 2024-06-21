@@ -2,7 +2,9 @@ package store.novabook.store.orders.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
+@Builder
 public record CreateOrdersBookRequest(
 	@NotNull(message = "ordersId 값은 필수 입니다")
 	Long ordersId,
