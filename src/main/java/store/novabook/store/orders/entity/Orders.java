@@ -74,7 +74,6 @@ public class Orders {
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
-		ReturnPolicy returnPolicy,
 		CreateOrdersRequest request) {
 		this.users = users;
 		this.deliveryFee = deliveryFee;
@@ -85,8 +84,8 @@ public class Orders {
 		this.deliveryDate = request.deliveryDate();
 		this.bookPurchaseAmount = request.bookPurchaseAmount();
 		this.deliveryAddress = request.deliveryAddress();
-		this.receiverName = request.recieverName();
-		this.receiverNumber = request.recieverNumber();
+		this.receiverName = request.receiverName();
+		this.receiverNumber = request.receiverNumber();
 		this.createdAt = LocalDateTime.now();
 	}
 
@@ -104,8 +103,8 @@ public class Orders {
 		this.deliveryDate = request.deliveryDate();
 		this.bookPurchaseAmount = request.bookPurchaseAmount();
 		this.deliveryAddress = request.deliveryAddress();
-		this.receiverName = request.recieverName();
-		this.receiverNumber = request.recieverNumber();
+		this.receiverName = request.receiverName();
+		this.receiverNumber = request.receiverNumber();
 		this.updatedAt = LocalDateTime.now();
 	}
 }

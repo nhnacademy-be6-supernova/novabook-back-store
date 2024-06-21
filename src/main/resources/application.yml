@@ -2,5 +2,10 @@ spring:
   application:
     name: 'store'
 
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
 server:
   port: 8090

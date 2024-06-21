@@ -76,7 +76,7 @@ public class PointHistoryServiceTests {
 			.pointPolicyId(mockPointPolicy.getId())
 			.memberId(mockMember.getId())
 			.pointContent("pointContent")
-			.pointAmount(1000)
+			.pointAmount(1000L)
 			.build());
 
 		verify(pointHistoryRepository, times(1)).save(any(PointHistory.class));

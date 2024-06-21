@@ -48,9 +48,7 @@ public class OrdersService {
 			.orElseThrow(() -> new EntityNotFoundException(WrappingPaper.class, request.wrappingPaperId()));
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.userId())
 			.orElseThrow(() -> new EntityNotFoundException(OrdersStatus.class, request.ordersStatusId()));
-		ReturnPolicy returnPolicy = returnPolicyRepository.findById(request.userId())
-			.orElseThrow(() -> new EntityNotFoundException(ReturnPolicy.class, request.returnPolicyId()));
-		Orders orders = new Orders(users, deliveryFee, wrappingPaper, ordersStatus, returnPolicy, request);
+		Orders orders = new Orders(users, deliveryFee, wrappingPaper, ordersStatus, request);
 		ordersRepository.save(orders);
 		return new CreateResponse(orders.getId());
 	}
