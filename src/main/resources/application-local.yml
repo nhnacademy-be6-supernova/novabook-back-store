@@ -16,16 +16,19 @@ spring:
       ddl-auto: create
 
 
+#eureka:
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:8687/eureka
+#
+
+
 eureka:
   client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8687/eureka
-
-
-
-
+    register-with-eureka: false
+    fetch-registry: false
 
 
 
