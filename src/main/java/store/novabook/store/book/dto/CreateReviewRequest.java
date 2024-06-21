@@ -1,5 +1,6 @@
 package store.novabook.store.book.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
@@ -9,7 +10,7 @@ public record CreateReviewRequest(
 	Long memberId,
 	@NotNull(message = "bookId 값은 필수 입니다 ")
 	Long bookId,
-	@NotNull(message = "content 값은 필수 입니다 ")
+	@NotBlank(message = "content 값은 필수 입니다 ")
 	String content,
 	String image,
 	int score
