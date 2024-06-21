@@ -80,7 +80,6 @@ public class Orders {
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
 		this.ordersStatus = ordersStatus;
-		this.returnPolicy = returnPolicy;
 		this.ordersDate = LocalDateTime.now();
 		this.totalAmount = request.totalAmount();
 		this.deliveryDate = request.deliveryDate();
@@ -94,13 +93,11 @@ public class Orders {
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
-		ReturnPolicy returnPolicy,
 		UpdateOrdersRequest request){
 		this.users = users;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
 		this.ordersStatus = ordersStatus;
-		this.returnPolicy = returnPolicy;
 		this.ordersDate = LocalDateTime.now();
 		this.totalAmount = request.totalAmount();
 		this.deliveryDate = request.deliveryDate();

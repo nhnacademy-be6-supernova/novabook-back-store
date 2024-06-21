@@ -30,7 +30,6 @@ public record GetOrdersResponse(
 			.deliveryFeeId(orders.getDeliveryFee().getId())
 			.wrappingPaperId(orders.getWrappingPaper().getId())
 			.ordersStatusId(orders.getOrdersStatus().getId())
-			.returnPolicyId(orders.getReturnPolicy().getId())
 			.ordersDate(orders.getOrdersDate())
 			.totalAmount(orders.getTotalAmount())
 			.deliveryDate(orders.getDeliveryDate())
