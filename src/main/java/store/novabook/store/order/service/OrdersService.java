@@ -79,10 +79,8 @@ public class OrdersService {
 			.orElseThrow(() -> new EntityNotFoundException(WrappingPaper.class, request.wrappingPaperId()));
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.userId())
 			.orElseThrow(() -> new EntityNotFoundException(OrdersStatus.class, request.ordersStatusId()));
-		ReturnPolicy returnPolicy = returnPolicyRepository.findById(request.userId())
-			.orElseThrow(() -> new EntityNotFoundException(ReturnPolicy.class, request.returnPolicyId()));
 		Orders orders = ordersRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Orders.class, id));
-		orders.update(users,deliveryFee,wrappingPaper,ordersStatus,returnPolicy,request);
+		orders.update(users,deliveryFee,wrappingPaper,ordersStatus,request);
 	}
 
 }
