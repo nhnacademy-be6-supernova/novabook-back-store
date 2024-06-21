@@ -1,0 +1,40 @@
+spring:
+  config:
+    activate:
+#      개인 테스트 환경
+      on-profile: local
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+
+#eureka:
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:8687/eureka
+#
+
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+
+
+
+server:
+  port: 8090
+
+
+
