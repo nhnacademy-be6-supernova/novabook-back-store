@@ -19,8 +19,8 @@ import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Review;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.ReviewRepository;
-import store.novabook.store.exception.AlreadyExistException;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.AlreadyExistException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.repository.MemberRepository;
 

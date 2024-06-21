@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.point.dto.CreatePointPolicyRequest;
 import store.novabook.store.point.dto.GetPointPolicyResponse;
 import store.novabook.store.point.entity.PointPolicy;
