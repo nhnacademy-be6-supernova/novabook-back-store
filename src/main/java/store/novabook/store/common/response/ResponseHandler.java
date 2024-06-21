@@ -19,7 +19,7 @@ import store.novabook.store.common.exception.ErrorStatus;
 import store.novabook.store.common.exception.ValidErrorResponse;
 
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = {"store.novabook.store"})
 public class ResponseHandler implements ResponseBodyAdvice<Object> {
 
 	@Override

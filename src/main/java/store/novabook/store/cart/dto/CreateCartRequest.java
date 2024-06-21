@@ -10,5 +10,5 @@ public record CreateCartRequest(
 	Users users,
 
 	@NotNull
-	boolean isExposed) {
+	Boolean isExposed) {
 }

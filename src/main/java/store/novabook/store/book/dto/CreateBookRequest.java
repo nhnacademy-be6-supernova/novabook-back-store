@@ -30,7 +30,7 @@ public record CreateBookRequest(
 	@NotNull(message = "책 발행일는 필수 입력값입니다.")
 	LocalDateTime publicationDate,
 	@NotNull(message = "책 재고는 필수 입력값입니다.")
-	int inventory,
+	Integer inventory,
 	@NotNull(message = "책 가격은 필수 입력값입니다.")
 	Long price,
 	@NotNull(message = "책 할인가격은 필수 입력값입니다.")

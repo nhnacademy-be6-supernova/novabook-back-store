@@ -9,6 +9,7 @@ import store.novabook.store.orders.entity.WrappingPaper;
 public record GetWrappingPaperResponse(
 	Long id,
 	long price,
+	String name,
 	String status,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
@@ -18,6 +19,7 @@ public record GetWrappingPaperResponse(
 			.id(wrappingPaper.getId())
 			.price(wrappingPaper.getPrice())
 			.status(wrappingPaper.getStatus())
+			.name(wrappingPaper.getName())
 			.createdAt(wrappingPaper.getCreatedAt())
 			.updatedAt(wrappingPaper.getUpdatedAt())
 			.build();

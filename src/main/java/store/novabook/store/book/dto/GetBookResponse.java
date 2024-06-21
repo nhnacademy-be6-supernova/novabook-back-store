@@ -12,7 +12,6 @@ import store.novabook.store.category.entity.BookCategory;
 @Builder
 public record GetBookResponse(
 	Long id,
-	Long bookStatusId,
 	String isbn,
 	String title,
 	String bookIndex,
@@ -28,17 +27,18 @@ public record GetBookResponse(
 	String image,
 	List<String> tags,
 	List<String> categories,
-	int likes
+	int likes,
+	int score
 ) {
 	public static GetBookResponse fromEntity(
 		Book book,
 		List<BookTag> tags,
 		List<BookCategory> categories,
-		int likes) {
+		int likes,
+		int score) {
 		return GetBookResponse.builder()
 			.id(book.getId())
 			.isbn(book.getIsbn())
-			.bookStatusId(book.getBookStatus().getId())
 			.title(book.getTitle())
 			.description(book.getDescription())
 			.descriptionDetail(book.getDescriptionDetail())
@@ -54,6 +54,7 @@ public record GetBookResponse(
 			.categories(categoryNames(categories))
 			.likes(likes)
 			.discountPrice(book.getDiscountPrice())
+			.score(score)
 			.build();
 	}
 
