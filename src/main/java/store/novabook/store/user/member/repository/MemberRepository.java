@@ -6,4 +6,5 @@ import store.novabook.store.user.member.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	boolean existsByLoginId(String loginId);
+
 }

@@ -14,6 +14,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.book.entity.Book;
+import store.novabook.store.order.dto.CreateOrdersBookRequest;
+import store.novabook.store.order.dto.UpdateOrdersBookRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,10 +26,12 @@ public class OrdersBook {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "orders_id")
 	private Orders orders;
 
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
@@ -36,11 +40,21 @@ public class OrdersBook {
 	private int quantity;
 
 	@NotNull
-	private Long price;
+	private long price;
 
 	@NotNull
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
 
+	public OrdersBook(Orders orders, Book book, CreateOrdersBookRequest request) {
+		this.orders = orders;
+		this.book = book;
+		this.quantity = request.quantity();
+		this.price = request.price();
+		this.createdAt = LocalDateTime.now();
+	}
+	public void update(Orders orders, Book book, UpdateOrdersBookRequest request){
+
+	}
 }

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.jdbc.Sql;
 
 import store.novabook.store.exception.AlreadyExistException;
 import store.novabook.store.exception.EntityNotFoundException;
@@ -199,36 +201,88 @@ class MemberServiceTest {
 		verify(memberRepository, times(1)).save(any(Member.class));
 	}
 
-	// @Test
-	// @DisplayName("회원 상태 휴면으로 수정 - 성공")
-	// void updateMemberStatusToDormantSuccess() {
-	// 	when(memberStatusRepository.findByName(MemberService.STATUS_DORMANT)).thenReturn(Optional.of(dormantStatus));
-	// 	when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-	//
-	// 	memberService.updateMemberStatusToDormant(1L);
-	//
-	// 	assertEquals(memberStatus, member.getMemberStatus());
-	//
-	// 	verify(memberStatusRepository, times(1)).findByName(MemberService.STATUS_DORMANT);
-	// 	verify(memberRepository, times(1)).findById(1L);
-	// 	verify(memberRepository, times(1)).save(any(Member.class));
-	// }
+	@Test
+	@DisplayName("회원 상태 휴면으로 수정 - 성공")
+	void updateMemberStatusToDormantSuccess() {
+		when(memberStatusRepository.findByName(MemberService.STATUS_DORMANT)).thenReturn(Optional.of(dormantStatus));
+		when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+
+		memberService.updateMemberStatusToDormant(1L);
+
+		assertEquals(dormantStatus.getName(), member.getMemberStatus().getName());
+
+		verify(memberStatusRepository, times(1)).findByName(MemberService.STATUS_DORMANT);
+		verify(memberRepository, times(1)).findById(1L);
+		verify(memberRepository, times(1)).save(any(Member.class));
+	}
 
 	@Test
-	@DisplayName("회원 상태 휴면으로 수정 - 실패")
-	void updateMemberStatusToDormantFail() {
+	@DisplayName("회원 상태 휴면으로 수정 - 실패 - 회원 상태 없음")
+	void updateMemberStatusToDormantFailNoStatus() {
+		when(memberStatusRepository.findByName(MemberService.STATUS_DORMANT)).thenReturn(Optional.empty());
 
+		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+			() -> memberService.updateMemberStatusToDormant(1L));
+
+		verify(memberStatusRepository, times(1)).findByName(MemberService.STATUS_DORMANT);
+		verify(memberRepository, never()).findById(anyLong());
+		verify(memberRepository, never()).save(any(Member.class));
+	}
+
+	@Test
+	@DisplayName("회원 상태 휴면으로 수정 - 실패 - 회원 없음")
+	void updateMemberStatusToDormantFailNoMember() {
+		when(memberStatusRepository.findByName(MemberService.STATUS_DORMANT)).thenReturn(Optional.of(dormantStatus));
+		when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+
+		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+			() -> memberService.updateMemberStatusToDormant(1L));
+
+		verify(memberStatusRepository, times(1)).findByName(MemberService.STATUS_DORMANT);
+		verify(memberRepository, times(1)).findById(1L);
+		verify(memberRepository, never()).save(any(Member.class));
 	}
 
 	@Test
 	@DisplayName("회원 상태 탈퇴로 수정 - 성공")
 	void updateMemberStatusToWithdrawnSuccess() {
+		when(memberStatusRepository.findByName(MemberService.STATUS_WITHDRAWN)).thenReturn(
+			Optional.of(withdrawnStatus));
+		when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
 
+		memberService.updateMemberStatusToWithdrawn(1L);
+
+		assertEquals(withdrawnStatus.getName(), member.getMemberStatus().getName());
+
+		verify(memberStatusRepository, times(1)).findByName(MemberService.STATUS_WITHDRAWN);
+		verify(memberRepository, times(1)).findById(1L);
+		verify(memberRepository, times(1)).save(any(Member.class));
 	}
 
 	@Test
-	@DisplayName("회원 상태 탈퇴로 수정 - 실패")
-	void updateMemberStatusToWithdrawnFail() {
+	@DisplayName("회원 상태 탈퇴로 수정 - 실패 - 회원 상태 없음")
+	void updateMemberStatusToWithdrawnFailNoStatus() {
+		when(memberStatusRepository.findByName(MemberService.STATUS_WITHDRAWN)).thenReturn(Optional.empty());
 
+		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+			() -> memberService.updateMemberStatusToWithdrawn(1L));
+
+		verify(memberStatusRepository, times(1)).findByName(MemberService.STATUS_WITHDRAWN);
+		verify(memberRepository, never()).findById(anyLong());
+		verify(memberRepository, never()).save(any(Member.class));
+	}
+
+	@Test
+	@DisplayName("회원 상태 탈퇴로 수정 - 실패 - 회원 없음")
+	void updateMemberStatusToWithdrawnFailNoMember() {
+		when(memberStatusRepository.findByName(MemberService.STATUS_WITHDRAWN)).thenReturn(Optional.of(withdrawnStatus));
+		when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+
+		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+			() -> memberService.updateMemberStatusToWithdrawn(1L));
+
+		verify(memberStatusRepository, times(1)).findByName(MemberService.STATUS_WITHDRAWN);
+		verify(memberRepository, times(1)).findById(1L);
+		verify(memberRepository, never()).save(any(Member.class));
 	}
 }

@@ -22,7 +22,7 @@ import store.novabook.store.order.repository.DeliveryFeeRepository;
 public class DeliveryFeeService {
 	private final DeliveryFeeRepository deliveryFeeRepository;
 
-	//create
+	//createOrders
 	public CreateResponse createFee(CreateDeliveryFeeRequest request) {
 		DeliveryFee deliveryFee = new DeliveryFee(request);
 		deliveryFeeRepository.save(deliveryFee);
@@ -46,6 +46,7 @@ public class DeliveryFeeService {
 		return new PageImpl<>(responses);
 	}
 
+	//단건 조회
 	@Transactional(readOnly = true)
 	public GetDeliveryFeeResponse getDeliveryFee(Long id) {
 		return GetDeliveryFeeResponse.from(

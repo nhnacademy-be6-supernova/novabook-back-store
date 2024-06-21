@@ -1,6 +1,5 @@
 package store.novabook.store.order.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -13,6 +12,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.order.dto.CreateOrdersRequest;
+import store.novabook.store.order.dto.UpdateOrdersRequest;
 import store.novabook.store.user.member.entity.Users;
 
 @Getter
@@ -44,11 +45,6 @@ public class Orders {
 	private OrdersStatus ordersStatus;
 
 	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "return_policy_id")
-	private ReturnPolicy returnPolicy;
-
-	@NotNull
 	private LocalDateTime ordersDate;
 
 	@NotNull
@@ -58,19 +54,57 @@ public class Orders {
 	private LocalDateTime deliveryDate;
 
 	@NotNull
-	private Long bookPurchaseAmount;
+	private long bookPurchaseAmount;
 
 	@NotNull
 	private String deliveryAddress;
 
 	@NotNull
-	private String recieverName;
+	private String receieverName;
 
 	@NotNull
-	private String recieverNumber;
+	private String receieverNumber;
 
 	@NotNull
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
+
+	public Orders(Users users,
+		DeliveryFee deliveryFee,
+		WrappingPaper wrappingPaper,
+		OrdersStatus ordersStatus,
+		ReturnPolicy returnPolicy,
+		CreateOrdersRequest request){
+		this.users = users;
+		this.deliveryFee = deliveryFee;
+		this.wrappingPaper = wrappingPaper;
+		this.ordersStatus = ordersStatus;
+		this.ordersDate = LocalDateTime.now();
+		this.totalAmount = request.totalAmount();
+		this.deliveryDate = request.deliveryDate();
+		this.bookPurchaseAmount = request.bookPurchaseAmount();
+		this.deliveryAddress = request.deliveryAddress();
+		this.receieverName = request.recieverName();
+		this.receieverNumber = request.recieverNumber();
+		this.createdAt = LocalDateTime.now();
+	}
+	public void update(Users users,
+		DeliveryFee deliveryFee,
+		WrappingPaper wrappingPaper,
+		OrdersStatus ordersStatus,
+		UpdateOrdersRequest request){
+		this.users = users;
+		this.deliveryFee = deliveryFee;
+		this.wrappingPaper = wrappingPaper;
+		this.ordersStatus = ordersStatus;
+		this.ordersDate = LocalDateTime.now();
+		this.totalAmount = request.totalAmount();
+		this.deliveryDate = request.deliveryDate();
+		this.bookPurchaseAmount = request.bookPurchaseAmount();
+		this.deliveryAddress = request.deliveryAddress();
+		this.receieverName = request.recieverName();
+		this.receieverNumber = request.recieverNumber();
+		this.updatedAt = LocalDateTime.now();
+	}
 }

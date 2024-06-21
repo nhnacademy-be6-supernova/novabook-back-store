@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.exception.AddressLimitExceededException;
+import store.novabook.store.exception.AlreadyExistException;
 import store.novabook.store.exception.EntityNotFoundException;
 import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
 import store.novabook.store.user.member.dto.CreateMemberAddressResponse;
@@ -31,6 +33,8 @@ public class MemberAddressService {
 		Member member = memberRepository.findById(createMemberAddressRequest.memberId())
 			.orElseThrow(() -> new EntityNotFoundException(MemberAddress.class, createMemberAddressRequest.memberId()));
 
+		validateMemberAddress(member);
+
 		StreetAddress streetAddress = streetAddressRepository.findByZipcodeAndStreetAddress(
 			createMemberAddressRequest.zipcode(), createMemberAddressRequest.streetAddress());
 		if (streetAddress == null) {
@@ -41,6 +45,7 @@ public class MemberAddressService {
 			streetAddressRepository.save(streetAddress);
 		}
 		MemberAddress memberAddress = MemberAddress.of(createMemberAddressRequest, member, streetAddress);
+
 		MemberAddress newMemberAddress = memberAddressRepository.save(memberAddress);
 
 		return CreateMemberAddressResponse.fromEntity(newMemberAddress);
@@ -104,5 +109,12 @@ public class MemberAddressService {
 		MemberAddress memberAddress = memberAddressRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(MemberAddress.class, id));
 		memberAddressRepository.delete(memberAddress);
+	}
+
+	private void validateMemberAddress(Member member) {
+		int currentMemberAddressCount = memberAddressRepository.countByMember(member);
+		if (currentMemberAddressCount >= 10) {
+			throw new AddressLimitExceededException(member.getId());
+		}
 	}
 }
