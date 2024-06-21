@@ -27,8 +27,8 @@ public record CreateOrdersRequest(
 	@NotBlank(message = "deliveryAddress 값은 필수 입니다")
 	String deliveryAddress,
 	@NotBlank(message = "recieverName 값은 필수 입니다")
-	String recieverName,
+	String receiverName,
 	@NotBlank(message = "recieverNumber 값은 필수 입니다")
-	String recieverNumber
+	String receiverNumber
 ) {
 }

@@ -9,13 +9,13 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.CreateResponse;
 import store.novabook.store.orders.dto.GetDeliveryFeeResponse;
