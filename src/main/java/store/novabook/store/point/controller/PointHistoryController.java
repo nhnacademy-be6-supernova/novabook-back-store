@@ -18,19 +18,19 @@ import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.service.PointHistoryService;
 
 @RestController
-@RequestMapping("/point")
+@RequestMapping("/api/v1/store/point/histories")
 @RequiredArgsConstructor
 public class PointHistoryController {
 	private final PointHistoryService pointHistoryService;
 
-	@GetMapping("/histories")
+	@GetMapping
 	public ResponseEntity<Page<GetPointHistoryResponse>> getPointHistoryList(Pageable pageable) {
 
 		Page<GetPointHistoryResponse> pointHistoryList = pointHistoryService.getPointHistoryList(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(pointHistoryList);
 	}
 
-	@PostMapping("/histories")
+	@PostMapping
 	public ResponseEntity<PointHistory> createPointHistory(
 		@Valid @RequestBody CreatePointHistoryRequest createPointHistoryRequest) {
 
