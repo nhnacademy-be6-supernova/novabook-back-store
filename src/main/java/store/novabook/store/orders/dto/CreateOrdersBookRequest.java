@@ -12,9 +12,9 @@ public record CreateOrdersBookRequest(
 	Long bookId,
 	@NotNull(message = "quantity 값은 필수 입니다")
 	@Min(value = 0, message = "0보다 커야 합니다 ")
-	int quantity,
+	Integer quantity,
 	@NotNull(message = "price 값은 필수 입니다")
 	@Min(value = 0, message = "0보다 커야 합니다 ")
-	long price
+	Long price
 ) {
 }

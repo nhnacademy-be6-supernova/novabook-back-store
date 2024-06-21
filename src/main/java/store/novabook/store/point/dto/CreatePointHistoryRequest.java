@@ -15,5 +15,5 @@ public record CreatePointHistoryRequest(
 	@NotNull
 	String pointContent,
 	@PositiveOrZero
-	long pointAmount) {
+	Long pointAmount) {
 }
