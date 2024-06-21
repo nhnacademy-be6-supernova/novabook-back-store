@@ -18,7 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.point.dto.CreatePointPolicyRequest;
 import store.novabook.store.point.dto.GetPointPolicyResponse;
 import store.novabook.store.point.entity.PointPolicy;

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.payment.dto.CreatePaymentRequest;
 import store.novabook.store.payment.dto.CreatePaymentResponse;
 import store.novabook.store.payment.dto.GetPaymentResponse;
