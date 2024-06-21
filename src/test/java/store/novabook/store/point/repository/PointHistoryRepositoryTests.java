@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import store.novabook.store.order.entity.Orders;
+import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.user.member.entity.Member;

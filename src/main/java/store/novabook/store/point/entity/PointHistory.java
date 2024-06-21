@@ -1,6 +1,5 @@
 package store.novabook.store.point.entity;
 
-import java.awt.*;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -21,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.order.entity.Orders;
+import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.user.member.entity.Member;
 
 @Entity
