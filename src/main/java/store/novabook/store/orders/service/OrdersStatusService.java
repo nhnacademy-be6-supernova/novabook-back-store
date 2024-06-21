@@ -1,4 +1,4 @@
-package store.novabook.store.orders.service;
+package store.novabook.store.order.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.exception.EntityNotFoundException;
 import store.novabook.store.orders.dto.CreateOrdersStatusRequest;
 import store.novabook.store.orders.dto.CreateResponse;
 import store.novabook.store.orders.dto.GetOrdersStatusResponse;
 import store.novabook.store.orders.dto.UpdateOrdersStatusRequest;
 import store.novabook.store.orders.entity.OrdersStatus;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
+import store.novabook.store.common.exception.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor

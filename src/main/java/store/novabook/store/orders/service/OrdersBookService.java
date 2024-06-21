@@ -1,4 +1,4 @@
-package store.novabook.store.orders.service;
+package store.novabook.store.order.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
-import store.novabook.store.exception.EntityNotFoundException;
 import store.novabook.store.orders.dto.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.CreateResponse;
 import store.novabook.store.orders.dto.GetOrdersBookResponse;
@@ -20,6 +19,7 @@ import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
 import store.novabook.store.orders.repository.OrdersBookRepository;
 import store.novabook.store.orders.repository.OrdersRepository;
+import store.novabook.store.common.exception.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor

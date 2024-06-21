@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +21,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import store.novabook.store.exception.AlreadyExistException;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.AlreadyExistException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
