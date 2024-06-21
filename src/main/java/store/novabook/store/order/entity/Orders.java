@@ -44,11 +44,6 @@ public class Orders {
 	private OrdersStatus ordersStatus;
 
 	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "return_policy_id")
-	private ReturnPolicy returnPolicy;
-
-	@NotNull
 	private LocalDateTime ordersDate;
 
 	@NotNull
