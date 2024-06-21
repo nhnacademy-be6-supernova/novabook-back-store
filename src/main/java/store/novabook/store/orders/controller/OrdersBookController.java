@@ -49,10 +49,12 @@ public class OrdersBookController {
 
 	//수정
 	@PutMapping("/{id}")
-	public ResponseEntity<Void> updateOrdersBook(@PathVariable Long id, @Valid @RequestBody UpdateOrdersBookRequest request) {
-		ordersBookService.update(id,request);
+	public ResponseEntity<Void> updateOrdersBook(@PathVariable Long id,
+		@Valid @RequestBody UpdateOrdersBookRequest request) {
+		ordersBookService.update(id, request);
 		return ResponseEntity.noContent().build();
 	}
+
 	//삭제
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteOrdersBook(@PathVariable Long id) {

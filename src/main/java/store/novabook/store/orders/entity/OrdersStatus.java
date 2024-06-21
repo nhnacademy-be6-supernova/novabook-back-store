@@ -29,12 +29,12 @@ public class OrdersStatus {
 
 	private LocalDateTime updatedAt;
 
-	public OrdersStatus(CreateOrdersStatusRequest request){
+	public OrdersStatus(CreateOrdersStatusRequest request) {
 		this.name = request.name();
 		this.createdAt = LocalDateTime.now();
 	}
 
-	public void update(UpdateOrdersStatusRequest request){
+	public void update(UpdateOrdersStatusRequest request) {
 		this.updatedAt = LocalDateTime.now();
 		this.name = request.name();
 	}

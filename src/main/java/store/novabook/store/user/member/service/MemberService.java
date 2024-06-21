@@ -1,7 +1,8 @@
 package store.novabook.store.user.member.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,12 +76,11 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<GetMemberResponse> getMemberAll() {
-		List<Member> memberList = memberRepository.findAll();
-		return memberList.stream()
-			.map(member -> new GetMemberResponse(member.getId(), member.getLoginId(), member.getName(),
-				member.getEmail()))
-			.toList();
+	public Page<GetMemberResponse> getMemberAll(Pageable pageable) {
+		Page<Member> memberList = memberRepository.findAll(pageable);
+		Page<GetMemberResponse> memberResponse = memberList.map(GetMemberResponse::fromEntity);
+
+		return new PageImpl<>(memberResponse.getContent(), pageable, memberList.getTotalElements());
 	}
 
 	@Transactional(readOnly = true)

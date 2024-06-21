@@ -24,7 +24,7 @@ public record UpdateOrdersRequest(
 	@NotNull(message = "deliveryDate은 필수 값입니다 ")
 	LocalDateTime deliveryDate,
 	@NotNull(message = "bookPurchaseAmount은 필수 값입니다 ")
-	@Min(value = 0,message = "0보다 커야 합니다 ")
+	@Min(value = 0, message = "0보다 커야 합니다 ")
 	long bookPurchaseAmount,
 	@NotNull(message = "deliveryAddress은 필수 값입니다 ")
 	String deliveryAddress,
@@ -32,5 +32,5 @@ public record UpdateOrdersRequest(
 	String recieverName,
 	@NotBlank(message = "recieverNumber은 필수 값입니다 ")
 	String recieverNumber
-){
+) {
 }

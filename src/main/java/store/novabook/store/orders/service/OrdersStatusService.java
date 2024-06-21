@@ -24,7 +24,7 @@ public class OrdersStatusService {
 	private final OrdersStatusRepository ordersStatusRepository;
 
 	//생성
-	public CreateResponse save(CreateOrdersStatusRequest request){
+	public CreateResponse save(CreateOrdersStatusRequest request) {
 		OrdersStatus ordersStatus = new OrdersStatus(request);
 		ordersStatusRepository.save(ordersStatus);
 		return new CreateResponse(ordersStatus.getId());
@@ -32,7 +32,7 @@ public class OrdersStatusService {
 
 	// 전체 조회
 	@Transactional(readOnly = true)
-	public Page<GetOrdersStatusResponse> getOrdersStatus(){
+	public Page<GetOrdersStatusResponse> getOrdersStatus() {
 		List<OrdersStatus> ordersStatusList = ordersStatusRepository.findAll();
 		List<GetOrdersStatusResponse> responses = new ArrayList<>();
 		for (OrdersStatus ordersStatus : ordersStatusList) {
@@ -43,14 +43,14 @@ public class OrdersStatusService {
 
 	// 단건 조회
 	@Transactional(readOnly = true)
-	public GetOrdersStatusResponse getOrdersStatus(Long id){
+	public GetOrdersStatusResponse getOrdersStatus(Long id) {
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(OrdersStatus.class, id));
 		return GetOrdersStatusResponse.form(ordersStatus);
 	}
 
 	//업데이트
-	public void updateOrdersStatus(Long id, UpdateOrdersStatusRequest request){
+	public void updateOrdersStatus(Long id, UpdateOrdersStatusRequest request) {
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(OrdersStatus.class, id));
 		ordersStatus.update(request);

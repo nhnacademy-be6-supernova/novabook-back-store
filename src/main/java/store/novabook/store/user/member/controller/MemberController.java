@@ -1,10 +1,9 @@
 package store.novabook.store.user.member.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +18,6 @@ import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
-import store.novabook.store.user.member.entity.MemberStatus;
 import store.novabook.store.user.member.service.MemberService;
 
 @RestController
@@ -37,9 +35,8 @@ public class MemberController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<GetMemberResponse>> getMemberAll() {
-		List<GetMemberResponse> memberAll = memberService.getMemberAll();
-		return ResponseEntity.ok(memberAll);
+	public ResponseEntity<Page<GetMemberResponse>> getMemberAll(Pageable pageable) {
+		return ResponseEntity.ok(memberService.getMemberAll(pageable));
 	}
 
 	@GetMapping("/{memberId}")
@@ -66,6 +63,5 @@ public class MemberController {
 		memberService.updateMemberStatusToWithdrawn(memberId);
 		return ResponseEntity.ok().build();
 	}
-
 
 }

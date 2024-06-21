@@ -33,7 +33,7 @@ public class OrdersStatusController {
 
 	//전체 조회
 	@GetMapping
-	public ResponseEntity<Page<GetOrdersStatusResponse>> getOrdersStatusAll(){
+	public ResponseEntity<Page<GetOrdersStatusResponse>> getOrdersStatusAll() {
 		Page<GetOrdersStatusResponse> response = ordersStatusService.getOrdersStatus();
 		return ResponseEntity.ok(response);
 	}
@@ -46,8 +46,9 @@ public class OrdersStatusController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Void> updateOrdersStatus(@PathVariable Long id, @RequestBody UpdateOrdersStatusRequest request) {
-		ordersStatusService.updateOrdersStatus(id,request);
+	public ResponseEntity<Void> updateOrdersStatus(@PathVariable Long id,
+		@RequestBody UpdateOrdersStatusRequest request) {
+		ordersStatusService.updateOrdersStatus(id, request);
 		return ResponseEntity.noContent().build();
 	}
 }

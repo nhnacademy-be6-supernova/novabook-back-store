@@ -53,11 +53,8 @@ public class OrdersBook {
 		this.price = request.price();
 		this.createdAt = LocalDateTime.now();
 	}
-	public void update(Orders orders, Book book, UpdateOrdersBookRequest request){
-		this.orders = orders;
-		this.book = book;
-		this.quantity = request.quantity();
-		this.price = request.price();
-		this.updatedAt = LocalDateTime.now();
+
+	public void update(Orders orders, Book book, UpdateOrdersBookRequest request) {
+
 	}
 }

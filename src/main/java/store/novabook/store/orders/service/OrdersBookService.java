@@ -29,18 +29,18 @@ public class OrdersBookService {
 	private final OrdersRepository ordersRepository;
 	private final BookRepository bookRepository;
 
-	public CreateResponse create(CreateOrdersBookRequest request){
+	public CreateResponse create(CreateOrdersBookRequest request) {
 		Orders orders = ordersRepository.findById(request.ordersId())
-			.orElseThrow(()-> new EntityNotFoundException(Orders.class, request.ordersId()));
+			.orElseThrow(() -> new EntityNotFoundException(Orders.class, request.ordersId()));
 		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(()-> new EntityNotFoundException(Book.class, request.bookId()));
-		OrdersBook ordersBook = new OrdersBook(orders, book,request);
+			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
+		OrdersBook ordersBook = new OrdersBook(orders, book, request);
 		ordersBookRepository.save(ordersBook);
 		return new CreateResponse(ordersBook.getId());
 	}
 
 	//전체 조회
-	public Page<GetOrdersBookResponse> getOrdersBookAll(){
+	public Page<GetOrdersBookResponse> getOrdersBookAll() {
 		List<OrdersBook> ordersBooks = ordersBookRepository.findAll();
 		List<GetOrdersBookResponse> responses = new ArrayList<>();
 		for (OrdersBook ordersBook : ordersBooks) {
@@ -50,24 +50,24 @@ public class OrdersBookService {
 	}
 
 	// 단건조회
-	public GetOrdersBookResponse getOrdersBook(Long id){
+	public GetOrdersBookResponse getOrdersBook(Long id) {
 		OrdersBook ordersBook = ordersBookRepository.findById(id)
-			.orElseThrow(()-> new EntityNotFoundException(OrdersBook.class, id));
+			.orElseThrow(() -> new EntityNotFoundException(OrdersBook.class, id));
 		return GetOrdersBookResponse.from(ordersBook);
 	}
 
 	//업데이트
-	public void update(Long id, UpdateOrdersBookRequest request){
+	public void update(Long id, UpdateOrdersBookRequest request) {
 		Orders orders = ordersRepository.findById(request.ordersId())
-			.orElseThrow(()-> new EntityNotFoundException(Orders.class, request.ordersId()));
+			.orElseThrow(() -> new EntityNotFoundException(Orders.class, request.ordersId()));
 		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(()-> new EntityNotFoundException(Book.class, request.bookId()));
+			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
 		OrdersBook ordersBook = ordersBookRepository.findById(id)
-			.orElseThrow(()-> new EntityNotFoundException(OrdersBook.class, id));
+			.orElseThrow(() -> new EntityNotFoundException(OrdersBook.class, id));
 		ordersBook.update(orders, book, request);
 	}
 
-	public void delete(Long id){
+	public void delete(Long id) {
 		ordersBookRepository.deleteById(id);
 	}
 }

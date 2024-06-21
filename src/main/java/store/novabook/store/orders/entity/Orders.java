@@ -60,10 +60,10 @@ public class Orders {
 	private String deliveryAddress;
 
 	@NotNull
-	private String receieverName;
+	private String receiverName;
 
 	@NotNull
-	private String receieverNumber;
+	private String receiverNumber;
 
 	@NotNull
 	private LocalDateTime createdAt;
@@ -74,7 +74,8 @@ public class Orders {
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
-		CreateOrdersRequest request){
+		ReturnPolicy returnPolicy,
+		CreateOrdersRequest request) {
 		this.users = users;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
@@ -84,15 +85,16 @@ public class Orders {
 		this.deliveryDate = request.deliveryDate();
 		this.bookPurchaseAmount = request.bookPurchaseAmount();
 		this.deliveryAddress = request.deliveryAddress();
-		this.receieverName = request.recieverName();
-		this.receieverNumber = request.recieverNumber();
+		this.receiverName = request.recieverName();
+		this.receiverNumber = request.recieverNumber();
 		this.createdAt = LocalDateTime.now();
 	}
+
 	public void update(Users users,
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
-		UpdateOrdersRequest request){
+		UpdateOrdersRequest request) {
 		this.users = users;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
@@ -102,8 +104,8 @@ public class Orders {
 		this.deliveryDate = request.deliveryDate();
 		this.bookPurchaseAmount = request.bookPurchaseAmount();
 		this.deliveryAddress = request.deliveryAddress();
-		this.receieverName = request.recieverName();
-		this.receieverNumber = request.recieverNumber();
+		this.receiverName = request.recieverName();
+		this.receiverNumber = request.recieverNumber();
 		this.updatedAt = LocalDateTime.now();
 	}
 }

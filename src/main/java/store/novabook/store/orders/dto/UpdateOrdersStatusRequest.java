@@ -7,6 +7,6 @@ import lombok.Builder;
 public record UpdateOrdersStatusRequest(
 	@NotBlank(message = "값이 비어 있습니다")
 	String name
-){
+) {
 
 }

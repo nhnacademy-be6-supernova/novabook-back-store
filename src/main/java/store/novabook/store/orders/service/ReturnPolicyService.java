@@ -30,7 +30,7 @@ public class ReturnPolicyService {
 	}
 
 	// 가장 최근 content
-	public String latestReturnPolicyContent(){
+	public String latestReturnPolicyContent() {
 		return returnPolicyRepository.findContentByOrderByIdDesc();
 	}
 
@@ -47,7 +47,7 @@ public class ReturnPolicyService {
 	@Transactional(readOnly = true)
 	public GetReturnPolicyResponse getReturnPolicyById(Long id) {
 		ReturnPolicy returnPolicy = returnPolicyRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(ReturnPolicy.class,id));
+			.orElseThrow(() -> new EntityNotFoundException(ReturnPolicy.class, id));
 		return GetReturnPolicyResponse.from(returnPolicy);
 	}
 
