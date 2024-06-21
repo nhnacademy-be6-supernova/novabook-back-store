@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class AlreadyExistException extends RuntimeException {
+
 	private final ErrorStatus errorStatus;
 	public AlreadyExistException(Class<?> entity) {
 		String message = String.format("%s가 이미 존재합니다.", entity.getSimpleName());
