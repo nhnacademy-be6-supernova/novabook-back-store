@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.exception.AddressLimitExceededException;
-import store.novabook.store.exception.AlreadyExistException;
 import store.novabook.store.exception.EntityNotFoundException;
 import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
 import store.novabook.store.user.member.dto.CreateMemberAddressResponse;
@@ -25,6 +24,7 @@ import store.novabook.store.user.member.repository.StreetAddressRepository;
 @Transactional
 public class MemberAddressService {
 
+	public static final int ADDRESS_COUNT = 10;
 	private final MemberAddressRepository memberAddressRepository;
 	private final StreetAddressRepository streetAddressRepository;
 	private final MemberRepository memberRepository;
@@ -113,7 +113,7 @@ public class MemberAddressService {
 
 	private void validateMemberAddress(Member member) {
 		int currentMemberAddressCount = memberAddressRepository.countByMember(member);
-		if (currentMemberAddressCount >= 10) {
+		if (currentMemberAddressCount > ADDRESS_COUNT) {
 			throw new AddressLimitExceededException(member.getId());
 		}
 	}

@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.exception.EntityNotFoundException;
-import store.novabook.store.order.entity.Orders;
-import store.novabook.store.order.repository.OrdersRepository;
+import store.novabook.store.orders.entity.Orders;
+import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.point.dto.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;
