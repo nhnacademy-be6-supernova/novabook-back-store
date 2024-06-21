@@ -24,6 +24,7 @@ import store.novabook.store.user.member.repository.StreetAddressRepository;
 @Transactional
 public class MemberAddressService {
 
+	public static final int ADDRESS_COUNT = 10;
 	private final MemberAddressRepository memberAddressRepository;
 	private final StreetAddressRepository streetAddressRepository;
 	private final MemberRepository memberRepository;
