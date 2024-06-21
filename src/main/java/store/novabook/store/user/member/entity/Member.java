@@ -100,7 +100,7 @@ public class Member {
 	}
 
 	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, MemberGrade memberGrade,
-		Users user) {
+		Users user, LocalDateTime birth) {
 		return Member.builder()
 			.users(user)
 			.memberGrade(memberGrade)
@@ -110,7 +110,7 @@ public class Member {
 			.name(createMemberRequest.name())
 			.number(createMemberRequest.number())
 			.email(createMemberRequest.email())
-			.birth(createMemberRequest.birth())
+			.birth(birth)
 			.point(5000L)
 			.totalAmount(0L)
 			.latestLoginAt(LocalDateTime.now())

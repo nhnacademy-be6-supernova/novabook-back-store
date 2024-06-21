@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -81,7 +80,9 @@ class MemberServiceTest {
 			.name("testUser")
 			.number("010-1234-5678")
 			.email("test@example.com")
-			.birth(LocalDateTime.of(2001, 2, 14, 0, 0))
+			.birthYear(2001)
+			.birthMonth(2)
+			.birthDay(14)
 			.build();
 
 		user = Users.builder().id(MemberService.ID).type(MemberService.TYPE).createdAt(LocalDateTime.now()).build();
@@ -101,7 +102,7 @@ class MemberServiceTest {
 			.name(createMemberRequest.name())
 			.number(createMemberRequest.number())
 			.email(createMemberRequest.email())
-			.birth(createMemberRequest.birth())
+			.birth(LocalDateTime.of(2001, 2, 14, 0, 0))
 			.point(5000L)
 			.totalAmount(0L)
 			.latestLoginAt(LocalDateTime.now())
