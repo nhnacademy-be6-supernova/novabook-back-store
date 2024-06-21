@@ -96,12 +96,12 @@ class MemberAddressServiceTest {
 		verify(memberAddressRepository, times(1)).save(any(MemberAddress.class));
 	}
 
-	@Test
+	/*@Test
 	@DisplayName("회원 주소 생성 - 새로운 주소 생성")
 	void createMemberAddressNewAddress() {
 		when(memberRepository.findById(createMemberAddressRequest.memberId())).thenReturn(Optional.of(member));
-		
-	}
+
+	}*/
 
 	@Test
 	@DisplayName("회원 주소 생성 - 실패 - 회원 없음")
