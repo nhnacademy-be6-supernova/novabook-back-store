@@ -1,5 +1,7 @@
 package store.novabook.store.user.member.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +60,10 @@ public class MemberService {
 		MemberStatus memberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
 			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class));
 
-		Member member = Member.of(createMemberRequest, memberStatus, memberGrade, user);
+		LocalDateTime birth = LocalDateTime.of(createMemberRequest.birthYear(), createMemberRequest.birthMonth(),
+			createMemberRequest.birthDay(), 0, 0);
+
+		Member member = Member.of(createMemberRequest, memberStatus, memberGrade, user, birth);
 
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
 			throw new AlreadyExistException(Member.class);
