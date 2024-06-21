@@ -17,5 +17,12 @@ public class ApplicationGlobalControllerAdvice  {
 		ErrorStatus errorStatus = e.getErrorStatus();
 		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
 	}
+	@ExceptionHandler(AddressLimitExceededException.class)
+	public ResponseEntity<ErrorStatus> handleApplicationException(AddressLimitExceededException e) {
+		ErrorStatus errorStatus = e.getErrorStatus();
+		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
+	}
+
+
 
 }
