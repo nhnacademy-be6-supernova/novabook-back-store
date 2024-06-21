@@ -1,4 +1,4 @@
-package store.novabook.store.common.handler;
+package store.novabook.store.common.response;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ import store.novabook.store.common.exception.ValidErrorResponse;
 
 @Slf4j
 @RestControllerAdvice
-public class ResponseAdvice implements ResponseBodyAdvice<Object> {
+public class ResponseHandler implements ResponseBodyAdvice<Object> {
 
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {

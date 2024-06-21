@@ -1,4 +1,4 @@
-package store.novabook.store.common.handler;
+package store.novabook.store.common.response;
 
 import java.util.HashMap;
 import java.util.Map;
