@@ -42,9 +42,9 @@ public class TagController {
 		return ResponseEntity.ok().body(tagService.createTag(createTagRequest));
 	}
 
-	@PutMapping
-	public ResponseEntity<Void> updateTag(@Valid @RequestBody UpdateTagRequest updateTagRequest) {
-		tagService.updateTag(updateTagRequest);
+	@PutMapping("/{id}")
+	public ResponseEntity<Void> updateTag(@Valid @RequestBody UpdateTagRequest updateTagRequest, @PathVariable Long id) {
+		tagService.updateTag(id, updateTagRequest);
 		return ResponseEntity.ok().build();
 	}
 
