@@ -23,7 +23,7 @@ public record CreateOrdersRequest(
 	LocalDateTime deliveryDate,
 	@NotNull(message = "bookPurchaseAmount 값은 필수 입니다")
 	@Min(value = 0, message = "0보다 커야 합니다 ")
-	long bookPurchaseAmount,
+	Long bookPurchaseAmount,
 	@NotBlank(message = "deliveryAddress 값은 필수 입니다")
 	String deliveryAddress,
 	@NotBlank(message = "recieverName 값은 필수 입니다")

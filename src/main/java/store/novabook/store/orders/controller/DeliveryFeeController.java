@@ -19,7 +19,7 @@ import store.novabook.store.orders.service.DeliveryFeeService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/delivery/fee")
+@RequestMapping("/orders/delivery/fee")
 public class DeliveryFeeController {
 	private final DeliveryFeeService deliveryFeeService;
 

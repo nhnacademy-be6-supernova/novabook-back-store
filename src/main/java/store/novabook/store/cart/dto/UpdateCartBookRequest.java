@@ -14,5 +14,5 @@ public record UpdateCartBookRequest(
 	Long bookId,
 	@NotNull
 	@Positive
-	int quantity) {
+	Integer quantity) {
 }
