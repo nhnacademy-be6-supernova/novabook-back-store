@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.exception.AddressLimitExceededException;
-import store.novabook.store.exception.AlreadyExistException;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.AddressLimitExceededException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
 import store.novabook.store.user.member.dto.CreateMemberAddressResponse;
 import store.novabook.store.user.member.dto.GetMemberAddressResponse;
