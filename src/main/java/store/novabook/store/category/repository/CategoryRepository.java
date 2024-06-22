@@ -10,4 +10,6 @@ import store.novabook.store.category.entity.Category;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 	List<Category> findByIdIn(Set<Long> ids);
 	Boolean existsByName(String name);
+
+	List<Category> findAllByOrderByTopCategoryId();
 }

@@ -65,7 +65,7 @@ public class BookService {
 
 			Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new EntityNotFoundException(Category.class, categoryId));
-			BookCategory bookCategory = new BookCategory(book, category, depth);
+			BookCategory bookCategory = new BookCategory(book, category);
 			bookCategories.add(bookCategory);
 		}
 		bookCategoryRepository.saveAll(bookCategories);
