@@ -53,7 +53,7 @@ public class PointHistoryControllerTest {
 
 		GetPointHistoryResponse getPointPolicyResponse = GetPointHistoryResponse.builder()
 			.pointContent("pointContent")
-			.pointAmount(1000)
+			.pointAmount(1000L)
 			.build();
 
 		List<GetPointHistoryResponse> getPointHistoryResponseList = Collections.singletonList(getPointPolicyResponse);
@@ -74,7 +74,7 @@ public class PointHistoryControllerTest {
 			.pointPolicyId(1L)
 			.memberId(1L)
 			.pointContent("pointContent")
-			.pointAmount(1000)
+			.pointAmount(1000L)
 			.build();
 
 		ObjectMapper objectMapper = new ObjectMapper();
