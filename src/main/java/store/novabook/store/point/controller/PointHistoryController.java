@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.point.dto.CreatePointHistoryRequest;
@@ -20,24 +17,20 @@ import store.novabook.store.point.dto.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.service.PointHistoryService;
 
-@Tag(name = "point-history-controller")
 @RestController
-@RequestMapping("/point")
+@RequestMapping("/api/v1/store/point/histories")
 @RequiredArgsConstructor
 public class PointHistoryController {
 	private final PointHistoryService pointHistoryService;
 
-	@Operation(summary = "포인트 내역 조회", description = "포인트 내역을 조회합니다.")
-	@GetMapping("/histories")
+	@GetMapping
 	public ResponseEntity<Page<GetPointHistoryResponse>> getPointHistoryList(Pageable pageable) {
 
 		Page<GetPointHistoryResponse> pointHistoryList = pointHistoryService.getPointHistoryList(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(pointHistoryList);
 	}
 
-	@Operation(summary = "포인트 내역 생성", description = "포인트 내역을 생성합니다.")
-	@Parameter(name = "createPointHistoryRequest", description = "포인트 내역 생성 정보", required = true)
-	@PostMapping("/histories")
+	@PostMapping
 	public ResponseEntity<PointHistory> createPointHistory(
 		@Valid @RequestBody CreatePointHistoryRequest createPointHistoryRequest) {
 

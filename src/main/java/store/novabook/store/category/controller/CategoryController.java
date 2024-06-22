@@ -1,6 +1,5 @@
 package store.novabook.store.category.controller;
 
-import static org.springframework.web.servlet.function.ServerResponse.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +21,7 @@ import store.novabook.store.category.entity.GetCategoryResponse;
 import store.novabook.store.category.service.CategoryService;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/v1/store/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 	private final CategoryService categoryService;

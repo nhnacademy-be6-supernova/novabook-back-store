@@ -70,7 +70,7 @@ public class TagControllerTest {
 
 		when(tagService.getTagAll(pageable)).thenReturn(page);
 
-		mockMvc.perform(get("/tags")
+		mockMvc.perform(get("/api/v1/store/tags")
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("page", "0")
 				.param("size", "10"))
@@ -84,7 +84,7 @@ public class TagControllerTest {
 		GetTagResponse response = new GetTagResponse( 1L,"Tag1");
 		when(tagService.getTag(1L)).thenReturn(response);
 
-		mockMvc.perform(get("/tags/1")
+		mockMvc.perform(get("/api/v1/store/tags/1")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.id").value(1L))
@@ -97,7 +97,7 @@ public class TagControllerTest {
 		CreateTagResponse response = new CreateTagResponse(1L);
 		when(tagService.createTag(any(CreateTagRequest.class))).thenReturn(response);
 
-		mockMvc.perform(post("/tags")
+		mockMvc.perform(post("/api/v1/store/tags")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
@@ -119,7 +119,7 @@ public class TagControllerTest {
 	public void testDeleteTag() throws Exception {
 		doNothing().when(tagService).deleteTag(1L);
 
-		mockMvc.perform(delete("/tags/1")
+		mockMvc.perform(delete("/api/v1/store/tags/1")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 	}

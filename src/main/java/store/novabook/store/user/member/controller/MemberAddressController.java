@@ -22,7 +22,7 @@ import store.novabook.store.user.member.service.MemberAddressService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/addresses")
+@RequestMapping("/api/v1/store/addresses")
 public class MemberAddressController {
 
 	private final MemberAddressService memberAddressService;

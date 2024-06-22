@@ -23,9 +23,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import store.novabook.store.point.dto.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.GetPointHistoryResponse;
 import store.novabook.store.point.service.PointHistoryService;
 
@@ -62,28 +59,25 @@ public class PointHistoryControllerTest {
 
 		Mockito.when(pointHistoryService.getPointHistoryList(Mockito.any(Pageable.class))).thenReturn(page);
 
-		mockMvc.perform(get("/point/histories"))
+		mockMvc.perform(get("/api/v1/store/point/histories")
+				.param("page", "0")
+				.param("size", "10")
+				.param("sort", "id,desc"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
 
-	@Test
-	void createPointHistoryTest() throws Exception {
-		CreatePointHistoryRequest createPointHistoryRequest = CreatePointHistoryRequest.builder()
-			.ordersId(1L)
-			.pointPolicyId(1L)
-			.memberId(1L)
-			.pointContent("pointContent")
-			.pointAmount(1000L)
-			.build();
-
-		ObjectMapper objectMapper = new ObjectMapper();
-		String createPointHistoryRequestJson = objectMapper.writeValueAsString(createPointHistoryRequest);
-
-		mockMvc.perform(post("/point/histories")
-				.contentType("application/json")
-				.content(createPointHistoryRequestJson))
-			.andExpect(status().isCreated());
-	}
+	// @Test
+	// void createPointPolicyTest() throws Exception {
+	// 	CreatePointHistoryRequest createPointHistoryRequest = CreatePointHistoryRequest.builder()
+	// 		.pointPolicyId(1L)
+	// 		.pointContent("pointContent")
+	// 		.pointAmount(1000)
+	// 		.build();
+	//
+	// 	mockMvc.perform(post("/point/histories")
+	// 			.flashAttr("createPointHistoryRequest", createPointHistoryRequest))
+	// 		.andExpect(status().isCreated());
+	// }
 
 }

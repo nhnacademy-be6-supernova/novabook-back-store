@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.orders.dto.CreateOrdersBookRequest;
@@ -20,13 +22,15 @@ import store.novabook.store.orders.dto.GetOrdersBookResponse;
 import store.novabook.store.orders.dto.UpdateOrdersBookRequest;
 import store.novabook.store.orders.service.OrdersBookService;
 
+@Tag(name = "OrdersBook API", description = "OrdersBook 을 생성 조회 수정, 삭제 합니다.")
 @RestController
-@RequestMapping("orders/book")
+@RequestMapping("/api/v1/store/orders/book")
 @RequiredArgsConstructor
 public class OrdersBookController {
 	private final OrdersBookService ordersBookService;
 
 	//생성
+	@Operation(summary = "생성", description = "생성합니다 ")
 	@PostMapping
 	public ResponseEntity<CreateResponse> createOrdersBook(@Valid @RequestBody CreateOrdersBookRequest request) {
 		CreateResponse response = ordersBookService.create(request);
@@ -34,6 +38,7 @@ public class OrdersBookController {
 	}
 
 	//전체 조회
+	@Operation(summary = "전체 조회", description = "전체 조회합니다.")
 	@GetMapping
 	public ResponseEntity<Page<GetOrdersBookResponse>> getOrdersBookAll() {
 		Page<GetOrdersBookResponse> responses = ordersBookService.getOrdersBookAll();
@@ -41,6 +46,7 @@ public class OrdersBookController {
 	}
 
 	//단건조회
+	@Operation(summary = "조회", description = "조회합니다.")
 	@GetMapping("/{id}")
 	public ResponseEntity<GetOrdersBookResponse> getOrdersBook(@PathVariable Long id) {
 		GetOrdersBookResponse response = ordersBookService.getOrdersBook(id);
@@ -48,6 +54,7 @@ public class OrdersBookController {
 	}
 
 	//수정
+	@Operation(summary = "수정", description = "수정합니다.")
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> updateOrdersBook(@PathVariable Long id,
 		@Valid @RequestBody UpdateOrdersBookRequest request) {
@@ -56,6 +63,7 @@ public class OrdersBookController {
 	}
 
 	//삭제
+	@Operation(summary = "삭제", description = "삭제 합니다.")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteOrdersBook(@PathVariable Long id) {
 		ordersBookService.delete(id);

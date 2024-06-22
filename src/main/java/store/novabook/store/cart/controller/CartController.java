@@ -21,7 +21,7 @@ import store.novabook.store.cart.service.CartService;
 @Tag(name = "cart-controller")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/carts")
+@RequestMapping("/api/v1/store/carts")
 public class CartController {
 
 	private final CartService cartService;
