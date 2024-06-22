@@ -10,33 +10,42 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.point.dto.CreatePointPolicyRequest;
 import store.novabook.store.point.dto.GetPointPolicyResponse;
 import store.novabook.store.point.service.PointPolicyService;
 
+@Tag(name = "point-policy-controller")
 @RestController()
-@RequestMapping("/point")
+@RequestMapping("/api/v1/store/point/policies")
 @RequiredArgsConstructor
 public class PointPolicyController {
 	private final PointPolicyService pointPolicyService;
 
-	@GetMapping("/policies")
+	@Operation(summary = "포인트 정책 조회", description = "포인트 정책을 조회합니다.")
+	@GetMapping
 	public ResponseEntity<Page<GetPointPolicyResponse>> getPoint(Pageable pageable) {
 
 		Page<GetPointPolicyResponse> pointPolicyResponseList = pointPolicyService.getPointPolicyList(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(pointPolicyResponseList);
 	}
 
-	@GetMapping("/policies/latest")
+	@Operation(summary = "최신 포인트 정책 조회", description = "최신 포인트 정책을 조회합니다 포인트 정책은 최신 포인트 정책으로 적용")
+	@Parameter(name = "getPointPolicyResponse", description = "최신 포인트 정책 조회 정보", required = true)
+	@GetMapping("/latest")
 	public ResponseEntity<GetPointPolicyResponse> getLatestPoint() {
 
 		GetPointPolicyResponse getPointPolicyResponse = pointPolicyService.getLatestPointPolicy();
 		return ResponseEntity.status(HttpStatus.OK).body(getPointPolicyResponse);
 	}
 
-	@PostMapping("/policies")
+	@Operation(summary = "포인트 정책 생성", description = "포인트 정책을 생성합니다.")
+	@Parameter(name = "createPointPolicyRequest", description = "포인트 정책 생성 정보", required = true)
+	@PostMapping
 	public ResponseEntity<Void> createPointPolicy(
 		@Valid @RequestBody CreatePointPolicyRequest createPointPolicyRequest) {
 

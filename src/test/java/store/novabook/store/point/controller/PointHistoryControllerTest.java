@@ -50,7 +50,7 @@ public class PointHistoryControllerTest {
 
 		GetPointHistoryResponse getPointPolicyResponse = GetPointHistoryResponse.builder()
 			.pointContent("pointContent")
-			.pointAmount(1000)
+			.pointAmount(1000L)
 			.build();
 
 		List<GetPointHistoryResponse> getPointHistoryResponseList = Collections.singletonList(getPointPolicyResponse);
@@ -59,7 +59,7 @@ public class PointHistoryControllerTest {
 
 		Mockito.when(pointHistoryService.getPointHistoryList(Mockito.any(Pageable.class))).thenReturn(page);
 
-		mockMvc.perform(get("/point/histories")
+		mockMvc.perform(get("/api/v1/store/point/histories")
 				.param("page", "0")
 				.param("size", "10")
 				.param("sort", "id,desc"))

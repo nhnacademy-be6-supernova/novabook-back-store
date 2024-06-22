@@ -23,6 +23,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import store.novabook.store.point.dto.CreatePointPolicyRequest;
 import store.novabook.store.point.dto.GetPointPolicyResponse;
 import store.novabook.store.point.service.PointPolicyService;
 
@@ -58,7 +61,7 @@ public class PointPolicyControllerTest {
 
 		Mockito.when(pointPolicyService.getPointPolicyList(Mockito.any(Pageable.class))).thenReturn(page);
 
-		mockMvc.perform(get("/point/policies")
+		mockMvc.perform(get("/api/v1/store/point/policies")
 				.param("page", "0")
 				.param("size", "10")
 				.param("sort", "id,desc"))
@@ -68,20 +71,24 @@ public class PointPolicyControllerTest {
 
 	@Test
 	void getLatestPointPolicyTest() throws Exception {
-		mockMvc.perform(get("/point/policies/latest"))
+		mockMvc.perform(get("/api/v1/store/point/policies/latest"))
 			.andExpect(status().isOk());
 	}
 
-	// @Test
-	// void createPointPolicyTest() throws Exception {
-	// 	CreatePointPolicyRequest createPointPolicyRequest = CreatePointPolicyRequest.builder()
-	// 		.reviewPointRate(1000L)
-	// 		.basicPoint(1000L)
-	// 		.registerPoint(3000L)
-	// 		.build();
-	//
-	// 	mockMvc.perform(post("/point/policies")
-	// 			.flashAttr("createPointPolicyRequest", createPointPolicyRequest))
-	// 		.andExpect(status().isCreated());
-	// }
+	@Test
+	void createPointPolicyTest() throws Exception {
+		CreatePointPolicyRequest createPointPolicyRequest = CreatePointPolicyRequest.builder()
+			.reviewPointRate(1000L)
+			.basicPoint(1000L)
+			.registerPoint(3000L)
+			.build();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		String createPointPolicyRequestJson = objectMapper.writeValueAsString(createPointPolicyRequest);
+
+		mockMvc.perform(post("/api/v1/store/point/policies")
+				.contentType("application/json")
+				.content(createPointPolicyRequestJson))
+			.andExpect(status().isCreated());
+	}
 }

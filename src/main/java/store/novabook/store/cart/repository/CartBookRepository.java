@@ -14,9 +14,7 @@ public interface CartBookRepository extends JpaRepository<CartBook, Long> {
 
 	Optional<CartBook> findByCartIdAndBookId(Long cartId, Long bookId);
 
-	// void updateQuantityById(Long id, int quantity);
+	boolean existsByCartIdAndBookId(Long cartId, Long bookId);
 
-	// Optional<CartBook> findByCart_IdAndBook_Id(Long cartId, Long bookId);
-	//
-	// void updateQuantityById(Long id, int quantity);
+	void deleteByCartIdAndBookId(Long cartId, Long bookId);
 }
