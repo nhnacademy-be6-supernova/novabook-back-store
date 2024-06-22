@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: 'store'
+
+  #기본으로 실행할 프로필
+  profiles:
+    active: h2
+
+server:
+  port: 8090
+
+# 유레카 비활성화
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+---
+# in memory 환경
+spring:
+  config:
+    activate:
+      on-profile: h2
+
+---
+#실제 DB 연결
+spring:
+  config:
+    activate:
+      on-profile: mysql
+
+
+
+
+
+
