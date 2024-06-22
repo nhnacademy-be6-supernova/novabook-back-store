@@ -1,6 +1,8 @@
 package store.novabook.store.category.controller;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -36,9 +38,14 @@ public class CategoryController {
 		return ResponseEntity.ok().body(categoryService.getCategory(id));
 	}
 
+	// @GetMapping
+	// public ResponseEntity<Page<GetCategoryResponse>> getCategoryAll(Pageable pageable) {
+	// 	return ResponseEntity.ok().body(categoryService.getCategoryAll(pageable));
+	// }
+
 	@GetMapping
-	public ResponseEntity<Page<GetCategoryResponse>> getCategoryAll(Pageable pageable) {
-		return ResponseEntity.ok().body(categoryService.getCategoryAll(pageable));
+	public ResponseEntity<List<GetCategoryResponse>> getCategoryAll() {
+		return ResponseEntity.ok().body(categoryService.getCategoryAll());
 	}
 
 	@DeleteMapping("/{id}")
