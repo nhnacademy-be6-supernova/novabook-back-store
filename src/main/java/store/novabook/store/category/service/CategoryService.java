@@ -1,4 +1,7 @@
 package store.novabook.store.category.service;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,13 +23,23 @@ import store.novabook.store.common.exception.EntityNotFoundException;
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
 
-	public CreateCategoryResponse create(CreateCategoryRequest category) {
-		if (categoryRepository.existsByName(category.name())) {
-			throw new AlreadyExistException(category.name());
+	public CreateCategoryResponse create(CreateCategoryRequest request) {
+		if (categoryRepository.existsByName(request.name())) {
+			throw new AlreadyExistException(request.name());
 		}
 
-		Category newCategory = categoryRepository.save(new Category(category.name()));
-		return new CreateCategoryResponse(newCategory.getId());
+		Category newCategory;
+		if(request.topCategoryId() == null){
+			newCategory = new Category(request.name());
+		}
+		else {
+			Category topCategory = categoryRepository.findById(request.topCategoryId())
+				.orElseThrow(() -> new EntityNotFoundException(Category.class, request.topCategoryId()));
+			newCategory = new Category(topCategory,request.name());
+		}
+
+		Category savedCategory = categoryRepository.save(newCategory);
+		return new CreateCategoryResponse(savedCategory.getId());
 	}
 
 	@Transactional(readOnly = true)
@@ -37,13 +50,25 @@ public class CategoryService {
 		return GetCategoryResponse.fromEntity(category);
 	}
 
+	// @Transactional(readOnly = true)
+	// public Page<GetCategoryResponse> getCategoryAll(Pageable pageable) {
+	//
+	// 	Page<Category> categories = categoryRepository.findAll(pageable);
+	// 	Page<GetCategoryResponse> categoryResponses = categories.map(GetCategoryResponse::fromEntity);
+	//
+	// 	return new PageImpl<>(categoryResponses.getContent(), pageable, categories.getTotalElements());
+	// }
+
 	@Transactional(readOnly = true)
-	public Page<GetCategoryResponse> getCategoryAll(Pageable pageable) {
+	public List<GetCategoryResponse> getCategoryAll() {
 
-		Page<Category> categories = categoryRepository.findAll(pageable);
-		Page<GetCategoryResponse> categoryResponses = categories.map(GetCategoryResponse::fromEntity);
+		List<Category> categories = categoryRepository.findAllByOrderByTopCategoryId();
+		List<GetCategoryResponse> responses = new ArrayList<>();
+		for (Category category : categories) {
+			responses.add(GetCategoryResponse.fromEntity(category));
+		}
 
-		return new PageImpl<>(categoryResponses.getContent(), pageable, categories.getTotalElements());
+		return responses;
 	}
 
 	public void delete(Long id) {

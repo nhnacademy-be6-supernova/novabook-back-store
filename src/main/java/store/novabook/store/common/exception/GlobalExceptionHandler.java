@@ -1,3 +1,4 @@
+/*
 package store.novabook.store.common.exception;
 
 import java.time.LocalDateTime;
@@ -63,3 +64,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
 	}
 
 }
+*/

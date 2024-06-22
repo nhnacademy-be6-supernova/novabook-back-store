@@ -6,6 +6,7 @@ import java.util.List;
 
 import lombok.Builder;
 import store.novabook.store.book.entity.Book;
+import store.novabook.store.category.entity.Category;
 import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.category.entity.BookCategory;
 
@@ -32,8 +33,8 @@ public record GetBookResponse(
 ) {
 	public static GetBookResponse fromEntity(
 		Book book,
-		List<BookTag> tags,
-		List<BookCategory> categories,
+		List<String> tags,
+		Category categories,
 		int likes,
 		int score) {
 		return GetBookResponse.builder()
@@ -50,7 +51,7 @@ public record GetBookResponse(
 			.price(book.getPrice())
 			.isPackaged(book.isPackaged())
 			.image(book.getImage())
-			.tags(tagNames(tags))
+			.tags(tags)
 			.categories(categoryNames(categories))
 			.likes(likes)
 			.discountPrice(book.getDiscountPrice())
@@ -69,13 +70,16 @@ public record GetBookResponse(
 		return tagNames;
 	}
 
-	public static List<String> categoryNames(List<BookCategory> categories) {
+	public static List<String> categoryNames(Category category) {
 		List<String> categoryNames = new ArrayList<>();
-		for (BookCategory category : categories) {
-			String categoryName = category.getCategory().getName();
-			if (categoryName != null && !categoryName.isEmpty()) {
-				categoryNames.add(categoryName);
-			}
+		if(category.hasTopCategory()){
+
+			categoryNames.add(category.getTopCategory().getName());
+			categoryNames.add(category.getName());
+
+		}
+		else {
+			categoryNames.add(category.getName());
 		}
 		return categoryNames;
 	}
