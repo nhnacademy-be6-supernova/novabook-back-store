@@ -17,26 +17,26 @@ import store.novabook.store.point.dto.GetPointPolicyResponse;
 import store.novabook.store.point.service.PointPolicyService;
 
 @RestController()
-@RequestMapping("/point")
+@RequestMapping("/api/v1/store/point/policies")
 @RequiredArgsConstructor
 public class PointPolicyController {
 	private final PointPolicyService pointPolicyService;
 
-	@GetMapping("/policies")
+	@GetMapping
 	public ResponseEntity<Page<GetPointPolicyResponse>> getPoint(Pageable pageable) {
 
 		Page<GetPointPolicyResponse> pointPolicyResponseList = pointPolicyService.getPointPolicyList(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(pointPolicyResponseList);
 	}
 
-	@GetMapping("/policies/latest")
+	@GetMapping("/latest")
 	public ResponseEntity<GetPointPolicyResponse> getLatestPoint() {
 
 		GetPointPolicyResponse getPointPolicyResponse = pointPolicyService.getLatestPointPolicy();
 		return ResponseEntity.status(HttpStatus.OK).body(getPointPolicyResponse);
 	}
 
-	@PostMapping("/policies")
+	@PostMapping
 	public ResponseEntity<Void> createPointPolicy(
 		@Valid @RequestBody CreatePointPolicyRequest createPointPolicyRequest) {
 

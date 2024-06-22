@@ -19,7 +19,7 @@ import store.novabook.store.cart.service.CartBookService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/cart/books")
+@RequestMapping("/api/v1/store/cart/books")
 public class CartBookController {
 
 	private final CartBookService cartBookService;
