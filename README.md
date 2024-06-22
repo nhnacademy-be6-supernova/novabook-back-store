@@ -1,2 +1,2 @@
 # novabook-back-store
-노바북 백엔드 서버
+노바북 back 서버
