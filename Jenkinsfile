@@ -19,7 +19,7 @@ pipeline {
             steps {
                 git(
                     url: REPO_URL,
-                    branch: 'feature/Jenkins',
+                    branch: 'main',
                     credentialsId: 'nova-dev'
                 )
             }
