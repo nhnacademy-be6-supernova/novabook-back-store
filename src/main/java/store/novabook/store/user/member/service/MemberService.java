@@ -130,5 +130,9 @@ public class MemberService {
 		memberRepository.save(member);
 	}
 
+	public boolean isDuplicateLoginId(String loginId) {
+		return memberRepository.existsByLoginId(loginId);
+	}
+
 }
 
