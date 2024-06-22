@@ -86,7 +86,7 @@ public class PointPolicyControllerTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 		String createPointPolicyRequestJson = objectMapper.writeValueAsString(createPointPolicyRequest);
 
-		mockMvc.perform(post("/point/policies")
+		mockMvc.perform(post("/api/v1/store/point/policies")
 				.contentType("application/json")
 				.content(createPointPolicyRequestJson))
 			.andExpect(status().isCreated());

@@ -60,7 +60,7 @@ public class CartBookControllerTest {
 
 		when(cartBookService.getCartBookListByCartId(anyLong(), any())).thenReturn(page);
 
-		mockMvc.perform(get("/cart/books/1"))
+		mockMvc.perform(get("/api/v1/store/cart/books/1"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -71,7 +71,7 @@ public class CartBookControllerTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(createCartBookRequest);
 
-		mockMvc.perform(post("/cart/books")
+		mockMvc.perform(post("/api/v1/store/cart/books")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json))
 			.andExpect(status().isCreated());
@@ -85,7 +85,7 @@ public class CartBookControllerTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(deleteCartBookRequest);
 
-		mockMvc.perform(delete("/cart/books")
+		mockMvc.perform(delete("/api/v1/store/cart/books")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json))
 			.andExpect(status().isNoContent());

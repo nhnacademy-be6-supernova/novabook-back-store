@@ -54,7 +54,7 @@ public class CartControllerTest {
 		GetCartResponse getCartResponse = new GetCartResponse(usersMock, true);
 		when(cartService.getCartByUserId(anyLong())).thenReturn(getCartResponse);
 
-		mockMvc.perform(get("/carts/1"))
+		mockMvc.perform(get("/api/v1/store/carts/1"))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().json("{\"users\":{},\"isExposed\":true}"));
@@ -65,11 +65,11 @@ public class CartControllerTest {
 		Users user = new Users(1L,
 			1,
 			LocalDateTime.now()
-			, LocalDateTime.now()); // Add necessary arguments or setters if needed
+			, LocalDateTime.now());
 
 		CreateCartRequest createCartRequest = new CreateCartRequest(user.getId(), true);
 
-		mockMvc.perform(post("/carts")
+		mockMvc.perform(post("/api/v1/store/carts")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(createCartRequest)))
 			.andExpect(status().isCreated());
