@@ -3,6 +3,7 @@ package store.novabook.store.cart.service;
 import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.cart.dto.CreateCartBookRequest;
+import store.novabook.store.cart.dto.DeleteCartBookRequest;
+import store.novabook.store.cart.dto.GetCartBookResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
@@ -26,13 +29,12 @@ public class CartBookService {
 	private final CartBookRepository cartBookRepository;
 	private final BookRepository bookRepository;
 
-
 	public void createCartBook(CreateCartBookRequest createCartBookRequest) {
 		cartBookRepository.findByCartIdAndBookId(
 				createCartBookRequest.cartId(),
 				createCartBookRequest.bookId())
 			.ifPresentOrElse(
-				cartBook -> {
+				cartBook ->
 					cartBookRepository.save(
 						CartBook.builder()
 							.id(cartBook.getId())
@@ -41,8 +43,8 @@ public class CartBookService {
 							.quantity(cartBook.getQuantity() + createCartBookRequest.quantity())
 							.createdAt(cartBook.getCreatedAt())
 							.updatedAt(LocalDateTime.now())
-							.build());
-				},
+							.build())
+				,
 				() -> {
 					Cart cart = cartRepository.findById(createCartBookRequest.cartId())
 						.orElseThrow(() -> new EntityNotFoundException(Cart.class, createCartBookRequest.cartId()));
@@ -61,16 +63,22 @@ public class CartBookService {
 			);
 	}
 
-	public Page<CartBook> getCartBookListByCartId(Long cartId, Pageable pageable) {
-		return cartBookRepository.findAllByCartId(cartId, pageable)
+	@Transactional(readOnly = true)
+	public Page<GetCartBookResponse> getCartBookListByCartId(Long cartId, Pageable pageable) {
+		Page<CartBook> cartBooks = cartBookRepository.findAllByCartId(cartId, pageable)
 			.orElseThrow(() -> new EntityNotFoundException(Cart.class, cartId));
+		Page<GetCartBookResponse> cartBookResponses = cartBooks.map(GetCartBookResponse::fromEntity);
+
+		return new PageImpl<>(cartBookResponses.getContent(), pageable, cartBooks.getTotalElements());
 	}
 
-	public void deleteCartBook(Long cartBookId) {
-		cartBookRepository.findById(cartBookId)
-			.orElseThrow(() -> new EntityNotFoundException(CartBook.class, cartBookId));
+	public void deleteCartBookAndBook(DeleteCartBookRequest deleteCartBookRequest) {
+		if (!cartBookRepository.existsByCartIdAndBookId(deleteCartBookRequest.cartBookId(),
+			deleteCartBookRequest.bookId())) {
+			throw new EntityNotFoundException(CartBook.class, deleteCartBookRequest.cartBookId());
+		}
 
-		cartBookRepository.deleteById(cartBookId);
+		cartBookRepository.deleteByCartIdAndBookId(deleteCartBookRequest.cartBookId(), deleteCartBookRequest.bookId());
 	}
 
 }
