@@ -13,14 +13,8 @@ import lombok.Setter;
 @Getter
 public class ApiResponse<T> {
 
-	private Map<String, Object> header = new HashMap<>();
+	private Map<String, Object> header;
 	private T body;
-
-	// public ApiResponse(String resultMessage, boolean isSuccessful, T body) {
-	// 	this.header.put("resultMessage", resultMessage);
-	// 	this.header.put("isSuccessful", isSuccessful);
-	// 	this.body = body;
-	// }
 
 	@JsonCreator
 	public ApiResponse(@JsonProperty("resultMessage") String resultMessage,
