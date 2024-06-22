@@ -26,7 +26,7 @@
 //
 // import store.novabook.store.category.dto.CreateCategoryRequest;
 // import store.novabook.store.category.dto.CreateCategoryResponse;
-// import store.novabook.store.category.entity.GetCategoryResponse;
+// import store.novabook.store.category.dto.GetCategoryListResponse;
 // import store.novabook.store.category.service.CategoryService;
 //
 // @WebMvcTest(CategoryController.class)
@@ -66,7 +66,7 @@
 //
 // 	@Test
 // 	void getCategory() throws Exception {
-// 		GetCategoryResponse response = new GetCategoryResponse(1L,"cate");
+// 		GetCategoryListResponse response = new GetCategoryListResponse(1L,"cate");
 // 		when(categoryService.getCategory(1L)).thenReturn(response);
 //
 // 		mockMvc.perform(get("/categories/1")
@@ -78,10 +78,10 @@
 //
 // 	@Test
 // 	void getCategoryAll() throws Exception {
-// 		GetCategoryResponse response = new GetCategoryResponse(1L,"cate");
+// 		GetCategoryListResponse response = new GetCategoryListResponse(1L,"cate");
 // 		Pageable pageable = PageRequest.of(0, 10);
-// 		List<GetCategoryResponse> responses = Collections.singletonList(response);
-// 		Page<GetCategoryResponse> page = new PageImpl<>(responses, pageable, 1);
+// 		List<GetCategoryListResponse> responses = Collections.singletonList(response);
+// 		Page<GetCategoryListResponse> page = new PageImpl<>(responses, pageable, 1);
 //
 // 		when(categoryService.getCategoryAll(pageable)).thenReturn(page);
 //

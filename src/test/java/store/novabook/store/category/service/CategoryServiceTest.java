@@ -23,7 +23,7 @@
 // import store.novabook.store.category.dto.CreateCategoryRequest;
 // import store.novabook.store.category.dto.CreateCategoryResponse;
 // import store.novabook.store.category.entity.Category;
-// import store.novabook.store.category.entity.GetCategoryResponse;
+// import store.novabook.store.category.dto.GetCategoryListResponse;
 // import store.novabook.store.category.repository.CategoryRepository;
 //
 // @ExtendWith(MockitoExtension.class)
@@ -54,7 +54,7 @@
 // 	@Test
 // 	void getCategory() {
 // 		when(categoryRepository.findById(1L)).thenReturn(Optional.ofNullable(category));
-// 		GetCategoryResponse getCategoryResponse = categoryService.getCategory(1L);
+// 		GetCategoryListResponse getCategoryResponse = categoryService.getCategory(1L);
 // 		assertEquals(category.getId(), getCategoryResponse.id());
 // 		verify(categoryRepository, times(1)).findById(anyLong());
 // 	}
@@ -66,7 +66,7 @@
 //
 // 		when( categoryRepository.findAll(any(Pageable.class))).thenReturn(page);
 //
-// 		Page<GetCategoryResponse> result = categoryService.getCategoryAll(PageRequest.of(0, 10));
+// 		Page<GetCategoryListResponse> result = categoryService.getCategoryAll(PageRequest.of(0, 10));
 //
 // 		assertNotNull(result);
 // 		assertEquals(1, result.getTotalElements());
