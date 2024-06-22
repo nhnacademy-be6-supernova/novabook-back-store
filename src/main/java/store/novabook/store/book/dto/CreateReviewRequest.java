@@ -13,6 +13,6 @@ public record CreateReviewRequest(
 	@NotBlank(message = "content 값은 필수 입니다 ")
 	String content,
 	String image,
-	int score
+	Integer score
 ) {
 }

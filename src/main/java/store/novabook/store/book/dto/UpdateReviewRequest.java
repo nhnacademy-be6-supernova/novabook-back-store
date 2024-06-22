@@ -14,7 +14,7 @@ public record UpdateReviewRequest(
 	@NotNull(message = "content 값은 필수 입니다 ")
 	String content,
 	String image,
-	int score,
+	Integer score,
 	LocalDateTime updatedAt
 ) {
 }

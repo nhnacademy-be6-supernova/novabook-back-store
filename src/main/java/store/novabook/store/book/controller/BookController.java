@@ -30,8 +30,8 @@ public class BookController {
 
 	@GetMapping("/book/{id}")
 	public ResponseEntity<GetBookResponse> getBook(@PathVariable Long id) {
-
 		return ResponseEntity.ok().body(bookService.getBook(id));
+
 	}
 
 	@GetMapping

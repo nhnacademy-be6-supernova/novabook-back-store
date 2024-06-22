@@ -45,9 +45,9 @@ public class TagService {
 		return new CreateTagResponse(tag.getId());
 	}
 
-	public void updateTag(UpdateTagRequest updateTagRequest){
-		Tag tag = tagRepository.findById(updateTagRequest.id())
-			.orElseThrow(() -> new EntityNotFoundException(Tag.class,updateTagRequest.id()));
+	public void updateTag(Long id, UpdateTagRequest updateTagRequest){
+		Tag tag = tagRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(Tag.class,id));
 		tag.update(updateTagRequest.name());
 	}
 

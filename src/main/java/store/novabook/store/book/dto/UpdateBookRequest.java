@@ -14,13 +14,13 @@ public record UpdateBookRequest(
 	@NotBlank(message = "책 index값은 필수 입력값입니다.")
 	String bookIndex,
 	@NotBlank(message = "책 재고값은 필수 입력값입니다.")
-	int inventory,
+	Integer inventory,
 	@NotBlank(message = "책 가격값은 필수 입력값입니다.")
 	Long price,
 	@NotBlank(message = "책 할인가격값은 필수 입력값입니다.")
 	Long discountPrice,
 	@NotBlank(message = "책 포장여부값은 필수 입력값입니다.")
-	boolean isPackaged) {
+	Boolean isPackaged) {
 
 	public UpdateBookRequest fromEntity(Book book) {
 		return UpdateBookRequest.builder()

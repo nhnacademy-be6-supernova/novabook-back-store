@@ -19,6 +19,7 @@ import store.novabook.store.book.dto.GetBookResponse;
 import store.novabook.store.book.dto.UpdateBookRequest;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.BookStatus;
+import store.novabook.store.book.repository.BookQueryRepository;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.BookStatusRepository;
 import store.novabook.store.book.repository.LikesRepository;
@@ -43,6 +44,7 @@ public class BookService {
 	private final CategoryRepository categoryRepository;
 	private final TagRepository tagRepository;
 	private final BookCategoryRepository bookCategoryRepository;
+	private final BookQueryRepository queryRepository;
 
 	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
@@ -72,15 +74,17 @@ public class BookService {
 	}
 	@Transactional(readOnly = true)
 	public GetBookResponse getBook(Long id) {
-		Book book = bookRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(Book.class, id));
-
-		List<BookTag> bookTags = bookTagRepository.findAllByBookId(book.getId());
-		List<BookCategory> bookCategories = bookCategoryRepository.findAllByBookId(book.getId());
-
-		int likes = likesRepository.countByBookId(book.getId());
-
-		return GetBookResponse.fromEntity(book, bookTags, bookCategories, likes);
+		// Book book = bookRepository.findById(id)
+		// 	.orElseThrow(() -> new EntityNotFoundException(Book.class, id));
+		//
+		// List<BookTag> bookTags = bookTagRepository.findAllByBookId(book.getId());
+		// List<BookCategory> bookCategories = bookCategoryRepository.findAllByBookId(book.getId());
+		//
+		// int likes = likesRepository.countByBookId(book.getId());
+		//
+		// return GetBookResponse.fromEntity(book, bookTags, bookCategories, likes);
+		GetBookResponse getBookResponse = queryRepository.getBook(id);
+		return getBookResponse;
 	}
 	@Transactional(readOnly = true)
 	public Page<GetBookAllResponse> getBookAll(Pageable pageable) {
