@@ -32,9 +32,6 @@ public class BookCategory {
 	private Book book;
 
 	@NotNull
-	private int depth;
-
-	@NotNull
 	private LocalDateTime createdAt;
 
 
@@ -42,10 +39,9 @@ public class BookCategory {
 	@Null
 	private LocalDateTime updatedAt;
 
-	public BookCategory(Book book, Category category, int depth) {
+	public BookCategory(Book book, Category category) {
 		this.category = category;
 		this.book = book;
-		this.depth = depth;
 		this.createdAt = LocalDateTime.now();
 	}
 }

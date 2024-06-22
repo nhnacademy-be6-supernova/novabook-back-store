@@ -29,7 +29,11 @@ public class TagController {
 
 	@GetMapping
 	public ResponseEntity<Page<GetTagResponse>> getTagAll(Pageable pageable) {
-		return ResponseEntity.ok().body(tagService.getTagAll(pageable));
+
+		Page<GetTagResponse> tagAll = tagService.getTagAll(pageable);
+
+
+		return ResponseEntity.ok().body(tagAll);
 	}
 
 	@GetMapping("/{id}")
