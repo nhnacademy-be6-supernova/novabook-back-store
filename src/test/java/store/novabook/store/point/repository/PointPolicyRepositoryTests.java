@@ -81,6 +81,7 @@ public class PointPolicyRepositoryTests {
 		entityManager.clear();
 	}
 
+	// @RepeatedTest(10000)
 	@Test
 	void getLatestPointPolicyTest() {
 		for (int i = 0; i < 10; i++) {

@@ -17,7 +17,7 @@ import store.novabook.store.payment.dto.GetPaymentResponse;
 import store.novabook.store.payment.service.PaymentService;
 
 @RestController
-@RequestMapping("/payments")
+@RequestMapping("/api/v1/store/payments")
 @RequiredArgsConstructor
 public class PaymentController {
 	private final PaymentService paymentService;

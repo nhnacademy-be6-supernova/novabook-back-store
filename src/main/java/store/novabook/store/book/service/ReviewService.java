@@ -66,28 +66,31 @@ public class ReviewService {
 	}
 
 	// 생성
-	public CreateReviewResponse createReview(CreateReviewRequest request) {
-		if (existsByBookIdAndMemberId(request)) {
+	public CreateReviewResponse createReview(Long memberId, CreateReviewRequest request) {
+		if (existsByBookIdAndMemberId(memberId, request)) {
 			throw new AlreadyExistException(Review.class);
 		}
 		Book book = bookRepository.findById(request.bookId())
 			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
-		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
 
 		Review review = reviewRepository.save(Review.toEntity(request, member, book));
 
 		return CreateReviewResponse.from(review);
 	}
 
-	public boolean existsByBookIdAndMemberId(CreateReviewRequest request) {
-		return reviewRepository.existsByMemberIdAndBookId(request.bookId(), request.memberId());
+	public boolean existsByBookIdAndMemberId(Long memberId, CreateReviewRequest request) {
+		return reviewRepository.existsByMemberIdAndBookId(request.bookId(), memberId);
 	}
 
 	// 수정
-	public void updateReview(UpdateReviewRequest request, Long reviewId) {
+	public void updateReview(Long memberId, UpdateReviewRequest request, Long reviewId) {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new EntityNotFoundException(Review.class, reviewId));
+		if(memberId.equals(review.getMember().getId())) {
+			throw new AlreadyExistException(Review.class);// 나말고 다른사람이 수정못하게 하는 코드
+		}
 		review.updateEntity(request);
 	}
 

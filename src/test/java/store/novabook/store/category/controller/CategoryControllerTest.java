@@ -57,7 +57,7 @@ class CategoryControllerTest {
 		CreateCategoryResponse response = new CreateCategoryResponse(1L);
 		when(categoryService.create(any(CreateCategoryRequest.class))).thenReturn(response);
 
-		mockMvc.perform(post("/categories")
+		mockMvc.perform(post("/api/v1/store/categories")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated())
@@ -69,7 +69,7 @@ class CategoryControllerTest {
 		GetCategoryResponse response = new GetCategoryResponse(1L,"cate");
 		when(categoryService.getCategory(1L)).thenReturn(response);
 
-		mockMvc.perform(get("/categories/1")
+		mockMvc.perform(get("/api/v1/store/categories/1")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.id").value(1L))
@@ -85,7 +85,7 @@ class CategoryControllerTest {
 
 		when(categoryService.getCategoryAll(pageable)).thenReturn(page);
 
-		mockMvc.perform(get("/categories")
+		mockMvc.perform(get("/api/v1/store/categories")
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("page", "0")
 				.param("size", "10"))
@@ -98,7 +98,7 @@ class CategoryControllerTest {
 	void deleteCategory() throws Exception {
 		doNothing().when(categoryService).delete(1L);
 
-		mockMvc.perform(delete("/categories/1")
+		mockMvc.perform(delete("/api/v1/store/categories/1")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 	}

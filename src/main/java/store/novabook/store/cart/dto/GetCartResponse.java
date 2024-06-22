@@ -1,7 +1,10 @@
 package store.novabook.store.cart.dto;
 
+import lombok.Builder;
 import store.novabook.store.user.member.entity.Users;
 
-public record GetCartResponse(Users users,
-							  boolean isExposed) {
+@Builder
+public record GetCartResponse(
+	Users users,
+	Boolean isExposed) {
 }

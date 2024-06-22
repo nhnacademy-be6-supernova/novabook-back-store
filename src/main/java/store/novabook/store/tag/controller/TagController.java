@@ -22,7 +22,7 @@ import store.novabook.store.tag.service.TagService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tags")
+@RequestMapping("/api/v1/store/tags")
 public class TagController {
 
 	private final TagService tagService;

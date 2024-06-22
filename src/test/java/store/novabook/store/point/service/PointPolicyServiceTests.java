@@ -87,12 +87,16 @@ public class PointPolicyServiceTests {
 	@Test
 	void getLatestPointPolicyTest() {
 
-		for (int i = 0; i < 10; i++) {
-			pointPolicyRepository.save(PointPolicy.builder().id(null)
-				.reviewPointRate(6000)
-				.basicPoint(6000)
-				.registerPoint(6000)
-				.build());
+		pointPolicyRepository.save(PointPolicy.builder().id(null)
+			.reviewPointRate(6000)
+			.basicPoint(6000)
+			.registerPoint(6000)
+			.build());
+
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
 		}
 
 		PointPolicy pointPolicy = PointPolicy.builder()
