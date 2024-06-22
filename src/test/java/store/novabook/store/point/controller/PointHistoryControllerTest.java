@@ -62,10 +62,7 @@ public class PointHistoryControllerTest {
 
 		Mockito.when(pointHistoryService.getPointHistoryList(Mockito.any(Pageable.class))).thenReturn(page);
 
-		mockMvc.perform(get("/point/histories")
-				.param("page", "0")
-				.param("size", "10")
-				.param("sort", "id,desc"))
+		mockMvc.perform(get("/point/histories"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -73,7 +70,9 @@ public class PointHistoryControllerTest {
 	@Test
 	void createPointHistoryTest() throws Exception {
 		CreatePointHistoryRequest createPointHistoryRequest = CreatePointHistoryRequest.builder()
+			.ordersId(1L)
 			.pointPolicyId(1L)
+			.memberId(1L)
 			.pointContent("pointContent")
 			.pointAmount(1000)
 			.build();

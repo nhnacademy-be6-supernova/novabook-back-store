@@ -1,7 +1,7 @@
 package store.novabook.store.cart.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +10,7 @@ import store.novabook.store.cart.dto.CreateCartRequest;
 import store.novabook.store.cart.dto.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.repository.CartRepository;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.user.member.entity.Users;
 import store.novabook.store.user.member.repository.UsersRepository;
 

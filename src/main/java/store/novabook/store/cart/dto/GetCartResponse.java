@@ -6,5 +6,5 @@ import store.novabook.store.user.member.entity.Users;
 @Builder
 public record GetCartResponse(
 	Users users,
-	boolean isExposed) {
+	Boolean isExposed) {
 }

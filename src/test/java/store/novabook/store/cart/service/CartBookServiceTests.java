@@ -113,7 +113,7 @@ public class CartBookServiceTests {
 		CartBook cartBookMock = mock(CartBook.class);
 
 		DeleteCartBookRequest deleteCartBookRequest = DeleteCartBookRequest.from(1L, 1L);
-		when(cartBookRepository.findByCartIdAndBookId(1L, 1L)).thenReturn(java.util.Optional.of(cartBookMock));
+		when(cartBookRepository.existsByCartIdAndBookId(1L, 1L)).thenReturn(true);
 
 		cartBookService.deleteCartBookAndBook(deleteCartBookRequest);
 

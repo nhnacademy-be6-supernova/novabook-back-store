@@ -12,5 +12,5 @@ public record CreateCartBookRequest(
 	Long bookId,
 	@NotNull
 	@Positive
-	int quantity) {
+	Integer quantity) {
 }

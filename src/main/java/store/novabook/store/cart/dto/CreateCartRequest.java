@@ -8,5 +8,5 @@ public record CreateCartRequest(
 	@NotNull
 	Long userId,
 	@NotNull
-	boolean isExposed) {
+	Boolean isExposed) {
 }

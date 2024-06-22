@@ -34,7 +34,7 @@ public class CartBookService {
 				createCartBookRequest.cartId(),
 				createCartBookRequest.bookId())
 			.ifPresentOrElse(
-				cartBook -> {
+				cartBook ->
 					cartBookRepository.save(
 						CartBook.builder()
 							.id(cartBook.getId())
@@ -43,8 +43,8 @@ public class CartBookService {
 							.quantity(cartBook.getQuantity() + createCartBookRequest.quantity())
 							.createdAt(cartBook.getCreatedAt())
 							.updatedAt(LocalDateTime.now())
-							.build());
-				},
+							.build())
+				,
 				() -> {
 					Cart cart = cartRepository.findById(createCartBookRequest.cartId())
 						.orElseThrow(() -> new EntityNotFoundException(Cart.class, createCartBookRequest.cartId()));
@@ -73,9 +73,10 @@ public class CartBookService {
 	}
 
 	public void deleteCartBookAndBook(DeleteCartBookRequest deleteCartBookRequest) {
-		cartBookRepository.findByCartIdAndBookId(deleteCartBookRequest.cartBookId(), deleteCartBookRequest.bookId())
-			.orElseThrow(
-				() -> new EntityNotFoundException(DeleteCartBookRequest.class, deleteCartBookRequest.cartBookId()));
+		if (!cartBookRepository.existsByCartIdAndBookId(deleteCartBookRequest.cartBookId(),
+			deleteCartBookRequest.bookId())) {
+			throw new EntityNotFoundException(CartBook.class, deleteCartBookRequest.cartBookId());
+		}
 
 		cartBookRepository.deleteByCartIdAndBookId(deleteCartBookRequest.cartBookId(), deleteCartBookRequest.bookId());
 	}

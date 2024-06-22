@@ -18,7 +18,7 @@ import store.novabook.store.cart.dto.CreateCartRequest;
 import store.novabook.store.cart.dto.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.repository.CartRepository;
-import store.novabook.store.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.user.member.entity.Users;
 import store.novabook.store.user.member.repository.UsersRepository;
 
