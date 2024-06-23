@@ -3,8 +3,6 @@ package store.novabook.store.category.controller;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +17,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.category.dto.CreateCategoryRequest;
 import store.novabook.store.category.dto.CreateCategoryResponse;
-import store.novabook.store.category.entity.GetCategoryResponse;
+import store.novabook.store.category.dto.GetCategoryListResponse;
+import store.novabook.store.category.dto.GetCategoryResponse;
 import store.novabook.store.category.service.CategoryService;
 
 @RestController
@@ -38,13 +37,8 @@ public class CategoryController {
 		return ResponseEntity.ok().body(categoryService.getCategory(id));
 	}
 
-	// @GetMapping
-	// public ResponseEntity<Page<GetCategoryResponse>> getCategoryAll(Pageable pageable) {
-	// 	return ResponseEntity.ok().body(categoryService.getCategoryAll(pageable));
-	// }
-
 	@GetMapping
-	public ResponseEntity<List<GetCategoryResponse>> getCategoryAll() {
+	public ResponseEntity<List<GetCategoryListResponse>> getCategoryAll() {
 		return ResponseEntity.ok().body(categoryService.getCategoryAll());
 	}
 
