@@ -18,6 +18,8 @@ import store.novabook.store.point.repository.PointPolicyRepository;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
+import store.novabook.store.user.member.dto.LoginMemberRequest;
+import store.novabook.store.user.member.dto.LoginMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
 import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.entity.MemberGrade;
@@ -130,6 +132,14 @@ public class MemberService {
 		memberRepository.save(member);
 	}
 
+	public LoginMemberResponse matches(LoginMemberRequest loginMemberRequest) {
+		Member member = memberRepository.findByLoginIdAndLoginPassword(loginMemberRequest.loginId(), loginMemberRequest.loginPassword());
+		if(member == null) {
+			return new LoginMemberResponse(false,null,null);
+		}
+
+		return new LoginMemberResponse(true, member.getId(), member.getName());
+	}
 	public boolean isDuplicateLoginId(String loginId) {
 		return memberRepository.existsByLoginId(loginId);
 	}

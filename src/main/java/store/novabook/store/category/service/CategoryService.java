@@ -1,18 +1,19 @@
 package store.novabook.store.category.service;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.category.dto.GetCategoryResponse;
 import store.novabook.store.category.dto.CreateCategoryRequest;
 import store.novabook.store.category.dto.CreateCategoryResponse;
+import store.novabook.store.category.dto.GetCategoryListResponse;
 import store.novabook.store.category.entity.Category;
-import store.novabook.store.category.entity.GetCategoryResponse;
+import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
@@ -22,13 +23,12 @@ import store.novabook.store.common.exception.EntityNotFoundException;
 @Transactional
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
+	private final BookCategoryRepository bookCategoryRepository;
 
 	public CreateCategoryResponse create(CreateCategoryRequest request) {
-		if (categoryRepository.existsByName(request.name())) {
-			throw new AlreadyExistException(request.name());
-		}
 
 		Category newCategory;
+
 		if(request.topCategoryId() == null){
 			newCategory = new Category(request.name());
 		}
@@ -51,25 +51,40 @@ public class CategoryService {
 	}
 
 	// @Transactional(readOnly = true)
-	// public Page<GetCategoryResponse> getCategoryAll(Pageable pageable) {
+	// public Page<GetCategoryListResponse> getCategoryAll(Pageable pageable) {
 	//
 	// 	Page<Category> categories = categoryRepository.findAll(pageable);
-	// 	Page<GetCategoryResponse> categoryResponses = categories.map(GetCategoryResponse::fromEntity);
+	// 	Page<GetCategoryListResponse> categoryResponses = categories.map(GetCategoryListResponse::fromEntity);
 	//
 	// 	return new PageImpl<>(categoryResponses.getContent(), pageable, categories.getTotalElements());
 	// }
 
 	@Transactional(readOnly = true)
-	public List<GetCategoryResponse> getCategoryAll() {
+	public List<GetCategoryListResponse> getCategoryAll() {
+		List<Category> categories = categoryRepository.findAllByOrderByTopCategoryDesc();
 
-		List<Category> categories = categoryRepository.findAllByOrderByTopCategoryId();
-		List<GetCategoryResponse> responses = new ArrayList<>();
+		// 해시맵을 사용하여 카테고리를 그룹화
+		Map<GetCategoryResponse, List<GetCategoryResponse>> categoryDTOMap = new HashMap<>();
+
 		for (Category category : categories) {
-			responses.add(GetCategoryResponse.fromEntity(category));
+			GetCategoryResponse categoryDTO = GetCategoryResponse.fromEntity(category);
+			if (category.hasTopCategory()) {
+				GetCategoryResponse topCategoryDTO = GetCategoryResponse.fromEntity(category.getTopCategory());
+				categoryDTOMap.computeIfAbsent(topCategoryDTO, k -> new ArrayList<>()).add(categoryDTO);
+			} else {
+				categoryDTOMap.computeIfAbsent(categoryDTO, k -> new ArrayList<>());
+			}
 		}
 
-		return responses;
+		// GetCategoryListResponse 리스트 생성
+		List<GetCategoryListResponse> getCategoryResponses = new ArrayList<>();
+		for (Map.Entry<GetCategoryResponse, List<GetCategoryResponse>> entry : categoryDTOMap.entrySet()) {
+			getCategoryResponses.add(new GetCategoryListResponse(entry.getKey(), entry.getValue()));
+		}
+
+		return getCategoryResponses;
 	}
+
 
 	public void delete(Long id) {
 		categoryRepository.deleteById(id);
