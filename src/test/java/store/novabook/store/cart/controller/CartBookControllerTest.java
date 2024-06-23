@@ -88,7 +88,7 @@ public class CartBookControllerTest {
 		mockMvc.perform(delete("/api/v1/store/cart/books")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json))
-			.andExpect(status().isNoContent());
+			.andExpect(status().isOk());
 
 		verify(cartBookService, times(1)).deleteCartBookAndBook(any(DeleteCartBookRequest.class));
 	}

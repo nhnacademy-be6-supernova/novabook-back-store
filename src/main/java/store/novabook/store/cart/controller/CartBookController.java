@@ -51,6 +51,6 @@ public class CartBookController {
 	@DeleteMapping
 	public ResponseEntity<Void> deleteCartBook(@Valid @RequestBody DeleteCartBookRequest deleteCartBookRequest) {
 		cartBookService.deleteCartBookAndBook(deleteCartBookRequest);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }
