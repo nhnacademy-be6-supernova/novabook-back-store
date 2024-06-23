@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
+import store.novabook.store.user.member.dto.LoginMemberRequest;
+import store.novabook.store.user.member.dto.LoginMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
 import store.novabook.store.user.member.service.MemberService;
 
@@ -43,6 +45,10 @@ public class MemberController {
 	public ResponseEntity<GetMemberResponse> getMember(@PathVariable Long memberId) {
 		GetMemberResponse memberResponse = memberService.getMember(memberId);
 		return ResponseEntity.ok(memberResponse);
+	}
+	@PostMapping("/login")
+	public ResponseEntity<LoginMemberResponse> login(@RequestBody LoginMemberRequest loginMemberRequest){
+		return ResponseEntity.ok().body(memberService.matches(loginMemberRequest));
 	}
 
 	@PutMapping("/{memberId}")
