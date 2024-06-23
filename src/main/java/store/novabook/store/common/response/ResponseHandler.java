@@ -45,12 +45,7 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
 		}
 
 		if (body instanceof Page<?> page) {
-			Map<String, Object> pageBody = new HashMap<>();
-			pageBody.put("pageNum", page.getNumber());
-			pageBody.put("pageSize", page.getSize());
-			pageBody.put("totalCount", page.getTotalElements());
-			pageBody.put("data", page.getContent());
-			return ApiResponse.success(pageBody);
+			return PageResponse.success(page.getNumber(), page.getSize(), page.getTotalElements(), page.getContent());
 		} else {
 			return ApiResponse.success(body);
 		}
