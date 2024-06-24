@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,13 +33,24 @@ public class WrappingPaperService {
 
 	//전체 조회
 	@Transactional(readOnly = true)
-	public Page<GetWrappingPaperResponse> getWrappingPaperAll() {
+	public Page<GetWrappingPaperResponse> getWrappingPaperAll(Pageable pageable) {
 		List<WrappingPaper> wrappingPapers = wrappingPaperRepository.findAll();
 		List<GetWrappingPaperResponse> wrappingPaperResponses = new ArrayList<>();
 		wrappingPapers.forEach(
 			wrappingPaper -> wrappingPaperResponses.add(GetWrappingPaperResponse.from(wrappingPaper)));
-		return new PageImpl<>(wrappingPaperResponses);
+		return new PageImpl<>(wrappingPaperResponses, pageable, wrappingPapers.size());
 	}
+
+	//전체 조회
+	@Transactional(readOnly = true)
+	public List<GetWrappingPaperResponse> getWrappingPaperAllList() {
+		List<WrappingPaper> wrappingPapers = wrappingPaperRepository.findAll();
+		List<GetWrappingPaperResponse> wrappingPaperResponses = new ArrayList<>();
+		wrappingPapers.forEach(
+			wrappingPaper -> wrappingPaperResponses.add(GetWrappingPaperResponse.from(wrappingPaper)));
+		return wrappingPaperResponses;
+	}
+
 
 	//단건 조회
 	@Transactional(readOnly = true)
