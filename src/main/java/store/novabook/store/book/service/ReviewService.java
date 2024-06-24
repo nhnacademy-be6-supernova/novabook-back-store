@@ -21,6 +21,8 @@ import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.ReviewRepository;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.orders.entity.Orders;
+import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.repository.MemberRepository;
 
@@ -31,6 +33,7 @@ public class ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final BookRepository bookRepository;
 	private final MemberRepository memberRepository;
+	private final OrdersRepository ordersRepository;
 
 	//member id 내가 쓴 책 목록 보기
 	@Transactional(readOnly = true)
@@ -66,16 +69,17 @@ public class ReviewService {
 	}
 
 	// 생성
-	public CreateReviewResponse createReview(Long memberId, CreateReviewRequest request) {
-		if (existsByBookIdAndMemberId(memberId, request)) {
+	public CreateReviewResponse createReview(Long orderId, CreateReviewRequest request) {
+		if (existsByBookIdAndMemberId(orderId, request)) {
 			throw new AlreadyExistException(Review.class);
 		}
 		Book book = bookRepository.findById(request.bookId())
 			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
 
-		Review review = reviewRepository.save(Review.toEntity(request, member, book));
+		Orders orders = ordersRepository.findById(orderId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, orderId));
+
+		Review review = reviewRepository.save(Review.toEntity(request, orders, book));
 
 		return CreateReviewResponse.from(review);
 	}
@@ -85,10 +89,11 @@ public class ReviewService {
 	}
 
 	// 수정
-	public void updateReview(Long memberId, UpdateReviewRequest request, Long reviewId) {
+	public void updateReview(Long ordersId, UpdateReviewRequest request, Long reviewId) {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new EntityNotFoundException(Review.class, reviewId));
-		if(memberId.equals(review.getMember().getId())) {
+
+		if(ordersId.equals(review.getOrders().getId())) {
 			throw new AlreadyExistException(Review.class);// 나말고 다른사람이 수정못하게 하는 코드
 		}
 		review.updateEntity(request);

@@ -11,7 +11,6 @@ public record UpdateReviewRequest(
 	Long bookId,
 	@NotNull(message = "content 값은 필수 입니다 ")
 	String content,
-	String image,
 	Integer score,
 	LocalDateTime updatedAt
 ) {
