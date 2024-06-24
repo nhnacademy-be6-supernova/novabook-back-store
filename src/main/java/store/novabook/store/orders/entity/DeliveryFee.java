@@ -2,6 +2,8 @@ package store.novabook.store.orders.entity;
 
 import java.time.LocalDateTime;
 
+import org.springframework.context.event.EventListener;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

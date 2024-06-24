@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.orders.dto.CreateOrdersBookRequest;
-import store.novabook.store.orders.dto.UpdateOrdersBookRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -54,7 +53,6 @@ public class OrdersBook {
 		this.createdAt = LocalDateTime.now();
 	}
 
-	public void update(Orders orders, Book book, UpdateOrdersBookRequest request) {
 
-	}
+
 }
