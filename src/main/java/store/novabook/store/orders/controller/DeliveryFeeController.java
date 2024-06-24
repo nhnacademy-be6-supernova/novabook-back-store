@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.CreateResponse;
+import store.novabook.store.orders.dto.GetDeliveryFeeListResponse;
 import store.novabook.store.orders.dto.GetDeliveryFeeResponse;
 import store.novabook.store.orders.service.DeliveryFeeService;
 
@@ -39,7 +40,7 @@ public class DeliveryFeeController {
 
 	//전체 조회
 	@Operation(summary = "전체 조회", description = " 전체 조회 합니다. 페이져블로 받습니다 ")
-	@GetMapping("/pagfeable")
+	@GetMapping("/pageable")
 	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll(Pageable pageable) {
 		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees(pageable);
 		return ResponseEntity.ok().body(deliveryFeeResponses);
@@ -47,9 +48,11 @@ public class DeliveryFeeController {
 
 	@Operation(summary = "전체 조회", description = "전체 조회 합니다.리스트로 받습니다.")
 	@GetMapping
-	public ResponseEntity<List<GetDeliveryFeeResponse>> getDeliveryFeeAllList() {
+	public ResponseEntity<GetDeliveryFeeListResponse> getDeliveryFeeAllList() {
 		List<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFeeList();
-		return ResponseEntity.ok().body(deliveryFeeResponses);
+		GetDeliveryFeeListResponse getDeliveryFeeListResponse = GetDeliveryFeeListResponse.builder()
+			.getDeliveryFeeResponses(deliveryFeeResponses).build();
+		return ResponseEntity.ok().body(getDeliveryFeeListResponse);
 	}
 
 	//단건 조회

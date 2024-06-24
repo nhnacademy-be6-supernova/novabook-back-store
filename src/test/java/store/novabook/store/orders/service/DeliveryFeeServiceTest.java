@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -70,15 +71,18 @@ class DeliveryFeeServiceTest {
 		DeliveryFee fee1 = new DeliveryFee(CreateDeliveryFeeRequest.builder().fee(1000L).build());
 		DeliveryFee fee2 = new DeliveryFee(CreateDeliveryFeeRequest.builder().fee(2000L).build());
 		List<DeliveryFee> deliveryFees = Arrays.asList(fee1, fee2);
-		when(deliveryFeeRepository.findAll()).thenReturn(deliveryFees);
+		Page<DeliveryFee> page = new PageImpl<>(deliveryFees, PageRequest.of(0, 10), deliveryFees.size());
 		Pageable pageable = PageRequest.of(0, 10);
+
+		when(deliveryFeeRepository.findAll(pageable)).thenReturn(page);
+
 		Page<GetDeliveryFeeResponse> result = deliveryFeeService.findAllDeliveryFees(pageable);
 
 		assertNotNull(result);
 		assertEquals(2, result.getTotalElements());
 		assertEquals(1000L, result.getContent().get(0).fee());
 		assertEquals(2000L, result.getContent().get(1).fee());
-		verify(deliveryFeeRepository, times(1)).findAll();
+		verify(deliveryFeeRepository, times(1)).findAll(any(Pageable.class));
 	}
 
 	@Test
