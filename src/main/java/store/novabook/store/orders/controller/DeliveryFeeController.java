@@ -1,6 +1,9 @@
 package store.novabook.store.orders.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.CreateResponse;
+import store.novabook.store.orders.dto.GetDeliveryFeeListResponse;
 import store.novabook.store.orders.dto.GetDeliveryFeeResponse;
 import store.novabook.store.orders.service.DeliveryFeeService;
 
@@ -35,11 +39,20 @@ public class DeliveryFeeController {
 	}
 
 	//전체 조회
-	@Operation(summary = "전체 조회", description = "전체 조회 합니다.")
-	@GetMapping
-	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll() {
-		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees();
+	@Operation(summary = "전체 조회", description = " 전체 조회 합니다. 페이져블로 받습니다 ")
+	@GetMapping("/pageable")
+	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll(Pageable pageable) {
+		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees(pageable);
 		return ResponseEntity.ok().body(deliveryFeeResponses);
+	}
+
+	@Operation(summary = "전체 조회", description = "전체 조회 합니다.리스트로 받습니다.")
+	@GetMapping
+	public ResponseEntity<GetDeliveryFeeListResponse> getDeliveryFeeAllList() {
+		List<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFeeList();
+		GetDeliveryFeeListResponse getDeliveryFeeListResponse = GetDeliveryFeeListResponse.builder()
+			.getDeliveryFeeResponses(deliveryFeeResponses).build();
+		return ResponseEntity.ok().body(getDeliveryFeeListResponse);
 	}
 
 	//단건 조회
@@ -49,4 +62,5 @@ public class DeliveryFeeController {
 		GetDeliveryFeeResponse response = deliveryFeeService.getDeliveryFee(id);
 		return ResponseEntity.ok().body(response);
 	}
+
 }
