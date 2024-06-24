@@ -10,10 +10,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.orders.dto.CreateOrdersRequest;
 import store.novabook.store.orders.dto.UpdateOrdersRequest;
+import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.entity.Users;
 
 @Getter
@@ -23,11 +25,6 @@ public class Orders {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "users_id")
-	private Users users;
 
 	@NotNull
 	@ManyToOne
@@ -43,6 +40,11 @@ public class Orders {
 	@ManyToOne
 	@JoinColumn(name = "orders_status_id")
 	private OrdersStatus ordersStatus;
+
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "member_id")
+	private Member member;
 
 	@NotNull
 	private LocalDateTime ordersDate;
@@ -70,12 +72,12 @@ public class Orders {
 
 	private LocalDateTime updatedAt;
 
-	public Orders(Users users,
+	public Orders(Member member,
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
 		CreateOrdersRequest request) {
-		this.users = users;
+		this.member = member;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
 		this.ordersStatus = ordersStatus;
@@ -89,12 +91,13 @@ public class Orders {
 		this.createdAt = LocalDateTime.now();
 	}
 
-	public void update(Users users,
+
+	public void update(Member member,
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
 		UpdateOrdersRequest request) {
-		this.users = users;
+		this.member = member;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
 		this.ordersStatus = ordersStatus;

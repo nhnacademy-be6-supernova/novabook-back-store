@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record CreateOrdersRequest(
 	@NotNull(message = "userId 값은 필수 입니다")
-	Long userId,
+	Long memberId,
 	@NotNull(message = "deliveryFeeId 값은 필수 입니다")
 	Long deliveryFeeId,
 	@NotNull(message = "wrappingPaperId 값은 필수 입니다")
