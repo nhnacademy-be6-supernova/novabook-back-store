@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.orders.dto.CreateResponse;
@@ -68,7 +70,8 @@ class WrappingPaperServiceTest {
 		List<WrappingPaper> wrappingPapers = Arrays.asList(paper1, paper2);
 		when(wrappingPaperRepository.findAll()).thenReturn(wrappingPapers);
 
-		Page<GetWrappingPaperResponse> result = wrappingPaperService.getWrappingPaperAll();
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<GetWrappingPaperResponse> result = wrappingPaperService.getWrappingPaperAll(pageable);
 
 		assertNotNull(result);
 		assertEquals(2, result.getTotalElements());

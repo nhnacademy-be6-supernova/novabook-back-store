@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +36,26 @@ public class DeliveryFeeService {
 		return deliveryFeeRepository.findTopFeeByOrderByIdDesc();
 	}
 
-	//전체 조회
+	//전체 조회 Page
 	@Transactional(readOnly = true)
-	public Page<GetDeliveryFeeResponse> findAllDeliveryFees() {
+	public Page<GetDeliveryFeeResponse> findAllDeliveryFees(Pageable pageable) {
+		Page<DeliveryFee> deliveryFees = deliveryFeeRepository.findAll(pageable);
+		List<GetDeliveryFeeResponse> responses = new ArrayList<>();
+		for (DeliveryFee deliveryFee : deliveryFees) {
+			responses.add(GetDeliveryFeeResponse.from(deliveryFee));
+		}
+		return new PageImpl<>(responses, pageable, deliveryFees.getTotalElements());
+	}
+
+	//전체 조회 List
+	@Transactional(readOnly = true)
+	public List<GetDeliveryFeeResponse> findAllDeliveryFeeList() {
 		List<DeliveryFee> deliveryFees = deliveryFeeRepository.findAll();
 		List<GetDeliveryFeeResponse> responses = new ArrayList<>();
 		for (DeliveryFee deliveryFee : deliveryFees) {
 			responses.add(GetDeliveryFeeResponse.from(deliveryFee));
 		}
-		return new PageImpl<>(responses);
+		return responses;
 	}
 
 	//단건 조회

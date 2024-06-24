@@ -1,6 +1,9 @@
 package store.novabook.store.orders.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,10 +38,17 @@ public class DeliveryFeeController {
 	}
 
 	//전체 조회
-	@Operation(summary = "전체 조회", description = "전체 조회 합니다.")
+	@Operation(summary = "전체 조회", description = " 전체 조회 합니다. 페이져블로 받습니다 ")
+	@GetMapping("/pagfeable")
+	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll(Pageable pageable) {
+		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees(pageable);
+		return ResponseEntity.ok().body(deliveryFeeResponses);
+	}
+
+	@Operation(summary = "전체 조회", description = "전체 조회 합니다.리스트로 받습니다.")
 	@GetMapping
-	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll() {
-		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees();
+	public ResponseEntity<List<GetDeliveryFeeResponse>> getDeliveryFeeAllList() {
+		List<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFeeList();
 		return ResponseEntity.ok().body(deliveryFeeResponses);
 	}
 
@@ -49,4 +59,5 @@ public class DeliveryFeeController {
 		GetDeliveryFeeResponse response = deliveryFeeService.getDeliveryFee(id);
 		return ResponseEntity.ok().body(response);
 	}
+
 }

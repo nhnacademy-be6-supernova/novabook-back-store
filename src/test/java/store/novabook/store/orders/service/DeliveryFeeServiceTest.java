@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
@@ -69,8 +71,8 @@ class DeliveryFeeServiceTest {
 		DeliveryFee fee2 = new DeliveryFee(CreateDeliveryFeeRequest.builder().fee(2000L).build());
 		List<DeliveryFee> deliveryFees = Arrays.asList(fee1, fee2);
 		when(deliveryFeeRepository.findAll()).thenReturn(deliveryFees);
-
-		Page<GetDeliveryFeeResponse> result = deliveryFeeService.findAllDeliveryFees();
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<GetDeliveryFeeResponse> result = deliveryFeeService.findAllDeliveryFees(pageable);
 
 		assertNotNull(result);
 		assertEquals(2, result.getTotalElements());
