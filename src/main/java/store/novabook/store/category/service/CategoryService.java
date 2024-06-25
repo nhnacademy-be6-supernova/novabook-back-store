@@ -17,6 +17,7 @@ import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.NotDeleteCategoryException;
 
 @Service
 @RequiredArgsConstructor
@@ -78,9 +79,9 @@ public class CategoryService {
 
 
 	public void delete(Long id) {
-		// if(bookCategoryRepository.existsById(id)) {
-		// 	throw new NotDeleteCategoryException();
-		// }
+		if(bookCategoryRepository.existsById(id)) {
+			throw new NotDeleteCategoryException();
+		}
 		categoryRepository.deleteById(id);
 	}
 }

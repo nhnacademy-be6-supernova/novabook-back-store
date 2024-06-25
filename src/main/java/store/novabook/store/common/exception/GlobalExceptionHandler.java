@@ -56,6 +56,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
 		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
 	}
 
+	@ExceptionHandler(NotDeleteCategoryException.class)
+	public ResponseEntity<ErrorStatus> handleNotDeleteCategoryException(NotDeleteCategoryException e) {
+		ErrorStatus errorStatus = e.getErrorStatus();
+		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorStatus> handleException(Exception e) {
 		ErrorStatus errorStatus = new ErrorStatus(e.getMessage(), 500, LocalDateTime.now());
