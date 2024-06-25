@@ -5,7 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import store.novabook.store.user.member.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-	boolean existsByLoginId(String loginId);;
+	boolean existsByLoginId(String loginId);
+
 	Member findByLoginIdAndLoginPassword(String loginId, String password);
+
+	Member findByLoginId(String loginId);
 
 }
