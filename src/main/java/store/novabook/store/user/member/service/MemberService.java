@@ -1,7 +1,6 @@
 package store.novabook.store.user.member.service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -72,14 +71,14 @@ public class MemberService {
 		MemberGradeHistory memberGradeHistory = MemberGradeHistory.builder()
 			.member(newMember)
 			.memberGradePolicy(memberGradePolicy)
-			.quarter(null)
+			.quarter(LocalDateTime.now())
 			.build();
 		memberGradeHistoryRepository.save(memberGradeHistory);
 
 		PointPolicy pointPolicy = pointPolicyRepository.findById(ID)
 			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class, ID));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy,null, newMember, REGISTER_POINT, POINT_AMOUNT);
+		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, POINT_AMOUNT);
 		pointHistoryRepository.save(pointHistory);
 
 		return CreateMemberResponse.fromEntity(newMember);
@@ -136,13 +135,15 @@ public class MemberService {
 	}
 
 	public LoginMemberResponse matches(LoginMemberRequest loginMemberRequest) {
-		Member member = memberRepository.findByLoginIdAndLoginPassword(loginMemberRequest.loginId(), loginMemberRequest.loginPassword());
-		if(member == null) {
-			return new LoginMemberResponse(false,null,null);
+		Member member = memberRepository.findByLoginIdAndLoginPassword(loginMemberRequest.loginId(),
+			loginMemberRequest.loginPassword());
+		if (member == null) {
+			return new LoginMemberResponse(false, null, null);
 		}
 
 		return new LoginMemberResponse(true, member.getId(), member.getName());
 	}
+
 	public boolean isDuplicateLoginId(String loginId) {
 		return memberRepository.existsByLoginId(loginId);
 	}

@@ -29,9 +29,10 @@ public class MemberAddressService {
 	private final StreetAddressRepository streetAddressRepository;
 	private final MemberRepository memberRepository;
 
-	public CreateMemberAddressResponse createMemberAddress(CreateMemberAddressRequest createMemberAddressRequest) {
-		Member member = memberRepository.findById(createMemberAddressRequest.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(MemberAddress.class, createMemberAddressRequest.memberId()));
+	public CreateMemberAddressResponse createMemberAddress(CreateMemberAddressRequest createMemberAddressRequest,
+		Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
 
 		validateMemberAddress(member);
 
@@ -52,13 +53,14 @@ public class MemberAddressService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<GetMemberAddressResponse> getMemberAddressAll() {
-		List<MemberAddress> memberAddressList = memberAddressRepository.findAll();
+	public List<GetMemberAddressResponse> getMemberAddressAll(Long memberId) {
+		List<MemberAddress> memberAddressList = memberAddressRepository.findAllByMemberId(memberId);
 		return memberAddressList.stream()
 			.map(memberAddress -> new GetMemberAddressResponse(
 				memberAddress.getId(),
 				memberAddress.getStreetAddress().getId(),
 				memberAddress.getMember().getId(),
+				memberAddress.getStreetAddress().getZipcode(),
 				memberAddress.getNickname(),
 				memberAddress.getStreetAddress().getStreetAddress(),
 				memberAddress.getMemberAddressDetail()))
@@ -73,6 +75,7 @@ public class MemberAddressService {
 			memberAddress.getId(),
 			memberAddress.getStreetAddress().getId(),
 			memberAddress.getMember().getId(),
+			memberAddress.getStreetAddress().getZipcode(),
 			memberAddress.getNickname(),
 			memberAddress.getStreetAddress().getStreetAddress(),
 			memberAddress.getMemberAddressDetail()

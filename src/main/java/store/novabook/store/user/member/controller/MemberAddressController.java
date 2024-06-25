@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
 import store.novabook.store.user.member.dto.CreateMemberAddressResponse;
+import store.novabook.store.user.member.dto.GetMemberAddressListResponse;
 import store.novabook.store.user.member.dto.GetMemberAddressResponse;
 import store.novabook.store.user.member.dto.UpdateMemberAddressRequest;
 import store.novabook.store.user.member.service.MemberAddressService;
@@ -31,15 +33,19 @@ public class MemberAddressController {
 
 	@PostMapping
 	public ResponseEntity<CreateMemberAddressResponse> createMemberAddress(
-		@RequestBody CreateMemberAddressRequest createMemberAddressRequest) {
-		CreateMemberAddressResponse saved = memberAddressService.createMemberAddress(createMemberAddressRequest);
+		@Valid @RequestBody CreateMemberAddressRequest createMemberAddressRequest, @RequestHeader Long memberId) {
+		CreateMemberAddressResponse saved = memberAddressService.createMemberAddress(createMemberAddressRequest,
+			memberId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<GetMemberAddressResponse>> getMemberAddressAll() {
-		List<GetMemberAddressResponse> memberAddressAll = memberAddressService.getMemberAddressAll();
-		return ResponseEntity.ok(memberAddressAll);
+	public ResponseEntity<GetMemberAddressListResponse> getMemberAddressAll(@RequestHeader Long memberId) {
+		List<GetMemberAddressResponse> memberAddressAll = memberAddressService.getMemberAddressAll(memberId);
+		GetMemberAddressListResponse getMemberAddressListResponse = GetMemberAddressListResponse.builder()
+			.memberAddresses(memberAddressAll)
+			.build();
+		return ResponseEntity.ok(getMemberAddressListResponse);
 	}
 
 	@GetMapping("/{memberAddressId}")
