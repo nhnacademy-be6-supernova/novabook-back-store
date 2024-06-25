@@ -31,7 +31,7 @@ public class MemberGradeHistory {
 	private Long id;
 
 	@NotNull
-	private Date quarter;
+	private LocalDateTime quarter;
 
 	@NotNull
 	@CreatedDate
@@ -51,7 +51,7 @@ public class MemberGradeHistory {
 	private MemberGradePolicy memberGradePolicy;
 
 	@Builder
-	public MemberGradeHistory(Member member, MemberGradePolicy memberGradePolicy, Date quarter) {
+	public MemberGradeHistory(Member member, MemberGradePolicy memberGradePolicy, LocalDateTime quarter) {
 		this.member = member;
 		this.memberGradePolicy = memberGradePolicy;
 		this.quarter = quarter;

@@ -14,7 +14,6 @@ public record GetBookResponse(
 	Long id,
 	String isbn,
 	String title,
-	String bookIndex,
 	String description,
 	String descriptionDetail,
 	String author,
@@ -42,14 +41,12 @@ public record GetBookResponse(
 			.title(book.getTitle())
 			.description(book.getDescription())
 			.descriptionDetail(book.getDescriptionDetail())
-			.bookIndex(book.getBookIndex())
 			.author(book.getAuthor())
 			.publisher(book.getPublisher())
 			.publicationDate(book.getPublicationDate())
 			.inventory(book.getInventory())
 			.price(book.getPrice())
 			.isPackaged(book.isPackaged())
-			.image(book.getImage())
 			.tags(tags)
 			.categories(categoryNames(categories))
 			.likes(likes)
