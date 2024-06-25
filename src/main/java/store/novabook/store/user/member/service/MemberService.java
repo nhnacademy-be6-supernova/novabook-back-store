@@ -72,7 +72,7 @@ public class MemberService {
 		MemberGradeHistory memberGradeHistory = MemberGradeHistory.builder()
 			.member(newMember)
 			.memberGradePolicy(memberGradePolicy)
-			.quarter(new Date())
+			.quarter(null)
 			.build();
 		memberGradeHistoryRepository.save(memberGradeHistory);
 

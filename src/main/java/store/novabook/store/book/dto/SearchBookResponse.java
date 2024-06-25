@@ -11,7 +11,6 @@ public record SearchBookResponse(
 	Long bookStatusId,
 	String isbn,
 	String title,
-	String bookIndex,
 	String description,
 	String descriptionDetail,
 	String author,
@@ -21,7 +20,6 @@ public record SearchBookResponse(
 	Long price,
 	Long discountPrice,
 	boolean isPackaged,
-	String image,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
 ) {
@@ -31,7 +29,6 @@ public record SearchBookResponse(
 			.bookStatusId(book.getBookStatus().getId())
 			.isbn(book.getIsbn())
 			.title(book.getTitle())
-			.bookIndex(book.getBookIndex())
 			.description(book.getDescription())
 			.descriptionDetail(book.getDescriptionDetail())
 			.author(book.getAuthor())
@@ -40,7 +37,6 @@ public record SearchBookResponse(
 			.price(book.getPrice())
 			.isPackaged(book.isPackaged())
 			.publicationDate(book.getPublicationDate())
-			.image(book.getImage())
 			.createdAt(book.getCreatedAt())
 			.updatedAt(book.getUpdatedAt())
 			.build();
