@@ -102,7 +102,7 @@ public class ReviewService {
 		Orders orders = ordersRepository.findById(orderId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, orderId));
 
-		Review review = reviewRepository.save(Review.toEntity(request, orders, book));
+		Review review = reviewRepository.save(Review.of(request, orders, book));
 
 		return CreateReviewResponse.from(review);
 	}
@@ -130,7 +130,7 @@ public class ReviewService {
 		if(ordersId.equals(review.getOrders().getId())) {
 			throw new AlreadyExistException(Review.class);  // 다른 사람이 수정하지 못하도록 예외 처리
 		}
-		review.updateEntity(request);
+		review.update(request);
 	}
 
 }

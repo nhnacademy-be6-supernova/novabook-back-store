@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +22,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class PointPolicy {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -41,5 +41,18 @@ public class PointPolicy {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+
+	@Builder
+	public PointPolicy(long reviewPointRate, long basicPoint, long registerPoint) {
+		this.reviewPointRate = reviewPointRate;
+		this.basicPoint = basicPoint;
+		this.registerPoint = registerPoint;
+
+	}
+
+	public static PointPolicy of(long reviewPointRate, long basicPoint, long registerPoint) {
+		return PointPolicy.builder().reviewPointRate(reviewPointRate).basicPoint(basicPoint).registerPoint(registerPoint).build();
+	}
 
 }

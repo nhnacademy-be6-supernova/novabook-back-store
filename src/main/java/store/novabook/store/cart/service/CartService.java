@@ -31,7 +31,6 @@ public class CartService {
 			Cart.builder()
 				.member(member)
 				.isExposed(createCartRequest.isExposed())
-				.createdAt(LocalDateTime.now())
 				.build());
 	}
 

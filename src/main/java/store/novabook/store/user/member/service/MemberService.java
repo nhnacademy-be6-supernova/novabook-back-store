@@ -79,7 +79,7 @@ public class MemberService {
 		PointPolicy pointPolicy = pointPolicyRepository.findById(ID)
 			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class, ID));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy, newMember, REGISTER_POINT, POINT_AMOUNT);
+		PointHistory pointHistory = PointHistory.of(pointPolicy,null, newMember, REGISTER_POINT, POINT_AMOUNT);
 		pointHistoryRepository.save(pointHistory);
 
 		return CreateMemberResponse.fromEntity(newMember);
