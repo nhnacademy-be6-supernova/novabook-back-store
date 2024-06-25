@@ -117,4 +117,9 @@ public class MemberAddressService {
 			throw new AddressLimitExceededException(member.getId());
 		}
 	}
+
+	public boolean checkMemberAddressCount(Long memberId) {
+		int currentMemberAddress = memberAddressRepository.countByMemberId(memberId);
+		return currentMemberAddress >= ADDRESS_COUNT;
+	}
 }
