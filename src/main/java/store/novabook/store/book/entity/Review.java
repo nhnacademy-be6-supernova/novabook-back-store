@@ -46,7 +46,7 @@ public class Review {
 	/** 리뷰가 참조하는 주문 객체. */
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "order_id")
+	@JoinColumn(name = "orders_id")
 	Orders orders;
 
 	/** 리뷰 내용. */

@@ -41,10 +41,6 @@ public class Book {
 	@NotNull
 	private String title;
 
-
-	@NotNull
-	private String bookIndex;
-
 	@NotNull
 	private String description;
 
@@ -74,9 +70,6 @@ public class Book {
 	boolean isPackaged;
 
 	@NotNull
-	private String image;
-
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -88,7 +81,6 @@ public class Book {
 	public Book(BookStatus bookStatus,
 				String isbn,
 				String title,
-				String bookIndex,
 				String description,
 				String descriptionDetail,
 				String author,
@@ -97,12 +89,10 @@ public class Book {
 				int inventory,
 				Long price,
 				Long discountPrice,
-				boolean isPackaged,
-				String image) {
+				boolean isPackaged) {
 		this.bookStatus = bookStatus;
 		this.isbn = isbn;
 		this.title = title;
-		this.bookIndex = bookIndex;
 		this.description = description;
 		this.descriptionDetail = descriptionDetail;
 		this.author = author;
@@ -112,7 +102,6 @@ public class Book {
 		this.price = price;
 		this.discountPrice = discountPrice;
 		this.isPackaged = isPackaged;
-		this.image = image;
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = null;
 
@@ -124,7 +113,6 @@ public class Book {
 			.bookStatus(bookStatus)
 			.isbn(request.isbn())
 			.title(request.title())
-			.bookIndex(request.bookIndex())
 			.description(request.description())
 			.descriptionDetail(request.descriptionDetail())
 			.author(request.author())
@@ -134,13 +122,11 @@ public class Book {
 			.price(request.price())
 			.discountPrice(request.discountPrice())
 			.isPackaged(request.isPackaged())
-			.image(request.image())
 			.build();
 	}
 
 	public void update(BookStatus bookStatus, UpdateBookRequest request) {
 		this.bookStatus = bookStatus;
-		this.bookIndex = request.bookIndex();
 		this.inventory = request.inventory();
 		this.price = request.price();
 		this.discountPrice = request.discountPrice();
