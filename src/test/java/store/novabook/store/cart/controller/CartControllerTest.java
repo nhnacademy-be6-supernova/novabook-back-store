@@ -52,7 +52,7 @@ public class CartControllerTest {
 	void getCartByUserIDTest() throws Exception {
 		Users usersMock = mock(Users.class);
 		GetCartResponse getCartResponse = new GetCartResponse(usersMock, true);
-		when(cartService.getCartByUserId(anyLong())).thenReturn(getCartResponse);
+		when(cartService.getCartByMemberId(anyLong())).thenReturn(getCartResponse);
 
 		mockMvc.perform(get("/api/v1/store/carts/1"))
 			.andDo(print())

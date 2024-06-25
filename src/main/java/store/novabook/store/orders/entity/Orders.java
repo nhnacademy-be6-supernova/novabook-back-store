@@ -2,7 +2,12 @@ package store.novabook.store.orders.entity;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,11 +21,11 @@ import lombok.NoArgsConstructor;
 import store.novabook.store.orders.dto.CreateOrdersRequest;
 import store.novabook.store.orders.dto.UpdateOrdersRequest;
 import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.entity.Users;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Orders {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,10 +73,13 @@ public class Orders {
 	private String receiverNumber;
 
 	@NotNull
+	@CreatedDate
 	private LocalDateTime createdAt;
 
+	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
+	@Builder
 	public Orders(Member member,
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
@@ -88,7 +96,6 @@ public class Orders {
 		this.deliveryAddress = request.deliveryAddress();
 		this.receiverName = request.receiverName();
 		this.receiverNumber = request.receiverNumber();
-		this.createdAt = LocalDateTime.now();
 	}
 
 
@@ -108,6 +115,5 @@ public class Orders {
 		this.deliveryAddress = request.deliveryAddress();
 		this.receiverName = request.receiverName();
 		this.receiverNumber = request.receiverNumber();
-		this.updatedAt = LocalDateTime.now();
 	}
 }

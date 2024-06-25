@@ -55,11 +55,11 @@ public class CartServiceTests {
 		when(usersRepository.findById(usersMock.getId())).thenReturn(java.util.Optional.of(usersMock));
 
 		CreateCartRequest createCartRequest = CreateCartRequest.builder()
-			.userId(usersMock.getId())
+			.memberId(usersMock.getId())
 			.isExposed(false)
 			.build();
 
-		when(cartRepository.findById(createCartRequest.userId())).thenReturn(java.util.Optional.of(cartMock));
+		when(cartRepository.findById(createCartRequest.memberId())).thenReturn(java.util.Optional.of(cartMock));
 
 		cartService.createCart(createCartRequest);
 
@@ -67,14 +67,14 @@ public class CartServiceTests {
 	}
 
 	@Test
-	void getCartByUserIdTest() {
+	void getCartByMemberIdTest() {
 		Users usersMock = mock(Users.class);
 		Cart cartMock = mock(Cart.class);
 		when(cartMock.getUsers()).thenReturn(usersMock);
 		when(cartMock.getIsExposed()).thenReturn(true);
 		when(cartRepository.findByUsersId(anyLong())).thenReturn(Optional.of(cartMock));
 
-		GetCartResponse result = cartService.getCartByUserId(1L);
+		GetCartResponse result = cartService.getCartByMemberId(1L);
 
 		assertNotNull(result);
 		assertEquals(usersMock, result.users());
@@ -82,11 +82,11 @@ public class CartServiceTests {
 	}
 
 	@Test
-	void getCartByUserIdTest_EntityNotFoundException() {
+	void getCartByMemberIdTest_EntityNotFoundException() {
 		when(cartRepository.findByUsersId(anyLong())).thenReturn(Optional.empty());
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			cartService.getCartByUserId(1L);
+			cartService.getCartByMemberId(1L);
 		});
 	}
 

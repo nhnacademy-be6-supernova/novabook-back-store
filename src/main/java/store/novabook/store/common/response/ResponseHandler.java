@@ -1,8 +1,5 @@
 package store.novabook.store.common.response;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;

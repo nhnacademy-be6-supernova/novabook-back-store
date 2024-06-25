@@ -1,8 +1,5 @@
 package store.novabook.store.tag.service;
 
-import java.sql.SQLException;
-
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

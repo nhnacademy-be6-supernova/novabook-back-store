@@ -1,8 +1,7 @@
 package store.novabook.store.common.response;
 
-import java.util.List;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import lombok.Builder;
 import store.novabook.store.book.entity.Book;
-import store.novabook.store.book.entity.BookStatus;
 
 @Builder
 public record SearchBookResponse(

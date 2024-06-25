@@ -13,9 +13,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,8 +24,6 @@ import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@AllArgsConstructor
-@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class MemberAddress {
 
@@ -33,10 +31,10 @@ public class MemberAddress {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
+	@NotBlank
 	private String nickname;
 
-	@NotNull
+	@NotBlank
 	private String memberAddressDetail;
 
 	@NotNull
@@ -56,6 +54,17 @@ public class MemberAddress {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
+	@Builder
+	public MemberAddress(String nickname,
+		String memberAddressDetail,
+		StreetAddress streetAddress,
+		Member member) {
+		this.nickname = nickname;
+		this.memberAddressDetail = memberAddressDetail;
+		this.streetAddress = streetAddress;
+		this.member = member;
+	}
+
 	public void update(StreetAddress streetAddress, String nickname, String memberAddressDetail) {
 		this.streetAddress = streetAddress;
 		this.nickname = nickname;
@@ -63,7 +72,8 @@ public class MemberAddress {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public static MemberAddress of(CreateMemberAddressRequest createMemberAddressRequest, Member member, StreetAddress streetAddress) {
+	public static MemberAddress of(CreateMemberAddressRequest createMemberAddressRequest, Member member,
+		StreetAddress streetAddress) {
 		return MemberAddress.builder()
 			.streetAddress(streetAddress)
 			.member(member)

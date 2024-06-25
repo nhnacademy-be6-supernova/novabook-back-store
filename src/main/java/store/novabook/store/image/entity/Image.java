@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.entity;
+package store.novabook.store.image.entity;
 
 import java.time.LocalDateTime;
 
@@ -11,27 +11,24 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.store.image.dto.request.CreateImageRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Builder
-@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Users {
-
+public class Image {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
-	private int type;
+	@NotBlank
+	private String source;
 
 	@NotNull
 	@CreatedDate
@@ -39,4 +36,9 @@ public class Users {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+
+	public Image(CreateImageRequest request) {
+		this.source = request.source();
+	}
 }

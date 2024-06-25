@@ -8,7 +8,6 @@ import lombok.Builder;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.tag.entity.BookTag;
-import store.novabook.store.category.entity.BookCategory;
 
 @Builder
 public record GetBookResponse(

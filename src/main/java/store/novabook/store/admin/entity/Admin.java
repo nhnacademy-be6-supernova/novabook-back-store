@@ -13,16 +13,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
-@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Admin {
 
@@ -49,9 +45,9 @@ public class Admin {
 	@CreatedDate
 	private LocalDateTime createdAt;
 
-	@NotNull
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
 
 	public void update(String loginId, String loginPassword, String name, String number, String email) {
 		this.loginId = loginId;

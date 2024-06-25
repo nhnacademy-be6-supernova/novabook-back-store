@@ -46,7 +46,7 @@ public class ReviewService {
 	 */
 	@Transactional(readOnly = true)
 	public Page<SearchBookResponse> myReviews(Long memberId, Pageable pageable) {
-		Page<Review> reviewList = reviewRepository.findByMemberId(memberId, pageable);
+		Page<Review> reviewList = reviewRepository.findByOrdersId(memberId, pageable);
 		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
 		for (Review review : reviewList) {
 			searchBookResponses.add(SearchBookResponse.from(review.getBook()));
@@ -62,7 +62,7 @@ public class ReviewService {
 	 */
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> membersReviews(Long memberId, Pageable pageable) {
-		Page<Review> reviews = reviewRepository.findByMemberId(memberId, pageable);
+		Page<Review> reviews = reviewRepository.findByOrdersId(memberId, pageable);
 		List<GetReviewResponse> reviewResponses = new ArrayList<>();
 		for (Review review : reviews) {
 			reviewResponses.add(GetReviewResponse.from(review));
@@ -114,7 +114,7 @@ public class ReviewService {
 	 * @return 존재 여부
 	 */
 	public boolean existsByBookIdAndMemberId(Long memberId, CreateReviewRequest request) {
-		return reviewRepository.existsByMemberIdAndBookId(request.bookId(), memberId);
+		return reviewRepository.existsByOrdersIdAndBookId(request.bookId(), memberId);
 	}
 
 	/**

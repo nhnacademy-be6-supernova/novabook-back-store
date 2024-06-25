@@ -4,24 +4,27 @@ import static jakarta.persistence.GenerationType.*;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.book.entity.Book;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@EntityListeners(AuditingEntityListener.class)
 public class CartBook {
 
 	@Id
@@ -42,8 +45,21 @@ public class CartBook {
 	private int quantity;
 
 	@NotNull
+	@CreatedDate
 	private LocalDateTime createdAt;
 
+	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+	@Builder
+	public CartBook(Cart cart, Book book, int quantity) {
+		this.cart = cart;
+		this.book = book;
+		this.quantity = quantity;
+	}
+
+	public static CartBook of(Cart cart, Book book, int quantity) {
+		return CartBook.builder().book(book).quantity(quantity).build();
+	}
 
 }

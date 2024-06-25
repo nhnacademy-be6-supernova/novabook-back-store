@@ -23,7 +23,6 @@ import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
 import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.entity.Users;
 import store.novabook.store.user.member.repository.MemberRepository;
 
 @Service
@@ -39,7 +38,7 @@ public class OrdersService {
 	//생성
 	public CreateResponse create(CreateOrdersRequest request) {
 		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(Users.class, request.memberId()));
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
 		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
 			.orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, request.deliveryFeeId()));
 		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
@@ -68,7 +67,7 @@ public class OrdersService {
 
 	public void update(Long id, UpdateOrdersRequest request) {
 		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(Users.class, request.memberId()));
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
 		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
 			.orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, request.deliveryFeeId()));
 		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
