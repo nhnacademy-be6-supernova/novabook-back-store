@@ -89,8 +89,9 @@ public class MemberController {
 
 	@PostMapping("/find")
 	public ResponseEntity<FindMemberLoginResponse> find(@RequestBody FindMemberRequest findMemberRequest) {
-
-		return ResponseEntity.ok().body(memberService.findMemberLogin(findMemberRequest.memberId()));
+		FindMemberLoginResponse memberLogin = memberService.findMemberLogin(findMemberRequest.memberId());
+		// return ResponseEntity.ok().body();
+		return null;
 	}
 
 }
