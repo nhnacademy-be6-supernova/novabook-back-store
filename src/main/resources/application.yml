@@ -25,19 +25,19 @@ springdoc:
     operations-sorter: alpha
 
 #유레카 활성화
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka
+#eureka:
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
 
 
 # 유레카 비활성화
-#eureka:
-#  client:
-#    register-with-eureka: false
-#    fetch-registry: false
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
 
 ---
 # mysql
