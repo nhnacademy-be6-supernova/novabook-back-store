@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +20,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@AllArgsConstructor
-@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class StreetAddress {
 
@@ -42,5 +39,12 @@ public class StreetAddress {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+	@Builder
+	public StreetAddress(String zipcode,
+		String streetAddress) {
+		this.zipcode = zipcode;
+		this.streetAddress = streetAddress;
+	}
 
 }

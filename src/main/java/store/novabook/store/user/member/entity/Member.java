@@ -13,10 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,9 +22,7 @@ import store.novabook.store.user.member.dto.CreateMemberRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
-@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
 
@@ -53,9 +49,6 @@ public class Member {
 	private LocalDateTime birth;
 
 	@NotNull
-	private Long point;
-
-	@NotNull
 	private LocalDateTime latestLoginAt;
 
 	@NotNull
@@ -68,24 +61,36 @@ public class Member {
 	@CreatedDate
 	private LocalDateTime createdAt;
 
-	@NotNull
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
-
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "member_grade_id")
-	private MemberGrade memberGrade;
 
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "member_status_id")
 	private MemberStatus memberStatus;
 
-	@NotNull
-	@OneToOne
-	@JoinColumn(name = "users_id")
-	private Users users;
+	@Builder
+	public Member(String loginId,
+		String loginPassword,
+		String name,
+		String number,
+		String email,
+		LocalDateTime birth,
+		LocalDateTime latestLoginAt,
+		Long totalAmount,
+		int authentication,
+		MemberStatus memberStatus) {
+		this.loginId = loginId;
+		this.loginPassword = loginPassword;
+		this.name = name;
+		this.number = number;
+		this.email = email;
+		this.birth = birth;
+		this.latestLoginAt = latestLoginAt;
+		this.totalAmount = totalAmount;
+		this.authentication = authentication;
+		this.memberStatus = memberStatus;
+	}
 
 	public void update(String loginPassword, String name, String number, String email) {
 		this.loginPassword = loginPassword;
@@ -99,11 +104,8 @@ public class Member {
 		this.memberStatus = memberStatus;
 	}
 
-	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, MemberGrade memberGrade,
-		Users user, LocalDateTime birth) {
+	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, LocalDateTime birth) {
 		return Member.builder()
-			.users(user)
-			.memberGrade(memberGrade)
 			.memberStatus(memberStatus)
 			.loginId(createMemberRequest.loginId())
 			.loginPassword(createMemberRequest.loginPassword())
@@ -111,7 +113,6 @@ public class Member {
 			.number(createMemberRequest.number())
 			.email(createMemberRequest.email())
 			.birth(birth)
-			.point(5000L)
 			.totalAmount(0L)
 			.latestLoginAt(LocalDateTime.now())
 			.build();

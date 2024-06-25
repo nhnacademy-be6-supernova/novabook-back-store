@@ -2,7 +2,12 @@ package store.novabook.store.book.entity;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,71 +15,85 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.book.dto.CreateReviewRequest;
 import store.novabook.store.book.dto.UpdateReviewRequest;
-import store.novabook.store.user.member.entity.Member;
+import store.novabook.store.orders.entity.Orders;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+/**
+ * 리뷰 정보를 저장하는 엔티티 클래스.
+ * 주문과 책에 대한 리뷰를 관리한다.
+ */
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Review {
 
+	/** 리뷰의 고유 ID. */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "member_id")
-	private Member member;
-
+	/** 리뷰가 참조하는 책 객체. */
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
 
+	/** 리뷰가 참조하는 주문 객체. */
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "order_id")
+	Orders orders;
+
+	/** 리뷰 내용. */
 	@NotNull
 	private String content;
 
-	private String image;
-
+	/** 리뷰 점수. */
 	@NotNull
 	private int score;
 
 	@NotNull
+	@CreatedDate
 	private LocalDateTime createdAt;
 
+	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	public static Review toEntity(CreateReviewRequest request, Member member, Book book) {
-		Review review = new Review();
-		review.member = member;
-		review.book = book;
-		review.content = request.content();
-		review.image = request.image();
-		review.score = request.score();
-		review.createdAt = LocalDateTime.now();
-		review.updatedAt = null;  // 생성 시점에는 업데이트 시간이 없으므로 null로 설정
-
-		return review;
+	@Builder
+	public Review(Book book, Orders orders, String content, int score) {
+		this.book = book;
+		this.orders = orders;
+		this.content = content;
+		this.score = score;
 	}
-	public static Review toEntity(UpdateReviewRequest request, Member member, Book book) {
-		Review review = new Review();
-		review.member = member;
-		review.book = book;
-		review.content = request.content();
-		review.image = request.image();
-		review.score = request.score();
-		review.updatedAt = LocalDateTime.now();  // 생성 시점에는 업데이트 시간이 없으므로 null로 설정
+	/**
+	 * CreateReviewRequest 객체로부터 Review 엔티티를 생성.
+	 * @param request 리뷰 생성 요청 데이터.
+	 * @param orders 관련 주문.
+	 * @param book 관련 책.
+	 * @return 생성된 Review 객체.
+	 */
 
-		return review;
+	public static Review of(CreateReviewRequest request, Orders orders, Book book) {
+		return Review.builder()
+			.book(book)
+			.orders(orders)
+			.content(request.content())
+			.score(request.score())
+			.build();
 	}
-	public void updateEntity(UpdateReviewRequest request) {
-		this.updatedAt = LocalDateTime.now();
+
+	/**
+	 * Review 엔티티를 주어진 UpdateReviewRequest 데이터로 업데이트.
+	 * @param request 리뷰 업데이트 요청 데이터.
+	 */
+	public void update(UpdateReviewRequest request) {
 		this.content = request.content();
-		this.image = request.image();
 		this.score = request.score();
 	}
 }

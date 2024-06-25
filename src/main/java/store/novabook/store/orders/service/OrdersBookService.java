@@ -64,8 +64,11 @@ public class OrdersBookService {
 			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
 		OrdersBook ordersBook = ordersBookRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(OrdersBook.class, id));
-		ordersBook.update(orders, book, request);
+
+		// TODO: UPDATE 구현해주세요.
+		// ordersBook.update(orders, book, request);
 	}
+
 
 	public void delete(Long id) {
 		ordersBookRepository.deleteById(id);

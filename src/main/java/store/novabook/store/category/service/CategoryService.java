@@ -1,4 +1,5 @@
 package store.novabook.store.category.service;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,14 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.category.dto.GetCategoryResponse;
 import store.novabook.store.category.dto.CreateCategoryRequest;
 import store.novabook.store.category.dto.CreateCategoryResponse;
 import store.novabook.store.category.dto.GetCategoryListResponse;
+import store.novabook.store.category.dto.GetCategoryResponse;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
-import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
 
 @Service
@@ -50,15 +50,6 @@ public class CategoryService {
 		return GetCategoryResponse.fromEntity(category);
 	}
 
-	// @Transactional(readOnly = true)
-	// public Page<GetCategoryListResponse> getCategoryAll(Pageable pageable) {
-	//
-	// 	Page<Category> categories = categoryRepository.findAll(pageable);
-	// 	Page<GetCategoryListResponse> categoryResponses = categories.map(GetCategoryListResponse::fromEntity);
-	//
-	// 	return new PageImpl<>(categoryResponses.getContent(), pageable, categories.getTotalElements());
-	// }
-
 	@Transactional(readOnly = true)
 	public List<GetCategoryListResponse> getCategoryAll() {
 		List<Category> categories = categoryRepository.findAllByOrderByTopCategoryDesc();
@@ -87,6 +78,9 @@ public class CategoryService {
 
 
 	public void delete(Long id) {
+		// if(bookCategoryRepository.existsById(id)) {
+		// 	throw new NotDeleteCategoryException();
+		// }
 		categoryRepository.deleteById(id);
 	}
 }

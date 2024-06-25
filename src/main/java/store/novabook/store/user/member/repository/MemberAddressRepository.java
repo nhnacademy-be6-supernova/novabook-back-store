@@ -6,5 +6,7 @@ import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.entity.MemberAddress;
 
 public interface MemberAddressRepository extends JpaRepository<MemberAddress, Long> {
-	int countByMember(Member member);
+	Integer countByMember(Member member);
+
+	Integer countByMemberId(Long memberId);
 }

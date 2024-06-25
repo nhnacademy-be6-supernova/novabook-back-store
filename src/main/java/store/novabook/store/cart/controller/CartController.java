@@ -35,11 +35,11 @@ public class CartController {
 	// }
 
 	@Operation(summary = "장바구니 조회", description = "장바구니를 조회합니다.")
-	@Parameter(name = "userId", description = "사용자 ID", required = true)
-	@GetMapping("/{userId}")
-	public ResponseEntity<GetCartResponse> getCartByUserID(@PathVariable Long userId) {
+	@Parameter(name = "memberId", description = "사용자 ID", required = true)
+	@GetMapping("/{memberId}")
+	public ResponseEntity<GetCartResponse> getCartByUserID(@PathVariable Long memberId) {
 
-		GetCartResponse getCartResponse = cartService.getCartByUserId(userId);
+		GetCartResponse getCartResponse = cartService.getCartByMemberId(memberId);
 		return ResponseEntity.status(HttpStatus.OK).body(getCartResponse);
 	}
 

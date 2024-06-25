@@ -1,7 +1,5 @@
 package store.novabook.store.cart.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -37,12 +35,9 @@ public class CartBookService {
 				cartBook ->
 					cartBookRepository.save(
 						CartBook.builder()
-							.id(cartBook.getId())
 							.cart(cartBook.getCart())
 							.book(cartBook.getBook())
 							.quantity(cartBook.getQuantity() + createCartBookRequest.quantity())
-							.createdAt(cartBook.getCreatedAt())
-							.updatedAt(LocalDateTime.now())
 							.build())
 				,
 				() -> {
@@ -57,7 +52,6 @@ public class CartBookService {
 							.cart(cart)
 							.book(book)
 							.quantity(createCartBookRequest.quantity())
-							.createdAt(LocalDateTime.now())
 							.build());
 				}
 			);

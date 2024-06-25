@@ -1,6 +1,7 @@
 package store.novabook.store.user.member.service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,13 +23,13 @@ import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
 import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.entity.MemberGrade;
+import store.novabook.store.user.member.entity.MemberGradeHistory;
+import store.novabook.store.user.member.entity.MemberGradePolicy;
 import store.novabook.store.user.member.entity.MemberStatus;
-import store.novabook.store.user.member.entity.Users;
-import store.novabook.store.user.member.repository.MemberGradeRepository;
+import store.novabook.store.user.member.repository.MemberGradeHistoryRepository;
+import store.novabook.store.user.member.repository.MemberGradePolicyRepository;
 import store.novabook.store.user.member.repository.MemberRepository;
 import store.novabook.store.user.member.repository.MemberStatusRepository;
-import store.novabook.store.user.member.repository.UsersRepository;
 
 @RequiredArgsConstructor
 @Service
@@ -39,25 +40,18 @@ public class MemberService {
 	public static final String STATUS_ACTIVE = "활동";
 	public static final String STATUS_DORMANT = "휴면";
 	public static final String STATUS_WITHDRAWN = "탈퇴";
-	public static final int TYPE = 1;
 	public static final long ID = 1L;
 	public static final String REGISTER_POINT = "회원가입 적립금";
 	public static final long POINT_AMOUNT = 5000L;
 
 	private final MemberRepository memberRepository;
-	private final UsersRepository usersRepository;
 	private final PointHistoryRepository pointHistoryRepository;
 	private final PointPolicyRepository pointPolicyRepository;
-	private final MemberGradeRepository memberGradeRepository;
+	private final MemberGradePolicyRepository memberGradePolicyRepository;
 	private final MemberStatusRepository memberStatusRepository;
+	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
 
 	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
-
-		Users user = Users.builder().type(TYPE).build();
-		usersRepository.save(user);
-
-		MemberGrade memberGrade = memberGradeRepository.findByName(GRADE_COMMON)
-			.orElseThrow(() -> new EntityNotFoundException(MemberGrade.class));
 
 		MemberStatus memberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
 			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class));
@@ -65,21 +59,30 @@ public class MemberService {
 		LocalDateTime birth = LocalDateTime.of(createMemberRequest.birthYear(), createMemberRequest.birthMonth(),
 			createMemberRequest.birthDay(), 0, 0);
 
-		Member member = Member.of(createMemberRequest, memberStatus, memberGrade, user, birth);
+		Member member = Member.of(createMemberRequest, memberStatus, birth);
 
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
 			throw new AlreadyExistException(Member.class);
 		}
 		Member newMember = memberRepository.save(member);
 
+		MemberGradePolicy memberGradePolicy = memberGradePolicyRepository.findByName(GRADE_COMMON)
+			.orElseThrow(() -> new EntityNotFoundException(MemberGradePolicy.class));
+
+		MemberGradeHistory memberGradeHistory = MemberGradeHistory.builder()
+			.member(newMember)
+			.memberGradePolicy(memberGradePolicy)
+			.quarter(new Date())
+			.build();
+		memberGradeHistoryRepository.save(memberGradeHistory);
+
 		PointPolicy pointPolicy = pointPolicyRepository.findById(ID)
 			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class, ID));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy, newMember, REGISTER_POINT, POINT_AMOUNT);
+		PointHistory pointHistory = PointHistory.of(pointPolicy,null, newMember, REGISTER_POINT, POINT_AMOUNT);
 		pointHistoryRepository.save(pointHistory);
 
 		return CreateMemberResponse.fromEntity(newMember);
-
 	}
 
 	@Transactional(readOnly = true)
