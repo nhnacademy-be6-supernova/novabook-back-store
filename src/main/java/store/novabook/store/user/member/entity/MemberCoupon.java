@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,4 +42,11 @@ public class MemberCoupon {
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
+
+	@Builder
+	public MemberCoupon(Long id, Member member, LocalDateTime usedAt) {
+		this.id = id;
+		this.member = member;
+		this.usedAt = usedAt;
+	}
 }
