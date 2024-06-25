@@ -3,8 +3,13 @@ package store.novabook.store.category.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.persistence.Column;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,7 +17,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +37,14 @@ public class Category {
 	@NotNull
 	private String name;
 
+	@OneToMany(mappedBy = "topCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Category> subCategories;
+
 	@NotNull
+	@CreatedDate
 	private LocalDateTime createdAt;
 
-	@Null
+	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
 	public Category(Category topCategory, String name) {

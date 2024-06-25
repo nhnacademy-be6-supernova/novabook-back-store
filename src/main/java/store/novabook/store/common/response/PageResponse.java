@@ -1,8 +1,7 @@
 package store.novabook.store.common.response;
 
-import java.util.List;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -41,5 +40,16 @@ public class PageResponse<T> {
 
 	public void addHeader(String key, Object value) {
 		this.header.put(key, value);
+	}
+
+
+	public int getTotalPageCount() {
+		long result = this.totalCount / this.pageSize;
+
+		if(this.totalCount % this.pageSize!= 0) {
+			result+=1L;
+		}
+
+		return (int) result;
 	}
 }

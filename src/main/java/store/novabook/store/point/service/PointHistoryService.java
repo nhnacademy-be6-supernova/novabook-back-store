@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.point.dto.CreatePointHistoryRequest;
@@ -18,7 +19,6 @@ import store.novabook.store.point.repository.PointHistoryRepository;
 import store.novabook.store.point.repository.PointPolicyRepository;
 import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.repository.MemberRepository;
-import store.novabook.store.common.exception.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -57,15 +57,7 @@ public class PointHistoryService {
 			.orElseThrow(
 				() -> new EntityNotFoundException(PointPolicy.class, createPointHistoryRequest.pointPolicyId()));
 
-		PointHistory pointHistory = new PointHistory(null,
-			orders,
-			pointPolicy,
-			member,
-			createPointHistoryRequest.pointContent(),
-			createPointHistoryRequest.pointAmount(),
-			LocalDateTime.now(),
-			null);
-
+		PointHistory pointHistory = PointHistory.of( pointPolicy,  orders,  member,  createPointHistoryRequest.pointContent(),  createPointHistoryRequest.pointAmount());
 		pointHistoryRepository.save(pointHistory);
 	}
 }

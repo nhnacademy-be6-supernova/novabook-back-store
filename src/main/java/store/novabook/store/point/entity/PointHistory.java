@@ -16,19 +16,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.user.member.entity.Member;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 @EntityListeners(AuditingEntityListener.class)
-@Builder
 public class PointHistory {
 
 	@Id
@@ -61,8 +58,18 @@ public class PointHistory {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	public static PointHistory of(PointPolicy pointPolicy, Member member, String pointContent, long pointAmount) {
+	@Builder
+	public PointHistory(Orders orders, PointPolicy pointPolicy, Member member, String pointContent, long pointAmount){
+		this.orders = orders;
+		this.pointPolicy = pointPolicy;
+		this.member = member;
+		this.pointContent = pointContent;
+		this.pointAmount = pointAmount;
+	}
+
+	public static PointHistory of(PointPolicy pointPolicy, Orders orders, Member member, String pointContent, long pointAmount) {
 		return PointHistory.builder()
+			.orders(orders)
 			.pointPolicy(pointPolicy)
 			.member(member)
 			.pointContent(pointContent)

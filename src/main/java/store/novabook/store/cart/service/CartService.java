@@ -11,8 +11,8 @@ import store.novabook.store.cart.dto.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.repository.CartRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.user.member.entity.Users;
-import store.novabook.store.user.member.repository.UsersRepository;
+import store.novabook.store.user.member.entity.Member;
+import store.novabook.store.user.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -20,18 +20,17 @@ import store.novabook.store.user.member.repository.UsersRepository;
 public class CartService {
 	private final CartRepository cartRepository;
 
-	private final UsersRepository usersRepository;
+	private final MemberRepository memberRepository;
 
 	public void createCart(CreateCartRequest createCartRequest) {
 
-		Users users = usersRepository.findById(createCartRequest.userId())
-			.orElseThrow(() -> new EntityNotFoundException(Cart.class, createCartRequest.userId()));
+		Member member = memberRepository.findById(createCartRequest.memberId())
+			.orElseThrow(() -> new EntityNotFoundException(Cart.class, createCartRequest.memberId()));
 
 		cartRepository.save(
 			Cart.builder()
-				.users(users)
+				.member(member)
 				.isExposed(createCartRequest.isExposed())
-				.createdAt(LocalDateTime.now())
 				.build());
 	}
 
@@ -47,12 +46,12 @@ public class CartService {
 	// }
 
 	@Transactional(readOnly = true)
-	public GetCartResponse getCartByUserId(Long userId) {
-		Cart cart = cartRepository.findByUsersId(userId)
-			.orElseThrow(() -> new EntityNotFoundException(Cart.class, userId));
+	public GetCartResponse getCartByMemberId(Long memberId) {
+		Cart cart = cartRepository.findByMemberId(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Cart.class, memberId));
 
 		return new GetCartResponse(
-			cart.getUsers(),
+			cart.getMember(),
 			cart.getIsExposed()
 		);
 	}

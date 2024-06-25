@@ -1,11 +1,11 @@
 package store.novabook.store.cart.dto;
 
-import store.novabook.store.user.member.entity.Users;
+import store.novabook.store.user.member.entity.Member;
 
 public record CreateCartResponse(
-	Users users,
+	Member member,
 	Boolean isExposed) {
-	public static CreateCartResponse from(Users users, boolean isExposed) {
-		return new CreateCartResponse(users, isExposed);
+	public static CreateCartResponse from(Member member, boolean isExposed) {
+		return new CreateCartResponse(member, isExposed);
 	}
 }

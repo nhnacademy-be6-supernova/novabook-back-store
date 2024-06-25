@@ -13,13 +13,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class MemberStatus {
@@ -37,5 +36,10 @@ public class MemberStatus {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+	@Builder
+	public MemberStatus(String name) {
+		this.name = name;
+	}
 
 }

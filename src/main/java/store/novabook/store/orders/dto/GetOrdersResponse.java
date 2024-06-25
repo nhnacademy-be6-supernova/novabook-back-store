@@ -7,7 +7,7 @@ import store.novabook.store.orders.entity.Orders;
 
 @Builder
 public record GetOrdersResponse(
-	Long userId,
+	Long memberId,
 	Long deliveryFeeId,
 	Long wrappingPaperId,
 	Long ordersStatusId,
@@ -23,7 +23,7 @@ public record GetOrdersResponse(
 ) {
 	public static GetOrdersResponse form(Orders orders) {
 		return GetOrdersResponse.builder()
-			.userId(orders.getId())
+			.memberId(orders.getId())
 			.deliveryFeeId(orders.getDeliveryFee().getId())
 			.wrappingPaperId(orders.getWrappingPaper().getId())
 			.ordersStatusId(orders.getOrdersStatus().getId())

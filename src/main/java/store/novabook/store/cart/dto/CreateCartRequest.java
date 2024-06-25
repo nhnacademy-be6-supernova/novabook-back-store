@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 public record CreateCartRequest(
 	@NotNull
-	Long userId,
+	Long memberId,
 	@NotNull
 	Boolean isExposed) {
 }
