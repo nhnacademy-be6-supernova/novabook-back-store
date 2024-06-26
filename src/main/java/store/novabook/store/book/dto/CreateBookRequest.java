@@ -1,8 +1,7 @@
 package store.novabook.store.book.dto;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,8 +13,6 @@ public record CreateBookRequest(
 	String isbn,
 	@NotBlank(message = "책 제목는 필수 입력값입니다.")
 	String title,
-	@NotBlank(message = "책 목차는 필수 입력값입니다.")
-	String bookIndex,
 	@NotBlank(message = "책 설명는 필수 입력값입니다.")
 	String description,
 	@NotBlank(message = "책 상세보기 설명은 필수 입력값입니다.")
@@ -24,7 +21,7 @@ public record CreateBookRequest(
 	String author,
 	@NotBlank(message = "책 출판사는 필수 입력값입니다.")
 	String publisher,
-	@NotNull(message = "책 발행일는 필수 입력값입니다.")
+	@NotNull(message = "책 발행일은 필수 입력값입니다.")
 	LocalDateTime publicationDate,
 	@NotNull(message = "책 재고는 필수 입력값입니다.")
 	Integer inventory,
@@ -35,7 +32,7 @@ public record CreateBookRequest(
 	@NotNull(message = "책 상태는 필수 입력값입니다.")
 	Boolean isPackaged,
 	String image,
-	Set<Long> tags,
-	HashMap<Integer, Long> category
+	List<Long> tags,
+	Long categoryId
 ) {
 }

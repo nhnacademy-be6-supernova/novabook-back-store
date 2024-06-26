@@ -1,5 +1,8 @@
 package store.novabook.store.tag.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.tag.dto.CreateTagRequest;
 import store.novabook.store.tag.dto.CreateTagResponse;
+import store.novabook.store.tag.dto.GetTagListResponse;
 import store.novabook.store.tag.dto.GetTagResponse;
 import store.novabook.store.tag.dto.UpdateTagRequest;
 import store.novabook.store.tag.entity.Tag;
@@ -29,6 +33,19 @@ public class TagService {
 
 		return new PageImpl<>(tagAllResponses.getContent(), pageable, tags.getTotalElements());
 	}
+
+	@Transactional(readOnly = true)
+	public GetTagListResponse getTagAllList() {
+		List<Tag> tags = tagRepository.findAll();
+		List<GetTagResponse> tagAllResponses = new ArrayList<>();
+		for (Tag tag : tags) {
+			tagAllResponses.add(GetTagResponse.fromEntity(tag));
+		}
+		return GetTagListResponse.builder()
+			.getTagResponseList(tagAllResponses)
+			.build();
+	}
+
 
 	@Transactional(readOnly = true)
 	public GetTagResponse getTag(Long id) {

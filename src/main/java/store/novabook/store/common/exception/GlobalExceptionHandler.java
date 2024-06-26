@@ -3,12 +3,14 @@ package store.novabook.store.common.exception;
 import java.time.LocalDateTime;
 
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -56,10 +58,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
 		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
 	}
 
+	@ExceptionHandler(NotDeleteCategoryException.class)
+	public ResponseEntity<ErrorStatus> handleNotDeleteCategoryException(NotDeleteCategoryException e) {
+		ErrorStatus errorStatus = e.getErrorStatus();
+		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorStatus> handleException(Exception e) {
 		ErrorStatus errorStatus = new ErrorStatus(e.getMessage(), 500, LocalDateTime.now());
 		return new ResponseEntity<>(errorStatus, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+		return new ResponseEntity<>("해당 카테고리 등록된 도서가 있어 삭제할 수 없습니다.", HttpStatus.CONFLICT);
+	}
 }
