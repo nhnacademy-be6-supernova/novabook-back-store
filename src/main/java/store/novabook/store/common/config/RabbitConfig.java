@@ -74,7 +74,7 @@ public class RabbitConfig {
 
 	@Bean
 	public Queue deadQueue() {
-		return new Queue(deadQueueName, false, false, false);
+		return new Queue(deadQueueName, true, false, false);
 	}
 
 	@Bean
