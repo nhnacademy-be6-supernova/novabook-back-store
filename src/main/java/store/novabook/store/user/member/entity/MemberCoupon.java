@@ -28,7 +28,6 @@ public class MemberCoupon {
 
 	private LocalDateTime usedAt;
 
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 
