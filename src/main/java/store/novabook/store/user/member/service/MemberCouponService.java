@@ -4,6 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.CouponAdapter;
 import store.novabook.store.common.adatper.dto.CreateCouponRequest;
@@ -39,7 +40,7 @@ public class MemberCouponService {
 	}
 
 	@RabbitListener(queues = "${rabbitmq.queue.member-coupon}")
-	public void handleCouponCreatedMessage(CouponCreatedMessage message) {
+	public void handleCouponCreatedMessage(@Valid CouponCreatedMessage message) {
 		Member member = memberRepository.findById(message.memberId())
 			.orElseThrow(() -> new EntityNotFoundException(Member.class));
 		MemberCoupon memberCoupon = MemberCoupon.builder().member(member).couponId(message.couponId()).build();

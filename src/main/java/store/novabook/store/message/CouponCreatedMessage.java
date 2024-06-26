@@ -1,4 +1,6 @@
 package store.novabook.store.message;
 
-public record CouponCreatedMessage(Long couponId, Long memberId) {
+import jakarta.validation.constraints.NotNull;
+
+public record CouponCreatedMessage(@NotNull Long couponId, @NotNull Long memberId) {
 }
