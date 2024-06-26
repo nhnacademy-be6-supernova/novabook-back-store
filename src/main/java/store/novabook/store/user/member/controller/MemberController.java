@@ -44,11 +44,21 @@ public class MemberController {
 	}
 
 	@CrossOrigin(origins = "http://localhost:8080")
-	@GetMapping("/checkDuplicated")
+	@GetMapping("/checkDuplicatedLoginId")
 	public ResponseEntity<Map<String, Boolean>> checkDuplicated(@RequestParam String loginId) {
 		boolean isDuplicateLoginId = memberService.isDuplicateLoginId(loginId);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("isDuplicateLoginId", isDuplicateLoginId);
+		return ResponseEntity.ok(response);
+	}
+
+	@CrossOrigin(origins = "http://localhost:8080")
+	@PostMapping("/checkDuplicatedEmail")
+	public ResponseEntity<Map<String, Boolean>> checkDuplicateEmail(@RequestBody Map<String, String> request) {
+		String email = request.get("email");
+		boolean isDuplicateEmail = memberService.isDuplicateEmail(email);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("isDuplicateEmail", isDuplicateEmail);
 		return ResponseEntity.ok(response);
 	}
 

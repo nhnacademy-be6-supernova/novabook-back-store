@@ -64,6 +64,7 @@ public class MemberService {
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
 			throw new AlreadyExistException(Member.class);
 		}
+
 		Member newMember = memberRepository.save(member);
 
 		MemberGradePolicy memberGradePolicy = memberGradePolicyRepository.findByName(GRADE_COMMON)
@@ -153,9 +154,12 @@ public class MemberService {
 		return new FindMemberLoginResponse(member.getLoginId(), member.getLoginPassword(), null);
 	}
 
-
 	public boolean isDuplicateLoginId(String loginId) {
 		return memberRepository.existsByLoginId(loginId);
+	}
+
+	public boolean isDuplicateEmail(String email) {
+		return memberRepository.existsByEmail(email);
 	}
 
 }
