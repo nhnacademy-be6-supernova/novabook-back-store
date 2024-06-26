@@ -7,7 +7,7 @@ import store.novabook.store.user.member.entity.MemberCoupon;
 public record CreateMemberCouponResponse(Long couponId) {
 	public static CreateMemberCouponResponse fromEntity(MemberCoupon memberCoupon) {
 		return CreateMemberCouponResponse.builder()
-			.couponId(memberCoupon.getId())
+			.couponId(memberCoupon.getCouponId())
 			.build();
 	}
 }

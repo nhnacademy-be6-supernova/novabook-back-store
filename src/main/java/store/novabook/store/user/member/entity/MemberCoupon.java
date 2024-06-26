@@ -6,7 +6,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
@@ -25,10 +24,8 @@ import lombok.NoArgsConstructor;
 public class MemberCoupon {
 
 	@Id
-	@Column(name = "coupon_id")
-	private Long id;
+	private Long couponId;
 
-	@NotNull
 	private LocalDateTime usedAt;
 
 	@NotNull
@@ -44,9 +41,12 @@ public class MemberCoupon {
 	private Member member;
 
 	@Builder
-	public MemberCoupon(Long id, Member member, LocalDateTime usedAt) {
-		this.id = id;
+	public MemberCoupon(Long couponId, Member member) {
+		this.couponId = couponId;
 		this.member = member;
+	}
+
+	public void update(LocalDateTime usedAt) {
 		this.usedAt = usedAt;
 	}
 }

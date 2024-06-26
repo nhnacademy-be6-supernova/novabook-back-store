@@ -54,6 +54,7 @@ public class MemberAddressController {
 		return ResponseEntity.ok(memberAddressResponse);
 	}
 
+	@CrossOrigin(origins = "http://localhost:8080")
 	@PutMapping("/{memberAddressId}")
 	public ResponseEntity<Void> updateMemberAddress(@PathVariable Long memberAddressId,
 		@RequestBody UpdateMemberAddressRequest updateMemberAddressRequest) {

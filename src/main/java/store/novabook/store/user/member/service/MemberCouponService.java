@@ -24,9 +24,8 @@ public class MemberCouponService {
 			.orElseThrow(() -> new EntityNotFoundException(Member.class));
 
 		MemberCoupon memberCoupon = MemberCoupon.builder()
-			.id(request.couponId())
+			.couponId(request.couponId())
 			.member(member)
-			.usedAt(request.usedAt())
 			.build();
 		memberCouponRepository.save(memberCoupon);
 
