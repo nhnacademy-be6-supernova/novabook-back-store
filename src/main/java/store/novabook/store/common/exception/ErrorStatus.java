@@ -1,5 +1,6 @@
 package store.novabook.store.common.exception;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatusCode;
@@ -14,7 +15,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ErrorStatus {
+public class ErrorStatus implements Serializable {
 	private String message;
 	private int status;
 

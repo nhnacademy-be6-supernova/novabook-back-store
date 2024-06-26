@@ -1,9 +1,6 @@
 package store.novabook.store.book.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -55,37 +52,23 @@ public class BookService {
 		List<Tag> tags = tagRepository.findByIdIn(request.tags());
 		List<BookTag> bookTags = tags.stream()
 			.map(tag -> new BookTag(book, tag))
-			.collect(Collectors.toList());
+			.toList();
 		bookTagRepository.saveAll(bookTags);
 
-		List<BookCategory> bookCategories = new ArrayList<>();
-		for (Map.Entry<Integer, Long> entry : request.category().entrySet()) {
-			Integer depth = entry.getKey();
-			Long categoryId = entry.getValue();
 
-			Category category = categoryRepository.findById(categoryId)
-				.orElseThrow(() -> new EntityNotFoundException(Category.class, categoryId));
-			BookCategory bookCategory = new BookCategory(book, category);
-			bookCategories.add(bookCategory);
-		}
-		bookCategoryRepository.saveAll(bookCategories);
+		Category category = categoryRepository.findById(request.categoryId())
+			.orElseThrow(() -> new EntityNotFoundException(Category.class, request.categoryId()));
+		BookCategory bookCategories = BookCategory.of(book, category);
+		bookCategoryRepository.save(bookCategories);
 
 		return new CreateBookResponse(book.getId());
 	}
+
 	@Transactional(readOnly = true)
 	public GetBookResponse getBook(Long id) {
-		// Book book = bookRepository.findById(id)
-		// 	.orElseThrow(() -> new EntityNotFoundException(Book.class, id));
-		//
-		// List<BookTag> bookTags = bookTagRepository.findAllByBookId(book.getId());
-		// List<BookCategory> bookCategories = bookCategoryRepository.findAllByBookId(book.getId());
-		//
-		// int likes = likesRepository.countByBookId(book.getId());
-		//
-		// return GetBookResponse.fromEntity(book, bookTags, bookCategories, likes);
-		GetBookResponse getBookResponse = queryRepository.getBook(id);
-		return getBookResponse;
+		return queryRepository.getBook(id);
 	}
+
 	@Transactional(readOnly = true)
 	public Page<GetBookAllResponse> getBookAll(Pageable pageable) {
 		Page<Book> books = bookRepository.findAll(pageable);
