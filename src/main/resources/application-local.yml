@@ -4,8 +4,34 @@ spring:
     url: jdbc:h2:mem:test
     username: sa
     password:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: supernova
+    password: 1234
+    listener:
+      simple:
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          initial-interval: 3000  # 최초 메시지 처리 실패 후 재시도까지의 인터벌 (3초)
+          max-interval: 10000    # 최대 재시도 인터벌 (10초)
+          max-attempts: 3        # 최대 재시도 횟수
+          multiplier: 2.0        # 이전 interval * multiplier = 다음 interval
 
 
   jpa:
     hibernate:
       ddl-auto: create
+
+rabbitmq:
+  queue:
+    coupon: couponQueue
+    dead: deadQueue
+    member-coupon: memberCouponQueue
+  exchange:
+    member: memberExchange
+    coupon: couponExchange
+  routing:
+    member: member.registration
+    couponCreated: coupon.created
