@@ -1,4 +1,4 @@
-package store.novabook.store.adatper;
+package store.novabook.store.common.adatper;
 
 public enum DiscountType {
 	AMOUNT,

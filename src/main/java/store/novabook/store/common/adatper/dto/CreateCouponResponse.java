@@ -1,4 +1,4 @@
-package store.novabook.store.adatper.dto;
+package store.novabook.store.common.adatper.dto;
 
 import lombok.Builder;
 

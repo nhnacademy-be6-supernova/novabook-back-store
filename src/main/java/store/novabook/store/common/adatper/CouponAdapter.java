@@ -1,4 +1,4 @@
-package store.novabook.store.adatper;
+package store.novabook.store.common.adatper;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import store.novabook.store.adatper.dto.CreateCouponRequest;
-import store.novabook.store.adatper.dto.CreateCouponResponse;
-import store.novabook.store.adatper.dto.GetCouponAllRequest;
-import store.novabook.store.adatper.dto.GetCouponAllResponse;
+import store.novabook.store.common.adatper.dto.CreateCouponRequest;
+import store.novabook.store.common.adatper.dto.CreateCouponResponse;
+import store.novabook.store.common.adatper.dto.GetCouponAllRequest;
+import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
 import store.novabook.store.common.response.ApiResponse;
 
 @FeignClient(name = "couponClient", url = "http://localhost:8070/api/v1")
