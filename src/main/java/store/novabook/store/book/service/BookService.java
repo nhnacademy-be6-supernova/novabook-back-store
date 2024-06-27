@@ -1,7 +1,17 @@
 package store.novabook.store.book.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +34,14 @@ import store.novabook.store.category.entity.BookCategory;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
+import store.novabook.store.category.service.CategoryService;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.FailedCreateBookException;
+import store.novabook.store.common.image.NHNCloudClient;
+import store.novabook.store.image.entity.BookImage;
+import store.novabook.store.image.entity.Image;
+import store.novabook.store.image.repository.BookImageRepository;
+import store.novabook.store.image.repository.ImageRepository;
 import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.BookTagRepository;
@@ -42,6 +59,22 @@ public class BookService {
 	private final TagRepository tagRepository;
 	private final BookCategoryRepository bookCategoryRepository;
 	private final BookQueryRepository queryRepository;
+	private final ImageRepository imageRepository;
+	private final BookImageRepository bookImageRepository;
+	private final CategoryService categoryService;
+	private final NHNCloudClient nhnCloudClient;
+
+	@Value("${nhn.cloud.imageManager.endpointUrl}")
+	private String endpointUrl;
+
+	@Value("${nhn.cloud.imageManager.accessKey}")
+	private String accessKey;
+
+	@Value("${nhn.cloud.imageManager.secretKey}")
+	private String secretKey;
+
+	@Value("${nhn.cloud.imageManager.bucketName}")
+	private String bucketName;
 
 	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
@@ -55,11 +88,23 @@ public class BookService {
 			.toList();
 		bookTagRepository.saveAll(bookTags);
 
-
 		Category category = categoryRepository.findById(request.categoryId())
 			.orElseThrow(() -> new EntityNotFoundException(Category.class, request.categoryId()));
 		BookCategory bookCategories = BookCategory.of(book, category);
 		bookCategoryRepository.save(bookCategories);
+
+		String imageUrl = request.image();
+		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+		String outputFilePath = "/Users/mun/novabook/novabook-back-store/src/main/resources/image/"+fileName;
+		try(InputStream in = new URI(imageUrl).toURL().openStream()){
+			Path imagePath = Paths.get(outputFilePath);
+			Files.copy(in, imagePath);
+		} catch (IOException | URISyntaxException e) {
+			throw new FailedCreateBookException();
+		}
+		uploadImage( accessKey,  secretKey, bucketName + fileName, false, outputFilePath);
+		Image image = imageRepository.save(new Image(fileName));
+		bookImageRepository.save(BookImage.of(book, image));
 
 		return new CreateBookResponse(book.getId());
 	}
@@ -95,4 +140,17 @@ public class BookService {
 			.orElseThrow(() -> new EntityNotFoundException(Book.class, id));
 		book.updateBookStatus(bookStatus);
 	}
+
+
+	public void uploadImage(String appKey, String secretKey, String path, boolean overwrite, String localFilePath) {
+
+		try {
+			File file = new File(localFilePath);
+			FileSystemResource resource = new FileSystemResource(file);
+			nhnCloudClient.uploadImage(appKey, path, overwrite, secretKey, resource);
+		} catch (Exception e) {
+			throw new FailedCreateBookException();
+		}
+	}
+
 }
