@@ -16,8 +16,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.book.dto.CreateBookRequest;
-import store.novabook.store.book.dto.CreateReviewRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,15 +35,6 @@ public class Image {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
-
-
-	public Image(CreateBookRequest request) {
-		this.source = request.image();
-	}
-
-	public Image(CreateReviewRequest request) {
-		this.source = request.image();
-	}
 
 	public Image(String fileName) {
 		this.source = fileName;
