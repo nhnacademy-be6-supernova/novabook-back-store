@@ -16,6 +16,9 @@ import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.entity.QBookCategory;
 import store.novabook.store.category.entity.QCategory;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.image.entity.Image;
+import store.novabook.store.image.entity.QBookImage;
+import store.novabook.store.image.entity.QImage;
 import store.novabook.store.tag.entity.QBookTag;
 import store.novabook.store.tag.entity.QTag;
 
@@ -36,6 +39,8 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 			QTag qTag = QTag.tag;
 			QBookCategory qBookCategory = QBookCategory.bookCategory;
 			QCategory qCategory = QCategory.category;
+		QImage qImage = QImage.image;
+		QBookImage qBookImage = QBookImage.bookImage;
 
 			Book book = from(qBook)
 				.leftJoin(qReview).on(qBook.id.eq(qReview.book.id))
@@ -71,12 +76,19 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 				.select(qReview.score)
 				.fetchFirst();
 
+			Image image = from(qBookImage)
+				.join(qImage).on(qBookImage.image.id.eq(qImage.id))
+				.where(qBookImage.book.id.eq(book.getId()))
+				.select(qImage)
+				.fetchOne();
+
+
 			// Review가 없는 경우 기본값 설정
 			if (score == null) {
 				score = 0;
 			}
 
-			return GetBookResponse.fromEntity(book, tags, category, (int)likesCount, score);
+			return GetBookResponse.fromEntity(book, tags, category, (int)likesCount, score, image);
 
 	}
 

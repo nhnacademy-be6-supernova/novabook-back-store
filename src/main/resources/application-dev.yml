@@ -53,4 +53,7 @@ nhn:
       accessKey: vyiy4M85i8mJ5mgP
       secretKey: ffpUQvzkmH8RsQDTuvpZD7U9tWlqExe4
       bucketName: /supernova-image/
+      localStorage: src/main/resources/image/
+
+
 
