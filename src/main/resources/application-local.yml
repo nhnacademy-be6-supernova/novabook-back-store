@@ -5,10 +5,10 @@ spring:
     username: sa
     password:
   rabbitmq:
-    host: localhost
+    host: 133.186.241.167
     port: 5672
-    username: supernova
-    password: 1234
+    username: admin
+    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto
@@ -24,14 +24,16 @@ spring:
     hibernate:
       ddl-auto: create
 
+
 rabbitmq:
   queue:
-    coupon: couponQueue
-    dead: deadQueue
-    member-coupon: memberCouponQueue
+    coupon: nova.coupon.queue
+    dead: nova.dead.queue
+    member-coupon: nova.membercoupon.queue
   exchange:
-    member: memberExchange
-    coupon: couponExchange
+    member: nova.member.exchange
+    coupon: nova.coupon.exchange
   routing:
     member: member.registration
     couponCreated: coupon.created
+

@@ -1,6 +1,5 @@
 package store.novabook.store.user.member.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,9 +25,11 @@ public record CreateMemberRequest(
 	String number,
 
 	@NotBlank(message = "이메일은 필수 입력 값입니다.")
-	@Email
 	@Size(max = 100, message = "최대 100자까지 가능합니다.")
 	String email,
+
+	@NotBlank(message = "이메일은 필수 입력 값입니다.")
+	String emailDomain,
 
 	@NotNull(message = "생년월일은 필수 입력 값입니다.")
 	Integer birthYear,
@@ -36,7 +37,13 @@ public record CreateMemberRequest(
 	@NotNull(message = "생년월일은 필수 입력 값입니다.")
 	Integer birthMonth,
 
-	@NotNull(message = "생년월일은 필수 입력값입니다.")
-	Integer birthDay) {
+	@NotNull(message = "생년월일은 필수 입력 값입니다.")
+	Integer birthDay,
 
+	@NotBlank(message = "주소는 필수 입력 값입니다.")
+	String address) {
+
+	public String getEmailFull() {
+		return email + "@" + emailDomain;
+	}
 }
