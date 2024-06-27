@@ -8,7 +8,7 @@ import lombok.Builder;
 public record UpdateMemberRequest(
 
 	@NotBlank(message = "비밀번호는 필수 입력 값입니다.")
-	@Size(max = 20, message = "최대 20자까지 가능합니다.")
+	@Size(max = 16, message = "최대 16자까지 가능합니다.")
 	String loginPassword,
 
 	@NotBlank(message = "이름은 필수 입력 값입니다.")
