@@ -1,9 +1,7 @@
 package store.novabook.store.category.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +11,7 @@ import store.novabook.store.category.dto.CreateCategoryRequest;
 import store.novabook.store.category.dto.CreateCategoryResponse;
 import store.novabook.store.category.dto.GetCategoryListResponse;
 import store.novabook.store.category.dto.GetCategoryResponse;
+import store.novabook.store.category.dto.SubCategoryDTO;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
@@ -46,41 +45,40 @@ public class CategoryService {
 	public GetCategoryResponse getCategory(Long id) {
 		Category category = categoryRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(Category.class, id));
-
-		return GetCategoryResponse.fromEntity(category);
+		return GetCategoryResponse.fromEntity(category, null);
 	}
 
+
 	@Transactional(readOnly = true)
-	public List<GetCategoryListResponse> getCategoryAll() {
+	public GetCategoryListResponse getAllCategories() {
 		List<Category> categories = categoryRepository.findAllByOrderByTopCategoryDesc();
 
-		// 해시맵을 사용하여 카테고리를 그룹화
-		Map<GetCategoryResponse, List<GetCategoryResponse>> categoryDTOMap = new HashMap<>();
-
+		List<GetCategoryResponse> categoryDTOs = new ArrayList<>();
 		for (Category category : categories) {
-			GetCategoryResponse categoryDTO = GetCategoryResponse.fromEntity(category);
-			if (category.hasTopCategory()) {
-				GetCategoryResponse topCategoryDTO = GetCategoryResponse.fromEntity(category.getTopCategory());
-				categoryDTOMap.computeIfAbsent(topCategoryDTO, k -> new ArrayList<>()).add(categoryDTO);
-			} else {
-				categoryDTOMap.computeIfAbsent(categoryDTO, k -> new ArrayList<>());
+			if(category.getTopCategory() == null){
+				GetCategoryResponse categoryDTO = convertToDTO(category);
+				categoryDTOs.add(categoryDTO);
+			}
+
+		}
+
+		return new GetCategoryListResponse(categoryDTOs);
+	}
+
+	private GetCategoryResponse convertToDTO(Category category) {
+		List<SubCategoryDTO> subCategoryDTOs = new ArrayList<>();
+		if (category.getSubCategories() != null) {
+			for (Category subCategory : category.getSubCategories()) {
+				SubCategoryDTO subCategoryDTO = new SubCategoryDTO(subCategory.getId(),subCategory.getName());
+				subCategoryDTOs.add(subCategoryDTO);
 			}
 		}
 
-		// GetCategoryListResponse 리스트 생성
-		List<GetCategoryListResponse> getCategoryResponses = new ArrayList<>();
-		for (Map.Entry<GetCategoryResponse, List<GetCategoryResponse>> entry : categoryDTOMap.entrySet()) {
-			getCategoryResponses.add(new GetCategoryListResponse(entry.getKey(), entry.getValue()));
-		}
-
-		return getCategoryResponses;
+		return GetCategoryResponse.fromEntity(category,subCategoryDTOs);
 	}
 
 
 	public void delete(Long id) {
-		// if(bookCategoryRepository.existsById(id)) {
-		// 	throw new NotDeleteCategoryException();
-		// }
 		categoryRepository.deleteById(id);
 	}
 }

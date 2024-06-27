@@ -18,7 +18,6 @@ public record GetBookAllResponse(
 			.id(book.getId())
 			.bookStatusId(book.getBookStatus().getId())
 			.title(book.getTitle())
-			.bookIndex(book.getBookIndex())
 			.inventory(book.getInventory())
 			.price(book.getPrice())
 			.discountPrice(book.getDiscountPrice())

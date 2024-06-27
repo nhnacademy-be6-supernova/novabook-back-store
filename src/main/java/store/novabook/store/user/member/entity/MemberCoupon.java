@@ -8,13 +8,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,10 +24,10 @@ import lombok.NoArgsConstructor;
 public class MemberCoupon {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long couponId;
 
-	@NotNull
+	private LocalDateTime usedAt;
+
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -39,4 +38,14 @@ public class MemberCoupon {
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
+
+	@Builder
+	public MemberCoupon(Long couponId, Member member) {
+		this.couponId = couponId;
+		this.member = member;
+	}
+
+	public void update(LocalDateTime usedAt) {
+		this.usedAt = usedAt;
+	}
 }

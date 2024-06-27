@@ -10,8 +10,6 @@ public record UpdateBookRequest(
 	Long id,
 	@NotBlank(message = "BookStatusId 값은 필수 입력값입니다.")
 	Long bookStatusId,
-	@NotBlank(message = "책 index값은 필수 입력값입니다.")
-	String bookIndex,
 	@NotBlank(message = "책 재고값은 필수 입력값입니다.")
 	Integer inventory,
 	@NotBlank(message = "책 가격값은 필수 입력값입니다.")
@@ -25,7 +23,6 @@ public record UpdateBookRequest(
 		return UpdateBookRequest.builder()
 			.id(book.getId())
 			.bookStatusId(book.getBookStatus().getId())
-			.bookIndex(book.getBookIndex())
 			.inventory(book.getInventory())
 			.price(book.getPrice())
 			.discountPrice(book.getDiscountPrice())

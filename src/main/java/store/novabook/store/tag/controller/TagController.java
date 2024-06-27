@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.tag.dto.CreateTagRequest;
 import store.novabook.store.tag.dto.CreateTagResponse;
+import store.novabook.store.tag.dto.GetTagListResponse;
 import store.novabook.store.tag.dto.GetTagResponse;
 import store.novabook.store.tag.dto.UpdateTagRequest;
 import store.novabook.store.tag.service.TagService;
@@ -30,6 +31,11 @@ public class TagController {
 	@GetMapping
 	public ResponseEntity<Page<GetTagResponse>> getTagAll(Pageable pageable) {
 		return ResponseEntity.ok().body(tagService.getTagAll(pageable));
+	}
+
+	@GetMapping("/list")
+	public ResponseEntity<GetTagListResponse> getTagAllList() {
+		return ResponseEntity.ok().body(tagService.getTagAllList());
 	}
 
 	@GetMapping("/{id}")
