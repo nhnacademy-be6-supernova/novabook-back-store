@@ -16,16 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateBookRequest;
+import store.novabook.store.book.dto.CreateBookResponse;
 import store.novabook.store.book.dto.GetBookAllResponse;
 import store.novabook.store.book.dto.GetBookResponse;
 import store.novabook.store.book.dto.UpdateBookRequest;
 import store.novabook.store.book.service.BookService;
+import store.novabook.store.image.service.ImageService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/store/books")
 public class BookController {
 	private final BookService bookService;
+	private final ImageService imageService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<GetBookResponse> getBook(@PathVariable Long id) {
@@ -39,9 +42,9 @@ public class BookController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> createBook(@Valid @RequestBody CreateBookRequest createBookRequest) {
-		bookService.create(createBookRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	public ResponseEntity<CreateBookResponse> createBook(@Valid @RequestBody CreateBookRequest createBookRequest) {
+		CreateBookResponse createBookResponse = bookService.create(createBookRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createBookResponse);
 	}
 
 	@PutMapping

@@ -55,17 +55,6 @@ public record GetBookResponse(
 			.build();
 	}
 
-	public static List<String> tagNames(List<BookTag> bookTags) {
-		List<String> tagNames = new ArrayList<>();
-		for (BookTag tag : bookTags) {
-			String tagName = tag.getTag().getName();
-			if (tagName != null && !tagName.isEmpty()) {
-				tagNames.add(tagName);
-			}
-		}
-		return tagNames;
-	}
-
 	public static List<String> categoryNames(Category category) {
 		List<String> categoryNames = new ArrayList<>();
 		if(category.hasTopCategory()){
@@ -79,5 +68,7 @@ public record GetBookResponse(
 		}
 		return categoryNames;
 	}
+
+
 
 }

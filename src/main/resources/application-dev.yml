@@ -45,3 +45,12 @@ rabbitmq:
   routing:
     member: member.registration
     couponCreated: coupon.created
+
+nhn:
+  cloud:
+    imageManager:
+      endpointUrl: https://api-image.nhncloudservice.com
+      accessKey: vyiy4M85i8mJ5mgP
+      secretKey: ffpUQvzkmH8RsQDTuvpZD7U9tWlqExe4
+      bucketName: /supernova-image/
+
