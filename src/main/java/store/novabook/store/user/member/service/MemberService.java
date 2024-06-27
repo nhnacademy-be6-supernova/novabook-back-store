@@ -79,7 +79,7 @@ public class MemberService {
 		PointPolicy pointPolicy = pointPolicyRepository.findById(ID)
 			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class, ID));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy,null, newMember, REGISTER_POINT, POINT_AMOUNT);
+		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, POINT_AMOUNT);
 		pointHistoryRepository.save(pointHistory);
 
 		return CreateMemberResponse.fromEntity(newMember);
@@ -136,13 +136,15 @@ public class MemberService {
 	}
 
 	public LoginMemberResponse matches(LoginMemberRequest loginMemberRequest) {
-		Member member = memberRepository.findByLoginIdAndLoginPassword(loginMemberRequest.loginId(), loginMemberRequest.loginPassword());
-		if(member == null) {
-			return new LoginMemberResponse(false,null,null);
+		Member member = memberRepository.findByLoginIdAndLoginPassword(loginMemberRequest.loginId(),
+			loginMemberRequest.loginPassword());
+		if (member == null) {
+			return new LoginMemberResponse(false, null, null);
 		}
 
 		return new LoginMemberResponse(true, member.getId(), member.getName());
 	}
+
 	public boolean isDuplicateLoginId(String loginId) {
 		return memberRepository.existsByLoginId(loginId);
 	}

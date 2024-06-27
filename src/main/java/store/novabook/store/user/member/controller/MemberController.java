@@ -41,7 +41,6 @@ public class MemberController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
-
 	@CrossOrigin(origins = "http://localhost:8080")
 	@GetMapping("/checkDuplicated")
 	public ResponseEntity<Map<String, Boolean>> checkDuplicated(@RequestParam String loginId) {
@@ -61,8 +60,9 @@ public class MemberController {
 		GetMemberResponse memberResponse = memberService.getMember(memberId);
 		return ResponseEntity.ok(memberResponse);
 	}
+
 	@PostMapping("/login")
-	public ResponseEntity<LoginMemberResponse> login(@RequestBody LoginMemberRequest loginMemberRequest){
+	public ResponseEntity<LoginMemberResponse> login(@RequestBody LoginMemberRequest loginMemberRequest) {
 		return ResponseEntity.ok().body(memberService.matches(loginMemberRequest));
 	}
 
