@@ -21,8 +21,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
-import store.novabook.store.user.member.dto.FindMemberLoginResponse;
-import store.novabook.store.user.member.dto.FindMemberRequest;
 import store.novabook.store.user.member.dto.GetMemberResponse;
 import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
@@ -96,12 +94,4 @@ public class MemberController {
 		memberService.updateMemberStatusToWithdrawn(memberId);
 		return ResponseEntity.ok().build();
 	}
-
-	@PostMapping("/find")
-	public ResponseEntity<FindMemberLoginResponse> find(@RequestBody FindMemberRequest findMemberRequest) {
-		FindMemberLoginResponse memberLogin = memberService.findMemberLogin(findMemberRequest.memberId());
-		// return ResponseEntity.ok().body();
-		return null;
-	}
-
 }

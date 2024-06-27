@@ -162,6 +162,7 @@ public class MemberService {
 		return new FindMemberLoginResponse(member.getLoginId(), member.getLoginPassword(), null);
 	}
 
+
 	public boolean isDuplicateLoginId(String loginId) {
 		return memberRepository.existsByLoginId(loginId);
 	}
