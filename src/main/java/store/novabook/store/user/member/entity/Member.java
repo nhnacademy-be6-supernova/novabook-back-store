@@ -111,7 +111,7 @@ public class Member {
 			.loginPassword(createMemberRequest.loginPassword())
 			.name(createMemberRequest.name())
 			.number(createMemberRequest.number())
-			.email(createMemberRequest.email())
+			.email(createMemberRequest.getEmailFull())
 			.birth(birth)
 			.totalAmount(0L)
 			.latestLoginAt(LocalDateTime.now())
