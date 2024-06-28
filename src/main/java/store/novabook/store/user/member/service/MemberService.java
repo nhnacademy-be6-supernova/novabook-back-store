@@ -1,7 +1,6 @@
 package store.novabook.store.user.member.service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,10 +15,13 @@ import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
 import store.novabook.store.point.repository.PointPolicyRepository;
+import store.novabook.store.user.member.MemberClient;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
 import store.novabook.store.user.member.dto.FindMemberLoginResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
+import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
+import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
 import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
@@ -52,6 +54,8 @@ public class MemberService {
 	private final MemberStatusRepository memberStatusRepository;
 	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
 
+	private final MemberClient memberClient;
+
 	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
 
 		MemberStatus memberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
@@ -80,7 +84,7 @@ public class MemberService {
 		PointPolicy pointPolicy = pointPolicyRepository.findById(ID)
 			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class, ID));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy,null, newMember, REGISTER_POINT, POINT_AMOUNT);
+		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, POINT_AMOUNT);
 		pointHistoryRepository.save(pointHistory);
 
 		return CreateMemberResponse.fromEntity(newMember);
@@ -149,9 +153,14 @@ public class MemberService {
 	public FindMemberLoginResponse findMemberLogin(String loginId) {
 		Member member = memberRepository.findByLoginId(loginId);
 		if (member == null) {
-			return new FindMemberLoginResponse(null, null, null);
+			throw new EntityNotFoundException(Member.class);
 		}
-		return new FindMemberLoginResponse(member.getLoginId(), member.getLoginPassword(), null);
+		return new FindMemberLoginResponse(member.getId(), member.getLoginId(), member.getLoginPassword(), "ROLE_USER");
+	}
+
+	public GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest) {
+
+		return memberClient.getMembersId(getMembersUUIDRequest);
 	}
 
 	public boolean isDuplicateLoginId(String loginId) {
