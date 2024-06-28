@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,7 @@ import store.novabook.store.user.member.dto.GetMemberResponse;
 import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
+import store.novabook.store.user.member.dto.UpdateMemberResponse;
 import store.novabook.store.user.member.service.MemberService;
 
 @RestController
@@ -77,7 +79,7 @@ public class MemberController {
 	}
 
 	@PutMapping("/{memberId}")
-	public ResponseEntity<Void> updateMember(@PathVariable Long memberId,
+	public ResponseEntity<UpdateMemberResponse> updateMember(@RequestHeader Long memberId,
 		@RequestBody UpdateMemberRequest updateMemberRequest) {
 		memberService.updateMember(memberId, updateMemberRequest);
 		return ResponseEntity.ok().build();
