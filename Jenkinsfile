@@ -20,7 +20,9 @@ pipeline {
                 git(
                     url: REPO_URL,
                     branch: 'main',
-                    credentialsId: 'nova-dev'
+                    credentialsId: 'nova-dev',
+		    changelog: false,
+	            poll: false
                 )
             }
         }
