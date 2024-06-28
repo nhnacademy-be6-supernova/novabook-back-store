@@ -27,7 +27,11 @@ pipeline {
         stage('Build') {
             steps {
                 withEnv(["JAVA_OPTS=${env.JAVA_OPTS}"]) {
-                    sh 'mvn clean package -DskipTests=true'
+                    sh """
+                        mvn clean package -DskipTests=true
+                        echo 테스트
+                        pwd
+                    """
                 }
             }
         }
@@ -69,7 +73,7 @@ pipeline {
 def deployToServer(server, deployPath, port) {
     withCredentials([sshUserPrivateKey(credentialsId: 'nova-dev', keyFileVariable: 'PEM_FILE')]) {
         sh """
-        scp -o StrictHostKeyChecking=no -i \$PEM_FILE target/lib/jenkins/${ARTIFACT_NAME} ${server}:${deployPath}
+        scp -o StrictHostKeyChecking=no -i \$PEM_FILE target/${ARTIFACT_NAME} ${server}:${deployPath}
 	    ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'fuser -k ${port}/tcp || true'
         ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'nohup /home/jdk-21.0.3+9/bin/java -jar ${deployPath}/${ARTIFACT_NAME}  --server.port=${port} ${env.JAVA_OPTS} > ${deployPath}/store_app.log 2>&1 &'
         """
