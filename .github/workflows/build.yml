@@ -42,5 +42,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script_stop: true
           script: |
+            chmod 755 ./store/target/store-0.0.1-SNAPSHOT.jar
             fuser -k 8090/tcp
             ./store/startup.sh
