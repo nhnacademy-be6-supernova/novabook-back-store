@@ -22,10 +22,6 @@ pipeline {
                     branch: 'main',
                     credentialsId: 'nova-dev'
                 )
-		    sh 'git reset --hard HEAD'
-                sh 'git clean -fdx'
-                sh 'git fetch --all'
-                sh 'git pull origin main'
             }
         }
         stage('Build') {
