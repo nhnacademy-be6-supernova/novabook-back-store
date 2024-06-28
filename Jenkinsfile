@@ -22,6 +22,10 @@ pipeline {
                     branch: 'main',
                     credentialsId: 'nova-dev'
                 )
+		    sh 'git reset --hard HEAD'
+                sh 'git clean -fdx'
+                sh 'git fetch --all'
+                sh 'git pull origin main'
             }
         }
         stage('Build') {
@@ -76,7 +80,6 @@ pipeline {
 def deployToServer(server, deployPath, port) {
     withCredentials([sshUserPrivateKey(credentialsId: 'nova-dev', keyFileVariable: 'PEM_FILE')]) {
         sh """
-	'rm store-0.0.1-SNAPSHOT.jar'
         scp -o StrictHostKeyChecking=no -i \$PEM_FILE target/${ARTIFACT_NAME} ${server}:${deployPath}
 	ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'fuser -k ${port}/tcp || true'
         ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'nohup /home/jdk-21.0.3+9/bin/java -jar ${deployPath}/${ARTIFACT_NAME} ${env.JAVA_OPTS} > ${deployPath}/store_app.log 2>&1 &'
