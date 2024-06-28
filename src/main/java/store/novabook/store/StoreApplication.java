@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class StoreApplication {
 
 	public static void main(String[] args) {
+		System.out.println("젠킨스 12-3012-03091-20491-049-02394-01249-02349-012394-01294-0=1293-012943-01394-1094-01249-02349-02394-23942-30492-304923-40923-049");
 		SpringApplication.run(StoreApplication.class, args);
 	}
 
