@@ -28,12 +28,10 @@ import store.novabook.store.point.service.PointPolicyService;
 public class PointPolicyController {
 	private final PointPolicyService pointPolicyService;
 
-	@CheckRole("ROLE_USER")
+	// @CheckRole("ROLE_ADMIN")
 	@Operation(summary = "포인트 정책 조회", description = "포인트 정책을 조회합니다.")
 	@GetMapping
 	public ResponseEntity<Page<GetPointPolicyResponse>> getPoint(Pageable pageable) {
-
-		String name = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		Page<GetPointPolicyResponse> pointPolicyResponseList = pointPolicyService.getPointPolicyList(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(pointPolicyResponseList);
