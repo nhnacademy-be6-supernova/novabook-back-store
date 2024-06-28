@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -73,8 +72,8 @@ public class MemberController {
 		return ResponseEntity.ok(memberService.getMemberAll(pageable));
 	}
 
-	@GetMapping("/{memberId}")
-	public ResponseEntity<GetMemberResponse> getMember(@PathVariable Long memberId) {
+	@GetMapping("/member")
+	public ResponseEntity<GetMemberResponse> getMember(@RequestHeader Long memberId) {
 		GetMemberResponse memberResponse = memberService.getMember(memberId);
 		return ResponseEntity.ok(memberResponse);
 	}
@@ -84,21 +83,21 @@ public class MemberController {
 		return ResponseEntity.ok().body(memberService.matches(loginMemberRequest));
 	}
 
-	@PutMapping("/{memberId}")
-	public ResponseEntity<Void> updateMember(@PathVariable Long memberId,
+	@PutMapping("/member")
+	public ResponseEntity<GetMemberResponse> updateMember(@RequestHeader Long memberId,
 		@RequestBody UpdateMemberRequest updateMemberRequest) {
 		memberService.updateMember(memberId, updateMemberRequest);
 		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping("/{memberId}/dormant")
-	public ResponseEntity<Void> updateMemberStatusToDormant(@PathVariable Long memberId) {
+	@PutMapping("/member/dormant")
+	public ResponseEntity<Void> updateMemberStatusToDormant(@RequestHeader Long memberId) {
 		memberService.updateMemberStatusToDormant(memberId);
 		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping("/{memberId}/withdrawn")
-	public ResponseEntity<Void> updateMemberStatusToWithdrawn(@PathVariable Long memberId) {
+	@PutMapping("/member/withdrawn")
+	public ResponseEntity<Void> updateMemberStatusToWithdrawn(@RequestHeader Long memberId) {
 		memberService.updateMemberStatusToWithdrawn(memberId);
 		return ResponseEntity.ok().build();
 	}
