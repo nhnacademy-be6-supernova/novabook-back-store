@@ -44,9 +44,12 @@ public class JWTFilter extends OncePerRequestFilter {
 		}
 
 		String authorization = request.getHeader("Authorization");
+		String refresh = request.getHeader("Refresh");
 
 		//Authorization 헤더 검증
 		if (authorization == null) {
+
+
 
 			log.error("token not found");
 			filterChain.doFilter(request, response);

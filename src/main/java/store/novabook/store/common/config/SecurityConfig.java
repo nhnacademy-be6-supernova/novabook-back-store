@@ -39,7 +39,7 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/**").permitAll())
-			.addFilterAt(new JWTFilter(jwtUtil, memberClient), UsernamePasswordAuthenticationFilter.class)
+			// .addFilterAt(new JWTFilter(jwtUtil, memberClient), UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
