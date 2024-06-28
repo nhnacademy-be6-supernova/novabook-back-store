@@ -4,7 +4,7 @@ spring:
 
   #기본으로 실행할 프로필
   profiles:
-    active: h2
+    active: dev
 
 server:
   port: 8090
