@@ -116,8 +116,7 @@ public class MemberService {
 	public GetMemberResponse getMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		return new GetMemberResponse(member.getId(), member.getLoginId(), member.getName(), member.getEmail());
-
+		return GetMemberResponse.fromEntity(member);
 	}
 
 	public void updateMember(Long memberId, UpdateMemberRequest updateMemberRequest) {
