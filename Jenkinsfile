@@ -79,7 +79,7 @@ def deployToServer(server, deployPath, port) {
 def showLogs(server, deployPath) {
     withCredentials([sshUserPrivateKey(credentialsId: 'nova-dev', keyFileVariable: 'PEM_FILE')]) {
         sh """
-        ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'tail -n 100 ${deployPath}/app.log'
+        ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'tail -n 100 ${deployPath}/store_app.log'
         """
     }
 }
