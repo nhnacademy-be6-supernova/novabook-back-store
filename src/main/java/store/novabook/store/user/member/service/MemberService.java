@@ -18,10 +18,13 @@ import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
 import store.novabook.store.point.repository.PointPolicyRepository;
+import store.novabook.store.user.member.MemberClient;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
 import store.novabook.store.user.member.dto.FindMemberLoginResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
+import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
+import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
 import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
@@ -53,6 +56,8 @@ public class MemberService {
 	private final MemberGradePolicyRepository memberGradePolicyRepository;
 	private final MemberStatusRepository memberStatusRepository;
 	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
+
+	private final MemberClient memberClient;
 
 	private final RabbitTemplate rabbitTemplate;
 
@@ -157,9 +162,14 @@ public class MemberService {
 	public FindMemberLoginResponse findMemberLogin(String loginId) {
 		Member member = memberRepository.findByLoginId(loginId);
 		if (member == null) {
-			return new FindMemberLoginResponse(null, null, null);
+			throw new EntityNotFoundException(Member.class);
 		}
-		return new FindMemberLoginResponse(member.getLoginId(), member.getLoginPassword(), null);
+		return new FindMemberLoginResponse(member.getId(), member.getLoginId(), member.getLoginPassword(), "ROLE_USER");
+	}
+
+	public GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest) {
+
+		return memberClient.getMembersId(getMembersUUIDRequest);
 	}
 
 	public boolean isDuplicateLoginId(String loginId) {
