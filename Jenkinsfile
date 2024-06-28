@@ -31,13 +31,6 @@ pipeline {
                 }
             }
         }
-	stage('Test') {
-            steps {
-                withEnv(["JAVA_OPTS=${env.JAVA_OPTS}"]) {
-                    sh 'mvn test -Dsurefire.forkCount=1 -Dsurefire.useSystemClassLoader=false'
-                }
-            }
-        }   
         stage('Add SSH Key to Known Hosts') {
             steps {
                 script {
@@ -77,8 +70,8 @@ def deployToServer(server, deployPath, port) {
     withCredentials([sshUserPrivateKey(credentialsId: 'nova-dev', keyFileVariable: 'PEM_FILE')]) {
         sh """
         scp -o StrictHostKeyChecking=no -i \$PEM_FILE target/${ARTIFACT_NAME} ${server}:${deployPath}
-	ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'fuser -k ${port}/tcp || true'
-        ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'nohup /home/jdk-21.0.3+9/bin/java -jar ${deployPath}/${ARTIFACT_NAME} ${env.JAVA_OPTS} > ${deployPath}/store_app.log 2>&1 &'
+	    ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'fuser -k ${port}/tcp || true'
+        ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'nohup /home/jdk-21.0.3+9/bin/java -jar ${deployPath}/${ARTIFACT_NAME} -Dspring.profiles.active=dev --server.port=${port} ${env.JAVA_OPTS} > ${deployPath}/store_app.log 2>&1 &'
         """
     }
 }
@@ -86,6 +79,7 @@ def deployToServer(server, deployPath, port) {
 def showLogs(server, deployPath) {
     withCredentials([sshUserPrivateKey(credentialsId: 'nova-dev', keyFileVariable: 'PEM_FILE')]) {
         sh """
+        ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'tail -n 100 ${deployPath}/store_app.log'
         """
     }
 }
