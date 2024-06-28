@@ -24,6 +24,8 @@ import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.user.member.MemberClient;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
+import store.novabook.store.user.member.dto.FindMemberLoginResponse;
+import store.novabook.store.user.member.dto.FindMemberRequest;
 import store.novabook.store.user.member.dto.GetMemberResponse;
 import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
 import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
