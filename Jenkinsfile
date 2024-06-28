@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        EUREKA_CLIENT_SERVICEURL_DEFAULTZONE = 'http://125.6.36.57:8761/eureka/'
         FRONT_SERVER = 'nova-dev@125.6.36.57'
         DEPLOY_PATH = '/home/nova-dev'
         REPO_URL = 'https://github.com/nhnacademy-be6-supernova/novabook-back-store.git'
@@ -28,13 +27,17 @@ pipeline {
         stage('Build') {
             steps {
                 withEnv(["JAVA_OPTS=${env.JAVA_OPTS}"]) {
-                    sh """
-                        mvn clean
-                        mvn package -DskipTests=true
-                    """
+                    sh 'mvn clean package -DskipTests=true'
                 }
             }
         }
+	stage('Test') {
+            steps {
+                withEnv(["JAVA_OPTS=${env.JAVA_OPTS}"]) {
+                    sh 'mvn test -Dsurefire.forkCount=1 -Dsurefire.useSystemClassLoader=false'
+                }
+            }
+        }   
         stage('Add SSH Key to Known Hosts') {
             steps {
                 script {
@@ -74,7 +77,7 @@ def deployToServer(server, deployPath, port) {
     withCredentials([sshUserPrivateKey(credentialsId: 'nova-dev', keyFileVariable: 'PEM_FILE')]) {
         sh """
         scp -o StrictHostKeyChecking=no -i \$PEM_FILE target/${ARTIFACT_NAME} ${server}:${deployPath}
-	    ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'fuser -k ${port}/tcp || true'
+	ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'fuser -k ${port}/tcp || true'
         ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'nohup /home/jdk-21.0.3+9/bin/java -jar ${deployPath}/${ARTIFACT_NAME} ${env.JAVA_OPTS} > ${deployPath}/store_app.log 2>&1 &'
         """
     }
