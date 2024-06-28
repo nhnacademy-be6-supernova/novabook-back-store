@@ -13,15 +13,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
+import store.novabook.store.user.member.MemberClient;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
+import store.novabook.store.user.member.dto.FindMemberLoginResponse;
+import store.novabook.store.user.member.dto.FindMemberRequest;
 import store.novabook.store.user.member.dto.GetMemberResponse;
+import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
+import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
 import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
 import store.novabook.store.user.member.dto.UpdateMemberRequest;
@@ -33,6 +40,7 @@ import store.novabook.store.user.member.service.MemberService;
 public class MemberController {
 
 	private final MemberService memberService;
+	private final MemberClient memberClient;
 
 	@PostMapping
 	public ResponseEntity<CreateMemberResponse> createMember(
@@ -93,5 +101,26 @@ public class MemberController {
 	public ResponseEntity<Void> updateMemberStatusToWithdrawn(@PathVariable Long memberId) {
 		memberService.updateMemberStatusToWithdrawn(memberId);
 		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/find")
+	public ResponseEntity<FindMemberLoginResponse> find(@Valid @RequestBody FindMemberRequest findMemberRequest) {
+		FindMemberLoginResponse memberLoginResponse = memberService.findMemberLogin(findMemberRequest.loginId());
+		return ResponseEntity.ok(memberLoginResponse);
+	}
+
+	@PostMapping("/find/admin")
+	public ResponseEntity<FindMemberLoginResponse> findAdmin(@Valid @RequestBody FindMemberRequest findMemberRequest) {
+		FindMemberLoginResponse memberLoginResponse = memberService.findMemberLogin(findMemberRequest.loginId());
+		return ResponseEntity.ok(memberLoginResponse);
+	}
+
+	@CheckRole("ROLE_USER")
+	@PostMapping("/uuid")
+	public ResponseEntity<GetMembersUUIDResponse> findUUID(@RequestHeader("Authorization") String authorization,
+		@RequestBody GetMembersUUIDRequest getMembersUUIDRequest) {
+		GetMembersUUIDResponse membersId = memberClient.getMembersId(getMembersUUIDRequest);
+
+		return ResponseEntity.ok(membersId);
 	}
 }
