@@ -72,7 +72,6 @@ pipeline {
 def deployToServer(server, deployPath, port) {
     withCredentials([sshUserPrivateKey(credentialsId: 'nova-dev', keyFileVariable: 'PEM_FILE')]) {
         sh """
-        ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'rm ${deployPath}/${ARTIFACT_NAME}'
         scp -o StrictHostKeyChecking=no -i \$PEM_FILE target/${ARTIFACT_NAME} ${server}:${deployPath}
 	    ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'fuser -k ${port}/tcp || true'
         ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'nohup /home/jdk-21.0.3+9/bin/java -jar ${deployPath}/${ARTIFACT_NAME}  --server.port=${port} ${env.JAVA_OPTS} > ${deployPath}/store_app.log 2>&1 &'
