@@ -18,6 +18,8 @@ eureka:
       defaultZone: http://125.6.36.57:8761/eureka
 
 
+
+
 #공통 설정 내용
 
 #swagger 설정
