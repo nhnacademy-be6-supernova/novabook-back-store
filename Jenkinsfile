@@ -4,7 +4,7 @@ pipeline {
     environment {
         FRONT_SERVER = 'nova-dev@125.6.36.57'
         DEPLOY_PATH = '/home/nova-dev'
-        REPO_URL = 'https://github.com/nhnacademy-be6-supernova/novabook-back-store'
+        REPO_URL = 'https://github.com/nhnacademy-be6-supernova/novabook-back-store.git'
         ARTIFACT_NAME = 'store-0.0.1-SNAPSHOT.jar'
         JAVA_OPTS = '-XX:+EnableDynamicAgentLoading -XX:+UseParallelGC'
     }
@@ -22,10 +22,6 @@ pipeline {
                     branch: 'main',
                     credentialsId: 'nova-dev'
                 )
-		    sh 'git reset --hard HEAD'
-                sh 'git clean -fdx'
-                sh 'git fetch --all'
-                sh 'git pull origin main'
             }
         }
         stage('Build') {
