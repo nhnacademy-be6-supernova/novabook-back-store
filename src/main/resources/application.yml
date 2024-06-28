@@ -9,6 +9,13 @@ spring:
 server:
   port: 8090
 
+#유레카 활성화
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://125.6.36.57:8761/eureka
 
 
 #공통 설정 내용
@@ -24,20 +31,8 @@ springdoc:
     display-request-duration: true
     operations-sorter: alpha
 
-#유레카 활성화
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://125.6.36.57:8761/eureka
 
 
-# 유레카 비활성화
-#eureka:
-#  client:
-#    register-with-eureka: false
-#    fetch-registry: false
 
 ---
 # mysql
