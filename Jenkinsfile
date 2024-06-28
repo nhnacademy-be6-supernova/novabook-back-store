@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        EUREKA_CLIENT_SERVICEURL_DEFAULTZONE = 'http://125.6.36.57:8761/eureka/'
         FRONT_SERVER = 'nova-dev@125.6.36.57'
         DEPLOY_PATH = '/home/nova-dev'
         REPO_URL = 'https://github.com/nhnacademy-be6-supernova/novabook-back-store.git'
@@ -82,7 +83,7 @@ def deployToServer(server, deployPath, port) {
 def showLogs(server, deployPath) {
     withCredentials([sshUserPrivateKey(credentialsId: 'nova-dev', keyFileVariable: 'PEM_FILE')]) {
         sh """
-        ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'tail -n 100 ${deployPath}/store_app.log'
+        ssh -o StrictHostKeyChecking=no -i \$PEM_FILE ${server} 'tail -f ${deployPath}/store_app.log'
         """
     }
 }
