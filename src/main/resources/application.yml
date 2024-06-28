@@ -2,7 +2,7 @@ spring:
   application:
     name: 'store'
 
-#기본으로 실행할 프로필
+  #기본으로 실행할 프로필
   profiles:
     active: h2
 
@@ -54,9 +54,11 @@ spring:
       on-profile: local
 
 
-
-
-
-
-
-
+---
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          couponClient:
+            url: http://localhost:8070/api/v1/coupon

@@ -13,7 +13,7 @@ import store.novabook.store.common.adatper.dto.GetCouponAllRequest;
 import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
 import store.novabook.store.common.response.ApiResponse;
 
-@FeignClient(name = "couponClient", url = "http://localhost:8070/api/v1")
+@FeignClient(name = "couponClient")
 public interface CouponAdapter {
 
 	@GetMapping
