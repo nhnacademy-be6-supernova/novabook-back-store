@@ -14,8 +14,6 @@ logging:
     path: ${user.dir}/logs/${spring.application.name}
 
 
-
-
 #공통 설정 내용
 
 #swagger 설정
