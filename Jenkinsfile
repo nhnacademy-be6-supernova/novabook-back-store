@@ -17,12 +17,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+		    sh 'git reset --hard HEAD'
+		    sh 'git clean -fdx'
                 git(
                     url: REPO_URL,
                     branch: 'main',
-                    credentialsId: 'nova-dev',
-		    changelog: false,
-	            poll: false
+                    credentialsId: 'nova-dev'
                 )
             }
         }
