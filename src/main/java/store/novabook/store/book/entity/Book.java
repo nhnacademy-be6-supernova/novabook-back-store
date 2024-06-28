@@ -102,8 +102,6 @@ public class Book {
 		this.price = price;
 		this.discountPrice = discountPrice;
 		this.isPackaged = isPackaged;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = null;
 
 	}
 

@@ -24,8 +24,6 @@ import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.user.member.MemberClient;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
-import store.novabook.store.user.member.dto.FindMemberLoginResponse;
-import store.novabook.store.user.member.dto.FindMemberRequest;
 import store.novabook.store.user.member.dto.GetMemberResponse;
 import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
 import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
@@ -50,11 +48,21 @@ public class MemberController {
 	}
 
 	@CrossOrigin(origins = "http://localhost:8080")
-	@GetMapping("/checkDuplicated")
+	@GetMapping("/checkDuplicatedLoginId")
 	public ResponseEntity<Map<String, Boolean>> checkDuplicated(@RequestParam String loginId) {
 		boolean isDuplicateLoginId = memberService.isDuplicateLoginId(loginId);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("isDuplicateLoginId", isDuplicateLoginId);
+		return ResponseEntity.ok(response);
+	}
+
+	@CrossOrigin(origins = "http://localhost:8080")
+	@PostMapping("/checkDuplicatedEmail")
+	public ResponseEntity<Map<String, Boolean>> checkDuplicateEmail(@RequestBody Map<String, String> request) {
+		String email = request.get("email");
+		boolean isDuplicateEmail = memberService.isDuplicateEmail(email);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("isDuplicateEmail", isDuplicateEmail);
 		return ResponseEntity.ok(response);
 	}
 

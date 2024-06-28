@@ -2,6 +2,8 @@ package store.novabook.store.user.member.service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.message.MemberRegistrationMessage;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
@@ -56,6 +59,14 @@ public class MemberService {
 
 	private final MemberClient memberClient;
 
+	private final RabbitTemplate rabbitTemplate;
+
+	@Value("${rabbitmq.exchange.member}")
+	private String memberExchange;
+
+	@Value("${rabbitmq.routing.member}")
+	private String memberCreateRoutingKey;
+
 	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
 
 		MemberStatus memberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
@@ -69,6 +80,7 @@ public class MemberService {
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
 			throw new AlreadyExistException(Member.class);
 		}
+
 		Member newMember = memberRepository.save(member);
 
 		MemberGradePolicy memberGradePolicy = memberGradePolicyRepository.findByName(GRADE_COMMON)
@@ -77,7 +89,7 @@ public class MemberService {
 		MemberGradeHistory memberGradeHistory = MemberGradeHistory.builder()
 			.member(newMember)
 			.memberGradePolicy(memberGradePolicy)
-			.quarter(null)
+			.quarter(LocalDateTime.now())
 			.build();
 		memberGradeHistoryRepository.save(memberGradeHistory);
 
@@ -87,6 +99,8 @@ public class MemberService {
 		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, POINT_AMOUNT);
 		pointHistoryRepository.save(pointHistory);
 
+		rabbitTemplate.convertAndSend(memberExchange, memberCreateRoutingKey,
+			MemberRegistrationMessage.builder().memberId(newMember.getId()).build());
 		return CreateMemberResponse.fromEntity(newMember);
 	}
 
@@ -102,20 +116,15 @@ public class MemberService {
 	public GetMemberResponse getMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		return new GetMemberResponse(
-			member.getId(),
-			member.getLoginId(),
-			member.getName(),
-			member.getEmail());
+		return new GetMemberResponse(member.getId(), member.getLoginId(), member.getName(), member.getEmail());
 
 	}
 
 	public void updateMember(Long memberId, UpdateMemberRequest updateMemberRequest) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		member.update(updateMemberRequest.loginPassword(),
-			updateMemberRequest.name(), updateMemberRequest.number(), updateMemberRequest.email()
-		);
+		member.update(updateMemberRequest.loginPassword(), updateMemberRequest.name(), updateMemberRequest.number(),
+			updateMemberRequest.email());
 		memberRepository.save(member);
 
 	}
@@ -165,6 +174,10 @@ public class MemberService {
 
 	public boolean isDuplicateLoginId(String loginId) {
 		return memberRepository.existsByLoginId(loginId);
+	}
+
+	public boolean isDuplicateEmail(String email) {
+		return memberRepository.existsByEmail(email);
 	}
 
 }
