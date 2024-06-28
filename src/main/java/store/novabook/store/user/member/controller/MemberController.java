@@ -104,16 +104,14 @@ public class MemberController {
 	}
 
 	@PostMapping("/find")
-	public ResponseEntity<FindMemberLoginResponse> find(@RequestBody FindMemberRequest findMemberRequest) {
-		FindMemberLoginResponse memberLoginResponse = memberService.findMemberLogin(findMemberRequest.memberId());
-		// return ResponseEntity.ok().body();
+	public ResponseEntity<FindMemberLoginResponse> find(@Valid @RequestBody FindMemberRequest findMemberRequest) {
+		FindMemberLoginResponse memberLoginResponse = memberService.findMemberLogin(findMemberRequest.loginId());
 		return ResponseEntity.ok(memberLoginResponse);
 	}
 
 	@PostMapping("/find/admin")
-	public ResponseEntity<FindMemberLoginResponse> findAdmin(@RequestBody FindMemberRequest findMemberRequest) {
-		FindMemberLoginResponse memberLoginResponse = memberService.findMemberLogin(findMemberRequest.memberId());
-		// return ResponseEntity.ok().body();
+	public ResponseEntity<FindMemberLoginResponse> findAdmin(@Valid @RequestBody FindMemberRequest findMemberRequest) {
+		FindMemberLoginResponse memberLoginResponse = memberService.findMemberLogin(findMemberRequest.loginId());
 		return ResponseEntity.ok(memberLoginResponse);
 	}
 
@@ -121,7 +119,6 @@ public class MemberController {
 	@PostMapping("/uuid")
 	public ResponseEntity<GetMembersUUIDResponse> findUUID(@RequestHeader("Authorization") String authorization,
 		@RequestBody GetMembersUUIDRequest getMembersUUIDRequest) {
-		// Now you can use the "authorization" variable which contains the value of the "Authorization" header
 		GetMembersUUIDResponse membersId = memberClient.getMembersId(getMembersUUIDRequest);
 
 		return ResponseEntity.ok(membersId);

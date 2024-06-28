@@ -39,22 +39,9 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/**").permitAll())
-			// .requestMatchers("/", "/auth/login", "/auth/uuid").permitAll()
-			// .requestMatchers("/auth/admin/**").permitAll())
-
 			.addFilterAt(new JWTFilter(jwtUtil, memberClient), UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-		// http
-		// 	.csrf(AbstractHttpConfigurer::disable)
-		// 	.formLogin(AbstractHttpConfigurer::disable)
-		// 	.httpBasic(AbstractHttpConfigurer::disable)
-		// 	.authorizeHttpRequests(authorize -> authorize
-		// 		.requestMatchers("/", "/auth/login", "/auth/uuid").permitAll()
-		// 		.requestMatchers("/auth/admin/**").permitAll()
-		// 		.anyRequest().authenticated())
-		// 	.sessionManagement(session -> session
-		// 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		return http.build();
 	}
