@@ -8,7 +8,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import store.novabook.store.common.security.service.NewTokenClient;
 import store.novabook.store.user.member.MemberClient;
 
 @Configuration
@@ -17,11 +19,13 @@ public class SecurityConfig {
 
 	private final JWTUtil jwtUtil;
 	private final MemberClient memberClient;
+	private final NewTokenClient newTokenClient;
 
-	public SecurityConfig(JWTUtil jwtUtil, MemberClient memberClient) {
+	public SecurityConfig(JWTUtil jwtUtil, MemberClient memberClient, NewTokenClient newTokenClient) {
 
 		this.jwtUtil = jwtUtil;
 		this.memberClient = memberClient;
+		this.newTokenClient = newTokenClient;
 	}
 
 	@Bean
@@ -38,7 +42,8 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/**").permitAll())
-			// .addFilterAt(new JWTFilter(jwtUtil, memberClient), UsernamePasswordAuthenticationFilter.class)
+			.addFilterAt(new JWTFilter(jwtUtil, memberClient, newTokenClient),
+				UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

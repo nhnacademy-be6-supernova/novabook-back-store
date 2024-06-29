@@ -47,7 +47,7 @@ public class JWTUtil {
 		return claims.get("authorities", String.class);
 	}
 
-	public Boolean isExpired(String token) {
+	public boolean isExpired(String token) {
 		Claims claims = null;
 		try {
 			claims = Jwts
