@@ -112,7 +112,7 @@ public class MemberController {
 
 	@PutMapping("/member/withdraw")
 	public ResponseEntity<Void> updateMemberStatusToWithdraw(@RequestHeader Long memberId,
-		DeleteMemberRequest deleteMemberRequest) {
+		@RequestBody DeleteMemberRequest deleteMemberRequest) {
 		memberService.updateMemberStatusToWithdraw(memberId, deleteMemberRequest);
 		return ResponseEntity.ok().build();
 	}
