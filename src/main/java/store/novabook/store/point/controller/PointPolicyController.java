@@ -32,8 +32,8 @@ public class PointPolicyController {
 	@GetMapping
 	public ResponseEntity<Page<GetPointPolicyResponse>> getPoint(Pageable pageable) {
 
-		// String name = SecurityContextHolder.getContext().getAuthentication().getName();
 
+		// String name = SecurityContextHolder.getContext().getAuthentication().getName();
 		Page<GetPointPolicyResponse> pointPolicyResponseList = pointPolicyService.getPointPolicyList(pageable);
 
 		HttpHeaders headers = new HttpHeaders();
