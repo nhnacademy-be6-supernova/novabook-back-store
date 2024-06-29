@@ -1,52 +1,47 @@
-
-name: Build
+name: Maven 배포
 
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - develop
-      - main
+    branches: [ "main" ]
+
 jobs:
   build:
-    name: Build and analyze
+
     runs-on: ubuntu-latest
-    
+
     steps:
-      - uses: actions/checkout@v4.1.7
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: actions/checkout@v3
       - name: Set up JDK 21
-        uses: actions/setup-java@v4.2.1
-        with:    
-          distribution: 'zulu'
-          java-version: 21
-          
-       # mvn clean verify 명령어 실행 
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
       - name: Build with Maven
-        run:
-          mvn clean verify
-      
-      # mvnw test 실행 
-      - name: test code
-        run: mvn test
-        
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4.0.2
+        run: |
+          mvn clean
+          mvn -B package --file pom.xml
+      - name: upload file
+        uses: appleboy/scp-action@master
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-          
-      - name: Cache Maven packages
-        uses: actions/cache@v4.0.2
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: "target/*.jar"
+          target: "~/store/"
+          rm: false
+      - name: execute shell script
+        uses: appleboy/ssh-action@master
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-          
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run:
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=store-novabook-store -Dsonar.projectName='store-novabook-store'
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script_stop: true
+          script: |
+            chmod 755 ./store/target/store-0.0.1-SNAPSHOT.jar
+            fuser -k 8090/tcp
+            ./store/startup.sh
