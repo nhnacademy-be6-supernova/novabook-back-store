@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +53,6 @@ public class MemberAddressController {
 		return ResponseEntity.ok(memberAddressResponse);
 	}
 
-	@CrossOrigin(origins = "http://localhost:8080")
 	@PutMapping("/{memberAddressId}")
 	public ResponseEntity<Void> updateMemberAddress(@PathVariable Long memberAddressId,
 		@RequestBody UpdateMemberAddressRequest updateMemberAddressRequest) {
@@ -68,7 +66,6 @@ public class MemberAddressController {
 		return ResponseEntity.ok().build();
 	}
 
-	@CrossOrigin(origins = "http://localhost:8080")
 	@GetMapping("/checkMemberAddressCount")
 	public ResponseEntity<Boolean> checkMemberAddressCount(@RequestHeader Long memberId) {
 		boolean isExceedMemberAddressCount = memberAddressService.checkMemberAddressCount(memberId);

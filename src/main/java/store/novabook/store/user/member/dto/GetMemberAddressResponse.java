@@ -1,5 +1,8 @@
 package store.novabook.store.user.member.dto;
 
+import lombok.Builder;
+
+@Builder
 public record GetMemberAddressResponse(
 	Long id,
 	Long streetAddressId,
@@ -9,5 +12,4 @@ public record GetMemberAddressResponse(
 	String streetAddress,
 	String memberAddressDetail
 ) {
-
 }

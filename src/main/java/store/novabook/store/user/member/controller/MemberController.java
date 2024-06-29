@@ -22,6 +22,7 @@ import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.user.member.MemberClient;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
+import store.novabook.store.user.member.dto.DeleteMemberRequest;
 import store.novabook.store.user.member.dto.FindMemberLoginResponse;
 import store.novabook.store.user.member.dto.FindMemberRequest;
 import store.novabook.store.user.member.dto.GetMemberResponse;
@@ -29,7 +30,9 @@ import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
 import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
 import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
-import store.novabook.store.user.member.dto.UpdateMemberRequest;
+import store.novabook.store.user.member.dto.UpdateMemberNameRequest;
+import store.novabook.store.user.member.dto.UpdateMemberNumberRequest;
+import store.novabook.store.user.member.dto.UpdateMemberPasswordRequest;
 import store.novabook.store.user.member.service.MemberService;
 
 @RestController
@@ -80,10 +83,24 @@ public class MemberController {
 		return ResponseEntity.ok().body(memberService.matches(loginMemberRequest));
 	}
 
-	@PutMapping("/member")
-	public ResponseEntity<GetMemberResponse> updateMember(@RequestHeader Long memberId,
-		@RequestBody UpdateMemberRequest updateMemberRequest) {
-		memberService.updateMember(memberId, updateMemberRequest);
+	@PutMapping("/member/name")
+	public ResponseEntity<Void> updateMemberName(@RequestHeader Long memberId,
+		@RequestBody @Valid UpdateMemberNameRequest updateMemberNameRequest) {
+		memberService.updateMemberName(memberId, updateMemberNameRequest);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/member/number")
+	public ResponseEntity<Void> updateMemberNumber(@RequestHeader Long memberId,
+		@RequestBody @Valid UpdateMemberNumberRequest updateMemberNumberRequest) {
+		memberService.updateMemberNumber(memberId, updateMemberNumberRequest);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/member/password")
+	public ResponseEntity<Void> updateMemberPassword(@RequestHeader Long memberId,
+		@RequestBody @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+		memberService.updateMemberPassword(memberId, updateMemberPasswordRequest);
 		return ResponseEntity.ok().build();
 	}
 
@@ -93,9 +110,10 @@ public class MemberController {
 		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping("/member/withdrawn")
-	public ResponseEntity<Void> updateMemberStatusToWithdrawn(@RequestHeader Long memberId) {
-		memberService.updateMemberStatusToWithdrawn(memberId);
+	@PutMapping("/member/withdraw")
+	public ResponseEntity<Void> updateMemberStatusToWithdraw(@RequestHeader Long memberId,
+		@RequestBody DeleteMemberRequest deleteMemberRequest) {
+		memberService.updateMemberStatusToWithdraw(memberId, deleteMemberRequest);
 		return ResponseEntity.ok().build();
 	}
 
