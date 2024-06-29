@@ -2,7 +2,6 @@ package store.novabook.store.category.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +47,6 @@ public class CategoryController {
 
 	@Operation(summary = "카테고리 삭제", description = "카테고리를 삭제합니다.")
 	@DeleteMapping("/{id}")
-	@CrossOrigin(origins = "http://localhost:8080")
 	public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
 		categoryService.delete(id);
 		return ResponseEntity.ok().build();
