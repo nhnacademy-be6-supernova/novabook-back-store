@@ -97,7 +97,6 @@ public class Member {
 		this.name = name;
 		this.number = number;
 		this.email = email;
-		this.updatedAt = LocalDateTime.now();
 	}
 
 	public void updateMemberStatus(MemberStatus memberStatus) {
@@ -116,5 +115,21 @@ public class Member {
 			.totalAmount(0L)
 			.latestLoginAt(LocalDateTime.now())
 			.build();
+	}
+
+	public void updateName(String name) {
+		this.name = name;
+	}
+
+	public void updateNumber(String number) {
+		this.number = number;
+	}
+
+	public void updateEmail(String email) {
+		this.email = email;
+	}
+
+	public void updateLoginPassword(String loginPassword) {
+		this.loginPassword = loginPassword;
 	}
 }

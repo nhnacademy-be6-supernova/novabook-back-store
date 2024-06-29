@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +22,7 @@ import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.user.member.MemberClient;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
+import store.novabook.store.user.member.dto.DeleteMemberRequest;
 import store.novabook.store.user.member.dto.FindMemberLoginResponse;
 import store.novabook.store.user.member.dto.FindMemberRequest;
 import store.novabook.store.user.member.dto.GetMemberResponse;
@@ -30,7 +30,9 @@ import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
 import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
 import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
-import store.novabook.store.user.member.dto.UpdateMemberRequest;
+import store.novabook.store.user.member.dto.UpdateMemberNameRequest;
+import store.novabook.store.user.member.dto.UpdateMemberNumberRequest;
+import store.novabook.store.user.member.dto.UpdateMemberPasswordRequest;
 import store.novabook.store.user.member.service.MemberService;
 
 @RestController
@@ -48,7 +50,6 @@ public class MemberController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
-	@CrossOrigin(origins = "http://localhost:8080")
 	@GetMapping("/checkDuplicatedLoginId")
 	public ResponseEntity<Map<String, Boolean>> checkDuplicated(@RequestParam String loginId) {
 		boolean isDuplicateLoginId = memberService.isDuplicateLoginId(loginId);
@@ -57,7 +58,6 @@ public class MemberController {
 		return ResponseEntity.ok(response);
 	}
 
-	@CrossOrigin(origins = "http://localhost:8080")
 	@PostMapping("/checkDuplicatedEmail")
 	public ResponseEntity<Map<String, Boolean>> checkDuplicateEmail(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
@@ -83,10 +83,24 @@ public class MemberController {
 		return ResponseEntity.ok().body(memberService.matches(loginMemberRequest));
 	}
 
-	@PutMapping("/member")
-	public ResponseEntity<GetMemberResponse> updateMember(@RequestHeader Long memberId,
-		@RequestBody UpdateMemberRequest updateMemberRequest) {
-		memberService.updateMember(memberId, updateMemberRequest);
+	@PutMapping("/member/name")
+	public ResponseEntity<Void> updateMemberName(@RequestHeader Long memberId,
+		@RequestBody @Valid UpdateMemberNameRequest updateMemberNameRequest) {
+		memberService.updateMemberName(memberId, updateMemberNameRequest);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/member/number")
+	public ResponseEntity<Void> updateMemberNumber(@RequestHeader Long memberId,
+		@RequestBody @Valid UpdateMemberNumberRequest updateMemberNumberRequest) {
+		memberService.updateMemberNumber(memberId, updateMemberNumberRequest);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/member/password")
+	public ResponseEntity<Void> updateMemberPassword(@RequestHeader Long memberId,
+		@RequestBody @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+		memberService.updateMemberPassword(memberId, updateMemberPasswordRequest);
 		return ResponseEntity.ok().build();
 	}
 
@@ -96,9 +110,10 @@ public class MemberController {
 		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping("/member/withdrawn")
-	public ResponseEntity<Void> updateMemberStatusToWithdrawn(@RequestHeader Long memberId) {
-		memberService.updateMemberStatusToWithdrawn(memberId);
+	@PutMapping("/member/withdraw")
+	public ResponseEntity<Void> updateMemberStatusToWithdraw(@RequestHeader Long memberId,
+		DeleteMemberRequest deleteMemberRequest) {
+		memberService.updateMemberStatusToWithdraw(memberId, deleteMemberRequest);
 		return ResponseEntity.ok().build();
 	}
 

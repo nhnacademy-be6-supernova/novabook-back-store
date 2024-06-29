@@ -21,13 +21,16 @@ import store.novabook.store.point.repository.PointPolicyRepository;
 import store.novabook.store.user.member.MemberClient;
 import store.novabook.store.user.member.dto.CreateMemberRequest;
 import store.novabook.store.user.member.dto.CreateMemberResponse;
+import store.novabook.store.user.member.dto.DeleteMemberRequest;
 import store.novabook.store.user.member.dto.FindMemberLoginResponse;
 import store.novabook.store.user.member.dto.GetMemberResponse;
 import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
 import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
 import store.novabook.store.user.member.dto.LoginMemberRequest;
 import store.novabook.store.user.member.dto.LoginMemberResponse;
-import store.novabook.store.user.member.dto.UpdateMemberRequest;
+import store.novabook.store.user.member.dto.UpdateMemberNameRequest;
+import store.novabook.store.user.member.dto.UpdateMemberNumberRequest;
+import store.novabook.store.user.member.dto.UpdateMemberPasswordRequest;
 import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.entity.MemberGradeHistory;
 import store.novabook.store.user.member.entity.MemberGradePolicy;
@@ -45,7 +48,7 @@ public class MemberService {
 	public static final String GRADE_COMMON = "일반";
 	public static final String STATUS_ACTIVE = "활동";
 	public static final String STATUS_DORMANT = "휴면";
-	public static final String STATUS_WITHDRAWN = "탈퇴";
+	public static final String STATUS_WITHDRAW = "탈퇴";
 	public static final long ID = 1L;
 	public static final String REGISTER_POINT = "회원가입 적립금";
 	public static final long POINT_AMOUNT = 5000L;
@@ -119,13 +122,27 @@ public class MemberService {
 		return GetMemberResponse.fromEntity(member);
 	}
 
-	public void updateMember(Long memberId, UpdateMemberRequest updateMemberRequest) {
+	public void updateMemberName(Long memberId, UpdateMemberNameRequest updateMemberNameRequest) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		member.update(updateMemberRequest.loginPassword(), updateMemberRequest.name(), updateMemberRequest.number(),
-			updateMemberRequest.email());
-		memberRepository.save(member);
+		member.updateName(updateMemberNameRequest.name());
+	}
 
+	public void updateMemberNumber(Long memberId, UpdateMemberNumberRequest updateMemberNumberRequest) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+		member.updateNumber(updateMemberNumberRequest.number());
+		memberRepository.save(member);
+	}
+
+	public void updateMemberPassword(Long memberId, UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+		if (!updateMemberPasswordRequest.loginPassword().equals(updateMemberPasswordRequest.loginPasswordConfirm())) {
+			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+		}
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+		member.updateLoginPassword(updateMemberPasswordRequest.loginPassword());
+		memberRepository.save(member);
 	}
 
 	public void updateMemberStatusToDormant(Long memberId) {
@@ -138,12 +155,17 @@ public class MemberService {
 		memberRepository.save(member);
 	}
 
-	public void updateMemberStatusToWithdrawn(Long memberId) {
-		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_WITHDRAWN)
+	public void updateMemberStatusToWithdraw(Long memberId, DeleteMemberRequest deleteMemberRequest) {
+		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_WITHDRAW)
 			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class, memberId));
 
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+
+		if (!member.getLoginPassword().equals(deleteMemberRequest.loginPassword())) {
+			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+		}
+
 		member.updateMemberStatus(newMemberStatus);
 		memberRepository.save(member);
 	}
@@ -178,6 +200,5 @@ public class MemberService {
 	public boolean isDuplicateEmail(String email) {
 		return memberRepository.existsByEmail(email);
 	}
-
 }
 
