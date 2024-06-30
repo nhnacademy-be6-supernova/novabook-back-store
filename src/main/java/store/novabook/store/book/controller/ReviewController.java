@@ -34,29 +34,29 @@ import store.novabook.store.book.service.ReviewService;
 public class ReviewController {
 
 	private final ReviewService reviewService;
-
+	private static final Long MEMBER_ID = 7L;
 	/**
 	 * 특정 회원이 작성한 리뷰가 포함된 책들을 페이지네이션으로 반환합니다.
-	 * @param memberId 회원 ID
 	 * @param pageable 페이지 정보
 	 * @return 페이지화된 책 정보
 	 */
 	@Operation(summary = "리뷰를 작성한 책들", description = "리뷰를 작성한 책들을 받습니다. 헤더에 memberId를 포함합니다.")
 	@GetMapping("/members/books")
-	public ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(@RequestHeader Long memberId, Pageable pageable) {
+	public ResponseEntity<Page<SearchBookResponse>> getReviewedBooks( Pageable pageable) {
+		Long memberId = MEMBER_ID;
 		Page<SearchBookResponse> searchBookResponses = reviewService.myReviews(memberId, pageable);
 		return ResponseEntity.ok(searchBookResponses);
 	}
 
 	/**
 	 * 특정 회원이 작성한 모든 리뷰를 페이지네이션으로 반환합니다.
-	 * @param memberId 회원 ID
 	 * @param pageable 페이지 정보
 	 * @return 페이지화된 리뷰 정보
 	 */
 	@Operation(summary = "작성한 리뷰들", description = "작성한 리뷰들을 받습니다. 헤더에 memberId를 포함합니다.")
 	@GetMapping("/members")
-	public ResponseEntity<Page<GetReviewResponse>> getReviewByMember(@RequestHeader Long memberId, Pageable pageable) {
+	public ResponseEntity<Page<GetReviewResponse>> getReviewByMember( Pageable pageable) {
+		Long memberId = MEMBER_ID;
 		Page<GetReviewResponse> getReviewResponses = reviewService.membersReviews(memberId, pageable);
 		return ResponseEntity.ok(getReviewResponses);
 	}
@@ -76,29 +76,29 @@ public class ReviewController {
 
 	/**
 	 * 새로운 리뷰를 작성합니다.
-	 * @param memberId 회원 ID
 	 * @param request 리뷰 생성 요청 데이터
 	 * @return 생성된 리뷰의 응답 데이터
 	 */
 	@Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다. 헤더에 memberId를 포함합니다.")
 	@PostMapping
-	public ResponseEntity<CreateReviewResponse> createReviewed(@RequestHeader Long memberId,
+	public ResponseEntity<CreateReviewResponse> createReviewed(
 		@Valid @RequestBody CreateReviewRequest request) {
+		Long memberId = MEMBER_ID;
 		CreateReviewResponse createReviewResponse = reviewService.createReview(memberId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createReviewResponse);
 	}
 
 	/**
 	 * 특정 리뷰를 업데이트합니다.
-	 * @param memberId 회원 ID
 	 * @param request 리뷰 업데이트 요청 데이터
 	 * @param reviewsId 수정할 리뷰의 ID
 	 * @return 응답 상태 코드
 	 */
 	@Operation(summary = "리뷰 수정", description = "리뷰를 수정합니다. 헤더에 memberId를 포함합니다.")
 	@PutMapping("/reviews/{reviewsId}")
-	public ResponseEntity<Void> updateReviewed(@RequestHeader Long memberId,
+	public ResponseEntity<Void> updateReviewed(
 		@Valid @RequestBody UpdateReviewRequest request, @PathVariable Long reviewsId) {
+		Long memberId = MEMBER_ID;
 		reviewService.updateReview(memberId, request, reviewsId);
 		return ResponseEntity.ok().build();
 	}

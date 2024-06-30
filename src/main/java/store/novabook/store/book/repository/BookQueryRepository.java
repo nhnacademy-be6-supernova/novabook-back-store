@@ -31,64 +31,62 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 	}
 
 	public GetBookResponse getBook(Long id) {
-			QBook qBook = QBook.book;
-			QReview qReview = QReview.review;
-			QLikes qLikes = QLikes.likes;
-			QBookStatus qBookStatus = QBookStatus.bookStatus;
-			QBookTag qBookTag = QBookTag.bookTag;
-			QTag qTag = QTag.tag;
-			QBookCategory qBookCategory = QBookCategory.bookCategory;
-			QCategory qCategory = QCategory.category;
+		QBook qBook = QBook.book;
+		QReview qReview = QReview.review;
+		QLikes qLikes = QLikes.likes;
+		QBookStatus qBookStatus = QBookStatus.bookStatus;
+		QBookTag qBookTag = QBookTag.bookTag;
+		QTag qTag = QTag.tag;
+		QBookCategory qBookCategory = QBookCategory.bookCategory;
+		QCategory qCategory = QCategory.category;
 		QImage qImage = QImage.image;
 		QBookImage qBookImage = QBookImage.bookImage;
 
-			Book book = from(qBook)
-				.leftJoin(qReview).on(qBook.id.eq(qReview.book.id))
-				.leftJoin(qLikes).on(qBook.id.eq(qLikes.book.id))
-				.join(qBookStatus).on(qBook.bookStatus.id.eq(qBookStatus.id))
-				.where(qBook.bookStatus.id.ne(4L).and(qBook.id.eq(id)))
-				.fetchOne();
-			if (book == null) {
-				throw new EntityNotFoundException(Book.class, id);
-			}
+		Book book = from(qBook)
+			.leftJoin(qReview).on(qBook.id.eq(qReview.book.id))
+			.leftJoin(qLikes).on(qBook.id.eq(qLikes.book.id))
+			.join(qBookStatus).on(qBook.bookStatus.id.eq(qBookStatus.id))
+			.where(qBook.bookStatus.id.ne(4L).and(qBook.id.eq(id)))
+			.fetchOne();
+		if (book == null) {
+			throw new EntityNotFoundException(Book.class, id);
+		}
 
-			// BookTag 및 BookCategory 서브쿼리로 조회
-			List<String> tags = from(qBookTag)
-				.join(qTag).on(qBookTag.tag.id.eq(qTag.id))
-				.where(qBookTag.book.id.eq(book.getId()))
-				.select(qTag.name)
-				.fetch();
+		// BookTag 및 BookCategory 서브쿼리로 조회
+		List<String> tags = from(qBookTag)
+			.join(qTag).on(qBookTag.tag.id.eq(qTag.id))
+			.where(qBookTag.book.id.eq(book.getId()))
+			.select(qTag.name)
+			.fetch();
 
-			Category category = from(qBookCategory)
-				.join(qCategory).on(qBookCategory.category.id.eq(qCategory.id))
-				.where(qBookCategory.book.id.eq(book.getId()))
-				.select(qCategory)
-				.fetchOne();
+		Category category = from(qBookCategory)
+			.join(qCategory).on(qBookCategory.category.id.eq(qCategory.id))
+			.where(qBookCategory.book.id.eq(book.getId()))
+			.select(qCategory)
+			.fetchOne();
 
+		long likesCount = from(qLikes)
+			.where(qLikes.book.id.eq(book.getId()))
+			.fetchCount();
 
-			long likesCount = from(qLikes)
-				.where(qLikes.book.id.eq(book.getId()))
-				.fetchCount();
+		// Review 조회
+		Integer score = from(qReview)
+			.where(qReview.book.id.eq(book.getId()))
+			.select(qReview.score)
+			.fetchFirst();
 
-			// Review 조회
-			Integer score = from(qReview)
-				.where(qReview.book.id.eq(book.getId()))
-				.select(qReview.score)
-				.fetchFirst();
+		Image image = from(qBookImage)
+			.join(qImage).on(qBookImage.image.id.eq(qImage.id))
+			.where(qBookImage.book.id.eq(book.getId()))
+			.select(qImage)
+			.fetchOne();
 
-			Image image = from(qBookImage)
-				.join(qImage).on(qBookImage.image.id.eq(qImage.id))
-				.where(qBookImage.book.id.eq(book.getId()))
-				.select(qImage)
-				.fetchOne();
+		// Review가 없는 경우 기본값 설정
+		if (score == null) {
+			score = 0;
+		}
 
-
-			// Review가 없는 경우 기본값 설정
-			if (score == null) {
-				score = 0;
-			}
-
-			return GetBookResponse.fromEntity(book, tags, category, (int)likesCount, score, image);
+		return GetBookResponse.fromEntity(book, tags, category, (int)likesCount, score, image);
 
 	}
 

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateLikesRequest;
 import store.novabook.store.book.dto.CreateLikesResponse;
-import store.novabook.store.book.dto.SearchBookResponse;
+import store.novabook.store.book.dto.GetLikeBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Likes;
 import store.novabook.store.book.repository.BookRepository;
@@ -32,21 +32,21 @@ public class LikesService {
 
 	//내가 좋아요 누른 책 목록 불러오기
 	@Transactional(readOnly = true)
-	public Page<SearchBookResponse> myLikes(Long memberId, Pageable pageable) {
+	public Page<GetLikeBookResponse> myLikes(Long memberId, Pageable pageable) {
 		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId, pageable);
-		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
+		List<GetLikeBookResponse> responses = new ArrayList<>();
 		for (Likes like : likesList) {
-			searchBookResponses.add(SearchBookResponse.from(like.getBook()));
+			responses.add(GetLikeBookResponse.from(like));
 		}
-		return new PageImpl<>(searchBookResponses, pageable, searchBookResponses.size());
+		return new PageImpl<>(responses, pageable, responses.size());
 	}
 
 	//생성
-	public CreateLikesResponse createLikes(CreateLikesRequest request) {
-		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
-		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
+	public CreateLikesResponse createLikes(Long memberId, Long bookId) {
+		Book book = bookRepository.findById(bookId)
+			.orElseThrow(() -> new EntityNotFoundException(Book.class,bookId));
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
 		Likes likes = likesRepository.save(Likes.of(book, member));
 		return CreateLikesResponse.from(likes);
 	}

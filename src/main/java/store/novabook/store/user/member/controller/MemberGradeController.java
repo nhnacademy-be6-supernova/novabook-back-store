@@ -2,7 +2,6 @@ package store.novabook.store.user.member.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,9 +15,10 @@ import store.novabook.store.user.member.service.MemberGradeHistoryService;
 public class MemberGradeController {
 
 	private final MemberGradeHistoryService memberGradeHistoryService;
+	private static final Long MEMBER_ID = 7L;
 
 	@GetMapping
-	public ResponseEntity<GetMemberGradeResponse> getMemberGrade(@RequestHeader Long memberId) {
-		return ResponseEntity.ok(memberGradeHistoryService.getMemberGrade(memberId));
+	public ResponseEntity<GetMemberGradeResponse> getMemberGrade() {
+		return ResponseEntity.ok(memberGradeHistoryService.getMemberGrade(MEMBER_ID));
 	}
 }
