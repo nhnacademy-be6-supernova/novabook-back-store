@@ -73,7 +73,6 @@ public class MemberService {
 	private String memberCreateRoutingKey;
 
 	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
-
 		if (!createMemberRequest.loginPassword().equals(createMemberRequest.loginPasswordConfirm())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
