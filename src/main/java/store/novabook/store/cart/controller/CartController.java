@@ -32,8 +32,7 @@ public class CartController {
 	@GetMapping("/{memberId}")
 	public ResponseEntity<GetCartResponse> getCartByUserID(@PathVariable Long memberId,
 		@DefaultValue(value = "true") boolean isExposed) {
-		GetCartResponse getCartResponse = cartService.getCartByMemberId(memberId, isExposed);
-		return ResponseEntity.status(HttpStatus.OK).body(getCartResponse);
+		return ResponseEntity.status(HttpStatus.OK).body(cartService.getCartByMemberId(memberId, isExposed));
 	}
 
 	@Operation(summary = "장바구니 생성", description = "장바구니를 생성합니다.")

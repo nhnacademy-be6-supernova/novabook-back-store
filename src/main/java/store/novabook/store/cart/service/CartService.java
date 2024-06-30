@@ -41,11 +41,11 @@ public class CartService {
 	public GetCartResponse getCartByMemberId(Long memberId, boolean isExposed) {
 		List<Long> cartIds = new ArrayList<>();
 
-		if(isExposed) {
+		if (isExposed) {
 			List<Cart> cartList = cartRepository.findByMemberIdAndIsExposedTrue(memberId);
-			for (Cart cart : cartList) {
-				cartIds.add(cart.getId());
-			}
+			cartIds = cartList.stream()
+				.map(Cart::getId)
+				.toList();
 		} else {
 			log.error("노출여부가 false인 기능은 구현하지 않았습니다.");
 		}
