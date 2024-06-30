@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,8 +20,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.CreateLikesRequest;
 import store.novabook.store.book.dto.CreateLikesResponse;
+import store.novabook.store.book.dto.GetLikeBookResponse;
 import store.novabook.store.book.dto.SearchBookResponse;
 import store.novabook.store.book.service.LikesService;
+
 @Tag(name = "Likes API 명세서", description = "Likes API 명세서")
 @RestController
 @RequiredArgsConstructor
@@ -28,19 +31,22 @@ import store.novabook.store.book.service.LikesService;
 public class LikesController {
 	private final LikesService likesService;
 
+	private static final Long MEMBER_ID = 7L;
+
 	//member id 가 좋아요 누른 책들
 	@Operation(summary = "누른 좋아요", description = "좋아요를 누른 책들을 받습니다. 헤더에 memberId를 포함합니다.")
-	@GetMapping("/members/books")
-	public ResponseEntity<Page<SearchBookResponse>> getLikes(@RequestHeader Long memberId, Pageable pageable) {
-		Page<SearchBookResponse> searchBookResponses = likesService.myLikes(memberId, pageable);
-		return ResponseEntity.ok().body(searchBookResponses);
+	@GetMapping("/member")
+	public ResponseEntity<Page<GetLikeBookResponse>> getLikes(Pageable pageable) {
+		Page<GetLikeBookResponse> responses = likesService.myLikes(MEMBER_ID, pageable);
+		return ResponseEntity.ok().body(responses);
 	}
 
 	//좋아요 누르면 하기 ( 프론트에서 좋아요를 눌렀었는지 아닌지 판단
 	@Operation(summary = "생성", description = "생성 합니다.")
 	@PostMapping
-	public ResponseEntity<CreateLikesResponse> createLikes(@Valid @RequestBody CreateLikesRequest createLikesRequest) {
-		CreateLikesResponse createLikesResponse = likesService.createLikes(createLikesRequest);
+	public ResponseEntity<CreateLikesResponse> createLikes(@Valid @RequestParam Long bookId) {
+		Long memberId = MEMBER_ID;
+		CreateLikesResponse createLikesResponse = likesService.createLikes(memberId, bookId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createLikesResponse);
 	}
 
