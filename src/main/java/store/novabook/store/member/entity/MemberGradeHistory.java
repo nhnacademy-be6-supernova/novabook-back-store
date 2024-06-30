@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.entity;
+package store.novabook.store.member.entity;
 
 import java.time.LocalDateTime;
 

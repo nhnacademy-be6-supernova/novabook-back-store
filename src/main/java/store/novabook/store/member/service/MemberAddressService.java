@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.service;
+package store.novabook.store.member.service;
 
 import java.util.List;
 
@@ -8,16 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.AddressLimitExceededException;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
-import store.novabook.store.user.member.dto.CreateMemberAddressResponse;
-import store.novabook.store.user.member.dto.GetMemberAddressResponse;
-import store.novabook.store.user.member.dto.UpdateMemberAddressRequest;
-import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.entity.MemberAddress;
-import store.novabook.store.user.member.entity.StreetAddress;
-import store.novabook.store.user.member.repository.MemberAddressRepository;
-import store.novabook.store.user.member.repository.MemberRepository;
-import store.novabook.store.user.member.repository.StreetAddressRepository;
+import store.novabook.store.member.dto.CreateMemberAddressRequest;
+import store.novabook.store.member.dto.CreateMemberAddressResponse;
+import store.novabook.store.member.dto.GetMemberAddressResponse;
+import store.novabook.store.member.dto.UpdateMemberAddressRequest;
+import store.novabook.store.member.entity.Member;
+import store.novabook.store.member.entity.MemberAddress;
+import store.novabook.store.member.entity.StreetAddress;
+import store.novabook.store.member.repository.MemberAddressRepository;
+import store.novabook.store.member.repository.MemberRepository;
+import store.novabook.store.member.repository.StreetAddressRepository;
 
 @RequiredArgsConstructor
 @Service

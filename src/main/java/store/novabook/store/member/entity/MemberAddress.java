@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.entity;
+package store.novabook.store.member.entity;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +19,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
+import store.novabook.store.member.dto.CreateMemberAddressRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

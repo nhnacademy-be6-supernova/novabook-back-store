@@ -1,6 +1,6 @@
 package store.novabook.store.cart.dto;
 
-import store.novabook.store.user.member.entity.Member;
+import store.novabook.store.member.entity.Member;
 
 public record CreateCartResponse(
 	Member member,

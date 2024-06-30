@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.controller;
+package store.novabook.store.member.controller;
 
 import java.util.List;
 
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.user.member.dto.CreateMemberAddressRequest;
-import store.novabook.store.user.member.dto.CreateMemberAddressResponse;
-import store.novabook.store.user.member.dto.GetMemberAddressListResponse;
-import store.novabook.store.user.member.dto.GetMemberAddressResponse;
-import store.novabook.store.user.member.dto.UpdateMemberAddressRequest;
-import store.novabook.store.user.member.service.MemberAddressService;
+import store.novabook.store.member.dto.CreateMemberAddressRequest;
+import store.novabook.store.member.dto.CreateMemberAddressResponse;
+import store.novabook.store.member.dto.GetMemberAddressListResponse;
+import store.novabook.store.member.dto.GetMemberAddressResponse;
+import store.novabook.store.member.dto.UpdateMemberAddressRequest;
+import store.novabook.store.member.service.MemberAddressService;
 
 @RestController
 @RequiredArgsConstructor

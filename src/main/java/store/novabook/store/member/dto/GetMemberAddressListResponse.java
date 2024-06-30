@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.dto;
+package store.novabook.store.member.dto;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.controller;
+package store.novabook.store.member.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,21 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.security.aop.CheckRole;
-import store.novabook.store.user.member.MemberClient;
-import store.novabook.store.user.member.dto.CreateMemberRequest;
-import store.novabook.store.user.member.dto.CreateMemberResponse;
-import store.novabook.store.user.member.dto.DeleteMemberRequest;
-import store.novabook.store.user.member.dto.FindMemberLoginResponse;
-import store.novabook.store.user.member.dto.FindMemberRequest;
-import store.novabook.store.user.member.dto.GetMemberResponse;
-import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
-import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
-import store.novabook.store.user.member.dto.LoginMemberRequest;
-import store.novabook.store.user.member.dto.LoginMemberResponse;
-import store.novabook.store.user.member.dto.UpdateMemberNameRequest;
-import store.novabook.store.user.member.dto.UpdateMemberNumberRequest;
-import store.novabook.store.user.member.dto.UpdateMemberPasswordRequest;
-import store.novabook.store.user.member.service.MemberService;
+import store.novabook.store.member.MemberClient;
+import store.novabook.store.member.dto.CreateMemberRequest;
+import store.novabook.store.member.dto.CreateMemberResponse;
+import store.novabook.store.member.dto.DeleteMemberRequest;
+import store.novabook.store.member.dto.FindMemberLoginResponse;
+import store.novabook.store.member.dto.FindMemberRequest;
+import store.novabook.store.member.dto.GetMemberResponse;
+import store.novabook.store.member.dto.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.GetMembersUUIDResponse;
+import store.novabook.store.member.dto.LoginMemberRequest;
+import store.novabook.store.member.dto.LoginMemberResponse;
+import store.novabook.store.member.dto.UpdateMemberNameRequest;
+import store.novabook.store.member.dto.UpdateMemberNumberRequest;
+import store.novabook.store.member.dto.UpdateMemberPasswordRequest;
+import store.novabook.store.member.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor

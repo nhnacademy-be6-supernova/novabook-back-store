@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.controller;
+package store.novabook.store.member.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.user.member.dto.GetMemberGradeResponse;
-import store.novabook.store.user.member.service.MemberGradeHistoryService;
+import store.novabook.store.member.dto.GetMemberGradeResponse;
+import store.novabook.store.member.service.MemberGradeHistoryService;
 
 @RestController
 @RequiredArgsConstructor

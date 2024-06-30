@@ -1,7 +1,7 @@
-package store.novabook.store.user.member.dto;
+package store.novabook.store.member.dto;
 
 import lombok.Builder;
-import store.novabook.store.user.member.entity.Member;
+import store.novabook.store.member.entity.Member;
 
 @Builder
 public record CreateMemberResponse(Long id) {

@@ -21,10 +21,10 @@ import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.ReviewRepository;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.member.entity.Member;
+import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.repository.OrdersRepository;
-import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.repository.MemberRepository;
 
 /**
  * 책 리뷰와 관련된 서비스를 제공하는 클래스.

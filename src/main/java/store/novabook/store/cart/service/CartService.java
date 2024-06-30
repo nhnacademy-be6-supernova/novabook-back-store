@@ -11,8 +11,8 @@ import store.novabook.store.cart.dto.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.repository.CartRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.repository.MemberRepository;
+import store.novabook.store.member.entity.Member;
+import store.novabook.store.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,7 @@
-package store.novabook.store.user.member.dto;
+package store.novabook.store.member.dto;
 
 import lombok.Builder;
-import store.novabook.store.user.member.entity.MemberCoupon;
+import store.novabook.store.member.entity.MemberCoupon;
 
 @Builder
 public record CreateMemberCouponResponse(Long couponId) {

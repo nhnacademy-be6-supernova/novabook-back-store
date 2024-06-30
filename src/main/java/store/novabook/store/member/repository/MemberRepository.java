@@ -1,8 +1,8 @@
-package store.novabook.store.user.member.repository;
+package store.novabook.store.member.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import store.novabook.store.user.member.entity.Member;
+import store.novabook.store.member.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	boolean existsByLoginId(String loginId);

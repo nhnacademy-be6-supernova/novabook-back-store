@@ -1,8 +1,8 @@
-package store.novabook.store.user.member.dto;
+package store.novabook.store.member.dto;
 
 import lombok.Builder;
-import store.novabook.store.user.member.entity.MemberAddress;
-import store.novabook.store.user.member.entity.StreetAddress;
+import store.novabook.store.member.entity.MemberAddress;
+import store.novabook.store.member.entity.StreetAddress;
 
 @Builder
 public record CreateMemberAddressResponse(Long id, StreetAddress streetAddress, String memberAddressDetail) {

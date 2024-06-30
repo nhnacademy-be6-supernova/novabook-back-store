@@ -9,7 +9,7 @@ import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.security.dto.CustomUserDetails;
 import store.novabook.store.common.security.dto.FindMembersRequest;
 import store.novabook.store.common.security.entity.Users;
-import store.novabook.store.user.member.dto.FindMemberLoginResponse;
+import store.novabook.store.member.dto.FindMemberLoginResponse;
 
 @Service
 public class CustomMembersDetailsService implements UserDetailsService {

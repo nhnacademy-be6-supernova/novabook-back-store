@@ -19,8 +19,8 @@ import store.novabook.store.book.entity.Likes;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.LikesRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.repository.MemberRepository;
+import store.novabook.store.member.entity.Member;
+import store.novabook.store.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor

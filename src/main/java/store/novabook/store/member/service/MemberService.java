@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.service;
+package store.novabook.store.member.service;
 
 import java.time.LocalDateTime;
 
@@ -14,32 +14,33 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.member.MemberClient;
+import store.novabook.store.member.dto.CreateMemberRequest;
+import store.novabook.store.member.dto.CreateMemberResponse;
+import store.novabook.store.member.dto.DeleteMemberRequest;
+import store.novabook.store.member.dto.FindMemberLoginResponse;
+import store.novabook.store.member.dto.GetMemberResponse;
+import store.novabook.store.member.dto.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.GetMembersUUIDResponse;
+import store.novabook.store.member.dto.LoginMemberRequest;
+import store.novabook.store.member.dto.LoginMemberResponse;
+import store.novabook.store.member.dto.UpdateMemberNameRequest;
+import store.novabook.store.member.dto.UpdateMemberNumberRequest;
+import store.novabook.store.member.dto.UpdateMemberPasswordRequest;
+import store.novabook.store.member.entity.Member;
+import store.novabook.store.member.entity.MemberGradeHistory;
+import store.novabook.store.member.entity.MemberGradePolicy;
+import store.novabook.store.member.entity.MemberStatus;
+import store.novabook.store.member.repository.MemberGradeHistoryRepository;
+import store.novabook.store.member.repository.MemberGradePolicyRepository;
+import store.novabook.store.member.repository.MemberRepository;
+import store.novabook.store.member.repository.MemberStatusRepository;
 import store.novabook.store.message.MemberRegistrationMessage;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
 import store.novabook.store.point.repository.PointPolicyRepository;
-import store.novabook.store.user.member.MemberClient;
-import store.novabook.store.user.member.dto.CreateMemberRequest;
-import store.novabook.store.user.member.dto.CreateMemberResponse;
-import store.novabook.store.user.member.dto.DeleteMemberRequest;
-import store.novabook.store.user.member.dto.FindMemberLoginResponse;
-import store.novabook.store.user.member.dto.GetMemberResponse;
-import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
-import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
-import store.novabook.store.user.member.dto.LoginMemberRequest;
-import store.novabook.store.user.member.dto.LoginMemberResponse;
-import store.novabook.store.user.member.dto.UpdateMemberNameRequest;
-import store.novabook.store.user.member.dto.UpdateMemberNumberRequest;
-import store.novabook.store.user.member.dto.UpdateMemberPasswordRequest;
-import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.entity.MemberGradeHistory;
-import store.novabook.store.user.member.entity.MemberGradePolicy;
-import store.novabook.store.user.member.entity.MemberStatus;
-import store.novabook.store.user.member.repository.MemberGradeHistoryRepository;
-import store.novabook.store.user.member.repository.MemberGradePolicyRepository;
-import store.novabook.store.user.member.repository.MemberRepository;
-import store.novabook.store.user.member.repository.MemberStatusRepository;
+
 
 @RequiredArgsConstructor
 @Service

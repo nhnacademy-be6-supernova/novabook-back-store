@@ -1,4 +1,4 @@
-package store.novabook.store.user.member.controller;
+package store.novabook.store.member.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.user.member.dto.CreateMemberCouponRequest;
-import store.novabook.store.user.member.dto.CreateMemberCouponResponse;
-import store.novabook.store.user.member.service.MemberCouponService;
+import store.novabook.store.member.dto.CreateMemberCouponRequest;
+import store.novabook.store.member.dto.CreateMemberCouponResponse;
+import store.novabook.store.member.service.MemberCouponService;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/coupon/memberCoupons")
