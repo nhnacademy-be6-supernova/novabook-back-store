@@ -1,25 +1,30 @@
 package store.novabook.store.cart.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.cart.dto.CreateCartRequest;
 import store.novabook.store.cart.dto.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
+import store.novabook.store.cart.repository.CartBookRepository;
 import store.novabook.store.cart.repository.CartRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.user.member.entity.Member;
 import store.novabook.store.user.member.repository.MemberRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CartService {
-	private final CartRepository cartRepository;
 
+	private final CartRepository cartRepository;
 	private final MemberRepository memberRepository;
 
 	public void createCart(CreateCartRequest createCartRequest) {
@@ -34,26 +39,19 @@ public class CartService {
 				.build());
 	}
 
-	// 이건 필요한지 필요없는지 모르겠어서 그냥 주석만 해둘게요(무지성으로 만들어버림..)
-	// @Transactional(readOnly = true)
-	// public Page<CreateCartResponse> getCartList(Pageable pageable) {
-	// 	Page<Cart> cartList = cartRepository.findAll(pageable);
-	//
-	// 	return cartList.map(cart -> new CreateCartResponse(
-	// 		cart.getUsers(),
-	// 		cart.getIsExposed()
-	// 	));
-	// }
-
 	@Transactional(readOnly = true)
-	public GetCartResponse getCartByMemberId(Long memberId) {
-		Cart cart = cartRepository.findByMemberId(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Cart.class, memberId));
+	public GetCartResponse getCartByMemberId(Long memberId, boolean isExposed) {
+		List<Long> cartIds = new ArrayList<>();
 
-		return new GetCartResponse(
-			cart.getMember(),
-			cart.getIsExposed()
-		);
+		if(isExposed) {
+			List<Cart> cartList = cartRepository.findByMemberIdIsExposedTrue(memberId);
+			for (Cart cart : cartList) {
+				cartIds.add(cart.getId());
+			}
+		} else {
+			log.error("노출여부가 false인 기능은 구현하지 않았습니다.");
+		}
+
+		return GetCartResponse.builder().cartId(cartIds).build();
 	}
-
 }

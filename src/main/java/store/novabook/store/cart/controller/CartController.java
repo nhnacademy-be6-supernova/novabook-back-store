@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.DefaultValue;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.cart.dto.CreateCartRequest;
 import store.novabook.store.cart.dto.GetCartResponse;
@@ -26,20 +27,12 @@ public class CartController {
 
 	private final CartService cartService;
 
-	// 이것도 만들고보니 쓸모가 없네요
-	// @GetMapping
-	// public ResponseEntity<Page<CreateCartResponse>> getAllCart(Pageable pageable) {
-	//
-	// 	Page<CreateCartResponse> cartList = cartService.getCartList(pageable);
-	// 	return ResponseEntity.status(HttpStatus.OK).body(cartList);
-	// }
-
 	@Operation(summary = "장바구니 조회", description = "장바구니를 조회합니다.")
 	@Parameter(name = "memberId", description = "사용자 ID", required = true)
 	@GetMapping("/{memberId}")
-	public ResponseEntity<GetCartResponse> getCartByUserID(@PathVariable Long memberId) {
-
-		GetCartResponse getCartResponse = cartService.getCartByMemberId(memberId);
+	public ResponseEntity<GetCartResponse> getCartByUserID(@PathVariable Long memberId,
+		@DefaultValue(value = "true") boolean isExposed) {
+		GetCartResponse getCartResponse = cartService.getCartByMemberId(memberId, isExposed);
 		return ResponseEntity.status(HttpStatus.OK).body(getCartResponse);
 	}
 
