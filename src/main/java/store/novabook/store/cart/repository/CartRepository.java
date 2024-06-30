@@ -9,6 +9,6 @@ import store.novabook.store.cart.entity.Cart;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
 	Optional<Cart> findByMemberId(Long memberId);
-	List<Cart> findByMemberIdIsExposedTrue(Long memberId);
+	List<Cart> findByMemberIdAndIsExposedTrue(Long memberId);
 
 }

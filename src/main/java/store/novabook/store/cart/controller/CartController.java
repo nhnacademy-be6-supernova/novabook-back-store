@@ -40,7 +40,6 @@ public class CartController {
 	@Parameter(name = "createCartRequest", description = "장바구니 생성 정보", required = true)
 	@PostMapping
 	public ResponseEntity<Void> createCart(@Valid @RequestBody CreateCartRequest createCartRequest) {
-
 		cartService.createCart(createCartRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}

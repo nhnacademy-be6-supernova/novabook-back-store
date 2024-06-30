@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import store.novabook.store.cart.entity.CartBook;
 
 public interface CartBookRepository extends JpaRepository<CartBook, Long> {
-
 	List<CartBook> findAllByCartId(Long cartId);
 
 	Optional<Page<CartBook>> findAllByCartId(Long cartId, Pageable pageable);

@@ -44,7 +44,7 @@ public class CartService {
 		List<Long> cartIds = new ArrayList<>();
 
 		if(isExposed) {
-			List<Cart> cartList = cartRepository.findByMemberIdIsExposedTrue(memberId);
+			List<Cart> cartList = cartRepository.findByMemberIdAndIsExposedTrue(memberId);
 			for (Cart cart : cartList) {
 				cartIds.add(cart.getId());
 			}
