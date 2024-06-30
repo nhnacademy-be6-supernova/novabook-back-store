@@ -52,9 +52,6 @@ public class Member {
 	private LocalDateTime latestLoginAt;
 
 	@NotNull
-	private Long totalAmount;
-
-	@NotNull
 	private int authentication;
 
 	@NotNull
@@ -77,7 +74,6 @@ public class Member {
 		String email,
 		LocalDateTime birth,
 		LocalDateTime latestLoginAt,
-		Long totalAmount,
 		int authentication,
 		MemberStatus memberStatus) {
 		this.loginId = loginId;
@@ -87,7 +83,6 @@ public class Member {
 		this.email = email;
 		this.birth = birth;
 		this.latestLoginAt = latestLoginAt;
-		this.totalAmount = totalAmount;
 		this.authentication = authentication;
 		this.memberStatus = memberStatus;
 	}
@@ -114,7 +109,6 @@ public class Member {
 			.number(createMemberRequest.number())
 			.email(createMemberRequest.getEmailFull())
 			.birth(birth)
-			.totalAmount(0L)
 			.latestLoginAt(LocalDateTime.now())
 			.build();
 	}
