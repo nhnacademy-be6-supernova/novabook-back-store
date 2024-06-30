@@ -52,9 +52,6 @@ public class Member {
 	private LocalDateTime latestLoginAt;
 
 	@NotNull
-	private Long totalAmount;
-
-	@NotNull
 	private int authentication;
 
 	@NotNull
@@ -77,7 +74,6 @@ public class Member {
 		String email,
 		LocalDateTime birth,
 		LocalDateTime latestLoginAt,
-		Long totalAmount,
 		int authentication,
 		MemberStatus memberStatus) {
 		this.loginId = loginId;
@@ -87,7 +83,6 @@ public class Member {
 		this.email = email;
 		this.birth = birth;
 		this.latestLoginAt = latestLoginAt;
-		this.totalAmount = totalAmount;
 		this.authentication = authentication;
 		this.memberStatus = memberStatus;
 	}
@@ -103,16 +98,17 @@ public class Member {
 		this.memberStatus = memberStatus;
 	}
 
-	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, LocalDateTime birth) {
+	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, LocalDateTime birth,
+		String encodedPassword) {
 		return Member.builder()
 			.memberStatus(memberStatus)
 			.loginId(createMemberRequest.loginId())
 			.loginPassword(createMemberRequest.loginPassword())
+			.loginPassword(encodedPassword)
 			.name(createMemberRequest.name())
 			.number(createMemberRequest.number())
 			.email(createMemberRequest.getEmailFull())
 			.birth(birth)
-			.totalAmount(0L)
 			.latestLoginAt(LocalDateTime.now())
 			.build();
 	}
@@ -123,10 +119,6 @@ public class Member {
 
 	public void updateNumber(String number) {
 		this.number = number;
-	}
-
-	public void updateEmail(String email) {
-		this.email = email;
 	}
 
 	public void updateLoginPassword(String loginPassword) {

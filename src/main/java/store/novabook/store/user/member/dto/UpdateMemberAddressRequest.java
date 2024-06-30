@@ -1,9 +1,7 @@
 package store.novabook.store.user.member.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 
-@Builder
 public record UpdateMemberAddressRequest(
 
 	@NotBlank(message = "별칭은 필수 항목입니다.")
