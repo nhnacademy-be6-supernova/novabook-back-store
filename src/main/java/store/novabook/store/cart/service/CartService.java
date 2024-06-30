@@ -1,6 +1,5 @@
 package store.novabook.store.cart.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.cart.dto.CreateCartRequest;
 import store.novabook.store.cart.dto.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
-import store.novabook.store.cart.repository.CartBookRepository;
 import store.novabook.store.cart.repository.CartRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.user.member.entity.Member;
