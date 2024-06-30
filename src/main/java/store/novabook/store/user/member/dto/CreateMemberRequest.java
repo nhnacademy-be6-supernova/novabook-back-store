@@ -3,9 +3,7 @@ package store.novabook.store.user.member.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 
-@Builder
 public record CreateMemberRequest(
 
 	@NotBlank(message = "아이디는 필수 입력 값입니다.")
