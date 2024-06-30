@@ -103,11 +103,13 @@ public class Member {
 		this.memberStatus = memberStatus;
 	}
 
-	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, LocalDateTime birth) {
+	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, LocalDateTime birth,
+		String encodedPassword) {
 		return Member.builder()
 			.memberStatus(memberStatus)
 			.loginId(createMemberRequest.loginId())
 			.loginPassword(createMemberRequest.loginPassword())
+			.loginPassword(encodedPassword)
 			.name(createMemberRequest.name())
 			.number(createMemberRequest.number())
 			.email(createMemberRequest.getEmailFull())
@@ -123,10 +125,6 @@ public class Member {
 
 	public void updateNumber(String number) {
 		this.number = number;
-	}
-
-	public void updateEmail(String email) {
-		this.email = email;
 	}
 
 	public void updateLoginPassword(String loginPassword) {
