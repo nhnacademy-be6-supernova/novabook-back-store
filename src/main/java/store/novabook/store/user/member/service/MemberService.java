@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +62,7 @@ public class MemberService {
 	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
 
 	private final MemberClient memberClient;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final RabbitTemplate rabbitTemplate;
 
@@ -71,6 +73,9 @@ public class MemberService {
 	private String memberCreateRoutingKey;
 
 	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
+		if (!createMemberRequest.loginPassword().equals(createMemberRequest.loginPasswordConfirm())) {
+			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+		}
 
 		MemberStatus memberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
 			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class));
@@ -78,7 +83,9 @@ public class MemberService {
 		LocalDateTime birth = LocalDateTime.of(createMemberRequest.birthYear(), createMemberRequest.birthMonth(),
 			createMemberRequest.birthDay(), 0, 0);
 
-		Member member = Member.of(createMemberRequest, memberStatus, birth);
+		String encodedPassword = bCryptPasswordEncoder.encode(createMemberRequest.loginPassword());
+
+		Member member = Member.of(createMemberRequest, memberStatus, birth, encodedPassword);
 
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
 			throw new AlreadyExistException(Member.class);
@@ -135,13 +142,17 @@ public class MemberService {
 		memberRepository.save(member);
 	}
 
-	public void updateMemberPassword(Long memberId, UpdateMemberPasswordRequest updateMemberPasswordRequest) {
-		if (!updateMemberPasswordRequest.loginPassword().equals(updateMemberPasswordRequest.loginPasswordConfirm())) {
+	public void updateMemberPassword(Long memberId,
+		UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+		if (!updateMemberPasswordRequest.loginPassword()
+			.equals(updateMemberPasswordRequest.loginPasswordConfirm())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
+
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		member.updateLoginPassword(updateMemberPasswordRequest.loginPassword());
+		String encodedPassword = bCryptPasswordEncoder.encode(updateMemberPasswordRequest.loginPassword());
+		member.updateLoginPassword(encodedPassword);
 		memberRepository.save(member);
 	}
 
