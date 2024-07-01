@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import store.novabook.store.common.security.service.NewTokenClient;
-import store.novabook.store.user.member.MemberClient;
+import store.novabook.store.member.MemberClient;
 
 @Configuration
 @EnableWebSecurity

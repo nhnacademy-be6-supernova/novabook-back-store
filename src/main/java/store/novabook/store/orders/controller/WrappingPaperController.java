@@ -11,39 +11,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.CreateWrappingPaperRequest;
-import store.novabook.store.orders.dto.GetWrappingPaperAllResponse;
-import store.novabook.store.orders.dto.GetWrappingPaperResponse;
-import store.novabook.store.orders.dto.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.controller.docs.WrappingPaperControllerDocs;
+import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
+import store.novabook.store.orders.dto.request.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetWrappingPaperAllResponse;
+import store.novabook.store.orders.dto.response.GetWrappingPaperResponse;
 import store.novabook.store.orders.service.WrappingPaperService;
 
-@Tag(name = "WrappingPaper API", description = "WrappingPaper 을 생성, 조회, 수정합니다. ")
 @RestController
-@RequestMapping("")
+@RequestMapping("/api/v1/store/orders/wrapping-papers")
 @RequiredArgsConstructor
-public class WrappingPaperController {
+public class WrappingPaperController implements WrappingPaperControllerDocs {
 	private final WrappingPaperService wrappingPaperService;
 
-	@Operation(summary = "WrappingPaper 생성", description = "WrappingPaper 생성합니다.")
 	@PostMapping
 	public ResponseEntity<CreateResponse> createWrappingPaper(@RequestBody CreateWrappingPaperRequest request) {
 		return ResponseEntity.ok(wrappingPaperService.createWrappingPaper(request));
 	}
 
-	@Operation(summary = "WrappingPaper 전체 조회", description = "WrappingPaper 전체 조회합니다. 페이저블로 받습니다")
-	@GetMapping("/pageable")
+	@GetMapping(params = {"size","page","order"})
 	public ResponseEntity<Page<GetWrappingPaperResponse>> getWrappingPaperAll(Pageable pageable) {
 		Page<GetWrappingPaperResponse> response = wrappingPaperService.getWrappingPaperAll(pageable);
 		return ResponseEntity.ok(response);
 	}
 
-	//List 전체조회
-	@Operation(summary = "WrappingPaper 전체 조회", description = "WrappingPaper 전체 조회합니다. 리스트로 받습니다.")
 	@GetMapping
 	public ResponseEntity<GetWrappingPaperAllResponse> getWrappingPaperAllList() {
 		GetWrappingPaperAllResponse response = GetWrappingPaperAllResponse.builder()
@@ -52,14 +46,12 @@ public class WrappingPaperController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "조회", description = "조회합니다.")
 	@GetMapping("/{id}")
 	public ResponseEntity<GetWrappingPaperResponse> getWrappingPaper(@PathVariable Long id) {
 		GetWrappingPaperResponse response = wrappingPaperService.getWrappingPaperById(id);
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "수정", description = "수정합니다.")
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> updateWrappingPaper(@PathVariable Long id,
 		@Valid @RequestBody UpdateWrappingPaperRequest request) {
