@@ -48,6 +48,8 @@ import store.novabook.store.image.entity.BookImage;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.repository.BookImageRepository;
 import store.novabook.store.image.repository.ImageRepository;
+import store.novabook.store.search.document.BookDocument;
+import store.novabook.store.search.repository.BookSearchRepository;
 import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.BookTagRepository;
@@ -70,6 +72,7 @@ public class BookService {
 	private final BookImageRepository bookImageRepository;
 	private final CategoryService categoryService;
 	private final NHNCloudClient nhnCloudClient;
+	private final BookSearchRepository bookSearchRepository;
 
 	@Value("${nhn.cloud.imageManager.endpointUrl}")
 	private String endpointUrl;
@@ -125,6 +128,8 @@ public class BookService {
 
 		Image image = imageRepository.save(new Image(nhnUrl));
 		bookImageRepository.save(BookImage.of(book, image));
+
+		bookSearchRepository.save(BookDocument.of(book));
 
 		return new CreateBookResponse(book.getId());
 	}
