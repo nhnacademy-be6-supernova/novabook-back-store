@@ -13,8 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.security.dto.CustomUserDetails;
-import store.novabook.store.common.security.dto.GetNewTokenRequest;
-import store.novabook.store.common.security.dto.GetNewTokenResponse;
 import store.novabook.store.common.security.entity.Users;
 import store.novabook.store.common.security.service.NewTokenClient;
 import store.novabook.store.user.member.MemberClient;
@@ -68,7 +66,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 			log.error("token expired");
 
-			GetNewTokenResponse newToken = newTokenClient.getNewToken(new GetNewTokenRequest(refresh));
+			// GetNewTokenResponse newToken = newTokenClient.getNewToken(new GetNewTokenRequest(refresh));
 
 			// Cookie expiredCookie = new Cookie("ZZZ", "QQQ");
 			// expiredCookie.setPath("/"); // 경로 설정
@@ -77,7 +75,7 @@ public class JWTFilter extends OncePerRequestFilter {
 			// response.addCookie(expiredCookie);
 
 			// 응답 헤더 설정
-			response.setHeader("NewToken", newToken.accessToken());
+			// response.setHeader("NewToken", newToken.accessToken());
 
 			filterChain.doFilter(request, response);
 
