@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.member.controller.docs.MemberAddressControllerDocs;
-
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
 import store.novabook.store.member.dto.response.CreateMemberAddressResponse;

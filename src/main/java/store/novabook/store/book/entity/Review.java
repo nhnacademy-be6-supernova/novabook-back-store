@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.book.dto.request.CreateReviewRequest;
 import store.novabook.store.book.dto.request.UpdateReviewRequest;
-import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
 
 /**

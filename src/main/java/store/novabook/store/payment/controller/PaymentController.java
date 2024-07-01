@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.payment.controller.docs.PaymentControllerDocs;
-
 import store.novabook.store.payment.dto.request.CreatePaymentRequest;
 import store.novabook.store.payment.dto.response.CreatePaymentResponse;
 import store.novabook.store.payment.dto.response.GetPaymentResponse;

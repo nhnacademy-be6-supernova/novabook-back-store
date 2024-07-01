@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.AddressLimitExceededException;
 import store.novabook.store.common.exception.EntityNotFoundException;
-
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
 import store.novabook.store.member.dto.response.CreateMemberAddressResponse;

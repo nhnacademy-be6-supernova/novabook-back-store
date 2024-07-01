@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
 import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;

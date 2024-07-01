@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import store.novabook.store.book.dto.request.CreateBookRequest;
 import store.novabook.store.book.dto.request.UpdateBookRequest;
 import store.novabook.store.book.dto.response.CreateBookResponse;

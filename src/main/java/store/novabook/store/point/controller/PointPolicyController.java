@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.point.controller.docs.PointPolicyControllerDocs;
-
 import store.novabook.store.point.dto.request.CreatePointPolicyRequest;
 import store.novabook.store.point.dto.response.GetPointPolicyResponse;
 import store.novabook.store.point.service.PointPolicyService;
