@@ -103,7 +103,7 @@ public class MemberServiceImpl implements MemberService {
 		MemberGradeHistory memberGradeHistory = MemberGradeHistory.builder()
 			.member(newMember)
 			.memberGradePolicy(memberGradePolicy)
-			// .quarter(LocalDateTime.now())
+			.quarter(LocalDateTime.now())
 			.build();
 		memberGradeHistoryRepository.save(memberGradeHistory);
 
