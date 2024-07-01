@@ -29,10 +29,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import store.novabook.store.cart.dto.CreateCartBookRequest;
 import store.novabook.store.cart.dto.DeleteCartBookRequest;
 import store.novabook.store.cart.dto.GetCartBookResponse;
-import store.novabook.store.cart.service.CartBookService;
+import store.novabook.store.cart.service.impl.CartBookServiceImpl;
 
 @WebMvcTest(CartBookControllerTest.class)
-@ContextConfiguration(classes = {CartBookService.class})
+@ContextConfiguration(classes = {CartBookServiceImpl.class})
 @EnableSpringDataWebSupport
 public class CartBookControllerTest {
 
@@ -40,11 +40,11 @@ public class CartBookControllerTest {
 	protected MockMvc mockMvc;
 
 	@MockBean
-	private CartBookService cartBookService;
+	private CartBookServiceImpl cartBookServiceImpl;
 
 	@BeforeEach
 	void setup() {
-		CartBookController controller = new CartBookController(cartBookService);
+		CartBookController controller = new CartBookController(cartBookServiceImpl);
 		mockMvc = MockMvcBuilders.standaloneSetup(controller)
 			.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 			.build();
@@ -58,7 +58,7 @@ public class CartBookControllerTest {
 		Page<GetCartBookResponse> page = new PageImpl<>(getCartBookResponseList, PageRequest.of(0, 10),
 			getCartBookResponseList.size());
 
-		when(cartBookService.getCartBookListByCartId(anyLong(), any())).thenReturn(page);
+		when(cartBookServiceImpl.getCartBookListByCartId(anyLong(), any())).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/cart/books/1"))
 			.andDo(print())
@@ -76,7 +76,7 @@ public class CartBookControllerTest {
 				.content(json))
 			.andExpect(status().isCreated());
 
-		verify(cartBookService, times(1)).createCartBook(any(CreateCartBookRequest.class));
+		verify(cartBookServiceImpl, times(1)).createCartBook(any(CreateCartBookRequest.class));
 	}
 
 	@Test
@@ -90,6 +90,6 @@ public class CartBookControllerTest {
 				.content(json))
 			.andExpect(status().isOk());
 
-		verify(cartBookService, times(1)).deleteCartBookAndBook(any(DeleteCartBookRequest.class));
+		verify(cartBookServiceImpl, times(1)).deleteCartBookAndBook(any(DeleteCartBookRequest.class));
 	}
 }

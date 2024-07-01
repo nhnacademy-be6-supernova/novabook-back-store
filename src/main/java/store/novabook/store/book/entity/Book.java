@@ -18,8 +18,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.book.dto.CreateBookRequest;
-import store.novabook.store.book.dto.UpdateBookRequest;
+import store.novabook.store.book.dto.request.CreateBookRequest;
+import store.novabook.store.book.dto.request.UpdateBookRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -69,7 +69,6 @@ public class Book {
 	@NotNull
 	boolean isPackaged;
 
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 
