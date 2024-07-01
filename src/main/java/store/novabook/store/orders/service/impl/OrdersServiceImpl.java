@@ -12,10 +12,11 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
-import store.novabook.store.orders.dto.CreateOrdersRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetOrdersResponse;
-import store.novabook.store.orders.dto.UpdateOrdersRequest;
+
+import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrdersResponse;
 import store.novabook.store.orders.entity.DeliveryFee;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersStatus;

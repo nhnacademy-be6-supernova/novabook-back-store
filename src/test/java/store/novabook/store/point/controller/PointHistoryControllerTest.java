@@ -23,7 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import store.novabook.store.point.dto.GetPointHistoryResponse;
+import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.service.impl.PointHistoryServiceImpl;
 
 @WebMvcTest(PointHistoryController.class)

@@ -4,11 +4,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import store.novabook.store.book.dto.CreateReviewRequest;
-import store.novabook.store.book.dto.CreateReviewResponse;
-import store.novabook.store.book.dto.GetReviewResponse;
-import store.novabook.store.book.dto.SearchBookResponse;
-import store.novabook.store.book.dto.UpdateReviewRequest;
+import store.novabook.store.book.dto.request.CreateReviewRequest;
+import store.novabook.store.book.dto.request.UpdateReviewRequest;
+import store.novabook.store.book.dto.response.CreateReviewResponse;
+import store.novabook.store.book.dto.response.GetReviewResponse;
+import store.novabook.store.book.dto.response.SearchBookResponse;
 
 public interface ReviewService {
 	@Transactional(readOnly = true)

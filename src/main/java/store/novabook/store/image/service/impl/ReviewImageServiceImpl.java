@@ -13,7 +13,7 @@ import store.novabook.store.image.entity.ReviewImage;
 import store.novabook.store.image.repository.ImageRepository;
 import store.novabook.store.image.repository.ReviewImageRepository;
 import store.novabook.store.image.service.ReviewImageService;
-import store.novabook.store.orders.dto.CreateResponse;
+import store.novabook.store.orders.dto.response.CreateResponse;
 
 @Service
 @RequiredArgsConstructor

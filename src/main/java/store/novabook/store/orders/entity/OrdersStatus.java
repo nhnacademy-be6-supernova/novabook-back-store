@@ -16,8 +16,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.orders.dto.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.UpdateOrdersStatusRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,7 +31,6 @@ public class OrdersStatus {
 	@NotNull
 	private String name;
 
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 

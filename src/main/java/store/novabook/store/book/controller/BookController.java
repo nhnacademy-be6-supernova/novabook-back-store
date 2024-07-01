@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.controller.docs.BookControllerDocs;
-import store.novabook.store.book.dto.CreateBookRequest;
-import store.novabook.store.book.dto.CreateBookResponse;
-import store.novabook.store.book.dto.GetBookAllResponse;
-import store.novabook.store.book.dto.GetBookResponse;
-import store.novabook.store.book.dto.UpdateBookRequest;
+import store.novabook.store.book.dto.request.CreateBookRequest;
+import store.novabook.store.book.dto.request.UpdateBookRequest;
+import store.novabook.store.book.dto.response.CreateBookResponse;
+import store.novabook.store.book.dto.response.GetBookAllResponse;
+import store.novabook.store.book.dto.response.GetBookResponse;
 import store.novabook.store.book.service.BookService;
 import store.novabook.store.image.service.ImageService;
 

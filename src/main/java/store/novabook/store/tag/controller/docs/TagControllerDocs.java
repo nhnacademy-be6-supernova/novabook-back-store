@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.tag.dto.CreateTagRequest;
-import store.novabook.store.tag.dto.CreateTagResponse;
-import store.novabook.store.tag.dto.GetTagListResponse;
-import store.novabook.store.tag.dto.GetTagResponse;
-import store.novabook.store.tag.dto.UpdateTagRequest;
+import store.novabook.store.tag.dto.request.CreateTagRequest;
+import store.novabook.store.tag.dto.request.UpdateTagRequest;
+import store.novabook.store.tag.dto.response.CreateTagResponse;
+import store.novabook.store.tag.dto.response.GetTagListResponse;
+import store.novabook.store.tag.dto.response.GetTagResponse;
 
 @Tag(name = "Tag API")
 public interface TagControllerDocs {

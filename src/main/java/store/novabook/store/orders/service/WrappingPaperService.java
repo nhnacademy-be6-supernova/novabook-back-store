@@ -6,10 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.CreateWrappingPaperRequest;
-import store.novabook.store.orders.dto.GetWrappingPaperResponse;
-import store.novabook.store.orders.dto.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
+import store.novabook.store.orders.dto.request.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetWrappingPaperResponse;
 
 public interface WrappingPaperService {
 	CreateResponse createWrappingPaper(CreateWrappingPaperRequest request);

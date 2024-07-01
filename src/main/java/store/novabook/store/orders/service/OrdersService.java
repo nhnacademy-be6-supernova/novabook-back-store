@@ -2,10 +2,10 @@ package store.novabook.store.orders.service;
 
 import org.springframework.data.domain.Page;
 
-import store.novabook.store.orders.dto.CreateOrdersRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetOrdersResponse;
-import store.novabook.store.orders.dto.UpdateOrdersRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrdersResponse;
 
 public interface OrdersService {
 	//생성

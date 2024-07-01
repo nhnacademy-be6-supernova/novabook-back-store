@@ -1,4 +1,4 @@
-package store.novabook.store.book.service;
+package store.novabook.store.book.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.CreateReviewRequest;
-import store.novabook.store.book.dto.CreateReviewResponse;
-import store.novabook.store.book.dto.GetReviewResponse;
-import store.novabook.store.book.dto.SearchBookResponse;
-import store.novabook.store.book.dto.UpdateReviewRequest;
+
+import store.novabook.store.book.dto.request.CreateReviewRequest;
+import store.novabook.store.book.dto.request.UpdateReviewRequest;
+import store.novabook.store.book.dto.response.CreateReviewResponse;
+import store.novabook.store.book.dto.response.GetReviewResponse;
+import store.novabook.store.book.dto.response.SearchBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Review;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.ReviewRepository;
+import store.novabook.store.book.service.ReviewService;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.member.entity.Member;
@@ -47,7 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<SearchBookResponse> myReviews(Long memberId, Pageable pageable) {
-		Page<Review> reviewList = reviewRepository.findByOrdersId(memberId, pageable);
+		Page<Review> reviewList = reviewRepository.findByOrdersBookId(memberId, pageable);
 		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
 		for (Review review : reviewList) {
 			searchBookResponses.add(SearchBookResponse.from(review.getBook()));
@@ -64,7 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> membersReviews(Long memberId, Pageable pageable) {
-		Page<Review> reviews = reviewRepository.findByOrdersId(memberId, pageable);
+		Page<Review> reviews = reviewRepository.findByOrdersBookId(memberId, pageable);
 		List<GetReviewResponse> reviewResponses = new ArrayList<>();
 		for (Review review : reviews) {
 			reviewResponses.add(GetReviewResponse.from(review));
@@ -105,8 +107,8 @@ public class ReviewServiceImpl implements ReviewService {
 
 		Orders orders = ordersRepository.findById(orderId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, orderId));
-
-		Review review = reviewRepository.save(Review.of(request, orders, book));
+		// TODO: OrdersBook 변경 필요
+		Review review = reviewRepository.save(Review.of(request, null, book));
 
 		return CreateReviewResponse.from(review);
 	}
@@ -119,7 +121,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Override
 	public boolean existsByBookIdAndMemberId(Long memberId, CreateReviewRequest request) {
-		return reviewRepository.existsByOrdersIdAndBookId(request.bookId(), memberId);
+		return reviewRepository.existsByOrdersBookIdAndBookId(request.bookId(), memberId);
 	}
 
 	/**
@@ -133,7 +135,7 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new EntityNotFoundException(Review.class, reviewId));
 
-		if(ordersId.equals(review.getOrders().getId())) {
+		if(ordersId.equals(review.getOrdersBook().getId())) {
 			throw new AlreadyExistException(Review.class);  // 다른 사람이 수정하지 못하도록 예외 처리
 		}
 		review.update(request);

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.member.controller.docs.MemberGradeControllerDocs;
-import store.novabook.store.member.dto.GetMemberGradeResponse;
+import store.novabook.store.member.dto.response.GetMemberGradeResponse;
 import store.novabook.store.member.service.MemberGradeHistoryService;
 
 @RestController

@@ -19,8 +19,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.member.entity.Member;
-import store.novabook.store.orders.dto.CreateOrdersRequest;
-import store.novabook.store.orders.dto.UpdateOrdersRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

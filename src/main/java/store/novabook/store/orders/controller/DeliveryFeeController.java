@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.orders.controller.docs.DeliveryFeeControllerDocs;
-import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetDeliveryFeeListResponse;
-import store.novabook.store.orders.dto.GetDeliveryFeeResponse;
+import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetDeliveryFeeListResponse;
+import store.novabook.store.orders.dto.response.GetDeliveryFeeResponse;
 import store.novabook.store.orders.service.DeliveryFeeService;
 
 @RestController

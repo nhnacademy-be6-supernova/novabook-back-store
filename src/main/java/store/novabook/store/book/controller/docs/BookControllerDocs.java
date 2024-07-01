@@ -12,11 +12,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.book.dto.CreateBookRequest;
-import store.novabook.store.book.dto.CreateBookResponse;
-import store.novabook.store.book.dto.GetBookAllResponse;
-import store.novabook.store.book.dto.GetBookResponse;
-import store.novabook.store.book.dto.UpdateBookRequest;
+import store.novabook.store.book.dto.request.CreateBookRequest;
+import store.novabook.store.book.dto.request.UpdateBookRequest;
+import store.novabook.store.book.dto.response.CreateBookResponse;
+import store.novabook.store.book.dto.response.GetBookAllResponse;
+import store.novabook.store.book.dto.response.GetBookResponse;
 
 @Tag(name = "Book API")
 public interface BookControllerDocs {

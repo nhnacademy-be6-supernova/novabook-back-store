@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import store.novabook.store.book.dto.GetBookResponse;
+import store.novabook.store.book.dto.response.GetBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.QBook;
 import store.novabook.store.book.entity.QBookStatus;

@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.CreateReturnPolicyRequest;
-import store.novabook.store.orders.dto.GetReturnPolicyResponse;
+import store.novabook.store.orders.dto.request.CreateReturnPolicyRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetReturnPolicyResponse;
 
 @Tag(name = "ReturnPolicy API", description = "환불 정책 API")
 public interface ReturnPolicyControllerDocs {

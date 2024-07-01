@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.security.dto.FindMembersRequest;
-import store.novabook.store.member.dto.FindMemberLoginResponse;
+import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 
 @FeignClient(name = "customUserDetailClient", url = "http://127.0.0.1:9777/api/v1/store/members")
 public interface CustomMembersDetailClient {

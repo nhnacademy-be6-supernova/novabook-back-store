@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import store.novabook.store.orders.dto.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetOrdersStatusResponse;
-import store.novabook.store.orders.dto.UpdateOrdersStatusRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrdersStatusResponse;
 
 @Tag(name = "OrdersStatus API", description = "주문 상태 API")
 public interface OrdersStatusControllerDocs {

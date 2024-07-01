@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.controller.docs.LikesControllerDocs;
-import store.novabook.store.book.dto.CreateLikesResponse;
-import store.novabook.store.book.dto.GetLikeBookResponse;
+
+import store.novabook.store.book.dto.response.CreateLikesResponse;
+import store.novabook.store.book.dto.response.GetLikeBookResponse;
 import store.novabook.store.book.service.LikesService;
 
 @RestController

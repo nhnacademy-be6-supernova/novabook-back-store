@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.category.dto.CreateCategoryRequest;
-import store.novabook.store.category.dto.CreateCategoryResponse;
-import store.novabook.store.category.dto.GetCategoryListResponse;
-import store.novabook.store.category.dto.GetCategoryResponse;
+import store.novabook.store.category.dto.request.CreateCategoryRequest;
+import store.novabook.store.category.dto.response.CreateCategoryResponse;
+import store.novabook.store.category.dto.response.GetCategoryListResponse;
+import store.novabook.store.category.dto.response.GetCategoryResponse;
 
 @Tag(name = "Category API")
 public interface CategoryControllerDocs {

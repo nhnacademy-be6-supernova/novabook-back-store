@@ -18,10 +18,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.CreateWrappingPaperRequest;
-import store.novabook.store.orders.dto.GetWrappingPaperResponse;
-import store.novabook.store.orders.dto.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
+import store.novabook.store.orders.dto.request.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetWrappingPaperResponse;
 import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
 import store.novabook.store.orders.service.impl.WrappingPaperServiceImpl;

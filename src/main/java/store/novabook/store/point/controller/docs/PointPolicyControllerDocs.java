@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.point.dto.CreatePointPolicyRequest;
-import store.novabook.store.point.dto.GetPointPolicyResponse;
+import store.novabook.store.point.dto.request.CreatePointPolicyRequest;
+import store.novabook.store.point.dto.response.GetPointPolicyResponse;
 
 @Tag(name = "PointPolicy API", description = "포인트 정책 API")
 public interface PointPolicyControllerDocs {

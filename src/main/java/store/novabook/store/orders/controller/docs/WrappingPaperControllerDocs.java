@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.CreateWrappingPaperRequest;
-import store.novabook.store.orders.dto.GetWrappingPaperAllResponse;
-import store.novabook.store.orders.dto.GetWrappingPaperResponse;
-import store.novabook.store.orders.dto.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
+import store.novabook.store.orders.dto.request.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetWrappingPaperAllResponse;
+import store.novabook.store.orders.dto.response.GetWrappingPaperResponse;
 
 @Tag(name = "WrappingPaper API", description = "포장지 API")
 public interface WrappingPaperControllerDocs {

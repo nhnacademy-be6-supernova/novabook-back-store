@@ -4,18 +4,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import store.novabook.store.member.dto.CreateMemberRequest;
-import store.novabook.store.member.dto.CreateMemberResponse;
-import store.novabook.store.member.dto.DeleteMemberRequest;
-import store.novabook.store.member.dto.FindMemberLoginResponse;
-import store.novabook.store.member.dto.GetMemberResponse;
-import store.novabook.store.member.dto.GetMembersUUIDRequest;
-import store.novabook.store.member.dto.GetMembersUUIDResponse;
-import store.novabook.store.member.dto.LoginMemberRequest;
-import store.novabook.store.member.dto.LoginMemberResponse;
-import store.novabook.store.member.dto.UpdateMemberNameRequest;
-import store.novabook.store.member.dto.UpdateMemberNumberRequest;
-import store.novabook.store.member.dto.UpdateMemberPasswordRequest;
+import store.novabook.store.member.dto.request.CreateMemberRequest;
+import store.novabook.store.member.dto.request.DeleteMemberRequest;
+import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.request.LoginMemberRequest;
+import store.novabook.store.member.dto.request.UpdateMemberNameRequest;
+import store.novabook.store.member.dto.request.UpdateMemberNumberRequest;
+import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
+import store.novabook.store.member.dto.response.CreateMemberResponse;
+import store.novabook.store.member.dto.response.FindMemberLoginResponse;
+import store.novabook.store.member.dto.response.GetMemberResponse;
+import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
+import store.novabook.store.member.dto.response.LoginMemberResponse;
 
 public interface MemberService {
 	CreateMemberResponse createMember(CreateMemberRequest createMemberRequest);

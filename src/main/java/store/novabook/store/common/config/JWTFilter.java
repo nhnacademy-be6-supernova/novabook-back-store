@@ -19,8 +19,8 @@ import store.novabook.store.common.security.dto.GetNewTokenResponse;
 import store.novabook.store.common.security.entity.Users;
 import store.novabook.store.common.security.service.NewTokenClient;
 import store.novabook.store.member.MemberClient;
-import store.novabook.store.member.dto.GetMembersUUIDRequest;
-import store.novabook.store.member.dto.GetMembersUUIDResponse;
+import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {

@@ -16,18 +16,18 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.member.MemberClient;
-import store.novabook.store.member.dto.CreateMemberRequest;
-import store.novabook.store.member.dto.CreateMemberResponse;
-import store.novabook.store.member.dto.DeleteMemberRequest;
-import store.novabook.store.member.dto.FindMemberLoginResponse;
-import store.novabook.store.member.dto.GetMemberResponse;
-import store.novabook.store.member.dto.GetMembersUUIDRequest;
-import store.novabook.store.member.dto.GetMembersUUIDResponse;
-import store.novabook.store.member.dto.LoginMemberRequest;
-import store.novabook.store.member.dto.LoginMemberResponse;
-import store.novabook.store.member.dto.UpdateMemberNameRequest;
-import store.novabook.store.member.dto.UpdateMemberNumberRequest;
-import store.novabook.store.member.dto.UpdateMemberPasswordRequest;
+import store.novabook.store.member.dto.request.CreateMemberRequest;
+import store.novabook.store.member.dto.request.DeleteMemberRequest;
+import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.request.LoginMemberRequest;
+import store.novabook.store.member.dto.request.UpdateMemberNameRequest;
+import store.novabook.store.member.dto.request.UpdateMemberNumberRequest;
+import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
+import store.novabook.store.member.dto.response.CreateMemberResponse;
+import store.novabook.store.member.dto.response.FindMemberLoginResponse;
+import store.novabook.store.member.dto.response.GetMemberResponse;
+import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
+import store.novabook.store.member.dto.response.LoginMemberResponse;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberGradeHistory;
 import store.novabook.store.member.entity.MemberGradePolicy;
@@ -103,7 +103,7 @@ public class MemberServiceImpl implements MemberService {
 		MemberGradeHistory memberGradeHistory = MemberGradeHistory.builder()
 			.member(newMember)
 			.memberGradePolicy(memberGradePolicy)
-			.quarter(LocalDateTime.now())
+			// .quarter(LocalDateTime.now())
 			.build();
 		memberGradeHistoryRepository.save(memberGradeHistory);
 

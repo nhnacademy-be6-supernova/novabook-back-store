@@ -11,11 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.tag.dto.CreateTagRequest;
-import store.novabook.store.tag.dto.CreateTagResponse;
-import store.novabook.store.tag.dto.GetTagListResponse;
-import store.novabook.store.tag.dto.GetTagResponse;
-import store.novabook.store.tag.dto.UpdateTagRequest;
+
+import store.novabook.store.tag.dto.request.CreateTagRequest;
+import store.novabook.store.tag.dto.request.UpdateTagRequest;
+import store.novabook.store.tag.dto.response.CreateTagResponse;
+import store.novabook.store.tag.dto.response.GetTagListResponse;
+import store.novabook.store.tag.dto.response.GetTagResponse;
 import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.TagRepository;
 import store.novabook.store.tag.service.TagService;

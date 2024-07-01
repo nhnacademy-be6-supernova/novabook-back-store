@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.category.controller.docs.CategoryControllerDocs;
-import store.novabook.store.category.dto.CreateCategoryRequest;
-import store.novabook.store.category.dto.CreateCategoryResponse;
-import store.novabook.store.category.dto.GetCategoryListResponse;
-import store.novabook.store.category.dto.GetCategoryResponse;
+import store.novabook.store.category.dto.request.CreateCategoryRequest;
+import store.novabook.store.category.dto.response.CreateCategoryResponse;
+import store.novabook.store.category.dto.response.GetCategoryListResponse;
+import store.novabook.store.category.dto.response.GetCategoryResponse;
 import store.novabook.store.category.service.CategoryService;
 
 @RestController

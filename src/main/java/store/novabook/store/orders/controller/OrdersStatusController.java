@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.orders.controller.docs.OrdersStatusControllerDocs;
-import store.novabook.store.orders.dto.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetOrdersStatusResponse;
-import store.novabook.store.orders.dto.UpdateOrdersStatusRequest;
+
+import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrdersStatusResponse;
 import store.novabook.store.orders.service.OrdersStatusService;
 
 @RestController

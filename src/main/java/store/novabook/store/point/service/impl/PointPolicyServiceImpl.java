@@ -7,8 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.point.dto.CreatePointPolicyRequest;
-import store.novabook.store.point.dto.GetPointPolicyResponse;
+
+import store.novabook.store.point.dto.request.CreatePointPolicyRequest;
+import store.novabook.store.point.dto.response.GetPointPolicyResponse;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointPolicyRepository;
 import store.novabook.store.point.service.PointPolicyService;

@@ -1,4 +1,4 @@
-package store.novabook.store.book.service;
+package store.novabook.store.book.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.CreateLikesResponse;
-import store.novabook.store.book.dto.GetLikeBookResponse;
+import store.novabook.store.book.dto.response.CreateLikesResponse;
+import store.novabook.store.book.dto.response.GetLikeBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Likes;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.LikesRepository;
+import store.novabook.store.book.service.LikesService;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;

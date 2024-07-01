@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.point.controller.docs.PointHistoryControllerDocs;
-import store.novabook.store.point.dto.CreatePointHistoryRequest;
-import store.novabook.store.point.dto.GetPointHistoryResponse;
+
+import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
+import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.service.PointHistoryService;
 

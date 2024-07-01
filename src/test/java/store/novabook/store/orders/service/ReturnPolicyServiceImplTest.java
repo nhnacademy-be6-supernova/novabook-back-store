@@ -15,9 +15,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.CreateReturnPolicyRequest;
-import store.novabook.store.orders.dto.GetReturnPolicyResponse;
+
+import store.novabook.store.orders.dto.request.CreateReturnPolicyRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetReturnPolicyResponse;
 import store.novabook.store.orders.entity.ReturnPolicy;
 import store.novabook.store.orders.repository.ReturnPolicyRepository;
 import store.novabook.store.orders.service.impl.ReturnPolicyServiceImpl;

@@ -1,4 +1,4 @@
-package store.novabook.store.book.service;
+package store.novabook.store.book.service.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,17 +25,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import store.novabook.store.book.dto.CreateBookRequest;
-import store.novabook.store.book.dto.CreateBookResponse;
-import store.novabook.store.book.dto.GetBookAllResponse;
-import store.novabook.store.book.dto.GetBookResponse;
-import store.novabook.store.book.dto.UpdateBookRequest;
+
+import store.novabook.store.book.dto.request.CreateBookRequest;
+import store.novabook.store.book.dto.request.UpdateBookRequest;
+import store.novabook.store.book.dto.response.CreateBookResponse;
+import store.novabook.store.book.dto.response.GetBookAllResponse;
+import store.novabook.store.book.dto.response.GetBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.book.repository.BookQueryRepository;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.BookStatusRepository;
 import store.novabook.store.book.repository.LikesRepository;
+import store.novabook.store.book.service.BookService;
 import store.novabook.store.category.entity.BookCategory;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;

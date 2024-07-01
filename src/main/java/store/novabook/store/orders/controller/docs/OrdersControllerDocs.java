@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.orders.dto.CreateOrdersRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetOrdersResponse;
-import store.novabook.store.orders.dto.UpdateOrdersRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrdersResponse;
 
 @Tag(name = "Orders API")
 public interface OrdersControllerDocs {

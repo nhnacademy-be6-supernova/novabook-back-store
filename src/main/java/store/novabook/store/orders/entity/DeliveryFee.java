@@ -16,7 +16,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
+import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

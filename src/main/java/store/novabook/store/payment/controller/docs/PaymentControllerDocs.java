@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.payment.dto.CreatePaymentRequest;
-import store.novabook.store.payment.dto.CreatePaymentResponse;
-import store.novabook.store.payment.dto.GetPaymentResponse;
+import store.novabook.store.payment.dto.request.CreatePaymentRequest;
+import store.novabook.store.payment.dto.response.CreatePaymentResponse;
+import store.novabook.store.payment.dto.response.GetPaymentResponse;
 
 @Tag(name = "Payment API")
 public interface PaymentControllerDocs {

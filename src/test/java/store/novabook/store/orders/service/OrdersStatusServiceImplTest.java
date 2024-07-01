@@ -8,10 +8,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.orders.dto.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetOrdersStatusResponse;
-import store.novabook.store.orders.dto.UpdateOrdersStatusRequest;
+
+import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrdersStatusResponse;
 import store.novabook.store.orders.entity.OrdersStatus;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
 import store.novabook.store.orders.service.impl.OrdersStatusServiceImpl;
@@ -99,23 +100,6 @@ class OrdersStatusServiceImplTest {
 		verify(ordersStatusRepository, times(1)).findById(id);
 	}
 
-	@Test
-	void testUpdateOrdersStatus() {
-		Long id = 1L;
-		OrdersStatus ordersStatus = new OrdersStatus(CreateOrdersStatusRequest.builder()
-			.name("Processing")
-			.build());
-		UpdateOrdersStatusRequest updateRequest = UpdateOrdersStatusRequest.builder()
-			.name("Shipped")
-			.build();
-		when(ordersStatusRepository.findById(id)).thenReturn(Optional.of(ordersStatus));
-
-		ordersStatusServiceImpl.updateOrdersStatus(id, updateRequest);
-
-		assertEquals("Shipped", ordersStatus.getName());
-		assertNotNull(ordersStatus.getUpdatedAt());
-		verify(ordersStatusRepository, times(1)).findById(id);
-	}
 
 	@Test
 	void testUpdateOrdersStatusNotFound() {

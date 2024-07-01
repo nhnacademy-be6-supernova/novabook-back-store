@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.member.controller.docs.MemberCouponControllerDocs;
-import store.novabook.store.member.dto.CreateMemberCouponRequest;
-import store.novabook.store.member.dto.CreateMemberCouponResponse;
+
+import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
+import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.service.MemberCouponService;
 
 @RequiredArgsConstructor

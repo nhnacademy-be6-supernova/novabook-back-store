@@ -42,7 +42,6 @@ public class Admin {
 	@NotNull
 	private String email;
 
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 

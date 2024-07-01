@@ -2,10 +2,10 @@ package store.novabook.store.orders.service;
 
 import org.springframework.data.domain.Page;
 
-import store.novabook.store.orders.dto.CreateOrdersBookRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetOrdersBookResponse;
-import store.novabook.store.orders.dto.UpdateOrdersBookRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersBookRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
 
 public interface OrdersBookService {
 	CreateResponse create(CreateOrdersBookRequest request);

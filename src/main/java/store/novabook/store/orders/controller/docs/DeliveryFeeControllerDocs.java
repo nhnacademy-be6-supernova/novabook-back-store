@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetDeliveryFeeListResponse;
-import store.novabook.store.orders.dto.GetDeliveryFeeResponse;
+import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetDeliveryFeeListResponse;
+import store.novabook.store.orders.dto.response.GetDeliveryFeeResponse;
 
 @Tag(name = "DeliveryFee API", description = "택배비 API")
 public interface DeliveryFeeControllerDocs {

@@ -18,7 +18,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.member.dto.CreateMemberRequest;
+import store.novabook.store.member.dto.request.CreateMemberRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

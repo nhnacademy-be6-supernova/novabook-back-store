@@ -5,9 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.payment.dto.CreatePaymentRequest;
-import store.novabook.store.payment.dto.CreatePaymentResponse;
-import store.novabook.store.payment.dto.GetPaymentResponse;
+
+import store.novabook.store.payment.dto.request.CreatePaymentRequest;
+import store.novabook.store.payment.dto.response.CreatePaymentResponse;
+import store.novabook.store.payment.dto.response.GetPaymentResponse;
 import store.novabook.store.payment.entity.Payment;
 import store.novabook.store.payment.repository.PaymentRepository;
 import store.novabook.store.payment.service.PaymentService;

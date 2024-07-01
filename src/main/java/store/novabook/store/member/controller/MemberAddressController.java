@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.member.controller.docs.MemberAddressControllerDocs;
-import store.novabook.store.member.dto.CreateMemberAddressRequest;
-import store.novabook.store.member.dto.CreateMemberAddressResponse;
-import store.novabook.store.member.dto.GetMemberAddressListResponse;
-import store.novabook.store.member.dto.GetMemberAddressResponse;
-import store.novabook.store.member.dto.UpdateMemberAddressRequest;
+
+import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
+import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
+import store.novabook.store.member.dto.response.CreateMemberAddressResponse;
+import store.novabook.store.member.dto.response.GetMemberAddressListResponse;
+import store.novabook.store.member.dto.response.GetMemberAddressResponse;
 import store.novabook.store.member.service.MemberAddressService;
 
 @RestController

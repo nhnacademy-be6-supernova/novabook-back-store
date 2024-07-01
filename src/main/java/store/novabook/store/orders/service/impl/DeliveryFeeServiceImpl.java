@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.GetDeliveryFeeResponse;
+import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetDeliveryFeeResponse;
 import store.novabook.store.orders.entity.DeliveryFee;
 import store.novabook.store.orders.repository.DeliveryFeeRepository;
 import store.novabook.store.orders.service.DeliveryFeeService;

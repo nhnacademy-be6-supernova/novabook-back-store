@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.book.dto.CreateLikesResponse;
-import store.novabook.store.book.dto.GetLikeBookResponse;
+import store.novabook.store.book.dto.response.CreateLikesResponse;
+import store.novabook.store.book.dto.response.GetLikeBookResponse;
 
 @Tag(name = "Likes API")
 public interface LikesControllerDocs {

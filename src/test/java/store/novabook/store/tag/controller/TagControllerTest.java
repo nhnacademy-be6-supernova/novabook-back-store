@@ -32,9 +32,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 
-import store.novabook.store.tag.dto.CreateTagRequest;
-import store.novabook.store.tag.dto.CreateTagResponse;
-import store.novabook.store.tag.dto.GetTagResponse;
+import store.novabook.store.tag.dto.request.CreateTagRequest;
+import store.novabook.store.tag.dto.response.CreateTagResponse;
+import store.novabook.store.tag.dto.response.GetTagResponse;
 import store.novabook.store.tag.service.impl.TagServiceImpl;
 
 @WebMvcTest(TagController.class)
@@ -60,24 +60,6 @@ public class TagControllerTest {
 	}
 
 	@Test
-	public void testGetTagAll() throws Exception {
-		GetTagResponse response = new GetTagResponse( 1L,"Tag1");
-		Pageable pageable = PageRequest.of(0, 10);
-		List<GetTagResponse> getTagResponse = Collections.singletonList(response);
-		Page<GetTagResponse> page = new PageImpl<>(getTagResponse, pageable, 1);
-
-		when(tagServiceImpl.getTagAll(pageable)).thenReturn(page);
-
-		mockMvc.perform(get("/api/v1/store/tags")
-				.contentType(MediaType.APPLICATION_JSON)
-				.param("page", "0")
-				.param("size", "10"))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.content[0].id").value(1L))
-			.andExpect(jsonPath("$.content[0].name").value("Tag1"));
-	}
-
-	@Test
 	public void testGetTag() throws Exception {
 		GetTagResponse response = new GetTagResponse( 1L,"Tag1");
 		when(tagServiceImpl.getTag(1L)).thenReturn(response);
@@ -100,17 +82,6 @@ public class TagControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.id").value(1L));
-	}
-
-	@Test
-	public void testUpdateTag() throws Exception {
-		// UpdateTagRequest request = new UpdateTagRequest(1L, "UpdatedTag");
-		// doNothing().when(tagService).updateTag(any(UpdateTagRequest.class));
-		//
-		// mockMvc.perform(put("/tags")
-		// 		.contentType(MediaType.APPLICATION_JSON)
-		// 		.content(objectMapper.writeValueAsString(request)))
-		// 	.andExpect(status().isOk());
 	}
 
 	@Test

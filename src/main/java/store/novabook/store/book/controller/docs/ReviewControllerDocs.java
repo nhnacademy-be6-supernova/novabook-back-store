@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.book.dto.CreateReviewRequest;
-import store.novabook.store.book.dto.CreateReviewResponse;
-import store.novabook.store.book.dto.GetReviewResponse;
-import store.novabook.store.book.dto.SearchBookResponse;
-import store.novabook.store.book.dto.UpdateReviewRequest;
+import store.novabook.store.book.dto.request.CreateReviewRequest;
+import store.novabook.store.book.dto.request.UpdateReviewRequest;
+import store.novabook.store.book.dto.response.CreateReviewResponse;
+import store.novabook.store.book.dto.response.GetReviewResponse;
+import store.novabook.store.book.dto.response.SearchBookResponse;
 
 /**
  * 리뷰 관련 API 요청을 처리하는 컨트롤러.

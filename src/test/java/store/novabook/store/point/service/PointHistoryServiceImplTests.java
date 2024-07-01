@@ -23,8 +23,9 @@ import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.point.dto.CreatePointHistoryRequest;
-import store.novabook.store.point.dto.GetPointHistoryResponse;
+
+import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
+import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
