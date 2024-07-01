@@ -23,11 +23,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import store.novabook.store.point.dto.GetPointHistoryResponse;
-import store.novabook.store.point.service.PointHistoryService;
+import store.novabook.store.point.dto.response.GetPointHistoryResponse;
+import store.novabook.store.point.service.impl.PointHistoryServiceImpl;
 
 @WebMvcTest(PointHistoryController.class)
-@ContextConfiguration(classes = {PointHistoryService.class})
+@ContextConfiguration(classes = {PointHistoryServiceImpl.class})
 @EnableSpringDataWebSupport
 public class PointHistoryControllerTest {
 
@@ -35,11 +35,11 @@ public class PointHistoryControllerTest {
 	protected MockMvc mockMvc;
 
 	@MockBean
-	private PointHistoryService pointHistoryService;
+	private PointHistoryServiceImpl pointHistoryServiceImpl;
 
 	@BeforeEach
 	void setup() {
-		PointHistoryController controller = new PointHistoryController(pointHistoryService);
+		PointHistoryController controller = new PointHistoryController(pointHistoryServiceImpl);
 		mockMvc = MockMvcBuilders.standaloneSetup(controller)
 			.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 			.build();
@@ -57,7 +57,7 @@ public class PointHistoryControllerTest {
 		Page<GetPointHistoryResponse> page = new PageImpl<>(getPointHistoryResponseList, PageRequest.of(0, 10),
 			getPointHistoryResponseList.size());
 
-		Mockito.when(pointHistoryService.getPointHistoryList(Mockito.any(Pageable.class))).thenReturn(page);
+		Mockito.when(pointHistoryServiceImpl.getPointHistoryList(Mockito.any(Pageable.class))).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/point/histories")
 				.param("page", "0")

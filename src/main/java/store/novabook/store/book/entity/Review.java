@@ -18,9 +18,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.book.dto.CreateReviewRequest;
-import store.novabook.store.book.dto.UpdateReviewRequest;
-import store.novabook.store.orders.entity.Orders;
+import store.novabook.store.book.dto.request.CreateReviewRequest;
+import store.novabook.store.book.dto.request.UpdateReviewRequest;
+import store.novabook.store.orders.entity.OrdersBook;
 
 /**
  * 리뷰 정보를 저장하는 엔티티 클래스.
@@ -46,8 +46,8 @@ public class Review {
 	/** 리뷰가 참조하는 주문 객체. */
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "orders_id")
-	Orders orders;
+	@JoinColumn(name = "orders_book_id")
+	OrdersBook ordersBook;
 
 	/** 리뷰 내용. */
 	@NotNull
@@ -57,7 +57,6 @@ public class Review {
 	@NotNull
 	private int score;
 
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -65,24 +64,24 @@ public class Review {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public Review(Book book, Orders orders, String content, int score) {
+	public Review(Book book, OrdersBook ordersBook, String content, int score) {
 		this.book = book;
-		this.orders = orders;
+		this.ordersBook = ordersBook;
 		this.content = content;
 		this.score = score;
 	}
 	/**
 	 * CreateReviewRequest 객체로부터 Review 엔티티를 생성.
 	 * @param request 리뷰 생성 요청 데이터.
-	 * @param orders 관련 주문.
+	 * @param ordersBook 관련 주문.
 	 * @param book 관련 책.
 	 * @return 생성된 Review 객체.
 	 */
 
-	public static Review of(CreateReviewRequest request, Orders orders, Book book) {
+	public static Review of(CreateReviewRequest request, OrdersBook ordersBook, Book book) {
 		return Review.builder()
 			.book(book)
-			.orders(orders)
+			.ordersBook(ordersBook)
 			.content(request.content())
 			.score(request.score())
 			.build();
