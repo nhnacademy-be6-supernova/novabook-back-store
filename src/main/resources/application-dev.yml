@@ -8,6 +8,7 @@ spring:
     password: Hv-]JRIyCw[[9O18
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: org.apache.commons.dbcp2.BasicDataSource  # 사용할 데이터 소스 타입 (DBCP2)
+
     dbcp2:
       initial-size: 20  # 처음 풀(pool)에 할당할 커넥션 개수
       max-total: 50  # 풀에 허용할 최대 커넥션 개수

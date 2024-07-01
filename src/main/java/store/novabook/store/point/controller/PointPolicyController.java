@@ -19,7 +19,7 @@ import store.novabook.store.point.dto.response.GetPointPolicyResponse;
 import store.novabook.store.point.service.PointPolicyService;
 
 @RestController
-@RequestMapping("/api/v1/store/point/policies")
+@RequestMapping("v")
 @RequiredArgsConstructor
 public class PointPolicyController implements PointPolicyControllerDocs {
 
