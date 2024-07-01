@@ -13,20 +13,20 @@ import store.novabook.store.search.service.BookSearchService;
 import store.novabook.store.search.document.BookDocument;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/store/search")
 @Document(indexName = "books")
+@RequiredArgsConstructor
 public class BookSearchController {
 
 	private final BookSearchService bookSearchService;
 
 	@GetMapping("/title")
 	public List<BookDocument> searchByTitle(@RequestParam String title) {
-		return bookSearchService.searchByTitle(title);
+		return bookSearchService.searchByTitlePhrase(title);
 	}
 
 	@GetMapping("/author")
 	public List<BookDocument> searchByAuthor(@RequestParam String author) {
-		return bookSearchService.searchByAuthor(author);
+		return bookSearchService.searchByAuthorContaining(author);
 	}
 }

@@ -41,6 +41,7 @@ import store.novabook.store.category.entity.BookCategory;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
+import store.novabook.store.category.service.CategoryService;
 import store.novabook.store.category.service.impl.CategoryServiceImpl;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.exception.FailedCreateBookException;
@@ -49,6 +50,8 @@ import store.novabook.store.image.entity.BookImage;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.repository.BookImageRepository;
 import store.novabook.store.image.repository.ImageRepository;
+import store.novabook.store.search.document.BookDocument;
+import store.novabook.store.search.repository.BookSearchRepository;
 import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.BookTagRepository;
@@ -69,8 +72,9 @@ public class BookServiceImpl implements BookService {
 	private final BookQueryRepository queryRepository;
 	private final ImageRepository imageRepository;
 	private final BookImageRepository bookImageRepository;
-	private final CategoryServiceImpl categoryServiceImpl;
+	private final CategoryService categoryService;
 	private final NHNCloudClient nhnCloudClient;
+	private final BookSearchRepository bookSearchRepository;
 
 	@Value("${nhn.cloud.imageManager.endpointUrl}")
 	private String endpointUrl;
@@ -87,7 +91,6 @@ public class BookServiceImpl implements BookService {
 	@Value("${nhn.cloud.imageManager.localStorage}")
 	private String localStorage;
 
-	@Override
 	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
 			.orElseThrow(() -> new EntityNotFoundException(BookStatus.class, request.bookStatusId()));
@@ -128,10 +131,11 @@ public class BookServiceImpl implements BookService {
 		Image image = imageRepository.save(new Image(nhnUrl));
 		bookImageRepository.save(BookImage.of(book, image));
 
+		bookSearchRepository.save(BookDocument.of(book));
+
 		return new CreateBookResponse(book.getId());
 	}
 
-	@Override
 	@Transactional(readOnly = true)
 	public GetBookResponse getBook(Long id) {
 		GetBookResponse getBookResponse = queryRepository.getBook(id);
@@ -139,7 +143,6 @@ public class BookServiceImpl implements BookService {
 		return getBookResponse;
 	}
 
-	@Override
 	@Transactional(readOnly = true)
 	public Page<GetBookAllResponse> getBookAll(Pageable pageable) {
 		Page<Book> books = bookRepository.findAll(pageable);
@@ -148,7 +151,6 @@ public class BookServiceImpl implements BookService {
 		return new PageImpl<>(booksResponse.getContent(), pageable, books.getTotalElements());
 	}
 
-	@Override
 	public void update(UpdateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
 			.orElseThrow(() -> new EntityNotFoundException(BookStatus.class, request.bookStatusId()));
@@ -159,7 +161,6 @@ public class BookServiceImpl implements BookService {
 		book.update(bookStatus, request);
 	}
 
-	@Override
 	public void delete(Long id) {
 		BookStatus bookStatus = bookStatusRepository.findById(4L)
 			.orElseThrow(() -> new EntityNotFoundException(BookStatus.class, id));
@@ -169,7 +170,7 @@ public class BookServiceImpl implements BookService {
 		book.updateBookStatus(bookStatus);
 	}
 
-	@Override
+
 	public String uploadImage(String appKey, String secretKey, String path, boolean overwrite, String localFilePath) {
 
 		try {

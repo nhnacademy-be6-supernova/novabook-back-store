@@ -1,4 +1,4 @@
-package store.novabook.store.config;
+package store.novabook.store.common.config;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
