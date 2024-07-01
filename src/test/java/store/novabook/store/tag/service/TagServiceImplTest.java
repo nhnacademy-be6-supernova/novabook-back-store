@@ -21,21 +21,21 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import store.novabook.store.book.entity.Book;
 import store.novabook.store.tag.dto.CreateTagRequest;
 import store.novabook.store.tag.dto.CreateTagResponse;
 import store.novabook.store.tag.dto.GetTagResponse;
 import store.novabook.store.tag.dto.UpdateTagRequest;
 import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.TagRepository;
+import store.novabook.store.tag.service.impl.TagServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-class TagServiceTest {
+class TagServiceImplTest {
 	@Mock
 	private TagRepository tagRepository;
 
 	@InjectMocks
-	private  TagService tagService;
+	private TagServiceImpl tagServiceImpl;
 
 	private Tag tag;
 	private CreateTagRequest createTagRequest;
@@ -56,7 +56,7 @@ class TagServiceTest {
 
 		when(tagRepository.findAll(any(Pageable.class))).thenReturn(page);
 
-		Page<GetTagResponse> result = tagService.getTagAll(PageRequest.of(0, 10));
+		Page<GetTagResponse> result = tagServiceImpl.getTagAll(PageRequest.of(0, 10));
 
 		assertNotNull(result);
 		assertEquals(1, result.getTotalElements());
@@ -66,7 +66,7 @@ class TagServiceTest {
 	@Test
 	void getTag() {
 		when(tagRepository.findById(1L)).thenReturn(Optional.ofNullable(tag));
-		GetTagResponse getTagResponse = tagService.getTag(1L);
+		GetTagResponse getTagResponse = tagServiceImpl.getTag(1L);
 		assertEquals(tag.getId(), getTagResponse.id());
 		verify(tagRepository, times(1)).findById(anyLong());
 	}
@@ -75,7 +75,7 @@ class TagServiceTest {
 	@DisplayName("createTag - 성공")
 	void createTag() {
 		when(tagRepository.save(any(Tag.class))).thenReturn(tag);
-		CreateTagResponse createTagResponse = tagService.createTag(createTagRequest);
+		CreateTagResponse createTagResponse = tagServiceImpl.createTag(createTagRequest);
 		assertNotNull(createTagResponse);
 		assertEquals(tag.getId(), createTagResponse.id());
 		verify(tagRepository, times(1)).save(any(Tag.class));
@@ -91,7 +91,7 @@ class TagServiceTest {
 
 	@Test
 	void deleteTag() {
-		tagService.deleteTag(1L);
+		tagServiceImpl.deleteTag(1L);
 		verify(tagRepository, times(1)).deleteById(anyLong());
 	}
 }

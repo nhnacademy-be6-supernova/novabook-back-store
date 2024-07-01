@@ -9,14 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.member.controller.docs.MemberCouponControllerDocs;
 import store.novabook.store.member.dto.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.CreateMemberCouponResponse;
 import store.novabook.store.member.service.MemberCouponService;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/coupon/memberCoupons")
+@RequestMapping("/api/v1/coupon/member-coupons")
 @RestController
-public class MemberCouponController {
+public class MemberCouponController implements MemberCouponControllerDocs {
 	private final MemberCouponService memberCouponService;
 
 	@PostMapping

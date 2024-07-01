@@ -20,13 +20,14 @@ import store.novabook.store.orders.dto.CreateReturnPolicyRequest;
 import store.novabook.store.orders.dto.GetReturnPolicyResponse;
 import store.novabook.store.orders.entity.ReturnPolicy;
 import store.novabook.store.orders.repository.ReturnPolicyRepository;
+import store.novabook.store.orders.service.impl.ReturnPolicyServiceImpl;
 
-public class ReturnPolicyServiceTest {
+public class ReturnPolicyServiceImplTest {
 	@Mock
 	private ReturnPolicyRepository returnPolicyRepository;
 
 	@InjectMocks
-	private ReturnPolicyService returnPolicyService;
+	private ReturnPolicyServiceImpl returnPolicyServiceImpl;
 
 	@BeforeEach
 	void setUp() {
@@ -40,7 +41,7 @@ public class ReturnPolicyServiceTest {
 		ReturnPolicy returnPolicy = new ReturnPolicy(request);
 		when(returnPolicyRepository.save(any(ReturnPolicy.class))).thenReturn(returnPolicy);
 
-		CreateResponse response = returnPolicyService.save(request);
+		CreateResponse response = returnPolicyServiceImpl.save(request);
 
 		assertNotNull(response);
 		assertEquals(returnPolicy.getId(), response.id());
@@ -52,7 +53,7 @@ public class ReturnPolicyServiceTest {
 		String expectedContent = "Latest Return Policy Content";
 		when(returnPolicyRepository.findContentByOrderByIdDesc()).thenReturn(expectedContent);
 
-		String actualContent = returnPolicyService.latestReturnPolicyContent();
+		String actualContent = returnPolicyServiceImpl.latestReturnPolicyContent();
 
 		assertEquals(expectedContent, actualContent);
 		verify(returnPolicyRepository, times(1)).findContentByOrderByIdDesc();
@@ -65,7 +66,7 @@ public class ReturnPolicyServiceTest {
 		List<ReturnPolicy> returnPolicies = Arrays.asList(policy1, policy2);
 		when(returnPolicyRepository.findAll()).thenReturn(returnPolicies);
 
-		Page<GetReturnPolicyResponse> result = returnPolicyService.getReturnPolicies();
+		Page<GetReturnPolicyResponse> result = returnPolicyServiceImpl.getReturnPolicies();
 
 		assertNotNull(result);
 		assertEquals(2, result.getTotalElements());
@@ -80,7 +81,7 @@ public class ReturnPolicyServiceTest {
 		ReturnPolicy returnPolicy = new ReturnPolicy(CreateReturnPolicyRequest.builder().content("Policy Content").build());
 		when(returnPolicyRepository.findById(id)).thenReturn(Optional.of(returnPolicy));
 
-		GetReturnPolicyResponse response = returnPolicyService.getReturnPolicyById(id);
+		GetReturnPolicyResponse response = returnPolicyServiceImpl.getReturnPolicyById(id);
 
 		assertNotNull(response);
 		assertEquals(returnPolicy.getContent(), response.content());
@@ -93,7 +94,7 @@ public class ReturnPolicyServiceTest {
 		when(returnPolicyRepository.findById(id)).thenReturn(Optional.empty());
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			returnPolicyService.getReturnPolicyById(id);
+			returnPolicyServiceImpl.getReturnPolicyById(id);
 		});
 
 		verify(returnPolicyRepository, times(1)).findById(id);

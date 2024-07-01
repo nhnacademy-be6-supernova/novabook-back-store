@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.member.MemberClient;
+import store.novabook.store.member.controller.docs.MemberControllerDocs;
 import store.novabook.store.member.dto.CreateMemberRequest;
 import store.novabook.store.member.dto.CreateMemberResponse;
 import store.novabook.store.member.dto.DeleteMemberRequest;
@@ -38,7 +39,7 @@ import store.novabook.store.member.service.MemberService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/store/members")
-public class MemberController {
+public class MemberController implements MemberControllerDocs {
 
 	private final MemberService memberService;
 	private final MemberClient memberClient;

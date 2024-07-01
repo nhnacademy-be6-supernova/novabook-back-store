@@ -28,11 +28,12 @@ import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
 import store.novabook.store.cart.repository.CartRepository;
+import store.novabook.store.cart.service.impl.CartBookServiceImpl;
 
-public class CartBookServiceTests {
+public class CartBookServiceImplImplTests {
 
 	@InjectMocks
-	private CartBookService cartBookService;
+	private CartBookServiceImpl cartBookServiceImpl;
 
 	@Mock
 	private CartBookRepository cartBookRepository;
@@ -74,7 +75,7 @@ public class CartBookServiceTests {
 		when(cartRepository.findById(createCartBookRequest.cartId())).thenReturn(java.util.Optional.of(cartMock));
 		when(bookRepository.findById(createCartBookRequest.bookId())).thenReturn(java.util.Optional.of(bookMock));
 
-		cartBookService.createCartBook(createCartBookRequest);
+		cartBookServiceImpl.createCartBook(createCartBookRequest);
 
 		verify(cartBookRepository, times(1)).save(any(CartBook.class));
 
@@ -97,7 +98,7 @@ public class CartBookServiceTests {
 		when(cartBookRepository.findAllByCartId(eq(cartMock.getId()), pageableCaptor.capture())).thenReturn(
 			Optional.of(page));
 
-		Page<GetCartBookResponse> result = cartBookService.getCartBookListByCartId(cartMock.getId(),
+		Page<GetCartBookResponse> result = cartBookServiceImpl.getCartBookListByCartId(cartMock.getId(),
 			PageRequest.of(0, 10));
 
 		assertAll(
@@ -115,7 +116,7 @@ public class CartBookServiceTests {
 		DeleteCartBookRequest deleteCartBookRequest = DeleteCartBookRequest.from(1L, 1L);
 		when(cartBookRepository.existsByCartIdAndBookId(1L, 1L)).thenReturn(true);
 
-		cartBookService.deleteCartBookAndBook(deleteCartBookRequest);
+		cartBookServiceImpl.deleteCartBookAndBook(deleteCartBookRequest);
 
 		verify(cartBookRepository, times(1)).deleteByCartIdAndBookId(1L, 1L);
 	}

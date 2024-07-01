@@ -9,7 +9,6 @@ import store.novabook.store.member.dto.GetMembersUUIDResponse;
 
 @FeignClient(name = "memberClient", url = "http://localhost:9777/auth/uuid")
 public interface MemberClient {
-
 	@PostMapping
 	GetMembersUUIDResponse getMembersId(@RequestBody GetMembersUUIDRequest getMembersUUIDRequest);
 

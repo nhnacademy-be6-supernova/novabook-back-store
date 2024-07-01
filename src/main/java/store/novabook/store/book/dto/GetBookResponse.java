@@ -4,13 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.Builder;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.image.entity.Image;
-import store.novabook.store.tag.entity.BookTag;
 
 @Builder
 public record GetBookResponse(

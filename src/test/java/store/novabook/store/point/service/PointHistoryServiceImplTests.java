@@ -18,6 +18,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import store.novabook.store.member.entity.Member;
+import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
@@ -27,13 +29,12 @@ import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
 import store.novabook.store.point.repository.PointPolicyRepository;
-import store.novabook.store.user.member.entity.Member;
-import store.novabook.store.user.member.repository.MemberRepository;
+import store.novabook.store.point.service.impl.PointHistoryServiceImpl;
 
-public class PointHistoryServiceTests {
+public class PointHistoryServiceImplTests {
 
 	@InjectMocks
-	private PointHistoryService pointHistoryService;
+	private PointHistoryServiceImpl pointHistoryServiceImpl;
 
 	@Mock
 	private PointPolicyRepository pointPolicyRepository;
@@ -71,7 +72,7 @@ public class PointHistoryServiceTests {
 		when(ordersRepository.findById(anyLong())).thenReturn(java.util.Optional.of(mockOrders));
 		when(memberRepository.findById(anyLong())).thenReturn(java.util.Optional.of(mockMember));
 
-		pointHistoryService.createPointHistory(CreatePointHistoryRequest.builder()
+		pointHistoryServiceImpl.createPointHistory(CreatePointHistoryRequest.builder()
 			.ordersId(mockOrders.getId())
 			.pointPolicyId(mockPointPolicy.getId())
 			.memberId(mockMember.getId())
@@ -97,7 +98,7 @@ public class PointHistoryServiceTests {
 
 		when(pointHistoryRepository.findAll(any(Pageable.class))).thenReturn(page);
 
-		Page<GetPointHistoryResponse> result = pointHistoryService.getPointHistoryList(PageRequest.of(0, 10));
+		Page<GetPointHistoryResponse> result = pointHistoryServiceImpl.getPointHistoryList(PageRequest.of(0, 10));
 
 		assertNotNull(result);
 		assertEquals(1, result.getTotalElements());
@@ -109,7 +110,7 @@ public class PointHistoryServiceTests {
 		when(pointHistoryRepository.findAll(any(Pageable.class))).thenReturn(Page.empty());
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			pointHistoryService.getPointHistoryList(PageRequest.of(0, 10));
+			pointHistoryServiceImpl.getPointHistoryList(PageRequest.of(0, 10));
 		});
 	}
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.tag.controller.docs.TagControllerDocs;
 import store.novabook.store.tag.dto.CreateTagRequest;
 import store.novabook.store.tag.dto.CreateTagResponse;
 import store.novabook.store.tag.dto.GetTagListResponse;
@@ -24,16 +25,16 @@ import store.novabook.store.tag.service.TagService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/store/tags")
-public class TagController {
+public class TagController implements TagControllerDocs {
 
 	private final TagService tagService;
 
-	@GetMapping
+	@GetMapping(params = {"size", "page", "sort"})
 	public ResponseEntity<Page<GetTagResponse>> getTagAll(Pageable pageable) {
 		return ResponseEntity.ok().body(tagService.getTagAll(pageable));
 	}
 
-	@GetMapping("/list")
+	@GetMapping
 	public ResponseEntity<GetTagListResponse> getTagAllList() {
 		return ResponseEntity.ok().body(tagService.getTagAllList());
 	}

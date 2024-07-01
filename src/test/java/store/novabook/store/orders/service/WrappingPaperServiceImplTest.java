@@ -24,14 +24,15 @@ import store.novabook.store.orders.dto.GetWrappingPaperResponse;
 import store.novabook.store.orders.dto.UpdateWrappingPaperRequest;
 import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
+import store.novabook.store.orders.service.impl.WrappingPaperServiceImpl;
 
-class WrappingPaperServiceTest {
+class WrappingPaperServiceImplTest {
 
 	@Mock
 	private WrappingPaperRepository wrappingPaperRepository;
 
 	@InjectMocks
-	private WrappingPaperService wrappingPaperService;
+	private WrappingPaperServiceImpl wrappingPaperServiceImpl;
 
 	@BeforeEach
 	void setUp() {
@@ -48,7 +49,7 @@ class WrappingPaperServiceTest {
 		WrappingPaper wrappingPaper = new WrappingPaper(request);
 		when(wrappingPaperRepository.save(any(WrappingPaper.class))).thenReturn(wrappingPaper);
 
-		CreateResponse response = wrappingPaperService.createWrappingPaper(request);
+		CreateResponse response = wrappingPaperServiceImpl.createWrappingPaper(request);
 
 		assertNotNull(response);
 		assertEquals(wrappingPaper.getId(), response.id());
@@ -71,7 +72,7 @@ class WrappingPaperServiceTest {
 		when(wrappingPaperRepository.findAll()).thenReturn(wrappingPapers);
 
 		Pageable pageable = PageRequest.of(0, 10);
-		Page<GetWrappingPaperResponse> result = wrappingPaperService.getWrappingPaperAll(pageable);
+		Page<GetWrappingPaperResponse> result = wrappingPaperServiceImpl.getWrappingPaperAll(pageable);
 
 		assertNotNull(result);
 		assertEquals(2, result.getTotalElements());
@@ -90,7 +91,7 @@ class WrappingPaperServiceTest {
 			.build());
 		when(wrappingPaperRepository.findById(id)).thenReturn(Optional.of(wrappingPaper));
 
-		GetWrappingPaperResponse response = wrappingPaperService.getWrappingPaperById(id);
+		GetWrappingPaperResponse response = wrappingPaperServiceImpl.getWrappingPaperById(id);
 
 		assertNotNull(response);
 		assertEquals(wrappingPaper.getName(), response.name());
@@ -104,7 +105,7 @@ class WrappingPaperServiceTest {
 		when(wrappingPaperRepository.findById(id)).thenReturn(Optional.empty());
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			wrappingPaperService.getWrappingPaperById(id);
+			wrappingPaperServiceImpl.getWrappingPaperById(id);
 		});
 
 		verify(wrappingPaperRepository, times(1)).findById(id);
@@ -124,7 +125,7 @@ class WrappingPaperServiceTest {
 			.build();
 		when(wrappingPaperRepository.findById(id)).thenReturn(Optional.of(wrappingPaper));
 
-		wrappingPaperService.updateWrappingPaper(id, updateRequest);
+		wrappingPaperServiceImpl.updateWrappingPaper(id, updateRequest);
 
 		assertEquals(10L, wrappingPaper.getPrice());
 		assertEquals("Unavailable", wrappingPaper.getStatus());
@@ -142,7 +143,7 @@ class WrappingPaperServiceTest {
 		when(wrappingPaperRepository.findById(id)).thenReturn(Optional.empty());
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			wrappingPaperService.updateWrappingPaper(id, updateRequest);
+			wrappingPaperServiceImpl.updateWrappingPaper(id, updateRequest);
 		});
 
 		verify(wrappingPaperRepository, times(1)).findById(id);

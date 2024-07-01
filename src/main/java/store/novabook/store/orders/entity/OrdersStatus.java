@@ -44,7 +44,6 @@ public class OrdersStatus {
 	}
 
 	public void update(UpdateOrdersStatusRequest request) {
-		this.updatedAt = LocalDateTime.now();
 		this.name = request.name();
 	}
 }

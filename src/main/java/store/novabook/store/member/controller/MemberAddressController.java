@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.member.controller.docs.MemberAddressControllerDocs;
 import store.novabook.store.member.dto.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.CreateMemberAddressResponse;
 import store.novabook.store.member.dto.GetMemberAddressListResponse;
@@ -26,7 +27,7 @@ import store.novabook.store.member.service.MemberAddressService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/store/addresses")
-public class MemberAddressController {
+public class MemberAddressController implements MemberAddressControllerDocs {
 
 	private final MemberAddressService memberAddressService;
 
@@ -66,9 +67,9 @@ public class MemberAddressController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/checkMemberAddressCount")
-	public ResponseEntity<Boolean> checkMemberAddressCount(@RequestHeader Long memberId) {
-		boolean isExceedMemberAddressCount = memberAddressService.checkMemberAddressCount(memberId);
+	@GetMapping("/is-creatable")
+	public ResponseEntity<Boolean> isCreatable(@RequestHeader Long memberId) {
+		boolean isExceedMemberAddressCount = memberAddressService.isCreatable(memberId);
 		return ResponseEntity.ok(isExceedMemberAddressCount);
 	}
 

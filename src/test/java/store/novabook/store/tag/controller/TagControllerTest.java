@@ -32,19 +32,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 
-import store.novabook.store.point.dto.GetPointHistoryResponse;
 import store.novabook.store.tag.dto.CreateTagRequest;
 import store.novabook.store.tag.dto.CreateTagResponse;
 import store.novabook.store.tag.dto.GetTagResponse;
-import store.novabook.store.tag.dto.UpdateTagRequest;
-import store.novabook.store.tag.service.TagService;
+import store.novabook.store.tag.service.impl.TagServiceImpl;
 
 @WebMvcTest(TagController.class)
-@ContextConfiguration(classes = {TagService.class})
+@ContextConfiguration(classes = {TagServiceImpl.class})
 @EnableSpringDataWebSupport
 public class TagControllerTest {
 	@MockBean
-	private TagService tagService;
+	private TagServiceImpl tagServiceImpl;
 
 	@Autowired
 	protected MockMvc mockMvc;
@@ -53,7 +51,7 @@ public class TagControllerTest {
 
 	@BeforeEach
 	public void setup() {
-		TagController tagController = new TagController(tagService);
+		TagController tagController = new TagController(tagServiceImpl);
 		objectMapper = new ObjectMapper();
 		PageableHandlerMethodArgumentResolver pageableArgumentResolver = new PageableHandlerMethodArgumentResolver();
 		mockMvc = MockMvcBuilders.standaloneSetup(tagController)
@@ -68,7 +66,7 @@ public class TagControllerTest {
 		List<GetTagResponse> getTagResponse = Collections.singletonList(response);
 		Page<GetTagResponse> page = new PageImpl<>(getTagResponse, pageable, 1);
 
-		when(tagService.getTagAll(pageable)).thenReturn(page);
+		when(tagServiceImpl.getTagAll(pageable)).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/tags")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -82,7 +80,7 @@ public class TagControllerTest {
 	@Test
 	public void testGetTag() throws Exception {
 		GetTagResponse response = new GetTagResponse( 1L,"Tag1");
-		when(tagService.getTag(1L)).thenReturn(response);
+		when(tagServiceImpl.getTag(1L)).thenReturn(response);
 
 		mockMvc.perform(get("/api/v1/store/tags/1")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -95,7 +93,7 @@ public class TagControllerTest {
 	public void testCreateTag() throws Exception {
 		CreateTagRequest request = new CreateTagRequest("Tag1");
 		CreateTagResponse response = new CreateTagResponse(1L);
-		when(tagService.createTag(any(CreateTagRequest.class))).thenReturn(response);
+		when(tagServiceImpl.createTag(any(CreateTagRequest.class))).thenReturn(response);
 
 		mockMvc.perform(post("/api/v1/store/tags")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -117,7 +115,7 @@ public class TagControllerTest {
 
 	@Test
 	public void testDeleteTag() throws Exception {
-		doNothing().when(tagService).deleteTag(1L);
+		doNothing().when(tagServiceImpl).deleteTag(1L);
 
 		mockMvc.perform(delete("/api/v1/store/tags/1")
 				.contentType(MediaType.APPLICATION_JSON))

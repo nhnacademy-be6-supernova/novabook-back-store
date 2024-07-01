@@ -14,6 +14,7 @@ import store.novabook.store.orders.dto.GetOrdersStatusResponse;
 import store.novabook.store.orders.dto.UpdateOrdersStatusRequest;
 import store.novabook.store.orders.entity.OrdersStatus;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
+import store.novabook.store.orders.service.impl.OrdersStatusServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class OrdersStatusServiceTest {
+class OrdersStatusServiceImplTest {
 
 	@Mock
 	private OrdersStatusRepository ordersStatusRepository;
 
 	@InjectMocks
-	private OrdersStatusService ordersStatusService;
+	private OrdersStatusServiceImpl ordersStatusServiceImpl;
 
 	@BeforeEach
 	void setUp() {
@@ -44,7 +45,7 @@ class OrdersStatusServiceTest {
 		OrdersStatus ordersStatus = new OrdersStatus(request);
 		when(ordersStatusRepository.save(any(OrdersStatus.class))).thenReturn(ordersStatus);
 
-		CreateResponse response = ordersStatusService.save(request);
+		CreateResponse response = ordersStatusServiceImpl.save(request);
 
 		assertNotNull(response);
 		assertEquals(ordersStatus.getId(), response.id());
@@ -62,7 +63,7 @@ class OrdersStatusServiceTest {
 		List<OrdersStatus> statusList = Arrays.asList(status1, status2);
 		when(ordersStatusRepository.findAll()).thenReturn(statusList);
 
-		Page<GetOrdersStatusResponse> result = ordersStatusService.getOrdersStatus();
+		Page<GetOrdersStatusResponse> result = ordersStatusServiceImpl.getOrdersStatus();
 
 		assertNotNull(result);
 		assertEquals(2, result.getTotalElements());
@@ -79,7 +80,7 @@ class OrdersStatusServiceTest {
 			.build());
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.of(ordersStatus));
 
-		GetOrdersStatusResponse response = ordersStatusService.getOrdersStatus(id);
+		GetOrdersStatusResponse response = ordersStatusServiceImpl.getOrdersStatus(id);
 
 		assertNotNull(response);
 		assertEquals("Processing", response.name());
@@ -92,7 +93,7 @@ class OrdersStatusServiceTest {
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.empty());
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			ordersStatusService.getOrdersStatus(id);
+			ordersStatusServiceImpl.getOrdersStatus(id);
 		});
 
 		verify(ordersStatusRepository, times(1)).findById(id);
@@ -109,7 +110,7 @@ class OrdersStatusServiceTest {
 			.build();
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.of(ordersStatus));
 
-		ordersStatusService.updateOrdersStatus(id, updateRequest);
+		ordersStatusServiceImpl.updateOrdersStatus(id, updateRequest);
 
 		assertEquals("Shipped", ordersStatus.getName());
 		assertNotNull(ordersStatus.getUpdatedAt());
@@ -125,7 +126,7 @@ class OrdersStatusServiceTest {
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.empty());
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			ordersStatusService.updateOrdersStatus(id, updateRequest);
+			ordersStatusServiceImpl.updateOrdersStatus(id, updateRequest);
 		});
 
 		verify(ordersStatusRepository, times(1)).findById(id);

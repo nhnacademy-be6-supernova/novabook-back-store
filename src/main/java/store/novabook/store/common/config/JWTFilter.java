@@ -12,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import reactor.util.annotation.NonNull;
 import store.novabook.store.common.security.dto.CustomUserDetails;
 import store.novabook.store.common.security.dto.GetNewTokenRequest;
 import store.novabook.store.common.security.dto.GetNewTokenResponse;
@@ -38,8 +39,8 @@ public class JWTFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
+		@NonNull FilterChain filterChain) throws ServletException, IOException {
 
 		String path = request.getRequestURI();
 

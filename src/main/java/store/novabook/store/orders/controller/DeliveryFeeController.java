@@ -13,40 +13,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.orders.controller.docs.DeliveryFeeControllerDocs;
 import store.novabook.store.orders.dto.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.CreateResponse;
 import store.novabook.store.orders.dto.GetDeliveryFeeListResponse;
 import store.novabook.store.orders.dto.GetDeliveryFeeResponse;
 import store.novabook.store.orders.service.DeliveryFeeService;
 
-@Tag(name = "DeliveryFee API", description = "DeliveryFee 을 생성 조회 수정, 삭제 합니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/store/orders/delivery/fee")
-public class DeliveryFeeController {
+public class DeliveryFeeController implements DeliveryFeeControllerDocs {
+
 	private final DeliveryFeeService deliveryFeeService;
 
-	//생성
-	@Operation(summary = "생성", description = "생성 합니다 ")
 	@PostMapping
 	public ResponseEntity<CreateResponse> createDeliveryFee(@Valid @RequestBody CreateDeliveryFeeRequest request) {
 		CreateResponse response = deliveryFeeService.createFee(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	//전체 조회
-	@Operation(summary = "전체 조회", description = " 전체 조회 합니다. 페이져블로 받습니다 ")
-	@GetMapping("/pageable")
+	@GetMapping(params = {"size", "page", "order"})
 	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll(Pageable pageable) {
 		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees(pageable);
 		return ResponseEntity.ok().body(deliveryFeeResponses);
 	}
 
-	@Operation(summary = "전체 조회", description = "전체 조회 합니다.리스트로 받습니다.")
 	@GetMapping
 	public ResponseEntity<GetDeliveryFeeListResponse> getDeliveryFeeAllList() {
 		List<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFeeList();
@@ -55,12 +49,9 @@ public class DeliveryFeeController {
 		return ResponseEntity.ok().body(getDeliveryFeeListResponse);
 	}
 
-	//단건 조회
-	@Operation(summary = "조회", description = "조회 합니다.")
 	@GetMapping("/{id}")
 	public ResponseEntity<GetDeliveryFeeResponse> getDeliveryFee(@PathVariable Long id) {
 		GetDeliveryFeeResponse response = deliveryFeeService.getDeliveryFee(id);
 		return ResponseEntity.ok().body(response);
 	}
-
 }
