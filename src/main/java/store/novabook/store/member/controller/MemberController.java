@@ -1,8 +1,5 @@
 package store.novabook.store.member.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,12 +20,15 @@ import store.novabook.store.member.MemberClient;
 import store.novabook.store.member.controller.docs.MemberControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
+import store.novabook.store.member.dto.request.DuplicateEmailRequest;
+import store.novabook.store.member.dto.request.DuplicateLoginIdRequest;
 import store.novabook.store.member.dto.request.FindMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
+import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
@@ -51,20 +51,15 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@PostMapping("/loginId/is-creatable")
-	public ResponseEntity<Map<String, Boolean>> checkDuplicated(@RequestBody String loginId) {
-		boolean isDuplicateLoginId = memberService.isCreatableLoginId(loginId);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("isDuplicateLoginId", isDuplicateLoginId);
-		return ResponseEntity.ok(response);
+	public ResponseEntity<DuplicateResponse> checkDuplicateLoginId(@RequestBody DuplicateLoginIdRequest request) {
+		DuplicateResponse isDuplicateLoginId = memberService.isDuplicateLoginId(request.loginId());
+		return ResponseEntity.ok().body(isDuplicateLoginId);
 	}
 
 	@PostMapping("/email/is-creatable")
-	public ResponseEntity<Map<String, Boolean>> checkDuplicateEmail(@RequestBody Map<String, String> request) {
-		String email = request.get("email");
-		boolean isDuplicateEmail = memberService.isCreatableEmail(email);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("isDuplicateEmail", isDuplicateEmail);
-		return ResponseEntity.ok(response);
+	public ResponseEntity<DuplicateResponse> checkDuplicateEmail(@RequestBody DuplicateEmailRequest request) {
+		DuplicateResponse isDuplicateEmail = memberService.isDuplicateEmail(request.email());
+		return ResponseEntity.ok().body(isDuplicateEmail);
 	}
 
 	@GetMapping
