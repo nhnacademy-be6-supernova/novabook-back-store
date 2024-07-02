@@ -10,40 +10,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.CreateReturnPolicyRequest;
-import store.novabook.store.orders.dto.GetReturnPolicyResponse;
+import store.novabook.store.orders.controller.docs.ReturnPolicyControllerDocs;
+import store.novabook.store.orders.dto.request.CreateReturnPolicyRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetReturnPolicyResponse;
 import store.novabook.store.orders.service.ReturnPolicyService;
 
-@Tag(name = "ReturnPolicy API", description = "ReturnPolicy 을 생성, 조회 합니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/store/orders/return/policy")
-public class ReturnPolicyController {
+public class ReturnPolicyController implements ReturnPolicyControllerDocs {
+
 	private final ReturnPolicyService returnPolicyService;
 
-	//생성
-	@Operation(summary = "생성", description = "생성합니다 ")
 	@PostMapping
 	public ResponseEntity<CreateResponse> createReturnPolicy(@Valid @RequestBody CreateReturnPolicyRequest request) {
 		CreateResponse response = returnPolicyService.save(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	//전체 조회
-	@Operation(summary = "전체 조회", description = "전체 조회합니다.")
 	@GetMapping
 	public ResponseEntity<Page<GetReturnPolicyResponse>> getReturnPolicyAll() {
 		Page<GetReturnPolicyResponse> response = returnPolicyService.getReturnPolicies();
 		return ResponseEntity.ok(response);
 	}
 
-	//단건 조회
-	@Operation(summary = "조회", description = "조회합니다.")
 	@GetMapping("{id}")
 	public ResponseEntity<GetReturnPolicyResponse> getReturnPolicy(@PathVariable Long id) {
 		GetReturnPolicyResponse response = returnPolicyService.getReturnPolicyById(id);

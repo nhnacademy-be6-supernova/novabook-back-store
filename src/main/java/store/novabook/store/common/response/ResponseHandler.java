@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import lombok.extern.slf4j.Slf4j;
+import reactor.util.annotation.Nullable;
 import store.novabook.store.common.exception.ErrorStatus;
 import store.novabook.store.common.exception.ValidErrorResponse;
 
@@ -20,14 +21,16 @@ import store.novabook.store.common.exception.ValidErrorResponse;
 public class ResponseHandler implements ResponseBodyAdvice<Object> {
 
 	@Override
-	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-		return MappingJackson2HttpMessageConverter.class.isAssignableFrom(converterType);
+	public boolean supports(@Nullable MethodParameter returnType,
+		@Nullable Class<? extends HttpMessageConverter<?>> converterType) {
+		return converterType != null && MappingJackson2HttpMessageConverter.class.isAssignableFrom(converterType);
 	}
 
 	@Override
-	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-		Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
-		ServerHttpResponse response) {
+	public Object beforeBodyWrite(Object body, @Nullable MethodParameter returnType,
+		@Nullable MediaType selectedContentType,
+		@Nullable Class<? extends HttpMessageConverter<?>> selectedConverterType, @Nullable ServerHttpRequest request,
+		@Nullable ServerHttpResponse response) {
 
 		if (body instanceof ErrorStatus errorStatus) {
 			return new ErrorResponse<>(errorStatus.getMessage(), body);
@@ -37,8 +40,8 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
 			return new ErrorResponse<>(problemDetail.getDetail(), body);
 		}
 
-		if (body instanceof ValidErrorResponse validErrorResponse) {
-			return new ErrorResponse<>("ServerError", validErrorResponse.result());
+		if (body instanceof ValidErrorResponse(var result)) {
+			return new ErrorResponse<>("ServerError", result);
 		}
 
 		if (body instanceof Page<?> page) {

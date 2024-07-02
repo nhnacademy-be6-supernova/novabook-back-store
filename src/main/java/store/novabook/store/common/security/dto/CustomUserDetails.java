@@ -9,8 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import store.novabook.store.common.security.entity.Users;
 
 public class CustomUserDetails implements UserDetails {
-
-	private final Users users;
+	private final transient Users users;
 
 	public CustomUserDetails(Users users) {
 		this.users = users;
@@ -19,12 +18,7 @@ public class CustomUserDetails implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> collection = new ArrayList<>();
-		collection.add(new GrantedAuthority() {
-			@Override
-			public String getAuthority() {
-				return users.getRole();
-			}
-		});
+		collection.add((GrantedAuthority)users::getRole);
 
 		return collection;
 	}

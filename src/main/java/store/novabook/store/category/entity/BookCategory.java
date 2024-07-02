@@ -44,7 +44,6 @@ public class BookCategory {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-
 	@Builder
 	public BookCategory(Book book, Category category) {
 		this.category = category;

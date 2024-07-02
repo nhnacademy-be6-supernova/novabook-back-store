@@ -12,14 +12,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import reactor.util.annotation.NonNull;
 import store.novabook.store.common.security.dto.CustomUserDetails;
 import store.novabook.store.common.security.dto.GetNewTokenRequest;
 import store.novabook.store.common.security.dto.GetNewTokenResponse;
 import store.novabook.store.common.security.entity.Users;
 import store.novabook.store.common.security.service.NewTokenClient;
-import store.novabook.store.user.member.MemberClient;
-import store.novabook.store.user.member.dto.GetMembersUUIDRequest;
-import store.novabook.store.user.member.dto.GetMembersUUIDResponse;
+import store.novabook.store.member.MemberClient;
+import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {
@@ -38,8 +39,8 @@ public class JWTFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
+		@NonNull FilterChain filterChain) throws ServletException, IOException {
 
 		String path = request.getRequestURI();
 

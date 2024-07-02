@@ -32,7 +32,6 @@ public class JWTUtil {
 			.getBody();
 
 		return claims.get("uuid", String.class);
-
 	}
 
 	public String getRole(String token) {
@@ -48,7 +47,7 @@ public class JWTUtil {
 	}
 
 	public boolean isExpired(String token) {
-		Claims claims = null;
+		Claims claims;
 		try {
 			claims = Jwts
 				.parserBuilder()

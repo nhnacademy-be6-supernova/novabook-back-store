@@ -1,69 +1,27 @@
 package store.novabook.store.orders.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.orders.dto.CreateResponse;
-import store.novabook.store.orders.dto.CreateWrappingPaperRequest;
-import store.novabook.store.orders.dto.GetWrappingPaperResponse;
-import store.novabook.store.orders.dto.UpdateWrappingPaperRequest;
-import store.novabook.store.orders.entity.WrappingPaper;
-import store.novabook.store.orders.repository.WrappingPaperRepository;
+import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
+import store.novabook.store.orders.dto.request.UpdateWrappingPaperRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetWrappingPaperResponse;
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class WrappingPaperService {
-	private final WrappingPaperRepository wrappingPaperRepository;
+public interface WrappingPaperService {
+	CreateResponse createWrappingPaper(CreateWrappingPaperRequest request);
 
-	//생성
-	public CreateResponse createWrappingPaper(CreateWrappingPaperRequest request) {
-		WrappingPaper wrappingPaper = new WrappingPaper(request);
-		wrappingPaperRepository.save(wrappingPaper);
-		return new CreateResponse(wrappingPaper.getId());
-	}
-
-	//전체 조회
 	@Transactional(readOnly = true)
-	public Page<GetWrappingPaperResponse> getWrappingPaperAll(Pageable pageable) {
-		List<WrappingPaper> wrappingPapers = wrappingPaperRepository.findAll();
-		List<GetWrappingPaperResponse> wrappingPaperResponses = new ArrayList<>();
-		wrappingPapers.forEach(
-			wrappingPaper -> wrappingPaperResponses.add(GetWrappingPaperResponse.from(wrappingPaper)));
-		return new PageImpl<>(wrappingPaperResponses, pageable, wrappingPapers.size());
-	}
+	Page<GetWrappingPaperResponse> getWrappingPaperAll(Pageable pageable);
 
-	//전체 조회
 	@Transactional(readOnly = true)
-	public List<GetWrappingPaperResponse> getWrappingPaperAllList() {
-		List<WrappingPaper> wrappingPapers = wrappingPaperRepository.findAll();
-		List<GetWrappingPaperResponse> wrappingPaperResponses = new ArrayList<>();
-		wrappingPapers.forEach(
-			wrappingPaper -> wrappingPaperResponses.add(GetWrappingPaperResponse.from(wrappingPaper)));
-		return wrappingPaperResponses;
-	}
+	List<GetWrappingPaperResponse> getWrappingPaperAllList();
 
-
-	//단건 조회
 	@Transactional(readOnly = true)
-	public GetWrappingPaperResponse getWrappingPaperById(Long id) {
-		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(WrappingPaper.class, id));
-		return GetWrappingPaperResponse.from(wrappingPaper);
-	}
+	GetWrappingPaperResponse getWrappingPaperById(Long id);
 
-	//수정
-	public void updateWrappingPaper(Long id, UpdateWrappingPaperRequest request) {
-		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(WrappingPaper.class, id));
-		wrappingPaper.updated(request);
-	}
+	void updateWrappingPaper(Long id, UpdateWrappingPaperRequest request);
 }

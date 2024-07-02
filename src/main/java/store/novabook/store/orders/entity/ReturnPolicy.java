@@ -16,7 +16,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.store.orders.dto.CreateReturnPolicyRequest;
+import store.novabook.store.orders.dto.request.CreateReturnPolicyRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

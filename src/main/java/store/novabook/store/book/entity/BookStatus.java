@@ -28,7 +28,6 @@ public class BookStatus {
 	@NotNull
 	private String name;
 
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 

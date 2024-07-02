@@ -39,8 +39,8 @@ public class Tag {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public Tag(String Name) {
-		this.name = Name;
+	public Tag(String name) {
+		this.name = name;
 		this.createdAt = LocalDateTime.now();
 	}
 
