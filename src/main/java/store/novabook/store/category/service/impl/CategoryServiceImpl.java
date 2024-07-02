@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.category.dto.SubCategoryDTO;
 import store.novabook.store.category.dto.request.CreateCategoryRequest;
 import store.novabook.store.category.dto.response.CreateCategoryResponse;
+import store.novabook.store.category.dto.response.GetCategoryIdsByBookIdResponse;
 import store.novabook.store.category.dto.response.GetCategoryListResponse;
 import store.novabook.store.category.dto.response.GetCategoryResponse;
+import store.novabook.store.category.entity.BookCategory;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
@@ -49,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 			.orElseThrow(() -> new EntityNotFoundException(Category.class, id));
 		return GetCategoryResponse.fromEntity(category, null);
 	}
+
 	@Override
 	@Transactional(readOnly = true)
 	public GetCategoryListResponse getAllCategories() {
@@ -81,5 +84,17 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public void delete(Long id) {
 		categoryRepository.deleteById(id);
+	}
+
+	@Override
+	public GetCategoryIdsByBookIdResponse getCategoryIdsByBookId(Long id) {
+		List<BookCategory> bookCategoryList = bookCategoryRepository.findAllByBookId(id);
+
+		List<Long> categoryIds = new ArrayList<>();
+		for (BookCategory bookCategory : bookCategoryList) {
+			categoryIds.add(bookCategory.getId());
+		}
+
+		return new GetCategoryIdsByBookIdResponse(categoryIds);
 	}
 }
