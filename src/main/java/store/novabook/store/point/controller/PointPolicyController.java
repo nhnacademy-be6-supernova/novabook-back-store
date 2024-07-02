@@ -27,7 +27,7 @@ public class PointPolicyController implements PointPolicyControllerDocs {
 
 	// @CheckRole("ROLE_USER")
 	@GetMapping
-	public ResponseEntity<Page<GetPointPolicyResponse>> getPoint(@CurrentUser String id, Pageable pageable) {
+	public ResponseEntity<Page<GetPointPolicyResponse>> getPoint(@CurrentUser Long id, Pageable pageable) {
 		Page<GetPointPolicyResponse> pointPolicyResponseList = pointPolicyService.getPointPolicyList(pageable);
 
 		return ResponseEntity.status(HttpStatus.OK).body(pointPolicyResponseList);

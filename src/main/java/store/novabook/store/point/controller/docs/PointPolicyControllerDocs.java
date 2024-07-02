@@ -16,7 +16,7 @@ import store.novabook.store.point.dto.response.GetPointPolicyResponse;
 @Tag(name = "PointPolicy API", description = "포인트 정책 API")
 public interface PointPolicyControllerDocs {
 	@Operation(summary = "포인트 정책 조회", description = "포인트 정책을 조회합니다.")
-	ResponseEntity<Page<GetPointPolicyResponse>> getPoint(@CurrentUser String id, Pageable pageable);
+	ResponseEntity<Page<GetPointPolicyResponse>> getPoint(@CurrentUser Long id, Pageable pageable);
 
 	@Operation(summary = "최신 포인트 정책 조회", description = "최신 포인트 정책을 조회합니다 포인트 정책은 최신 포인트 정책으로 적용")
 	@Parameter(name = "getPointPolicyResponse", description = "최신 포인트 정책 조회 정보", required = true)
