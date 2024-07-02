@@ -18,6 +18,7 @@ import store.novabook.store.book.controller.docs.ReviewControllerDocs;
 import store.novabook.store.book.dto.request.CreateReviewRequest;
 import store.novabook.store.book.dto.request.UpdateReviewRequest;
 import store.novabook.store.book.dto.response.CreateReviewResponse;
+import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.dto.response.SearchBookResponse;
 import store.novabook.store.book.service.ReviewService;
@@ -39,6 +40,12 @@ public class ReviewController implements ReviewControllerDocs {
 	@GetMapping("/members")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewByMember( Pageable pageable) {
 		Page<GetReviewResponse> getReviewResponses = reviewService.membersReviews(MEMBER_ID, pageable);
+		return ResponseEntity.ok(getReviewResponses);
+	}
+
+	// @GetMapping("/members/books")
+	public ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReview( Pageable pageable) {
+		Page<GetOrdersBookReviewIdResponse> getReviewResponses = reviewService.getOrdersBookReviewIds(MEMBER_ID, pageable);
 		return ResponseEntity.ok(getReviewResponses);
 	}
 
