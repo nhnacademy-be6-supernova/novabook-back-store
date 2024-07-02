@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import store.novabook.store.member.entity.MemberGradeHistory;
 
 public interface MemberGradeHistoryRepository extends JpaRepository<MemberGradeHistory, Long> {
-	Optional<MemberGradeHistory> findByMemberId(Long memberId);
+	Optional<MemberGradeHistory> findFirstByMemberIdOrderByCreatedAtDesc(Long memberId);
 }

@@ -19,7 +19,7 @@ public class MemberGradeHistoryServiceImpl implements MemberGradeHistoryService 
 
 	@Override
 	public GetMemberGradeResponse getMemberGrade(Long memberId) {
-		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findByMemberId(memberId)
+		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(MemberGradeHistory.class, memberId));
 		return GetMemberGradeResponse.from(memberGradeHistory);
 	}
