@@ -2,7 +2,9 @@ package store.novabook.store.search.document;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -18,7 +20,7 @@ import store.novabook.store.image.entity.Image;
 import store.novabook.store.tag.entity.Tag;
 
 @Getter
-// @Document(indexName = "supernova")
+@Document(indexName = "supernova")
 public class BookDocument {
 	@Id
 	@Field(type = FieldType.Long)
@@ -46,7 +48,7 @@ public class BookDocument {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public BookDocument(Long id, String title, String author, String publisher, String image, List<String> tagList, List<String> categoryList, LocalDateTime createdAt) {
+	public BookDocument(Long id, String title, String author, String publisher, String image, List<String> tagList, List<String> categoryList) {
 		this.id = id;
 		this.title = title;
 		this.author = author;
@@ -69,20 +71,20 @@ public class BookDocument {
 			.build();
 	}
 	public static List<String> categoryNames(List<Category> categories) {
-		List<String> categoryNames = new ArrayList<>();
+		Set<String> categoryNames = new HashSet<>();
 		for (Category category : categories) {
-			if(category.hasTopCategory()){
+			if (category.hasTopCategory()) {
 
 				categoryNames.add(category.getTopCategory().getName());
 				categoryNames.add(category.getName());
 
-			}
-			else {
+			} else {
 				categoryNames.add(category.getName());
+
 			}
 		}
 
-		return categoryNames;
+		return categoryNames.stream().toList();
 	}
 
 	public static List<String> tagNames(List<Tag> tags) {
