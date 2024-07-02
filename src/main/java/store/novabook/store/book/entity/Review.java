@@ -58,7 +58,7 @@ public class Review {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public Review(OrdersBook ordersBook, String content, int score) {
+	public Review( OrdersBook ordersBook, String content, int score) {
 		this.ordersBook = ordersBook;
 		this.content = content;
 		this.score = score;

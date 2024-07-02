@@ -10,9 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.cart.dto.CreateCartBookRequest;
-import store.novabook.store.cart.dto.DeleteCartBookRequest;
-import store.novabook.store.cart.dto.GetCartBookResponse;
+import store.novabook.store.cart.dto.request.CreateCartBookRequest;
+import store.novabook.store.cart.dto.request.DeleteCartBookRequest;
+import store.novabook.store.cart.dto.response.GetCartBookResponse;
 
 @Tag(name = "CartBook API", description = "장바구니 - 도서 관계 테이블 API")
 public interface CartBookControllerDocs {

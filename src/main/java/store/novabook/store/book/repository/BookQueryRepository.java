@@ -42,10 +42,10 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 		QCategory qCategory = QCategory.category;
 		QImage qImage = QImage.image;
 		QBookImage qBookImage = QBookImage.bookImage;
-
+		QOrdersBook qOrdersBook = QOrdersBook.ordersBook;
 
 		Book book = from(qBook)
-			.leftJoin(qReview).on(qBook.id.eq(qReview.ordersBook.book.id))
+			.leftJoin(qReview).on(qOrdersBook.book.id.eq(qReview.ordersBook.book.id))
 			.leftJoin(qLikes).on(qBook.id.eq(qLikes.book.id))
 			.join(qBookStatus).on(qBook.bookStatus.id.eq(qBookStatus.id))
 			.where(qBook.bookStatus.id.ne(4L).and(qBook.id.eq(id)))
@@ -61,11 +61,11 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 			.select(qTag.name)
 			.fetch();
 
-		Category category = from(qBookCategory)
+		List<String> categories = from(qBookCategory)
 			.join(qCategory).on(qBookCategory.category.id.eq(qCategory.id))
 			.where(qBookCategory.book.id.eq(book.getId()))
-			.select(qCategory)
-			.fetchOne();
+			.select(qCategory.name)
+			.fetch();
 
 		long likesCount = from(qLikes)
 			.where(qLikes.book.id.eq(book.getId()))
@@ -88,7 +88,7 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 			score = 0;
 		}
 
-		return GetBookResponse.fromEntity(book, tags, category, (int)likesCount, score, image);
+		return GetBookResponse.fromEntity(book, tags, categories, (int)likesCount, score, image);
 
 	}
 

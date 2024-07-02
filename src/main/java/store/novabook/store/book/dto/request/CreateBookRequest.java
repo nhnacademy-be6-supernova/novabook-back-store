@@ -33,6 +33,6 @@ public record CreateBookRequest(
 	Boolean isPackaged,
 	String image,
 	List<Long> tags,
-	Long categoryId
+	List<Long> categories
 ) {
 }

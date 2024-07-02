@@ -29,12 +29,10 @@ import store.novabook.store.image.service.ImageService;
 @RequestMapping("/api/v1/store/books")
 public class BookController implements BookControllerDocs {
 	private final BookService bookService;
-	private final ImageService imageService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<GetBookResponse> getBook(@PathVariable Long id) {
 		return ResponseEntity.ok().body(bookService.getBook(id));
-
 	}
 
 	@GetMapping
@@ -59,5 +57,4 @@ public class BookController implements BookControllerDocs {
 		bookService.delete(id);
 		return ResponseEntity.ok().build();
 	}
-
 }
