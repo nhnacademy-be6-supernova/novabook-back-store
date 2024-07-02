@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.point.controller.docs.PointHistoryControllerDocs;
 import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
+import store.novabook.store.point.dto.request.GetPointHistoryRequest;
+import store.novabook.store.point.dto.response.GetPointHistoryListResponse;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.service.PointHistoryService;
@@ -25,10 +27,15 @@ public class PointHistoryController implements PointHistoryControllerDocs {
 
 	private final PointHistoryService pointHistoryService;
 
-	@GetMapping
+	@GetMapping(params = {"size", "page"})
 	public ResponseEntity<Page<GetPointHistoryResponse>> getPointHistoryList(Pageable pageable) {
 		Page<GetPointHistoryResponse> pointHistoryList = pointHistoryService.getPointHistoryList(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(pointHistoryList);
+	}
+
+	@GetMapping
+	public ResponseEntity<GetPointHistoryListResponse> getPointHistoryListByMemberId(@RequestBody GetPointHistoryRequest getPointHistoryRequest) {
+		return ResponseEntity.ok().body(pointHistoryService.getPointHistory(getPointHistoryRequest));
 	}
 
 	@PostMapping
