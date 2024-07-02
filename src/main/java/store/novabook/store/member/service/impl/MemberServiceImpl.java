@@ -20,9 +20,8 @@ import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
-import store.novabook.store.member.dto.request.UpdateMemberNameRequest;
-import store.novabook.store.member.dto.request.UpdateMemberNumberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
+import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
@@ -136,17 +135,16 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updateMemberName(Long memberId, UpdateMemberNameRequest updateMemberNameRequest) {
+	public void updateMemberNumberOrName(Long memberId, UpdateMemberRequest updateMemberRequest) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		member.updateName(updateMemberNameRequest.name());
-	}
 
-	@Override
-	public void updateMemberNumber(Long memberId, UpdateMemberNumberRequest updateMemberNumberRequest) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		member.updateNumber(updateMemberNumberRequest.number());
+		if (updateMemberRequest.name() != null) {
+			member.updateName(updateMemberRequest.name());
+		}
+		if (updateMemberRequest.number() != null) {
+			member.updateNumber(updateMemberRequest.number());
+		}
 		memberRepository.save(member);
 	}
 
@@ -217,12 +215,12 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public boolean isDuplicateLoginId(String loginId) {
+	public boolean isCreatableLoginId(String loginId) {
 		return memberRepository.existsByLoginId(loginId);
 	}
 
 	@Override
-	public boolean isDuplicateEmail(String email) {
+	public boolean isCreatableEmail(String email) {
 		return memberRepository.existsByEmail(email);
 	}
 }
