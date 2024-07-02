@@ -103,10 +103,11 @@ public class BookServiceImpl implements BookService {
 			.toList();
 		bookTagRepository.saveAll(bookTags);
 
-		Category category = categoryRepository.findById(request.categoryId())
-			.orElseThrow(() -> new EntityNotFoundException(Category.class, request.categoryId()));
-		BookCategory bookCategories = BookCategory.of(book, category);
-		bookCategoryRepository.save(bookCategories);
+		List<Category> categories = categoryRepository.findByIdIn(request.categories());
+		List<BookCategory> bookCategories = categories.stream()
+			.map(category -> new BookCategory(book, category))
+			.toList();
+		bookCategoryRepository.saveAll(bookCategories);
 
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
@@ -119,9 +120,9 @@ public class BookServiceImpl implements BookService {
 			try {
 				Files.delete(imagePath);
 			} catch (IOException ex) {
-				log.error("Failed to delete file {}", outputFilePath);
+				log.error("Failed to delete file : {}", outputFilePath);
 			}
-			log.error(e.getMessage());
+			log.error("Failed to download file : {}", e.getMessage());
 			throw new FailedCreateBookException();
 		}
 
@@ -131,16 +132,14 @@ public class BookServiceImpl implements BookService {
 		Image image = imageRepository.save(new Image(nhnUrl));
 		bookImageRepository.save(BookImage.of(book, image));
 
-		bookSearchRepository.save(BookDocument.of(book));
+		bookSearchRepository.save(BookDocument.of(book,image, tags, categories));
 
 		return new CreateBookResponse(book.getId());
 	}
 
 	@Transactional(readOnly = true)
 	public GetBookResponse getBook(Long id) {
-		GetBookResponse getBookResponse = queryRepository.getBook(id);
-		getBookResponse.image();
-		return getBookResponse;
+		return queryRepository.getBook(id);
 	}
 
 	@Transactional(readOnly = true)
@@ -190,6 +189,7 @@ public class BookServiceImpl implements BookService {
 			return (String)map.get("url");
 
 		} catch (Exception e) {
+			log.error("Failed to nhnCloud : {}", e.getMessage());
 			throw new FailedCreateBookException();
 		}
 	}

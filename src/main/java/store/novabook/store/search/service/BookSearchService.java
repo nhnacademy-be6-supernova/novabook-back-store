@@ -2,7 +2,6 @@ package store.novabook.store.search.service;
 
 import java.util.List;
 
-import store.novabook.store.book.entity.Book;
 import store.novabook.store.search.document.BookDocument;
 
 public interface BookSearchService {
@@ -15,7 +14,6 @@ public interface BookSearchService {
 	List<BookDocument> searchByTitlePhrase(String title);
 	// 저자에 정확한 문구가 포함된 문서 검색
 	List<BookDocument> searchByAuthorPhrase(String author);
-	void save(Book book);
 
 }
 

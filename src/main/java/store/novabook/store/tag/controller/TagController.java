@@ -29,7 +29,7 @@ public class TagController implements TagControllerDocs {
 
 	private final TagService tagService;
 
-	@GetMapping(params = {"size", "page", "sort"})
+	@GetMapping(params = {"size", "page"})
 	public ResponseEntity<Page<GetTagResponse>> getTagAll(Pageable pageable) {
 		return ResponseEntity.ok().body(tagService.getTagAll(pageable));
 	}
