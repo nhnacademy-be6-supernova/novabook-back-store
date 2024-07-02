@@ -9,8 +9,10 @@ import store.novabook.store.book.entity.Review;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 	Page<Review> findByOrdersBookId(Long ordersId, Pageable pageable);
 
-	Page<Review> findByBookId(Long bookId, Pageable pageable);
+	// Page<Review> findByBookId(Long bookId, Pageable pageable);
 
-	boolean existsByOrdersBookIdAndBookId(Long ordersId, Long bookId);
+	// boolean existsByOrdersBookIdAndBookId(Long ordersId, Long bookId);
+
+	Page<Review> findAllByOrdersBookOrdersMemberId(Long memberId, Pageable pageable);
 
 }
