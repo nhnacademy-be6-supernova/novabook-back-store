@@ -19,7 +19,6 @@ import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.entity.QBookImage;
 import store.novabook.store.image.entity.QImage;
-import store.novabook.store.orders.entity.QOrdersBook;
 import store.novabook.store.tag.entity.QBookTag;
 import store.novabook.store.tag.entity.QTag;
 

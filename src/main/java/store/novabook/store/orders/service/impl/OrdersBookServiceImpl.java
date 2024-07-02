@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.common.exception.EntityNotFoundException;
@@ -18,6 +20,7 @@ import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
+import store.novabook.store.orders.repository.impl.OrdersBookQueryRepositoryImpl;
 import store.novabook.store.orders.repository.OrdersBookRepository;
 import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.orders.service.OrdersBookService;
@@ -29,6 +32,7 @@ public class OrdersBookServiceImpl implements OrdersBookService {
 	private final OrdersBookRepository ordersBookRepository;
 	private final OrdersRepository ordersRepository;
 	private final BookRepository bookRepository;
+	private final OrdersBookQueryRepositoryImpl ordersBookQueryRepositoryImpl;
 
 	@Override
 	public CreateResponse create(CreateOrdersBookRequest request) {
@@ -74,5 +78,10 @@ public class OrdersBookServiceImpl implements OrdersBookService {
 	@Override
 	public void delete(Long id) {
 		ordersBookRepository.deleteById(id);
+	}
+
+	@Override
+	public Page<GetOrdersBookReviewIdResponse> getOrdersBookReviewByMemberId(Long memberId, Pageable pageable) {
+		return null;
 	}
 }
