@@ -6,7 +6,7 @@ import store.novabook.store.book.entity.Review;
 @Builder
 public record GetReviewResponse(
 	Long id,
-	Long orderBookId,
+	Long ordersBookId,
 	Long bookId,
 	String content,
 	int score
@@ -14,8 +14,8 @@ public record GetReviewResponse(
 	public static GetReviewResponse from(Review review) {
 		return GetReviewResponse.builder()
 			.id(review.getId())
-			.bookId(review.getBook().getId())
-			.orderBookId(review.getOrdersBook().getId())
+			// .bookId(review.getBook().getId())
+			.ordersBookId(review.getOrdersBook().getId())
 			.content(review.getContent())
 			.score(review.getScore())
 			.build();

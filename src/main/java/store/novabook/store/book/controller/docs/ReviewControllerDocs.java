@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import store.novabook.store.book.dto.request.CreateReviewRequest;
 import store.novabook.store.book.dto.request.UpdateReviewRequest;
 import store.novabook.store.book.dto.response.CreateReviewResponse;
+import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.dto.response.SearchBookResponse;
 
@@ -37,12 +38,17 @@ public interface ReviewControllerDocs {
 	@Operation(summary = "회원 리뷰 조회", description = "회원이 작성한 리뷰들을 조회합니다.")
 	ResponseEntity<Page<GetReviewResponse>> getReviewByMember(Pageable pageable);
 
-	/**
-	 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환합니다.
-	 * @param bookId 책 ID
-	 * @param pageable 페이지 정보
-	 * @return 페이지화된 리뷰 정보
-	 */
+
+	@Operation(summary = "회원이 구매한 책 목록", description = "회원이 리뷰를 남길수 있는 책 목록을 보여줌니다.")
+	ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReview( Pageable pageable);
+
+
+		/**
+		 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환합니다.
+		 * @param bookId 책 ID
+		 * @param pageable 페이지 정보
+		 * @return 페이지화된 리뷰 정보
+		 */
 	@Operation(summary = "도서 리뷰 조회", description = "도서에 작성된 리뷰들을 조회합니다.")
 	ResponseEntity<Page<GetReviewResponse>> getReviewByBookId(@PathVariable Long bookId, Pageable pageable);
 

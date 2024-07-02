@@ -37,12 +37,6 @@ public class Review {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	/** 리뷰가 참조하는 책 객체. */
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "book_id")
-	private Book book;
-
 	/** 리뷰가 참조하는 주문 객체. */
 	@NotNull
 	@ManyToOne
@@ -64,8 +58,7 @@ public class Review {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public Review(Book book, OrdersBook ordersBook, String content, int score) {
-		this.book = book;
+	public Review(OrdersBook ordersBook, String content, int score) {
 		this.ordersBook = ordersBook;
 		this.content = content;
 		this.score = score;
@@ -74,13 +67,11 @@ public class Review {
 	 * CreateReviewRequest 객체로부터 Review 엔티티를 생성.
 	 * @param request 리뷰 생성 요청 데이터.
 	 * @param ordersBook 관련 주문.
-	 * @param book 관련 책.
 	 * @return 생성된 Review 객체.
 	 */
 
-	public static Review of(CreateReviewRequest request, OrdersBook ordersBook, Book book) {
+	public static Review of(CreateReviewRequest request, OrdersBook ordersBook) {
 		return Review.builder()
-			.book(book)
 			.ordersBook(ordersBook)
 			.content(request.content())
 			.score(request.score())
