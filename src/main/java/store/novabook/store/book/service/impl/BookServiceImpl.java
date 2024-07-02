@@ -107,7 +107,7 @@ public class BookServiceImpl implements BookService {
 
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-		String outputFilePath = localStorage+fileName;
+		String outputFilePath = localStorage + fileName;
 		try(InputStream in = new URI(imageUrl).toURL().openStream()){
 			Path imagePath = Paths.get(outputFilePath);
 			Files.copy(in, imagePath);

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.dto.response.SearchBookResponse;
 import store.novabook.store.book.service.ReviewService;
+import store.novabook.store.common.security.aop.CurrentUser;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,20 +34,14 @@ public class ReviewController implements ReviewControllerDocs {
 	private static final Long MEMBER_ID = 7L;
 
 	@GetMapping("/members/books")
-	public ResponseEntity<Page<SearchBookResponse>> getReviewedBooks( Pageable pageable) {
-		Page<SearchBookResponse> searchBookResponses = reviewService.myReviews(MEMBER_ID, pageable);
+	public ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(@CurrentUser Long memberId, Pageable pageable) {
+		Page<SearchBookResponse> searchBookResponses = reviewService.myReviews(memberId, pageable);
 		return ResponseEntity.ok(searchBookResponses);
 	}
 
 	@GetMapping("/members")
-	public ResponseEntity<Page<GetReviewResponse>> getReviewByMember( Pageable pageable) {
-		Page<GetReviewResponse> getReviewResponses = reviewService.membersReviews(MEMBER_ID, pageable);
-		return ResponseEntity.ok(getReviewResponses);
-	}
-
-	// @GetMapping("/members/books")
-	public ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReview( Pageable pageable) {
-		Page<GetOrdersBookReviewIdResponse> getReviewResponses = reviewService.getOrdersBookReviewIds(MEMBER_ID, pageable);
+	public ResponseEntity<Page<GetReviewResponse>> getReviewByMember(@CurrentUser Long memberId,  Pageable pageable) {
+		Page<GetReviewResponse> getReviewResponses = reviewService.membersReviews(memberId, pageable);
 		return ResponseEntity.ok(getReviewResponses);
 	}
 
@@ -55,17 +51,19 @@ public class ReviewController implements ReviewControllerDocs {
 		return ResponseEntity.ok(getReviewResponses);
 	}
 
-	@PostMapping
+	@PostMapping("/{ordersBookId}")
 	public ResponseEntity<CreateReviewResponse> createReviewed(
+		@Valid @RequestParam Long ordersBookId,
 		@Valid @RequestBody CreateReviewRequest request) {
-		CreateReviewResponse createReviewResponse = reviewService.createReview(MEMBER_ID, request);
+		CreateReviewResponse createReviewResponse = reviewService.createReview(ordersBookId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createReviewResponse);
 	}
 
 	@PutMapping("/reviews/{reviewsId}")
 	public ResponseEntity<Void> updateReviewed(
+		@CurrentUser Long memberId,
 		@Valid @RequestBody UpdateReviewRequest request, @PathVariable Long reviewsId) {
-		reviewService.updateReview(MEMBER_ID, request, reviewsId);
+		reviewService.updateReview(memberId, request, reviewsId);
 		return ResponseEntity.ok().build();
 	}
 }

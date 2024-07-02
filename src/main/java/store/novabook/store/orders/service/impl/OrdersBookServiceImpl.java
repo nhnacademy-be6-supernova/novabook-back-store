@@ -20,6 +20,7 @@ import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
+import store.novabook.store.orders.repository.OrdersBookQueryRepository;
 import store.novabook.store.orders.repository.impl.OrdersBookQueryRepositoryImpl;
 import store.novabook.store.orders.repository.OrdersBookRepository;
 import store.novabook.store.orders.repository.OrdersRepository;
@@ -32,7 +33,6 @@ public class OrdersBookServiceImpl implements OrdersBookService {
 	private final OrdersBookRepository ordersBookRepository;
 	private final OrdersRepository ordersRepository;
 	private final BookRepository bookRepository;
-	private final OrdersBookQueryRepositoryImpl ordersBookQueryRepositoryImpl;
 
 	@Override
 	public CreateResponse create(CreateOrdersBookRequest request) {
@@ -80,8 +80,10 @@ public class OrdersBookServiceImpl implements OrdersBookService {
 		ordersBookRepository.deleteById(id);
 	}
 
+	//마이페이지에 주문한 책목록 리뷰 달수 있게 목록 전달
 	@Override
 	public Page<GetOrdersBookReviewIdResponse> getOrdersBookReviewByMemberId(Long memberId, Pageable pageable) {
-		return null;
+		return ordersBookRepository.getOrdersBookReviewIdByMemberId(memberId,
+			pageable);
 	}
 }

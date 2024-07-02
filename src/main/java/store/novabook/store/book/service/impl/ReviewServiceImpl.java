@@ -23,12 +23,9 @@ import store.novabook.store.book.repository.ReviewRepository;
 import store.novabook.store.book.service.ReviewService;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
-import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
 import store.novabook.store.orders.repository.OrdersBookRepository;
-import store.novabook.store.orders.repository.OrdersRepository;
 
 /**
  * 책 리뷰와 관련된 서비스를 제공하는 클래스.
@@ -114,34 +111,18 @@ public class ReviewServiceImpl implements ReviewService {
 
 	/**
 	 * 새로운 리뷰를 생성하고 그 결과를 반환한다.
-	 * @param orderId 주문 ID
+	 * @param ordersBookId 주문책 ID
 	 * @param request 리뷰 생성 요청 데이터
 	 * @return 생성된 리뷰 응답
 	 */
 	@Override
-	public CreateReviewResponse createReview(Long orderId, CreateReviewRequest request) {
-		if (existsByBookIdAndMemberId(orderId, request)) {
-			throw new AlreadyExistException(Review.class);
-		}
-		OrdersBook ordersbook = ordersBookRepository.findById(request.bookId())
-			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
-
-		// TODO: OrdersBook 변경 필요
+	public CreateReviewResponse createReview(Long ordersBookId, CreateReviewRequest request) {
+		OrdersBook ordersbook = ordersBookRepository.findById(ordersBookId)
+			.orElseThrow(() -> new EntityNotFoundException(Book.class, ordersBookId));
 		Review review = reviewRepository.save(Review.of(request, ordersbook));
-
+		//TODO 리뷰 이미지를 저장
+		// TODO: 리뷰를 달면 포인트 적립
 		return CreateReviewResponse.from(review);
-	}
-
-	/**
-	 * 특정 책 ID와 회원 ID가 일치하는 리뷰가 존재하는지 확인한다.
-	 * @param memberId 회원 ID
-	 * @param request 리뷰 생성 요청 데이터
-	 * @return 존재 여부
-	 */
-	@Override
-	public boolean existsByBookIdAndMemberId(Long memberId, CreateReviewRequest request) {
-		// return reviewRepository.existsByOrdersBookIdAndBookId(request.bookId(), memberId);
-		return false;
 	}
 
 	/**

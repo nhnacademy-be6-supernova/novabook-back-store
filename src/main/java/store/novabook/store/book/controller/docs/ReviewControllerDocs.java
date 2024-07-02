@@ -15,6 +15,7 @@ import store.novabook.store.book.dto.response.CreateReviewResponse;
 import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.dto.response.SearchBookResponse;
+import store.novabook.store.common.security.aop.CurrentUser;
 
 /**
  * 리뷰 관련 API 요청을 처리하는 컨트롤러.
@@ -28,7 +29,7 @@ public interface ReviewControllerDocs {
 	 * @return 페이지화된 책 정보
 	 */
 	@Operation(summary = "도서 페이지 조회", description = "리뷰가 존재하는 책들을 조회합니다.")
-	ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(Pageable pageable);
+	ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(@CurrentUser Long memberId, Pageable pageable);
 
 	/**
 	 * 특정 회원이 작성한 모든 리뷰를 페이지네이션으로 반환합니다.
@@ -36,11 +37,7 @@ public interface ReviewControllerDocs {
 	 * @return 페이지화된 리뷰 정보
 	 */
 	@Operation(summary = "회원 리뷰 조회", description = "회원이 작성한 리뷰들을 조회합니다.")
-	ResponseEntity<Page<GetReviewResponse>> getReviewByMember(Pageable pageable);
-
-
-	@Operation(summary = "회원이 구매한 책 목록", description = "회원이 리뷰를 남길수 있는 책 목록을 보여줌니다.")
-	ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReview( Pageable pageable);
+	ResponseEntity<Page<GetReviewResponse>> getReviewByMember(@CurrentUser Long memberId, Pageable pageable);
 
 
 		/**
@@ -58,7 +55,7 @@ public interface ReviewControllerDocs {
 	 * @return 생성된 리뷰의 응답 데이터
 	 */
 	@Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.")
-	ResponseEntity<CreateReviewResponse> createReviewed(@Valid @RequestBody CreateReviewRequest request);
+	ResponseEntity<CreateReviewResponse> createReviewed(@CurrentUser Long memberId, @Valid @RequestBody CreateReviewRequest request);
 
 	/**
 	 * 특정 리뷰를 업데이트합니다.
@@ -67,5 +64,5 @@ public interface ReviewControllerDocs {
 	 * @return 응답 상태 코드
 	 */
 	@Operation(summary = "리뷰 수정", description = "리뷰를 수정합니다.")
-	ResponseEntity<Void> updateReviewed(@Valid @RequestBody UpdateReviewRequest request, @PathVariable Long reviewsId);
+	ResponseEntity<Void> updateReviewed(@CurrentUser Long memberId, @Valid @RequestBody UpdateReviewRequest request, @PathVariable Long reviewsId);
 }

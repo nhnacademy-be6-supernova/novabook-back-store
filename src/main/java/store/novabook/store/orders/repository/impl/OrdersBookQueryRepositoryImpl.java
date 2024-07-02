@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.types.Projections;
@@ -18,7 +19,7 @@ import com.querydsl.core.types.Projections;
 import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.orders.entity.OrdersBook;
 import store.novabook.store.orders.repository.OrdersBookQueryRepository;
-
+@Repository
 @Transactional(readOnly = true)
 public class OrdersBookQueryRepositoryImpl extends QuerydslRepositorySupport implements OrdersBookQueryRepository {
 	public OrdersBookQueryRepositoryImpl() {
@@ -27,9 +28,11 @@ public class OrdersBookQueryRepositoryImpl extends QuerydslRepositorySupport imp
 
 	public Page<GetOrdersBookReviewIdResponse> getOrdersBookReviewIdByMemberId(Long memberId, Pageable pageable) {
 		List<GetOrdersBookReviewIdResponse> responses = from(ordersBook).select(
-				Projections.constructor(GetOrdersBookReviewIdResponse.class, review.id, orders.id, book.id, book.title,
-					orders.createdAt)
-			).innerJoin(review)
+				Projections.constructor(GetOrdersBookReviewIdResponse.class, ordersBook.id, review.id, orders.id, book.id, book.title,
+					orders.createdAt))
+			.innerJoin(book).on(ordersBook.book.id.eq(book.id))
+			.innerJoin(orders).on(orders.id.eq(ordersBook.orders.id))
+			.leftJoin(review).on(ordersBook.id.eq(review.ordersBook.id))
 			.where(orders.member.id.eq(memberId))
 			.fetch();
 		return new PageImpl<>(responses, pageable, responses.size());

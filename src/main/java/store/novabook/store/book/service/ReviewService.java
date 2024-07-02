@@ -26,7 +26,5 @@ public interface ReviewService {
 
 	CreateReviewResponse createReview(Long orderId, CreateReviewRequest request);
 
-	boolean existsByBookIdAndMemberId(Long memberId, CreateReviewRequest request);
-
 	void updateReview(Long ordersId, UpdateReviewRequest request, Long reviewId);
 }

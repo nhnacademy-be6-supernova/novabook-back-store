@@ -1,6 +1,7 @@
 package store.novabook.store.orders.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,11 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
+import store.novabook.store.common.security.aop.CurrentUser;
 import store.novabook.store.orders.controller.docs.OrdersBookControllerDocs;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersBookRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
+import store.novabook.store.orders.repository.impl.OrdersBookQueryRepositoryImpl;
 import store.novabook.store.orders.service.OrdersBookService;
 
 @RestController
@@ -26,6 +30,8 @@ import store.novabook.store.orders.service.OrdersBookService;
 @RequiredArgsConstructor
 public class OrdersBookController implements OrdersBookControllerDocs {
 	private final OrdersBookService ordersBookService;
+	private static final Long MEMBER_ID = 7L;
+	private final OrdersBookQueryRepositoryImpl ordersBookQueryRepository;
 
 	@PostMapping
 	public ResponseEntity<CreateResponse> createOrdersBook(@Valid @RequestBody CreateOrdersBookRequest request) {
@@ -36,6 +42,16 @@ public class OrdersBookController implements OrdersBookControllerDocs {
 	@GetMapping
 	public ResponseEntity<Page<GetOrdersBookResponse>> getOrdersBookAll() {
 		Page<GetOrdersBookResponse> responses = ordersBookService.getOrdersBookAll();
+		return ResponseEntity.ok(responses);
+	}
+
+	//마이페이지에서 사용
+	@GetMapping("/members")
+	public ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(
+		@CurrentUser Long memberId, Pageable pageable) {
+		Page<GetOrdersBookReviewIdResponse> responses = ordersBookQueryRepository.getOrdersBookReviewIdByMemberId(
+			memberId,
+			pageable);
 		return ResponseEntity.ok(responses);
 	}
 
@@ -57,4 +73,5 @@ public class OrdersBookController implements OrdersBookControllerDocs {
 		ordersBookService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
+
 }
