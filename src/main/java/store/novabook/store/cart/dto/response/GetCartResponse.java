@@ -1,10 +1,12 @@
-package store.novabook.store.cart.dto;
+package store.novabook.store.cart.dto.response;
+
+import java.util.List;
 
 import lombok.Builder;
-import store.novabook.store.member.entity.Member;
 
 @Builder
 public record GetCartResponse(
-	Member member,
-	Boolean isExposed) {
+	Long cartId,
+	List<GetCartBookResponse> cartBookList
+	) {
 }

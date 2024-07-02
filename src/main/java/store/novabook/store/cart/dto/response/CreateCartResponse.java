@@ -1,4 +1,4 @@
-package store.novabook.store.cart.dto;
+package store.novabook.store.cart.dto.response;
 
 import store.novabook.store.member.entity.Member;
 

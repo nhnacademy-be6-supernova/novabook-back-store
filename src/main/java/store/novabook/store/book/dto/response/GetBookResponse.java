@@ -1,12 +1,10 @@
 package store.novabook.store.book.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Builder;
 import store.novabook.store.book.entity.Book;
-import store.novabook.store.category.entity.Category;
 import store.novabook.store.image.entity.Image;
 
 @Builder
@@ -33,7 +31,7 @@ public record GetBookResponse(
 	public static GetBookResponse fromEntity(
 		Book book,
 		List<String> tags,
-		Category categories,
+		List<String> categories,
 		int likes,
 		int score,
 		Image image) {
@@ -50,28 +48,11 @@ public record GetBookResponse(
 			.price(book.getPrice())
 			.isPackaged(book.isPackaged())
 			.tags(tags)
-			.categories(categoryNames(categories))
+			.categories(categories)
 			.likes(likes)
 			.discountPrice(book.getDiscountPrice())
 			.score(score)
 			.image(image.getSource())
 			.build();
 	}
-
-	public static List<String> categoryNames(Category category) {
-		List<String> categoryNames = new ArrayList<>();
-		if(category.hasTopCategory()){
-
-			categoryNames.add(category.getTopCategory().getName());
-			categoryNames.add(category.getName());
-
-		}
-		else {
-			categoryNames.add(category.getName());
-		}
-		return categoryNames;
-	}
-
-
-
 }

@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CurrentUser;
 import store.novabook.store.member.controller.docs.MemberAddressControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
@@ -33,14 +33,14 @@ public class MemberAddressController implements MemberAddressControllerDocs {
 
 	@PostMapping
 	public ResponseEntity<CreateMemberAddressResponse> createMemberAddress(
-		@Valid @RequestBody CreateMemberAddressRequest createMemberAddressRequest, @RequestHeader Long memberId) {
+		@Valid @RequestBody CreateMemberAddressRequest createMemberAddressRequest, @CurrentUser Long memberId) {
 		CreateMemberAddressResponse saved = memberAddressService.createMemberAddress(createMemberAddressRequest,
 			memberId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
 	@GetMapping
-	public ResponseEntity<GetMemberAddressListResponse> getMemberAddressAll(@RequestHeader Long memberId) {
+	public ResponseEntity<GetMemberAddressListResponse> getMemberAddressAll(@CurrentUser Long memberId) {
 		List<GetMemberAddressResponse> memberAddressAll = memberAddressService.getMemberAddressAll(memberId);
 		GetMemberAddressListResponse getMemberAddressListResponse = GetMemberAddressListResponse.builder()
 			.memberAddresses(memberAddressAll)
@@ -68,7 +68,7 @@ public class MemberAddressController implements MemberAddressControllerDocs {
 	}
 
 	@GetMapping("/is-creatable")
-	public ResponseEntity<Boolean> isCreatable(@RequestHeader Long memberId) {
+	public ResponseEntity<Boolean> isCreatable(@CurrentUser Long memberId) {
 		boolean isExceedMemberAddressCount = memberAddressService.isCreatable(memberId);
 		return ResponseEntity.ok(isExceedMemberAddressCount);
 	}

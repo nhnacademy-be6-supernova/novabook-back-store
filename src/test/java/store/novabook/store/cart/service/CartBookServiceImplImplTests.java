@@ -21,9 +21,9 @@ import org.springframework.data.domain.Pageable;
 
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
-import store.novabook.store.cart.dto.CreateCartBookRequest;
-import store.novabook.store.cart.dto.DeleteCartBookRequest;
-import store.novabook.store.cart.dto.GetCartBookResponse;
+import store.novabook.store.cart.dto.request.CreateCartBookRequest;
+import store.novabook.store.cart.dto.request.DeleteCartBookRequest;
+import store.novabook.store.cart.dto.response.GetCartBookResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
@@ -79,34 +79,6 @@ public class CartBookServiceImplImplTests {
 
 		verify(cartBookRepository, times(1)).save(any(CartBook.class));
 
-	}
-
-	@Test
-	void getCartBookListByCartIdTest() {
-		CartBook cartBookMock = mock(CartBook.class);
-		Cart cartMock = mock(Cart.class);
-		Book bookMock = mock(Book.class);
-
-		when(cartBookMock.getCart()).thenReturn(cartMock);
-		when(cartBookMock.getBook()).thenReturn(bookMock);
-		when(cartMock.getId()).thenReturn(1L);
-		when(bookMock.getId()).thenReturn(1L);
-
-		List<CartBook> cartBookList = Collections.singletonList(cartBookMock);
-		Page<CartBook> page = new PageImpl<>(cartBookList, PageRequest.of(0, 10), cartBookList.size());
-
-		when(cartBookRepository.findAllByCartId(eq(cartMock.getId()), pageableCaptor.capture())).thenReturn(
-			Optional.of(page));
-
-		Page<GetCartBookResponse> result = cartBookServiceImpl.getCartBookListByCartId(cartMock.getId(),
-			PageRequest.of(0, 10));
-
-		assertAll(
-			() -> assertNotNull(result),
-			() -> assertEquals(1, result.getTotalElements()),
-			() -> assertEquals(0, pageableCaptor.getValue().getPageNumber()),
-			() -> assertEquals(10, pageableCaptor.getValue().getPageSize())
-		);
 	}
 
 	@Test

@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import store.novabook.store.category.dto.request.CreateCategoryRequest;
 import store.novabook.store.category.dto.response.CreateCategoryResponse;
+import store.novabook.store.category.dto.response.GetCategoryIdsByBookIdResponse;
 import store.novabook.store.category.dto.response.GetCategoryListResponse;
 import store.novabook.store.category.dto.response.GetCategoryResponse;
 import store.novabook.store.category.entity.Category;
@@ -20,4 +21,7 @@ public interface CategoryService {
 	GetCategoryResponse convertToDTO(Category category);
 
 	void delete(Long id);
+
+	@Transactional(readOnly = true)
+	GetCategoryIdsByBookIdResponse getCategoryIdsByBookId(Long id);
 }

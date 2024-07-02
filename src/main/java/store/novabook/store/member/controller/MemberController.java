@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.security.aop.CheckRole;
+import store.novabook.store.common.security.aop.CurrentUser;
 import store.novabook.store.member.MemberClient;
 import store.novabook.store.member.controller.docs.MemberControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
@@ -72,7 +73,7 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@GetMapping("/member")
-	public ResponseEntity<GetMemberResponse> getMember(@RequestHeader Long memberId) {
+	public ResponseEntity<GetMemberResponse> getMember(@CurrentUser Long memberId) {
 		GetMemberResponse memberResponse = memberService.getMember(memberId);
 		return ResponseEntity.ok(memberResponse);
 	}
@@ -83,27 +84,27 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@PutMapping("/member/update")
-	public ResponseEntity<Void> updateMember(@RequestHeader Long memberId,
+	public ResponseEntity<Void> updateMember(@CurrentUser Long memberId,
 		@RequestBody UpdateMemberRequest updateMemberRequest) {
 		memberService.updateMemberNumberOrName(memberId, updateMemberRequest);
 		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping("/member/password")
-	public ResponseEntity<Void> updateMemberPassword(@RequestHeader Long memberId,
+	public ResponseEntity<Void> updateMemberPassword(@CurrentUser Long memberId,
 		@RequestBody @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest) {
 		memberService.updateMemberPassword(memberId, updateMemberPasswordRequest);
 		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping("/member/dormant")
-	public ResponseEntity<Void> updateMemberStatusToDormant(@RequestHeader Long memberId) {
+	public ResponseEntity<Void> updateMemberStatusToDormant(@CurrentUser Long memberId) {
 		memberService.updateMemberStatusToDormant(memberId);
 		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping("/member/withdraw")
-	public ResponseEntity<Void> updateMemberStatusToWithdraw(@RequestHeader Long memberId,
+	public ResponseEntity<Void> updateMemberStatusToWithdraw(@CurrentUser Long memberId,
 		@RequestBody DeleteMemberRequest deleteMemberRequest) {
 		memberService.updateMemberStatusToWithdraw(memberId, deleteMemberRequest);
 		return ResponseEntity.ok().build();

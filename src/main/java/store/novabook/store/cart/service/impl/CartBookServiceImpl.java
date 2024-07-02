@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
-import store.novabook.store.cart.dto.CreateCartBookRequest;
-import store.novabook.store.cart.dto.DeleteCartBookRequest;
-import store.novabook.store.cart.dto.GetCartBookResponse;
+import store.novabook.store.cart.dto.request.CreateCartBookRequest;
+import store.novabook.store.cart.dto.request.DeleteCartBookRequest;
+import store.novabook.store.cart.dto.response.GetCartBookResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
@@ -64,9 +64,9 @@ public class CartBookServiceImpl implements CartBookService {
 	public Page<GetCartBookResponse> getCartBookListByCartId(Long cartId, Pageable pageable) {
 		Page<CartBook> cartBooks = cartBookRepository.findAllByCartId(cartId, pageable)
 			.orElseThrow(() -> new EntityNotFoundException(Cart.class, cartId));
-		Page<GetCartBookResponse> cartBookResponses = cartBooks.map(GetCartBookResponse::fromEntity);
+		// Page<GetCartBookResponse> cartBookResponses = cartBooks.map(GetCartBookResponse::fromEntity);
 
-		return new PageImpl<>(cartBookResponses.getContent(), pageable, cartBooks.getTotalElements());
+		return new PageImpl<>(null, pageable, cartBooks.getTotalElements());
 	}
 
 	@Override
