@@ -1,5 +1,9 @@
 package store.novabook.store.member.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +16,7 @@ import store.novabook.store.common.adatper.dto.CreateCouponResponse;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
+import store.novabook.store.member.dto.response.GetCouponIdsResponse;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberCoupon;
 import store.novabook.store.member.repository.MemberCouponRepository;
@@ -49,6 +54,16 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			.orElseThrow(() -> new EntityNotFoundException(Member.class));
 		MemberCoupon memberCoupon = MemberCoupon.builder().member(member).couponId(message.couponId()).build();
 		memberCouponRepository.save(memberCoupon);
+	}
+
+	@Override
+	public GetCouponIdsResponse getMemberCoupon(Long memberId) {
+		List<Long> couponIds = memberCouponRepository.findByMemberId(memberId)
+			.stream()
+			.map(MemberCoupon::getCouponId)
+			.toList();
+
+		return GetCouponIdsResponse.builder().couponIds(couponIds).build();
 	}
 
 }

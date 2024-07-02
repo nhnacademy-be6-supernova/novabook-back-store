@@ -48,8 +48,8 @@ public class CategoryController implements CategoryControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/bId/{id}")
-	public ResponseEntity<GetCategoryIdsByBookIdResponse> getCategoryByBId(@PathVariable Long id) {
-		return ResponseEntity.ok().body(categoryService.getCategoryIdsByBookId(id));
+	@GetMapping("/book/{bookId}")
+	public ResponseEntity<GetCategoryIdsByBookIdResponse> getCategoryByBId(@PathVariable Long bookId) {
+		return ResponseEntity.ok().body(categoryService.getCategoryIdsByBookId(bookId));
 	}
 }
