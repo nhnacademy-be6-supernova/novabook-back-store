@@ -64,9 +64,9 @@ public class CartBookServiceImpl implements CartBookService {
 	public Page<GetCartBookResponse> getCartBookListByCartId(Long cartId, Pageable pageable) {
 		Page<CartBook> cartBooks = cartBookRepository.findAllByCartId(cartId, pageable)
 			.orElseThrow(() -> new EntityNotFoundException(Cart.class, cartId));
-		Page<GetCartBookResponse> cartBookResponses = cartBooks.map(GetCartBookResponse::fromEntity);
+		// Page<GetCartBookResponse> cartBookResponses = cartBooks.map(GetCartBookResponse::fromEntity);
 
-		return new PageImpl<>(cartBookResponses.getContent(), pageable, cartBooks.getTotalElements());
+		return new PageImpl<>(null, pageable, cartBooks.getTotalElements());
 	}
 
 	@Override

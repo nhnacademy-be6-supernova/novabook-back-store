@@ -36,8 +36,6 @@ public class Cart {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	@NotNull
-	private Boolean isExposed;
 
 	@NotNull
 	@CreatedDate
@@ -47,13 +45,12 @@ public class Cart {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public Cart(Member member, Boolean isExposed) {
+	public Cart(Member member) {
 		this.member = member;
-		this.isExposed = isExposed;
 	}
 
-	public static Cart of(Member member, Boolean isExposed) {
-		return Cart.builder().member(member).isExposed(isExposed).build();
+	public static Cart of(Member member) {
+		return Cart.builder().member(member).build();
 	}
 
 }
