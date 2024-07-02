@@ -8,9 +8,8 @@ import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
-import store.novabook.store.member.dto.request.UpdateMemberNameRequest;
-import store.novabook.store.member.dto.request.UpdateMemberNumberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
+import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
@@ -26,9 +25,7 @@ public interface MemberService {
 	@Transactional(readOnly = true)
 	GetMemberResponse getMember(Long memberId);
 
-	void updateMemberName(Long memberId, UpdateMemberNameRequest updateMemberNameRequest);
-
-	void updateMemberNumber(Long memberId, UpdateMemberNumberRequest updateMemberNumberRequest);
+	void updateMemberNumberOrName(Long memberId, UpdateMemberRequest updateMemberRequest);
 
 	void updateMemberPassword(Long memberId,
 		UpdateMemberPasswordRequest updateMemberPasswordRequest);
@@ -43,7 +40,7 @@ public interface MemberService {
 
 	GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest);
 
-	boolean isDuplicateLoginId(String loginId);
+	boolean isCreatableLoginId(String loginId);
 
-	boolean isDuplicateEmail(String email);
+	boolean isCreatableEmail(String email);
 }

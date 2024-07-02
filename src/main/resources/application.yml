@@ -9,6 +9,9 @@ spring:
 server:
   port: 8090
 
+logging:
+  file:
+    path: ${user.dir}/logs/${spring.application.name}
 
 
 #공통 설정 내용
