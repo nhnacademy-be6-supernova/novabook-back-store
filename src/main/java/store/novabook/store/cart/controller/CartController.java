@@ -16,6 +16,7 @@ import store.novabook.store.cart.controller.docs.CartControllerDocs;
 import store.novabook.store.cart.dto.request.CreateCartRequest;
 import store.novabook.store.cart.dto.response.GetCartResponse;
 import store.novabook.store.cart.service.CartService;
+import store.novabook.store.common.security.aop.CurrentUser;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,13 +25,13 @@ public class CartController implements CartControllerDocs {
 
 	private final CartService cartService;
 
-	@GetMapping("/{memberId}")
-	public ResponseEntity<GetCartResponse> getCartByUserID(@PathVariable Long memberId) {
-		GetCartResponse getCartResponse = cartService.getCartByMemberId(memberId);
+	@GetMapping
+	public ResponseEntity<GetCartResponse> getCartByMemberID() {
+		GetCartResponse getCartResponse = cartService.getCartByMemberId(3L);
 		return ResponseEntity.status(HttpStatus.OK).body(getCartResponse);
 	}
 
-	@PostMapping
+	@GetMapping("/list")
 	public ResponseEntity<Void> createCart(@Valid @RequestBody CreateCartRequest createCartRequest) {
 		cartService.createCart(createCartRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
