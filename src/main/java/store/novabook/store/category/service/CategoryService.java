@@ -22,5 +22,6 @@ public interface CategoryService {
 
 	void delete(Long id);
 
+	@Transactional(readOnly = true)
 	GetCategoryIdsByBookIdResponse getCategoryIdsByBookId(Long id);
 }

@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.cart.controller.docs.CartBookControllerDocs;
-import store.novabook.store.cart.dto.CreateCartBookRequest;
-import store.novabook.store.cart.dto.DeleteCartBookRequest;
-import store.novabook.store.cart.dto.GetCartBookResponse;
+import store.novabook.store.cart.dto.request.CreateCartBookRequest;
+import store.novabook.store.cart.dto.request.DeleteCartBookRequest;
+import store.novabook.store.cart.dto.response.GetCartBookResponse;
 import store.novabook.store.cart.service.CartBookService;
 
 @RestController
@@ -31,6 +31,14 @@ public class CartBookController implements CartBookControllerDocs {
 	public ResponseEntity<Page<GetCartBookResponse>> getAllCartBook(@PathVariable Long cartId, Pageable pageable) {
 		Page<GetCartBookResponse> cartBookPage = cartBookService.getCartBookListByCartId(cartId, pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(cartBookPage);
+	}
+
+	@GetMapping
+	public ResponseEntity<GetCartBookResponse> getCartId() {
+
+
+		return ResponseEntity.ok().build();
+
 	}
 
 	@PostMapping
