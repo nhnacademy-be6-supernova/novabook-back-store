@@ -26,9 +26,8 @@ import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.FindMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
-import store.novabook.store.member.dto.request.UpdateMemberNameRequest;
-import store.novabook.store.member.dto.request.UpdateMemberNumberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
+import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
@@ -51,18 +50,18 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
-	@GetMapping("/checkDuplicatedLoginId")
+	@GetMapping("/is-creatable")
 	public ResponseEntity<Map<String, Boolean>> checkDuplicated(@RequestParam String loginId) {
-		boolean isDuplicateLoginId = memberService.isDuplicateLoginId(loginId);
+		boolean isDuplicateLoginId = memberService.isCreatableLoginId(loginId);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("isDuplicateLoginId", isDuplicateLoginId);
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping("/checkDuplicatedEmail")
+	@PostMapping("/is-creatable")
 	public ResponseEntity<Map<String, Boolean>> checkDuplicateEmail(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
-		boolean isDuplicateEmail = memberService.isDuplicateEmail(email);
+		boolean isDuplicateEmail = memberService.isCreatableEmail(email);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("isDuplicateEmail", isDuplicateEmail);
 		return ResponseEntity.ok(response);
@@ -84,17 +83,10 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok().body(memberService.matches(loginMemberRequest));
 	}
 
-	@PutMapping("/member/name")
-	public ResponseEntity<Void> updateMemberName(@RequestHeader Long memberId,
-		@RequestBody @Valid UpdateMemberNameRequest updateMemberNameRequest) {
-		memberService.updateMemberName(memberId, updateMemberNameRequest);
-		return ResponseEntity.ok().build();
-	}
-
-	@PutMapping("/member/number")
-	public ResponseEntity<Void> updateMemberNumber(@RequestHeader Long memberId,
-		@RequestBody @Valid UpdateMemberNumberRequest updateMemberNumberRequest) {
-		memberService.updateMemberNumber(memberId, updateMemberNumberRequest);
+	@PutMapping("/member/update")
+	public ResponseEntity<Void> updateMember(@RequestHeader Long memberId,
+		@RequestBody UpdateMemberRequest updateMemberRequest) {
+		memberService.updateMemberNumberOrName(memberId, updateMemberRequest);
 		return ResponseEntity.ok().build();
 	}
 
