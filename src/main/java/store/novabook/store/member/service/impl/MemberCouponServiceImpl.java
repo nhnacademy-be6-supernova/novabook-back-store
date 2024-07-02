@@ -29,6 +29,7 @@ import store.novabook.store.message.CouponCreatedMessage;
 @Service
 @Transactional
 public class MemberCouponServiceImpl implements MemberCouponService {
+
 	private final MemberCouponRepository memberCouponRepository;
 	private final MemberRepository memberRepository;
 	private final CouponAdapter couponAdapter;

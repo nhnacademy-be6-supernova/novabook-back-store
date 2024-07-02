@@ -33,7 +33,7 @@ public class PointHistoryController implements PointHistoryControllerDocs {
 		return ResponseEntity.status(HttpStatus.OK).body(pointHistoryList);
 	}
 
-	@GetMapping
+	@PostMapping("/member")
 	public ResponseEntity<GetPointHistoryListResponse> getPointHistoryListByMemberId(@RequestBody GetPointHistoryRequest getPointHistoryRequest) {
 		return ResponseEntity.ok().body(pointHistoryService.getPointHistory(getPointHistoryRequest));
 	}

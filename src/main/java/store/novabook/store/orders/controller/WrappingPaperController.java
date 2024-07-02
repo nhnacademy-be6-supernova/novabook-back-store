@@ -32,7 +32,7 @@ public class WrappingPaperController implements WrappingPaperControllerDocs {
 		return ResponseEntity.ok(wrappingPaperService.createWrappingPaper(request));
 	}
 
-	@GetMapping(params = {"size","page","order"})
+	@GetMapping(params = {"size","page"})
 	public ResponseEntity<Page<GetWrappingPaperResponse>> getWrappingPaperAll(Pageable pageable) {
 		Page<GetWrappingPaperResponse> response = wrappingPaperService.getWrappingPaperAll(pageable);
 		return ResponseEntity.ok(response);

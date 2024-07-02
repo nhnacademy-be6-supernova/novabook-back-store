@@ -30,7 +30,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	}
 
 	@GetMapping
-	public ResponseEntity<GetCouponIdsResponse> getMemberCoupon(Long memberId) {
+	public ResponseEntity<GetCouponIdsResponse> getMemberCoupon(@CurrentUser Long memberId) {
 		return ResponseEntity.ok().body(memberCouponService.getMemberCoupon(memberId));
 	}
 }
