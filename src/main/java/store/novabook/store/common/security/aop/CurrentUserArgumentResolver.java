@@ -22,7 +22,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
-			return authentication.getName();
+			return Long.parseLong(authentication.getName());
 		}
 		return null;
 	}
