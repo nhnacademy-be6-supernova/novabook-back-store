@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -50,15 +49,15 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
-	@GetMapping("/is-creatable")
-	public ResponseEntity<Map<String, Boolean>> checkDuplicated(@RequestParam String loginId) {
+	@PostMapping("/loginId/is-creatable")
+	public ResponseEntity<Map<String, Boolean>> checkDuplicated(@RequestBody String loginId) {
 		boolean isDuplicateLoginId = memberService.isCreatableLoginId(loginId);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("isDuplicateLoginId", isDuplicateLoginId);
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping("/is-creatable")
+	@PostMapping("/email/is-creatable")
 	public ResponseEntity<Map<String, Boolean>> checkDuplicateEmail(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
 		boolean isDuplicateEmail = memberService.isCreatableEmail(email);
