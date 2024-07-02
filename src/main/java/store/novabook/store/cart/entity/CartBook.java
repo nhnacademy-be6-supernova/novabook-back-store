@@ -45,6 +45,9 @@ public class CartBook {
 	private int quantity;
 
 	@NotNull
+	private boolean isExposed;
+
+	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 

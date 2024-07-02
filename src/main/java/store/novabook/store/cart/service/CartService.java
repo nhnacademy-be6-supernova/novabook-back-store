@@ -8,6 +8,5 @@ import store.novabook.store.cart.dto.response.GetCartResponse;
 public interface CartService {
 	void createCart(CreateCartRequest createCartRequest);
 
-	@Transactional(readOnly = true)
 	GetCartResponse getCartByMemberId(Long memberId);
 }

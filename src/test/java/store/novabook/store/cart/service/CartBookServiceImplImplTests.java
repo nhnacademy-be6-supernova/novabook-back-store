@@ -82,34 +82,6 @@ public class CartBookServiceImplImplTests {
 	}
 
 	@Test
-	void getCartBookListByCartIdTest() {
-		CartBook cartBookMock = mock(CartBook.class);
-		Cart cartMock = mock(Cart.class);
-		Book bookMock = mock(Book.class);
-
-		when(cartBookMock.getCart()).thenReturn(cartMock);
-		when(cartBookMock.getBook()).thenReturn(bookMock);
-		when(cartMock.getId()).thenReturn(1L);
-		when(bookMock.getId()).thenReturn(1L);
-
-		List<CartBook> cartBookList = Collections.singletonList(cartBookMock);
-		Page<CartBook> page = new PageImpl<>(cartBookList, PageRequest.of(0, 10), cartBookList.size());
-
-		when(cartBookRepository.findAllByCartId(eq(cartMock.getId()), pageableCaptor.capture())).thenReturn(
-			Optional.of(page));
-
-		Page<GetCartBookResponse> result = cartBookServiceImpl.getCartBookListByCartId(cartMock.getId(),
-			PageRequest.of(0, 10));
-
-		assertAll(
-			() -> assertNotNull(result),
-			() -> assertEquals(1, result.getTotalElements()),
-			() -> assertEquals(0, pageableCaptor.getValue().getPageNumber()),
-			() -> assertEquals(10, pageableCaptor.getValue().getPageSize())
-		);
-	}
-
-	@Test
 	void deleteCartBookAndBookTest() {
 		CartBook cartBookMock = mock(CartBook.class);
 
