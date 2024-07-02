@@ -19,6 +19,7 @@ import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.entity.QBookImage;
 import store.novabook.store.image.entity.QImage;
+import store.novabook.store.orders.entity.QOrdersBook;
 import store.novabook.store.tag.entity.QBookTag;
 import store.novabook.store.tag.entity.QTag;
 
@@ -42,8 +43,9 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 		QImage qImage = QImage.image;
 		QBookImage qBookImage = QBookImage.bookImage;
 
+
 		Book book = from(qBook)
-			.leftJoin(qReview).on(qBook.id.eq(qReview.book.id))
+			.leftJoin(qReview).on(qBook.id.eq(qReview.ordersBook.book.id))
 			.leftJoin(qLikes).on(qBook.id.eq(qLikes.book.id))
 			.join(qBookStatus).on(qBook.bookStatus.id.eq(qBookStatus.id))
 			.where(qBook.bookStatus.id.ne(4L).and(qBook.id.eq(id)))
@@ -71,7 +73,7 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 
 		// Review 조회
 		Integer score = from(qReview)
-			.where(qReview.book.id.eq(book.getId()))
+			.where(qReview.ordersBook.book.id.eq(book.getId()))
 			.select(qReview.score)
 			.fetchFirst();
 
