@@ -14,6 +14,7 @@
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
+
     <springProfile name="prod">
         <include resource="logs/prod/file-info-appender.xml"/>
         <include resource="logs/prod/file-warn-appender.xml"/>
