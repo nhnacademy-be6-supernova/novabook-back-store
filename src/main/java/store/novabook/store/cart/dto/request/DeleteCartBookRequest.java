@@ -1,4 +1,4 @@
-package store.novabook.store.cart.dto;
+package store.novabook.store.cart.dto.request;
 
 public record DeleteCartBookRequest(
 	Long cartBookId,

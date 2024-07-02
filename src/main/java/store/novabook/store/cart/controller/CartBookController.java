@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.cart.controller.docs.CartBookControllerDocs;
-import store.novabook.store.cart.dto.CreateCartBookRequest;
-import store.novabook.store.cart.dto.DeleteCartBookRequest;
-import store.novabook.store.cart.dto.GetCartBookResponse;
+
+import store.novabook.store.cart.dto.request.CreateCartBookRequest;
+import store.novabook.store.cart.dto.request.DeleteCartBookRequest;
+import store.novabook.store.cart.dto.response.GetCartBookResponse;
 import store.novabook.store.cart.service.CartBookService;
 
 @RestController

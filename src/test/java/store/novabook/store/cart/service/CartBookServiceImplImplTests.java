@@ -21,9 +21,9 @@ import org.springframework.data.domain.Pageable;
 
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
-import store.novabook.store.cart.dto.CreateCartBookRequest;
-import store.novabook.store.cart.dto.DeleteCartBookRequest;
-import store.novabook.store.cart.dto.GetCartBookResponse;
+import store.novabook.store.cart.dto.request.CreateCartBookRequest;
+import store.novabook.store.cart.dto.request.DeleteCartBookRequest;
+import store.novabook.store.cart.dto.response.GetCartBookResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
