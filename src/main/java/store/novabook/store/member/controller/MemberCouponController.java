@@ -15,7 +15,7 @@ import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.service.MemberCouponService;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/coupon/member-coupons")
+@RequestMapping("/api/v1/store/members/coupons")
 @RestController
 public class MemberCouponController implements MemberCouponControllerDocs {
 	private final MemberCouponService memberCouponService;
