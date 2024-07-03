@@ -1,10 +1,7 @@
 package store.novabook.store.member.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -14,6 +11,7 @@ import store.novabook.store.common.adatper.CouponAdapter;
 import store.novabook.store.common.adatper.dto.CreateCouponRequest;
 import store.novabook.store.common.adatper.dto.CreateCouponResponse;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.dto.response.GetCouponIdsResponse;
