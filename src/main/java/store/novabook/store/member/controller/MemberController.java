@@ -50,13 +50,13 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
-	@PostMapping("/loginId/is-creatable")
+	@PostMapping("/login-id/is-duplicate")
 	public ResponseEntity<DuplicateResponse> checkDuplicateLoginId(@RequestBody DuplicateLoginIdRequest request) {
 		DuplicateResponse isDuplicateLoginId = memberService.isDuplicateLoginId(request.loginId());
 		return ResponseEntity.ok().body(isDuplicateLoginId);
 	}
 
-	@PostMapping("/email/is-creatable")
+	@PostMapping("/email/is-duplicate")
 	public ResponseEntity<DuplicateResponse> checkDuplicateEmail(@RequestBody DuplicateEmailRequest request) {
 		DuplicateResponse isDuplicateEmail = memberService.isDuplicateEmail(request.email());
 		return ResponseEntity.ok().body(isDuplicateEmail);
