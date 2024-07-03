@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import store.novabook.store.member.MemberClient;
+import store.novabook.store.member.service.MemberClient;
 
 @Configuration
 @EnableWebSecurity
