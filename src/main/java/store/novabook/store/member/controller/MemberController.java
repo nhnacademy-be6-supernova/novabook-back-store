@@ -19,7 +19,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentUser;
-import store.novabook.store.member.MemberClient;
 import store.novabook.store.member.controller.docs.MemberControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
@@ -33,6 +32,7 @@ import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
+import store.novabook.store.member.service.MemberClient;
 import store.novabook.store.member.service.MemberService;
 
 @RestController
