@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
 import store.novabook.store.member.dto.response.CreateMemberAddressResponse;
+import store.novabook.store.member.dto.response.ExceedResponse;
 import store.novabook.store.member.dto.response.GetMemberAddressResponse;
 import store.novabook.store.member.entity.Member;
 
@@ -26,5 +27,5 @@ public interface MemberAddressService {
 
 	void validateMemberAddress(Member member);
 
-	boolean isCreatable(Long memberId);
+	ExceedResponse isExceed(Long memberId);
 }
