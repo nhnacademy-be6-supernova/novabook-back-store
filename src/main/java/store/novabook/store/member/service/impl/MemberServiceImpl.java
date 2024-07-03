@@ -2,8 +2,6 @@ package store.novabook.store.member.service.impl;
 
 import java.time.LocalDateTime;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.adatper.CouponType;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.member.MemberClient;
+import store.novabook.store.common.messaging.CouponSender;
+import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
@@ -23,6 +23,7 @@ import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
+import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
@@ -35,8 +36,8 @@ import store.novabook.store.member.repository.MemberGradeHistoryRepository;
 import store.novabook.store.member.repository.MemberGradePolicyRepository;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.member.repository.MemberStatusRepository;
+import store.novabook.store.member.service.MemberClient;
 import store.novabook.store.member.service.MemberService;
-import store.novabook.store.message.MemberRegistrationMessage;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointHistoryRepository;
@@ -66,13 +67,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberClient memberClient;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	private final RabbitTemplate rabbitTemplate;
-
-	@Value("${rabbitmq.exchange.member}")
-	private String memberExchange;
-
-	@Value("${rabbitmq.routing.member}")
-	private String memberCreateRoutingKey;
+	private final CouponSender couponSender;
 
 	@Override
 	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
@@ -112,8 +107,8 @@ public class MemberServiceImpl implements MemberService {
 		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, POINT_AMOUNT);
 		pointHistoryRepository.save(pointHistory);
 
-		rabbitTemplate.convertAndSend(memberExchange, memberCreateRoutingKey,
-			MemberRegistrationMessage.builder().memberId(newMember.getId()).build());
+		couponSender.sendToHighTrafficQueue(
+			CreateCouponMessage.fromEntity(newMember.getId(), CouponType.WELCOME, null));
 		return CreateMemberResponse.fromEntity(newMember);
 	}
 
@@ -215,13 +210,13 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public boolean isCreatableLoginId(String loginId) {
-		return memberRepository.existsByLoginId(loginId);
+	public DuplicateResponse isDuplicateLoginId(String loginId) {
+		return new DuplicateResponse(memberRepository.existsByLoginId(loginId));
 	}
 
 	@Override
-	public boolean isCreatableEmail(String email) {
-		return memberRepository.existsByEmail(email);
+	public DuplicateResponse isDuplicateEmail(String email) {
+		return new DuplicateResponse(memberRepository.existsByEmail(email));
 	}
 }
 

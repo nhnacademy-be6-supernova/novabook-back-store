@@ -22,8 +22,6 @@ import store.novabook.store.member.entity.MemberCoupon;
 import store.novabook.store.member.repository.MemberCouponRepository;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.member.service.MemberCouponService;
-import store.novabook.store.message.CouponCreatedMessage;
-
 
 @RequiredArgsConstructor
 @Service
@@ -49,8 +47,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	}
 
 	@Override
-	@RabbitListener(queues = "${rabbitmq.queue.member-coupon}")
-	public void handleCouponCreatedMessage(@Valid CouponCreatedMessage message) {
+	public void createMemberCouponByMessage(@Valid RegisterCouponMessage message) {
 		Member member = memberRepository.findById(message.memberId())
 			.orElseThrow(() -> new EntityNotFoundException(Member.class));
 		MemberCoupon memberCoupon = MemberCoupon.builder().member(member).couponId(message.couponId()).build();

@@ -15,9 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.NonNull;
 import store.novabook.store.common.security.dto.CustomUserDetails;
 import store.novabook.store.common.security.entity.Users;
-import store.novabook.store.member.MemberClient;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
+import store.novabook.store.member.service.MemberClient;
 
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {

@@ -65,3 +65,19 @@ spring:
         config:
           couponClient:
             url: http://localhost:8070/api/v1/coupon
+---
+rabbitmq:
+  queue:
+    couponCreateNormal: nova.coupon.create.normal.queue
+    couponCreateHighTraffic: nova.coupon.create.hightraffic.queue
+    couponRegisterNormal: nova.coupon.register.normal.queue
+    couponRegisterHighTraffic: nova.coupon.register.hightraffic.queue
+    deadLetter: nova.coupon.deadletter.queue
+  exchange:
+    couponOperation: nova.coupon.operation.exchange
+    deadLetter: nova.coupon.deadletter.exchange
+  routing:
+    couponCreateNormal: coupon.create.normal
+    couponCreateHighTraffic: coupon.create.hightraffic
+    couponRegisterNormal: coupon.register.normal
+    couponRegisterHighTraffic: coupon.register.hightraffic
