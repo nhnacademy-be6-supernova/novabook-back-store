@@ -53,7 +53,7 @@ public class ReviewController implements ReviewControllerDocs {
 
 	@PostMapping("/{ordersBookId}")
 	public ResponseEntity<CreateReviewResponse> createReviewed(
-		@Valid @RequestParam Long ordersBookId,
+		@Valid @PathVariable Long ordersBookId,
 		@Valid @RequestBody CreateReviewRequest request) {
 		CreateReviewResponse createReviewResponse = reviewService.createReview(ordersBookId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createReviewResponse);

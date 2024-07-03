@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import store.novabook.store.cart.dto.CreateCartRequest;
-import store.novabook.store.cart.dto.GetCartResponse;
+import store.novabook.store.cart.dto.request.CreateCartRequest;
+import store.novabook.store.cart.dto.response.GetCartResponse;
 
 @Tag(name = "Cart API")
 public interface CartControllerDocs {
