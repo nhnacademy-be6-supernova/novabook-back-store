@@ -39,23 +39,27 @@ public interface ReviewControllerDocs {
 	@Operation(summary = "회원 리뷰 조회", description = "회원이 작성한 리뷰들을 조회합니다.")
 	ResponseEntity<Page<GetReviewResponse>> getReviewByMember(@CurrentUser Long memberId, Pageable pageable);
 
-
-		/**
-		 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환합니다.
-		 * @param bookId 책 ID
-		 * @param pageable 페이지 정보
-		 * @return 페이지화된 리뷰 정보
-		 */
+	/**
+	 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환합니다.
+	 * @param bookId 책 ID
+	 * @param pageable 페이지 정보
+	 * @return 페이지화된 리뷰 정보
+	 */
 	@Operation(summary = "도서 리뷰 조회", description = "도서에 작성된 리뷰들을 조회합니다.")
 	ResponseEntity<Page<GetReviewResponse>> getReviewByBookId(@PathVariable Long bookId, Pageable pageable);
 
 	/**
 	 * 새로운 리뷰를 작성합니다.
+	 * @param ordersBookId 주문 도서 ID
 	 * @param request 리뷰 생성 요청 데이터
+	 * @param memberId 현재 사용자 ID
 	 * @return 생성된 리뷰의 응답 데이터
 	 */
 	@Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.")
-	ResponseEntity<CreateReviewResponse> createReviewed(@CurrentUser Long memberId, @Valid @RequestBody CreateReviewRequest request);
+	ResponseEntity<CreateReviewResponse> createReviewed(@Valid @PathVariable Long ordersBookId,
+		@Valid @RequestBody CreateReviewRequest request,
+		@CurrentUser Long memberId);
+
 
 	/**
 	 * 특정 리뷰를 업데이트합니다.
@@ -64,5 +68,6 @@ public interface ReviewControllerDocs {
 	 * @return 응답 상태 코드
 	 */
 	@Operation(summary = "리뷰 수정", description = "리뷰를 수정합니다.")
-	ResponseEntity<Void> updateReviewed(@CurrentUser Long memberId, @Valid @RequestBody UpdateReviewRequest request, @PathVariable Long reviewsId);
+	ResponseEntity<Void> updateReviewed(@CurrentUser Long memberId, @Valid @RequestBody UpdateReviewRequest request,
+		@PathVariable Long reviewsId);
 }

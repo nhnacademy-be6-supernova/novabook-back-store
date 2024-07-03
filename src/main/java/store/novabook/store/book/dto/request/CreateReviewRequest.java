@@ -16,7 +16,6 @@ public record CreateReviewRequest(
 	String content,
 	@NotNull(message = "score는 필수 값입니다.")
 	Integer score,
-	@JsonIgnore
 	List<ReviewImageDTO> reviewImageDTOs
 ) {
 }

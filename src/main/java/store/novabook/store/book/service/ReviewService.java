@@ -24,7 +24,7 @@ public interface ReviewService {
 	@Transactional(readOnly = true)
 	Page<GetOrdersBookReviewIdResponse> getOrdersBookReviewIds(Long memberId, Pageable pageable);
 
-	CreateReviewResponse createReview(Long orderId, CreateReviewRequest request);
+	CreateReviewResponse createReview(Long orderId, CreateReviewRequest request, Long memberId);
 
 	void updateReview(Long ordersId, UpdateReviewRequest request, Long reviewId);
 }
