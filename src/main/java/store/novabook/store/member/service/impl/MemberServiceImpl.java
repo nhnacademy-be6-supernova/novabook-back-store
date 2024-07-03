@@ -24,6 +24,7 @@ import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
+import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
@@ -36,6 +37,7 @@ import store.novabook.store.member.repository.MemberGradeHistoryRepository;
 import store.novabook.store.member.repository.MemberGradePolicyRepository;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.member.repository.MemberStatusRepository;
+import store.novabook.store.member.service.MemberClient;
 import store.novabook.store.member.service.MemberService;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
@@ -209,13 +211,13 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public boolean isCreatableLoginId(String loginId) {
-		return memberRepository.existsByLoginId(loginId);
+	public DuplicateResponse isDuplicateLoginId(String loginId) {
+		return new DuplicateResponse(memberRepository.existsByLoginId(loginId));
 	}
 
 	@Override
-	public boolean isCreatableEmail(String email) {
-		return memberRepository.existsByEmail(email);
+	public DuplicateResponse isDuplicateEmail(String email) {
+		return new DuplicateResponse(memberRepository.existsByEmail(email));
 	}
 }
 

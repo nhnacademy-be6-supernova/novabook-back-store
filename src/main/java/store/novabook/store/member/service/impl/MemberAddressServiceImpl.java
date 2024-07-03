@@ -11,6 +11,7 @@ import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
 import store.novabook.store.member.dto.response.CreateMemberAddressResponse;
+import store.novabook.store.member.dto.response.ExceedResponse;
 import store.novabook.store.member.dto.response.GetMemberAddressResponse;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberAddress;
@@ -129,8 +130,9 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 	}
 
 	@Override
-	public boolean isCreatable(Long memberId) {
+	public ExceedResponse isExceed(Long memberId) {
 		int currentMemberAddress = memberAddressRepository.countByMemberId(memberId);
-		return currentMemberAddress >= ADDRESS_COUNT;
+		boolean isExceed = currentMemberAddress >= ADDRESS_COUNT;
+		return new ExceedResponse(isExceed);
 	}
 }

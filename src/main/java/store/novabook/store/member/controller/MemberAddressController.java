@@ -20,6 +20,7 @@ import store.novabook.store.member.controller.docs.MemberAddressControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
 import store.novabook.store.member.dto.response.CreateMemberAddressResponse;
+import store.novabook.store.member.dto.response.ExceedResponse;
 import store.novabook.store.member.dto.response.GetMemberAddressListResponse;
 import store.novabook.store.member.dto.response.GetMemberAddressResponse;
 import store.novabook.store.member.service.MemberAddressService;
@@ -67,9 +68,9 @@ public class MemberAddressController implements MemberAddressControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/is-creatable")
-	public ResponseEntity<Boolean> isCreatable(@CurrentUser Long memberId) {
-		boolean isExceedMemberAddressCount = memberAddressService.isCreatable(memberId);
+	@GetMapping("/is-exceed")
+	public ResponseEntity<ExceedResponse> isExceed(@CurrentUser Long memberId) {
+		ExceedResponse isExceedMemberAddressCount = memberAddressService.isExceed(memberId);
 		return ResponseEntity.ok(isExceedMemberAddressCount);
 	}
 

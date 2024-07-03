@@ -11,6 +11,7 @@ import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
+import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
@@ -40,7 +41,7 @@ public interface MemberService {
 
 	GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest);
 
-	boolean isCreatableLoginId(String loginId);
+	DuplicateResponse isDuplicateLoginId(String loginId);
 
-	boolean isCreatableEmail(String email);
+	DuplicateResponse isDuplicateEmail(String email);
 }
