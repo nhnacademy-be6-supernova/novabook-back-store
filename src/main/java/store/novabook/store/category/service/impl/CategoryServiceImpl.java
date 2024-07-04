@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.category.dto.SubCategoryDTO;
 import store.novabook.store.category.dto.request.CreateCategoryRequest;
 import store.novabook.store.category.dto.response.CreateCategoryResponse;
+import store.novabook.store.category.dto.response.DeleteResponse;
 import store.novabook.store.category.dto.response.GetCategoryIdsByBookIdResponse;
 import store.novabook.store.category.dto.response.GetCategoryListResponse;
 import store.novabook.store.category.dto.response.GetCategoryResponse;
@@ -82,8 +83,13 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public void delete(Long id) {
-		categoryRepository.deleteById(id);
+	public DeleteResponse delete(Long id) {
+		if (bookCategoryRepository.existsByCategoryId(id)) {
+			return new DeleteResponse(false);
+		} else {
+			categoryRepository.deleteById(id);
+			return new DeleteResponse(true);
+		}
 	}
 
 	@Override

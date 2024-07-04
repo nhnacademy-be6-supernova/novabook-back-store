@@ -21,15 +21,14 @@ spring:
           max-attempts: 3        # 최대 재시도 횟수
           multiplier: 2.0        # 이전 interval * multiplier = 다음 interval
 
-# rabbitmq 설정
 rabbitmq:
   queue:
-    coupon: couponQueue
-    dead: deadQueue
-    member-coupon: memberCouponQueue
+    coupon: nova.coupon.queue
+    dead: nova.dead.queue
+    member-coupon: nova.membercoupon.queue
   exchange:
-    member: memberExchange
-    coupon: couponExchange
+    member: nova.member.exchange
+    coupon: nova.coupon.exchange
   routing:
     member: member.registration
     couponCreated: coupon.created

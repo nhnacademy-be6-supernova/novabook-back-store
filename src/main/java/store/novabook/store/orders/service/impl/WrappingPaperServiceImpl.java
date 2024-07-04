@@ -45,6 +45,7 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<GetWrappingPaperResponse> getWrappingPaperAllList() {
+
 		List<WrappingPaper> wrappingPapers = wrappingPaperRepository.findAll();
 		List<GetWrappingPaperResponse> wrappingPaperResponses = new ArrayList<>();
 		wrappingPapers.forEach(

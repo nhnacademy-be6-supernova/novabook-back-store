@@ -1,5 +1,8 @@
 package store.novabook.store.point.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,8 @@ import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
+import store.novabook.store.point.dto.request.GetPointHistoryRequest;
+import store.novabook.store.point.dto.response.GetPointHistoryListResponse;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;
 import store.novabook.store.point.entity.PointPolicy;
@@ -43,8 +48,23 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 			pointHistory.getPointContent(),
 			pointHistory.getPointAmount()
 		));
-
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetPointHistoryListResponse getPointHistory(GetPointHistoryRequest getPointHistoryRequest) {
+		List<GetPointHistoryResponse> pointHistoryResponses = pointHistoryRepository.findByMemberId(
+				getPointHistoryRequest.memberId())
+			.stream()
+			.map(pointHistory -> GetPointHistoryResponse.builder()
+				.pointAmount(pointHistory.getPointAmount())
+				.pointContent(pointHistory.getPointContent())
+				.build())
+			.toList();
+
+		return GetPointHistoryListResponse.builder().pointHistoryResponseList(pointHistoryResponses).build();
+	}
+
 
 	@Override
 	public void createPointHistory(CreatePointHistoryRequest createPointHistoryRequest) {
