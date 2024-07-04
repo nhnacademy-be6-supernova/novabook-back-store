@@ -62,7 +62,11 @@ public class CartBook {
 	}
 
 	public static CartBook of(Cart cart, Book book, int quantity) {
-		return CartBook.builder().book(book).quantity(quantity).build();
+		return CartBook.builder().cart(cart).book(book).quantity(quantity).build();
+	}
+
+	public void updateIsExposed(boolean isExposed) {
+		this.isExposed = isExposed;
 	}
 
 }
