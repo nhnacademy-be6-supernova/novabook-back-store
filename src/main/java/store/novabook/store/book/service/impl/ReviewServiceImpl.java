@@ -112,9 +112,17 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetReviewListResponse bookReviews(Long bookId) {
-		List<GetReviewResponse> reviews = reviewRepository.findReviewByBookId(bookId);
+		List<ReviewImageDto> reviewImageDtoList = reviewRepository.findReviewByBookId(bookId);
 
-		return GetReviewListResponse.builder().getReviewResponses(reviews).build();
+		Map<Long, GetReviewResponse> reviewMap = new HashMap<>();
+		for (ReviewImageDto dto : reviewImageDtoList) {
+			reviewMap.computeIfAbsent(dto.reviewId(),
+				id -> new GetReviewResponse(maskString(dto.nickName()), dto.reviewId(), dto.orderBookId(), dto.content(),
+					new ArrayList<>(),
+					dto.score(), dto.createdAt())).reviewImages().add(dto.reviewImage());
+		}
+
+		return GetReviewListResponse.builder().getReviewResponses(new ArrayList<>(reviewMap.values())).build();
 	}
 
 	/**
@@ -196,8 +204,8 @@ public class ReviewServiceImpl implements ReviewService {
 		List<ReviewImageDTO> reviewImageDTO) {
 		try {
 			List<MultipartFile> resource = FileConverter.convertToMultipartFile(reviewImageDTO);
-			String jsonResponse = nhnCloudClient.uploadImagesAndGetRecord(appKey, params,
-				resource, secretKey).getBody();
+			String jsonResponse = nhnCloudClient.uploadImagesAndGetRecord(appKey, params, resource, secretKey)
+				.getBody();
 
 			// JSON 응답을 파싱하여 URL 필드를 추출
 			List<String> response = extractUrls(jsonResponse);
@@ -221,17 +229,15 @@ public class ReviewServiceImpl implements ReviewService {
 				if (item.has("url")) {
 					urls.add(item.get("url").asText());
 				}
-
-				if (item.has("queues")) {
-					for (JsonNode queue : item.path("queues")) {
-						if (queue.has("url")) {
-							urls.add(queue.get("url").asText());
-						}
-					}
-				}
 			}
 		}
 
 		return urls;
+	}
+
+	public static String maskString(String input) {
+		return input != null && input.length() > 3
+			? input.substring(0, 3) + "*".repeat(input.length() - 3)
+			: input;
 	}
 }

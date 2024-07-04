@@ -2,6 +2,9 @@ package store.novabook.store.book.repository.impl;
 
 import static store.novabook.store.book.entity.QReview.*;
 import static store.novabook.store.image.entity.QReviewImage.*;
+import static store.novabook.store.member.entity.QMember.*;
+import static store.novabook.store.orders.entity.QOrders.*;
+import static store.novabook.store.orders.entity.QOrdersBook.*;
 
 import java.util.List;
 
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.types.Projections;
 
+import store.novabook.store.book.dto.ReviewImageDto;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.entity.Review;
 import store.novabook.store.book.repository.ReviewQueryRepository;
@@ -24,13 +28,16 @@ public class ReviewQueryRepositoryImpl extends QuerydslRepositorySupport impleme
 	}
 
 	@Override
-	public List<GetReviewResponse> findReviewByBookId(Long bookId) {
+	public List<ReviewImageDto> findReviewByBookId(Long bookId) {
 		return from(review).select(
-				Projections.constructor(GetReviewResponse.class, review.id,
-					review.ordersBook.id, review.content,
-					Projections.list(reviewImage.image.source), reviewImage.review.score,
+				Projections.constructor(ReviewImageDto.class, member.loginId, review.id,
+					ordersBook.id, review.content, reviewImage.image.source, reviewImage.review.score,
 					reviewImage.review.createdAt))
 			.innerJoin(reviewImage).on(reviewImage.review.id.eq(review.id))
+			.innerJoin(ordersBook).on(review.ordersBook.id.eq(ordersBook.id))
+			.innerJoin(orders).on(ordersBook.orders.id.eq(orders.id))
+			.innerJoin(member).on(orders.member.id.eq(member.id))
+
 			.where(review.ordersBook.book.id.eq(bookId))
 			.fetch();
 	}
