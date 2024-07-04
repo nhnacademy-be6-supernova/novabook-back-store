@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.book.dto.ReviewImageDto;
 import store.novabook.store.book.dto.request.CreateReviewRequest;
 import store.novabook.store.book.dto.request.ReviewImageDTO;
 import store.novabook.store.book.dto.request.UpdateReviewRequest;
@@ -102,7 +103,6 @@ public class ReviewServiceImpl implements ReviewService {
 		return new PageImpl<>(searchBookResponses, pageable, searchBookResponses.size());
 	}
 
-
 	/**
 	 * 주어진 책 ID와 관련된 모든 리뷰를 읽기 전용으로 조회합니다.
 	 *
@@ -112,9 +112,9 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetReviewListResponse bookReviews(Long bookId) {
-		return GetReviewListResponse.builder()
-			.getReviewResponses(reviewRepository.findReviewByBookId(bookId))
-			.build();
+		List<GetReviewResponse> reviews = reviewRepository.findReviewByBookId(bookId);
+
+		return GetReviewListResponse.builder().getReviewResponses(reviews).build();
 	}
 
 	/**
