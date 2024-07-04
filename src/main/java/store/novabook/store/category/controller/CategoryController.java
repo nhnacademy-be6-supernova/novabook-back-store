@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.category.controller.docs.CategoryControllerDocs;
 import store.novabook.store.category.dto.request.CreateCategoryRequest;
 import store.novabook.store.category.dto.response.CreateCategoryResponse;
+import store.novabook.store.category.dto.response.DeleteResponse;
 import store.novabook.store.category.dto.response.GetCategoryIdsByBookIdResponse;
 import store.novabook.store.category.dto.response.GetCategoryListResponse;
 import store.novabook.store.category.dto.response.GetCategoryResponse;
@@ -42,14 +42,14 @@ public class CategoryController implements CategoryControllerDocs {
 		return ResponseEntity.ok().body(categoryService.getAllCategories());
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-		categoryService.delete(id);
-		return ResponseEntity.ok().build();
-	}
-
 	@GetMapping("/book/{bookId}")
 	public ResponseEntity<GetCategoryIdsByBookIdResponse> getCategoryByBId(@PathVariable Long bookId) {
 		return ResponseEntity.ok().body(categoryService.getCategoryIdsByBookId(bookId));
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<DeleteResponse> delete(@PathVariable Long id) {
+		DeleteResponse response = categoryService.delete(id);
+		return ResponseEntity.ok().body(response);
 	}
 }
