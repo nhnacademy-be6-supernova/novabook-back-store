@@ -16,9 +16,6 @@ public interface ReviewService {
 	Page<SearchBookResponse> myReviews(Long memberId, Pageable pageable);
 
 	@Transactional(readOnly = true)
-	Page<GetReviewResponse> membersReviews(Long memberId, Pageable pageable);
-
-	@Transactional(readOnly = true)
 	Page<GetReviewResponse> bookReviews(Long bookId, Pageable pageable);
 
 	@Transactional(readOnly = true)

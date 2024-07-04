@@ -40,12 +40,6 @@ public class ReviewController implements ReviewControllerDocs {
 		return ResponseEntity.ok(searchBookResponses);
 	}
 
-	@GetMapping("/members")
-	public ResponseEntity<Page<GetReviewResponse>> getReviewByMember(@CurrentUser Long memberId, Pageable pageable) {
-		Page<GetReviewResponse> getReviewResponses = reviewService.membersReviews(memberId, pageable);
-		return ResponseEntity.ok(getReviewResponses);
-	}
-
 	@GetMapping("/books/{bookId}")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewByBookId(@PathVariable Long bookId, Pageable pageable) {
 		Page<GetReviewResponse> getReviewResponses = reviewService.bookReviews(bookId, pageable);

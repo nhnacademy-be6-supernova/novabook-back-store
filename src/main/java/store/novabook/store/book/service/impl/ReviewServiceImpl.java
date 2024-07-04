@@ -101,22 +101,6 @@ public class ReviewServiceImpl implements ReviewService {
 		return new PageImpl<>(searchBookResponses, pageable, searchBookResponses.size());
 	}
 
-	/**
-	 * 특정 회원이 작성한 리뷰 목록을 페이지네이션으로 반환한다.
-	 * @param memberId 회원 ID
-	 * @param pageable 페이징 정보
-	 * @return 회원의 리뷰 페이지
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> membersReviews(Long memberId, Pageable pageable) {
-		Page<Review> reviews = reviewRepository.findByOrdersBookId(memberId, pageable);
-		List<GetReviewResponse> reviewResponses = new ArrayList<>();
-		for (Review review : reviews) {
-			reviewResponses.add(GetReviewResponse.from(review));
-		}
-		return new PageImpl<>(reviewResponses, pageable, reviewResponses.size());
-	}
 
 	/**
 	 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환한다.
@@ -161,13 +145,21 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Override
 	public CreateReviewResponse createReview(Long ordersBookId, CreateReviewRequest request, Long memberId) {
+		if (reviewRepository.existsByOrdersBookId(ordersBookId)) {
+			throw new AlreadyExistException(OrdersBook.class, ordersBookId);
+		}
+
 		OrdersBook ordersbook = ordersBookRepository.findById(ordersBookId)
-			.orElseThrow(() -> new EntityNotFoundException(Book.class, ordersBookId));
+			.orElseThrow(() -> new EntityNotFoundException(OrdersBook.class, ordersBookId));
+
 		Review review = reviewRepository.save(Review.of(request, ordersbook));
+
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class));
+
 		//리뷰 이미지를 저장
 		String basepath = bucketName + "review";
 		//NHN클라우드 설정

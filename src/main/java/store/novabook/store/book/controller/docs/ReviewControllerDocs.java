@@ -32,14 +32,6 @@ public interface ReviewControllerDocs {
 	ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(@CurrentUser Long memberId, Pageable pageable);
 
 	/**
-	 * 특정 회원이 작성한 모든 리뷰를 페이지네이션으로 반환합니다.
-	 * @param pageable 페이지 정보
-	 * @return 페이지화된 리뷰 정보
-	 */
-	@Operation(summary = "회원 리뷰 조회", description = "회원이 작성한 리뷰들을 조회합니다.")
-	ResponseEntity<Page<GetReviewResponse>> getReviewByMember(@CurrentUser Long memberId, Pageable pageable);
-
-	/**
 	 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환합니다.
 	 * @param bookId 책 ID
 	 * @param pageable 페이지 정보
