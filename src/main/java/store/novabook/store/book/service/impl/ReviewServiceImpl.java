@@ -28,6 +28,7 @@ import store.novabook.store.book.dto.request.ReviewImageDTO;
 import store.novabook.store.book.dto.request.UpdateReviewRequest;
 import store.novabook.store.book.dto.response.CreateReviewResponse;
 import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
+import store.novabook.store.book.dto.response.GetReviewListResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.dto.response.SearchBookResponse;
 import store.novabook.store.book.entity.Book;
@@ -103,21 +104,17 @@ public class ReviewServiceImpl implements ReviewService {
 
 
 	/**
-	 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환한다.
-	 * @param bookId 책 ID
-	 * @param pageable 페이징 정보
-	 * @return 책의 리뷰 페이지
+	 * 주어진 책 ID와 관련된 모든 리뷰를 읽기 전용으로 조회합니다.
+	 *
+	 * @param bookId 리뷰를 조회할 책의 ID
+	 * @return 해당 책과 관련된 리뷰 목록을 포함하는 {@link GetReviewResponse} 객체 리스트
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> bookReviews(Long bookId, Pageable pageable) {
-		// Page<Review> reviews = reviewRepository.findByBookId(bookId, pageable);
-		// List<GetReviewResponse> reviewResponses = new ArrayList<>();
-		// for (Review review : reviews) {
-		// 	reviewResponses.add(GetReviewResponse.from(review));
-		// }
-		// return new PageImpl<>(reviewResponses, pageable, reviewResponses.size());
-		return null;
+	public GetReviewListResponse bookReviews(Long bookId) {
+		return GetReviewListResponse.builder()
+			.getReviewResponses(reviewRepository.findReviewByBookId(bookId))
+			.build();
 	}
 
 	/**

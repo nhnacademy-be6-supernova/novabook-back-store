@@ -13,6 +13,7 @@ import store.novabook.store.book.dto.request.CreateReviewRequest;
 import store.novabook.store.book.dto.request.UpdateReviewRequest;
 import store.novabook.store.book.dto.response.CreateReviewResponse;
 import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
+import store.novabook.store.book.dto.response.GetReviewListResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.dto.response.SearchBookResponse;
 import store.novabook.store.common.security.aop.CurrentUser;
@@ -34,11 +35,10 @@ public interface ReviewControllerDocs {
 	/**
 	 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환합니다.
 	 * @param bookId 책 ID
-	 * @param pageable 페이지 정보
-	 * @return 페이지화된 리뷰 정보
+	 * @return 리뷰 정보
 	 */
 	@Operation(summary = "도서 리뷰 조회", description = "도서에 작성된 리뷰들을 조회합니다.")
-	ResponseEntity<Page<GetReviewResponse>> getReviewByBookId(@PathVariable Long bookId, Pageable pageable);
+	ResponseEntity<GetReviewListResponse> getReviewByBookId(@PathVariable Long bookId);
 
 	/**
 	 * 새로운 리뷰를 작성합니다.
