@@ -26,8 +26,6 @@ public class MemberCoupon {
 	@Id
 	private Long couponId;
 
-	private LocalDateTime usedAt;
-
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -43,9 +41,5 @@ public class MemberCoupon {
 	public MemberCoupon(Long couponId, Member member) {
 		this.couponId = couponId;
 		this.member = member;
-	}
-
-	public void update(LocalDateTime usedAt) {
-		this.usedAt = usedAt;
 	}
 }
