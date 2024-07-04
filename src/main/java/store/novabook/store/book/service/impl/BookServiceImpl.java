@@ -111,8 +111,8 @@ public class BookServiceImpl implements BookService {
 
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-		String outputFilePath = localStorage+fileName;
-		try(InputStream in = new URI(imageUrl).toURL().openStream()){
+		String outputFilePath = localStorage + fileName;
+		try (InputStream in = new URI(imageUrl).toURL().openStream()) {
 			Path imagePath = Paths.get(outputFilePath);
 			Files.copy(in, imagePath);
 		} catch (IOException | URISyntaxException e) {
@@ -126,13 +126,12 @@ public class BookServiceImpl implements BookService {
 			throw new FailedCreateBookException();
 		}
 
-		String nhnUrl =  uploadImage( accessKey,  secretKey, bucketName + fileName, false, outputFilePath);
-
+		String nhnUrl = uploadImage(accessKey, secretKey, bucketName + fileName, false, outputFilePath);
 
 		Image image = imageRepository.save(new Image(nhnUrl));
 		bookImageRepository.save(BookImage.of(book, image));
 
-		bookSearchRepository.save(BookDocument.of(book,image, tags, categories));
+		bookSearchRepository.save(BookDocument.of(book, image, tags, categories));
 
 		return new CreateBookResponse(book.getId());
 	}
@@ -169,14 +168,14 @@ public class BookServiceImpl implements BookService {
 		book.updateBookStatus(bookStatus);
 	}
 
-
 	public String uploadImage(String appKey, String secretKey, String path, boolean overwrite, String localFilePath) {
 
 		try {
 			File file = new File(localFilePath);
 			FileSystemResource resource = new FileSystemResource(file);
 
-			ResponseEntity<String> response = nhnCloudClient.uploadImage(appKey, path, overwrite, secretKey, true, resource);
+			ResponseEntity<String> response = nhnCloudClient.uploadImage(appKey, path, overwrite, secretKey, true,
+				resource);
 			String jsonResponse = response.getBody();
 
 			// JSON 응답을 파싱하여 URL 필드를 추출
@@ -184,7 +183,7 @@ public class BookServiceImpl implements BookService {
 
 			Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, Map.class);
 
-			HashMap<String, Object> map = (HashMap<String, Object>) responseMap.get("file");
+			HashMap<String, Object> map = (HashMap<String, Object>)responseMap.get("file");
 
 			return (String)map.get("url");
 

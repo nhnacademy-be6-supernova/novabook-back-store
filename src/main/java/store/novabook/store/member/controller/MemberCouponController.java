@@ -19,6 +19,7 @@ import store.novabook.store.common.security.aop.CurrentUser;
 import store.novabook.store.member.controller.docs.MemberCouponControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
+import store.novabook.store.member.dto.response.GetCouponIdsResponse;
 import store.novabook.store.member.service.MemberCouponService;
 
 @RequiredArgsConstructor
@@ -54,5 +55,10 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	public ResponseEntity<GetCouponAllResponse> getMemberCouponByMemberId(@CurrentUser Long memberId) {
 		GetCouponAllResponse response = memberCouponService.getValidAllByMemberId(memberId);
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping
+	public ResponseEntity<GetCouponIdsResponse> getMemberCoupon(@CurrentUser Long memberId) {
+		return ResponseEntity.ok().body(memberCouponService.getMemberCoupon(memberId));
 	}
 }

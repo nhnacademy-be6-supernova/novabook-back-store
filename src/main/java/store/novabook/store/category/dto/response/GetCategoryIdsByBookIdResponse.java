@@ -6,5 +6,4 @@ import java.util.List;
 import store.novabook.store.category.entity.BookCategory;
 
 public record GetCategoryIdsByBookIdResponse(List<Long> categoryIds){
-
 }

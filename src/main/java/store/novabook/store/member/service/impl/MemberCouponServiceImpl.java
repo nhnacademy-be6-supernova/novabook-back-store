@@ -2,6 +2,8 @@ package store.novabook.store.member.service.impl;
 
 import java.util.List;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ import store.novabook.store.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
+import store.novabook.store.member.dto.response.GetCouponIdsResponse;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberCoupon;
 import store.novabook.store.member.repository.MemberCouponRepository;
@@ -30,6 +33,7 @@ import store.novabook.store.member.service.MemberCouponService;
 @Service
 @Transactional
 public class MemberCouponServiceImpl implements MemberCouponService {
+
 	private final MemberCouponRepository memberCouponRepository;
 	private final MemberRepository memberRepository;
 	private final CouponAdapter couponAdapter;
@@ -100,6 +104,16 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			pageable);
 
 		return GetUsedCouponHistoryAllResponse.fromEntity(response.getBody());
+	}
+
+	@Override
+	public GetCouponIdsResponse getMemberCoupon(Long memberId) {
+		List<Long> couponIds = memberCouponRepository.findByMemberId(memberId)
+			.stream()
+			.map(MemberCoupon::getCouponId)
+			.toList();
+
+		return GetCouponIdsResponse.builder().couponIds(couponIds).build();
 	}
 
 }
