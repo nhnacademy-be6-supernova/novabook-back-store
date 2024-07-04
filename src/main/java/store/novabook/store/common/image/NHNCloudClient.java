@@ -5,6 +5,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,7 +17,7 @@ import feign.RequestLine;
 
 @FeignClient(name = "nhnCloudClient", url = "https://api-image.nhncloudservice.com")
 public interface NHNCloudClient {
-	@PutMapping(value = "/image/v2.0/appkeys/{appKey}/images", consumes = "application/octet-stream")
+	@PostMapping(value = "/image/v2.0/appkeys/{appKey}/images", consumes = "application/octet-stream")
 	ResponseEntity<String> uploadImage(
 		@PathVariable("appKey") String appKey,
 		@RequestParam("path") String path,

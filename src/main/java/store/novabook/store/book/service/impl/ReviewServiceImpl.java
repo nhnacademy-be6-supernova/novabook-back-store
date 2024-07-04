@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,10 @@ import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.exception.FailedCreateBookException;
 import store.novabook.store.common.image.NHNCloudClient;
+import store.novabook.store.common.image.NHNCloudMutilpartClient;
+import store.novabook.store.common.response.ImageUploadResponse;
 import store.novabook.store.common.util.FileConverter;
+import store.novabook.store.common.util.ParamsDTO;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.entity.ReviewImage;
 import store.novabook.store.image.repository.ImageRepository;
@@ -61,9 +65,9 @@ import store.novabook.store.point.repository.PointPolicyRepository;
 public class ReviewServiceImpl implements ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final OrdersBookRepository ordersBookRepository;
-	private final NHNCloudClient nhnCloudClient;
+	private final NHNCloudMutilpartClient nhnCloudClient;
 	private final ImageRepository imageRepository;
-	private final ReviewImageRepository imageReviewRepository;
+	private final ReviewImageRepository reviewImageRepository;
 	private final PointHistoryRepository pointHistoryRepository;
 	private final PointPolicyRepository pointPolicyRepository;
 	private final MemberRepository memberRepository;
@@ -165,14 +169,16 @@ public class ReviewServiceImpl implements ReviewService {
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class));
 		//리뷰 이미지를 저장
+		String basepath = bucketName + "review";
+		//NHN클라우드 설정
+		String paramsJson = "{\"basepath\": \"" + basepath + "\", \"overwrite\": true, \"autorename\": \"true\"}";
 
-		request.reviewImageDTOs().forEach(reviewImageDTO -> {
-			String nhnUrl = uploadImage(accessKey, secretKey, bucketName + reviewImageDTO.fileName(), false,
-				reviewImageDTO);
-			Image image = imageRepository.save(new Image(nhnUrl));
-			imageReviewRepository.save(ReviewImage.of(review, image));
+		List<String> imageList = uploadImage(accessKey, paramsJson, secretKey, request.reviewImageDTOs());
+
+		imageList.forEach(imageUrl -> {
+			Image image1 = imageRepository.save(new Image(imageUrl));
+			reviewImageRepository.save(new ReviewImage(review, image1));
 		});
-
 		// 리뷰를 달면 포인트 적립
 		PointHistory pointHistory = PointHistory.of(pointPolicy, null, member, REVIEW_POINT,
 			pointPolicy.getReviewPointRate());
@@ -197,33 +203,46 @@ public class ReviewServiceImpl implements ReviewService {
 		review.update(request);
 	}
 
-	public String uploadImage(String appKey, String secretKey, String path, boolean overwrite,
-		ReviewImageDTO reviewImageDTO) {
-
-		MultipartFile resource = null;
+	public List<String> uploadImage(String appKey, String params, String secretKey,
+		List<ReviewImageDTO> reviewImageDTO) {
 		try {
-			resource = FileConverter.convertToMultipartFile(reviewImageDTO);
+			List<MultipartFile> resource = FileConverter.convertToMultipartFile(reviewImageDTO);
+			String jsonResponse = nhnCloudClient.uploadImagesAndGetRecord(appKey, params,
+				resource, secretKey).getBody();
+
+			// JSON 응답을 파싱하여 URL 필드를 추출
+			List<String> response = extractUrls(jsonResponse);
+
+			return response;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
-		ResponseEntity<String> response = nhnCloudClient.uploadImageMultipartFile(appKey, path, overwrite,
-				secretKey, true, resource);
-			String jsonResponse = response.getBody();
-
-			// JSON 응답을 파싱하여 URL 필드를 추출
-			ObjectMapper objectMapper = new ObjectMapper();
-
-		Map<String, Object> responseMap = null;
-		try {
-			responseMap = objectMapper.readValue(jsonResponse, Map.class);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
-
-		HashMap<String, Object> map = (HashMap<String, Object>)responseMap.get("file");
-			return (String)map.get("url");
-
 	}
 
+	public static List<String> extractUrls(String jsonString) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode rootNode = mapper.readTree(jsonString);
+
+		List<String> urls = new ArrayList<>();
+
+		// 성공 항목(successes)에서 URL 추출
+		JsonNode successes = rootNode.path("successes");
+		if (successes.isArray()) {
+			for (JsonNode item : successes) {
+				if (item.has("url")) {
+					urls.add(item.get("url").asText());
+				}
+
+				if (item.has("queues")) {
+					for (JsonNode queue : item.path("queues")) {
+						if (queue.has("url")) {
+							urls.add(queue.get("url").asText());
+						}
+					}
+				}
+			}
+		}
+
+		return urls;
+	}
 }
