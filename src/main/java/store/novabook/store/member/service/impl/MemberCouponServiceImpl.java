@@ -2,8 +2,7 @@ package store.novabook.store.member.service.impl;
 
 import java.util.List;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +14,13 @@ import store.novabook.store.common.adatper.CouponStatus;
 import store.novabook.store.common.adatper.dto.CreateCouponRequest;
 import store.novabook.store.common.adatper.dto.CreateCouponResponse;
 import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
-import store.novabook.store.common.adatper.dto.GetCouponHistoryAllResponse;
-import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryAllResponse;
+import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
+import store.novabook.store.common.adatper.dto.GetCouponResponse;
+import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.store.common.response.ApiResponse;
+import store.novabook.store.common.response.PageResponse;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.dto.response.GetCouponIdsResponse;
@@ -76,34 +77,34 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	}
 
 	@Override
-	public GetCouponHistoryAllResponse getMemberCouponHistory(Long memberId, Pageable pageable) {
+	public Page<GetCouponHistoryResponse> getMemberCouponHistory(Long memberId, Pageable pageable) {
 		List<Long> couponList = memberCouponRepository.findByMemberId(memberId)
 			.stream()
 			.map(MemberCoupon::getCouponId)
 			.toList();
 
 		if (couponList.isEmpty()) {
-			return GetCouponHistoryAllResponse.builder().build();
+			return null;
 		}
 
-		ApiResponse<GetCouponAllResponse> response = couponAdapter.getCouponAll(couponList, pageable);
-		return GetCouponHistoryAllResponse.fromEntity(response.getBody());
+		PageResponse<GetCouponResponse> couponResponse = couponAdapter.getCouponAll(couponList, pageable);
+		return couponResponse.toPage().map(GetCouponHistoryResponse::fromEntity);
 	}
 
 	@Override
-	public GetUsedCouponHistoryAllResponse getMemberUsedCouponHistory(Long memberId, Pageable pageable) {
+	public Page<GetUsedCouponHistoryResponse> getMemberUsedCouponHistory(Long memberId, Pageable pageable) {
 		List<Long> couponList = memberCouponRepository.findByMemberId(memberId)
 			.stream()
 			.map(MemberCoupon::getCouponId)
 			.toList();
 
 		if (couponList.isEmpty()) {
-			return GetUsedCouponHistoryAllResponse.builder().build();
+			return null;
 		}
-		ApiResponse<GetCouponAllResponse> response = couponAdapter.getCouponByStatus(couponList, CouponStatus.USED,
+		PageResponse<GetCouponResponse> response = couponAdapter.getCouponByStatus(couponList, CouponStatus.USED,
 			pageable);
 
-		return GetUsedCouponHistoryAllResponse.fromEntity(response.getBody());
+		return response.toPage().map(GetUsedCouponHistoryResponse::fromEntity);
 	}
 
 	@Override

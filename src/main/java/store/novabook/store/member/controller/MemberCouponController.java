@@ -1,5 +1,6 @@
 package store.novabook.store.member.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -13,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
-import store.novabook.store.common.adatper.dto.GetCouponHistoryAllResponse;
-import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryAllResponse;
+import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
+import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
 import store.novabook.store.common.security.aop.CurrentUser;
 import store.novabook.store.member.controller.docs.MemberCouponControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
@@ -37,17 +38,18 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	}
 
 	@GetMapping("/history")
-	public ResponseEntity<GetCouponHistoryAllResponse> getMemberCouponHistoryByMemberId(@CurrentUser Long memberId,
+	public ResponseEntity<Page<GetCouponHistoryResponse>> getMemberCouponHistoryByMemberId(@CurrentUser Long memberId,
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-		GetCouponHistoryAllResponse response = memberCouponService.getMemberCouponHistory(memberId, pageable);
+		Page<GetCouponHistoryResponse> response = memberCouponService.getMemberCouponHistory(memberId, pageable);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/history/used")
-	public ResponseEntity<GetUsedCouponHistoryAllResponse> getMemberUsedCouponHistoryByMemberId(
+	public ResponseEntity<Page<GetUsedCouponHistoryResponse>> getMemberUsedCouponHistoryByMemberId(
 		@CurrentUser Long memberId,
 		@PageableDefault(sort = "usedAt", direction = Sort.Direction.DESC) Pageable pageable) {
-		GetUsedCouponHistoryAllResponse response = memberCouponService.getMemberUsedCouponHistory(memberId, pageable);
+		Page<GetUsedCouponHistoryResponse> response = memberCouponService.getMemberUsedCouponHistory(memberId,
+			pageable);
 		return ResponseEntity.ok(response);
 	}
 
