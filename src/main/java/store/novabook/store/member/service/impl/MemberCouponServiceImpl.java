@@ -1,8 +1,10 @@
 package store.novabook.store.member.service.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +86,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			.toList();
 
 		if (couponList.isEmpty()) {
-			return null;
+			return new PageImpl<>(new LinkedList<>());
 		}
 
 		PageResponse<GetCouponResponse> couponResponse = couponAdapter.getCouponAll(couponList, pageable);
@@ -99,8 +101,9 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			.toList();
 
 		if (couponList.isEmpty()) {
-			return null;
+			return new PageImpl<>(new LinkedList<>());
 		}
+
 		PageResponse<GetCouponResponse> response = couponAdapter.getCouponByStatus(couponList, CouponStatus.USED,
 			pageable);
 
