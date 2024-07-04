@@ -175,7 +175,7 @@ public class MemberServiceImpl implements MemberService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
 
-		if (!member.getLoginPassword().equals(deleteMemberRequest.loginPassword())) {
+		if (!bCryptPasswordEncoder.matches(deleteMemberRequest.loginPassword(), member.getLoginPassword())) {
 			throw new BadCredentialsException(LOGIN_FAIL_MESSAGE);
 		}
 
