@@ -63,6 +63,6 @@ public class DeliveryFeeServiceImpl implements DeliveryFeeService {
 	@Transactional(readOnly = true)
 	public GetDeliveryFeeResponse getDeliveryFee(Long id) {
 		return GetDeliveryFeeResponse.from(
-			deliveryFeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, id)));
+			deliveryFeeRepository.findByIdOrderByCreatedAtDesc(id).orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, id)));
 	}
 }
