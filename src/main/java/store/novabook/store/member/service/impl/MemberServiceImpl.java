@@ -35,7 +35,7 @@ import store.novabook.store.member.repository.MemberGradeHistoryRepository;
 import store.novabook.store.member.repository.MemberGradePolicyRepository;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.member.repository.MemberStatusRepository;
-import store.novabook.store.member.service.MemberClient;
+import store.novabook.store.member.service.AuthMembersClient;
 import store.novabook.store.member.service.MemberService;
 import store.novabook.store.message.MemberRegistrationMessage;
 import store.novabook.store.point.entity.PointHistory;
@@ -64,7 +64,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberStatusRepository memberStatusRepository;
 	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
 
-	private final MemberClient memberClient;
+	private final AuthMembersClient authMembersClient;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final RabbitTemplate rabbitTemplate;
@@ -212,7 +212,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest) {
 
-		return memberClient.getMembersId(getMembersUUIDRequest);
+		return authMembersClient.getMembersId(getMembersUUIDRequest);
 	}
 
 	@Override
