@@ -1,12 +1,10 @@
 package store.novabook.store.cart.service;
 
-import org.springframework.transaction.annotation.Transactional;
-
-import store.novabook.store.cart.dto.request.CreateCartRequest;
-import store.novabook.store.cart.dto.response.GetCartResponse;
+import store.novabook.store.cart.dto.response.CartIdResponse;
 
 public interface CartService {
-	void createCart(CreateCartRequest createCartRequest);
 
-	GetCartResponse getCartByMemberId(Long memberId);
+	CartIdResponse getCartIdByMemberId(Long memberId);
+
+	CartIdResponse createCartId(Long memberId);
 }

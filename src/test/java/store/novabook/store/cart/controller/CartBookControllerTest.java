@@ -26,8 +26,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import store.novabook.store.cart.dto.request.CreateCartBookRequest;
-import store.novabook.store.cart.dto.request.DeleteCartBookRequest;
 import store.novabook.store.cart.dto.response.GetCartBookResponse;
 import store.novabook.store.cart.service.impl.CartBookServiceImpl;
 

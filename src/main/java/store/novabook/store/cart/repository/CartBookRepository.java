@@ -13,8 +13,4 @@ public interface CartBookRepository extends JpaRepository<CartBook, Long> {
 	Optional<Page<CartBook>> findAllByCartId(Long cartId, Pageable pageable);
 
 	Optional<CartBook> findByCartIdAndBookId(Long cartId, Long bookId);
-
-	boolean existsByCartIdAndBookId(Long cartId, Long bookId);
-
-	void deleteByCartIdAndBookId(Long cartId, Long bookId);
 }
