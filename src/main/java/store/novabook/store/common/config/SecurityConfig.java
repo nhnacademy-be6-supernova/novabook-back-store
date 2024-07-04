@@ -10,20 +10,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import store.novabook.store.member.service.MemberClient;
+import lombok.RequiredArgsConstructor;
+import store.novabook.store.member.service.AuthMembersClient;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final JWTUtil jwtUtil;
-	private final MemberClient memberClient;
-
-	public SecurityConfig(JWTUtil jwtUtil, MemberClient memberClient) {
-
-		this.jwtUtil = jwtUtil;
-		this.memberClient = memberClient;
-	}
+	private final AuthMembersClient authMembersClient;
 
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -39,7 +34,7 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/**").permitAll())
-			.addFilterAt(new JWTFilter(memberClient)
+			.addFilterAt(new JWTFilter(authMembersClient)
 				,
 				UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement(session -> session
