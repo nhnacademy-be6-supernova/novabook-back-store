@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class StoreApplication {
 
 	public static void main(String[] args) {
-		System.out.println("젠킨스 강하경 ");
+		System.out.println("젠킨스 강하경 7월 4일 11:28");
 		SpringApplication.run(StoreApplication.class, args);
 	}
 
