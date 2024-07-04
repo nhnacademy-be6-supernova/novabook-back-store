@@ -51,7 +51,7 @@ public class DeliveryFeeController implements DeliveryFeeControllerDocs {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<GetDeliveryFeeResponse> getDeliveryFee(@PathVariable Long id) {
-		GetDeliveryFeeResponse response = deliveryFeeService.getDeliveryFee(id);
+		GetDeliveryFeeResponse response = deliveryFeeService.getRecentDeliveryFee(id);
 		return ResponseEntity.ok().body(response);
 	}
 }

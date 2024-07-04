@@ -22,5 +22,5 @@ public interface DeliveryFeeService {
 	List<GetDeliveryFeeResponse> findAllDeliveryFeeList();
 
 	@Transactional(readOnly = true)
-	GetDeliveryFeeResponse getDeliveryFee(Long id);
+	GetDeliveryFeeResponse getRecentDeliveryFee(Long id);
 }
