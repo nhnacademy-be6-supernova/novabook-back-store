@@ -61,8 +61,16 @@ public class DeliveryFeeServiceImpl implements DeliveryFeeService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public GetDeliveryFeeResponse getRecentDeliveryFee(Long id) {
+	public GetDeliveryFeeResponse getDeliveryFee(Long id) {
 		return GetDeliveryFeeResponse.from(
-			deliveryFeeRepository.findByIdOrderByCreatedAtDesc(id).orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, id)));
+			deliveryFeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, id)));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetDeliveryFeeResponse getRecentDeliveryFee() {
+		return GetDeliveryFeeResponse.from(
+		deliveryFeeRepository.findByIdOrderByCreatedAtDesc()
+			.orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class)));
 	}
 }

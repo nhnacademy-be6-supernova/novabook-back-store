@@ -8,5 +8,5 @@ import store.novabook.store.orders.entity.DeliveryFee;
 
 public interface DeliveryFeeRepository extends JpaRepository<DeliveryFee, Long> {
 	long findTopFeeByOrderByIdDesc();
-	Optional<DeliveryFee> findByIdOrderByCreatedAtDesc(Long id);
+	Optional<DeliveryFee> findByIdOrderByCreatedAtDesc();
 }

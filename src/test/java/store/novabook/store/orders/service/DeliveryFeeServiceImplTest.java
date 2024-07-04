@@ -93,7 +93,7 @@ class DeliveryFeeServiceImplTest {
 		DeliveryFee deliveryFee = new DeliveryFee(CreateDeliveryFeeRequest.builder().fee(1000L).build());
 		when(deliveryFeeRepository.findById(id)).thenReturn(Optional.of(deliveryFee));
 
-		GetDeliveryFeeResponse response = deliveryFeeService.getRecentDeliveryFee(id);
+		GetDeliveryFeeResponse response = deliveryFeeService.getDeliveryFee(id);
 
 		assertNotNull(response);
 		assertEquals(deliveryFee.getFee(), response.fee());
@@ -107,7 +107,7 @@ class DeliveryFeeServiceImplTest {
 		Long id = 1L;
 		when(deliveryFeeRepository.findById(id)).thenReturn(Optional.empty());
 
-		assertThrows(EntityNotFoundException.class, () -> deliveryFeeService.getRecentDeliveryFee(id));
+		assertThrows(EntityNotFoundException.class, () -> deliveryFeeService.getDeliveryFee(id));
 		verify(deliveryFeeRepository, times(1)).findById(id);
 	}
 }
