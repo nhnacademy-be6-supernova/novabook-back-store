@@ -11,24 +11,20 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.NonNull;
 import store.novabook.store.common.security.dto.CustomUserDetails;
 import store.novabook.store.common.security.entity.Users;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
-import store.novabook.store.member.service.MemberClient;
+import store.novabook.store.member.service.AuthMembersClient;
 
 @Slf4j
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
-
-	private final MemberClient memberClient;
-
-	public JWTFilter(MemberClient memberClient) {
-
-		this.memberClient = memberClient;
-	}
+	private final AuthMembersClient authMembersClient;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -45,12 +41,12 @@ public class JWTFilter extends OncePerRequestFilter {
 
 		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(username);
 
-		GetMembersUUIDResponse membersId = memberClient.getMembersId(getMembersUUIDRequest);
+		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getMembersId(getMembersUUIDRequest);
 
 		//userEntity를 생성하여 값 set
 		Users userEntity = new Users();
-		userEntity.setId(Long.parseLong(membersId.usersId()));
-		userEntity.setUsername(membersId.usersId());
+		userEntity.setId(Long.parseLong(getMembersUUIDResponse.membersId()));
+		userEntity.setUsername(getMembersUUIDResponse.membersId());
 		userEntity.setPassword("temppassword");
 		userEntity.setRole(role);
 

@@ -32,7 +32,7 @@ import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
-import store.novabook.store.member.service.MemberClient;
+import store.novabook.store.member.service.AuthMembersClient;
 import store.novabook.store.member.service.MemberService;
 
 @RestController
@@ -41,7 +41,7 @@ import store.novabook.store.member.service.MemberService;
 public class MemberController implements MemberControllerDocs {
 
 	private final MemberService memberService;
-	private final MemberClient memberClient;
+	private final AuthMembersClient authMembersClient;
 
 	@PostMapping
 	public ResponseEntity<CreateMemberResponse> createMember(
@@ -121,7 +121,7 @@ public class MemberController implements MemberControllerDocs {
 	@PostMapping("/uuid")
 	public ResponseEntity<GetMembersUUIDResponse> findUUID(@RequestHeader("Authorization") String authorization,
 		@RequestBody GetMembersUUIDRequest getMembersUUIDRequest) {
-		GetMembersUUIDResponse membersId = memberClient.getMembersId(getMembersUUIDRequest);
+		GetMembersUUIDResponse membersId = authMembersClient.getMembersId(getMembersUUIDRequest);
 
 		return ResponseEntity.ok(membersId);
 	}
