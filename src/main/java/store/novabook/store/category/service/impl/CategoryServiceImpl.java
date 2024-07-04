@@ -84,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public DeleteResponse delete(Long id) {
-		if (bookCategoryRepository.existsById(id)) {
+		if (bookCategoryRepository.existsByCategoryId(id)) {
 			return new DeleteResponse(false);
 		} else {
 			categoryRepository.deleteById(id);
