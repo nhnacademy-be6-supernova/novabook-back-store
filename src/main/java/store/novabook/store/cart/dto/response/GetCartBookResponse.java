@@ -6,7 +6,7 @@ import store.novabook.store.image.entity.Image;
 
 @Builder
 public record GetCartBookResponse(
-	Long bookId,
+	Long cartBookId,
 	String image,
 	String title,
 	Long price,
@@ -15,7 +15,7 @@ public record GetCartBookResponse(
 ) {
 	public static GetCartBookResponse fromEntity(CartBook cartBook, Image image) {
 		return GetCartBookResponse.builder()
-			.bookId(cartBook.getBook().getId())
+			.cartBookId(cartBook.getId())
 			.image(image.getSource())
 			.title(cartBook.getBook().getTitle())
 			.price(cartBook.getBook().getPrice())

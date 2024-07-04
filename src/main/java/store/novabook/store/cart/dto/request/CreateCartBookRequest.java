@@ -2,9 +2,7 @@ package store.novabook.store.cart.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Builder;
 
-@Builder
 public record CreateCartBookRequest(
 	@NotNull
 	Long cartId,
@@ -12,5 +10,6 @@ public record CreateCartBookRequest(
 	Long bookId,
 	@NotNull
 	@Positive
-	Integer quantity) {
+	Integer quantity
+) {
 }
