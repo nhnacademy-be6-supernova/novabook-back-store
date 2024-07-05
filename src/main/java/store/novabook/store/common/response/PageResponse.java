@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,10 +26,8 @@ public class PageResponse<T> {
 	private List<T> data;
 
 	@JsonCreator
-	public PageResponse(@JsonProperty("pageNum") int pageNum,
-		@JsonProperty("pageSize") int pageSize,
-		@JsonProperty("totalCount") long totalCount,
-		@JsonProperty("data") List<T> data) {
+	public PageResponse(@JsonProperty("pageNum") int pageNum, @JsonProperty("pageSize") int pageSize,
+		@JsonProperty("totalCount") long totalCount, @JsonProperty("data") List<T> data) {
 		this.pageNum = pageNum;
 		this.pageSize = pageSize;
 		this.totalCount = totalCount;
@@ -42,14 +45,18 @@ public class PageResponse<T> {
 		this.header.put(key, value);
 	}
 
-
 	public int getTotalPageCount() {
 		long result = this.totalCount / this.pageSize;
 
-		if(this.totalCount % this.pageSize!= 0) {
-			result+=1L;
+		if (this.totalCount % this.pageSize != 0) {
+			result += 1L;
 		}
 
-		return (int) result;
+		return (int)result;
+	}
+
+	public Page<T> toPage() {
+		Pageable pageable = PageRequest.of(this.pageNum, this.pageSize);
+		return new PageImpl<>(this.data, pageable, this.totalCount);
 	}
 }
