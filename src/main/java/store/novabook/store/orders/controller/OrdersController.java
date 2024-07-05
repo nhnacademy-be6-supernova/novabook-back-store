@@ -1,5 +1,6 @@
 package store.novabook.store.orders.controller;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.orders.controller.docs.OrdersControllerDocs;
-import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.TossPaymentRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
-import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersResponse;
 import store.novabook.store.orders.service.OrdersService;
 
@@ -28,9 +28,8 @@ public class OrdersController implements OrdersControllerDocs {
 	private final OrdersService ordersService;
 
 	@PostMapping
-	public ResponseEntity<CreateResponse> createOrders(@Valid @RequestBody CreateOrdersRequest request) {
-		CreateResponse response = ordersService.create(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	public ResponseEntity<JSONObject> createOrders(@RequestBody TossPaymentRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(ordersService.create(request));
 	}
 
 	@GetMapping

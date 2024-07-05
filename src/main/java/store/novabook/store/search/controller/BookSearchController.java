@@ -14,7 +14,7 @@ import store.novabook.store.search.document.BookDocument;
 
 @RestController
 @RequestMapping("/api/v1/store/search")
-@Document(indexName = "books")
+// @Document(indexName = "books")
 @RequiredArgsConstructor
 public class BookSearchController {
 
