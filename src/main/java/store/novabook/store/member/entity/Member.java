@@ -61,6 +61,8 @@ public class Member {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
+	private String paycoId;
+
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "member_status_id")
