@@ -53,11 +53,11 @@
 // 		when(usersRepository.findById(usersMock.getId())).thenReturn(java.util.Optional.of(usersMock));
 //
 // 		CreateCartRequest createCartRequest = CreateCartRequest.builder()
-// 			.memberId(usersMock.getId())
+// 			.ordersBookId(usersMock.getId())
 // 			.isExposed(false)
 // 			.build();
 //
-// 		when(cartRepository.findById(createCartRequest.memberId())).thenReturn(java.util.Optional.of(cartMock));
+// 		when(cartRepository.findById(createCartRequest.ordersBookId())).thenReturn(java.util.Optional.of(cartMock));
 //
 // 		cartService.createCart(createCartRequest);
 //

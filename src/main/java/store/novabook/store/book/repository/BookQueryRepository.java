@@ -12,7 +12,6 @@ import store.novabook.store.book.entity.QBook;
 import store.novabook.store.book.entity.QBookStatus;
 import store.novabook.store.book.entity.QLikes;
 import store.novabook.store.book.entity.QReview;
-import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.entity.QBookCategory;
 import store.novabook.store.category.entity.QCategory;
 import store.novabook.store.common.exception.EntityNotFoundException;

@@ -80,7 +80,7 @@
 // 	@Test
 // 	@DisplayName("회원 주소 생성 - 성공")
 // 	void createMemberAddress() {
-// 		when(memberRepository.findById(createMemberAddressRequest.memberId())).thenReturn(Optional.of(member));
+// 		when(memberRepository.findById(createMemberAddressRequest.ordersBookId())).thenReturn(Optional.of(member));
 // 		when(streetAddressRepository.findByZipcodeAndStreetAddress(createMemberAddressRequest.zipcode(),
 // 			createMemberAddressRequest.streetAddress())).thenReturn(streetAddress);
 // 		when(memberAddressRepository.save(any(MemberAddress.class))).thenReturn(memberAddress);
@@ -90,7 +90,7 @@
 // 		assertNotNull(response);
 // 		assertEquals(memberAddress.getId(), response.id());
 //
-// 		verify(memberRepository, times(1)).findById(createMemberAddressRequest.memberId());
+// 		verify(memberRepository, times(1)).findById(createMemberAddressRequest.ordersBookId());
 // 		verify(streetAddressRepository, times(1)).findByZipcodeAndStreetAddress(createMemberAddressRequest.zipcode(),
 // 			createMemberAddressRequest.streetAddress());
 // 		verify(memberAddressRepository, times(1)).save(any(MemberAddress.class));
@@ -99,7 +99,7 @@
 // 	/*@Test
 // 	@DisplayName("회원 주소 생성 - 새로운 주소 생성")
 // 	void createMemberAddressNewAddress() {
-// 		when(memberRepository.findById(createMemberAddressRequest.memberId())).thenReturn(Optional.of(member));
+// 		when(memberRepository.findById(createMemberAddressRequest.ordersBookId())).thenReturn(Optional.of(member));
 //
 // 	}*/
 //
