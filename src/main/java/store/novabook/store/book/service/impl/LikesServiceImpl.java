@@ -1,18 +1,15 @@
 package store.novabook.store.book.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.response.CreateLikesResponse;
+import store.novabook.store.book.dto.request.LikeBookRequest;
 import store.novabook.store.book.dto.response.GetLikeBookResponse;
+import store.novabook.store.book.dto.response.LikeBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Likes;
 import store.novabook.store.book.repository.BookRepository;
@@ -35,22 +32,18 @@ public class LikesServiceImpl implements LikesService {
 	@Transactional(readOnly = true)
 	public Page<GetLikeBookResponse> myLikes(Long memberId, Pageable pageable) {
 		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId, pageable);
-		List<GetLikeBookResponse> responses = new ArrayList<>();
-		for (Likes like : likesList) {
-			responses.add(GetLikeBookResponse.from(like));
-		}
-		return new PageImpl<>(responses, pageable, responses.size());
+		return likesList.map(GetLikeBookResponse::from);
 	}
 
 	//생성
 	@Override
-	public CreateLikesResponse createLikes(Long memberId, Long bookId) {
-		Book book = bookRepository.findById(bookId)
-			.orElseThrow(() -> new EntityNotFoundException(Book.class,bookId));
+	public LikeBookResponse createLikes(Long memberId, LikeBookRequest likeBookRequest) {
+		Book book = bookRepository.findById(likeBookRequest.bookId())
+			.orElseThrow(() -> new EntityNotFoundException(Book.class, likeBookRequest.bookId()));
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
 		Likes likes = likesRepository.save(Likes.of(book, member));
-		return CreateLikesResponse.from(likes);
+		return LikeBookResponse.builder().build();
 	}
 
 	// 삭제

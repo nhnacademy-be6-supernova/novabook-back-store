@@ -8,16 +8,17 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.controller.docs.LikesControllerDocs;
-import store.novabook.store.book.dto.response.CreateLikesResponse;
+import store.novabook.store.book.dto.request.LikeBookRequest;
 import store.novabook.store.book.dto.response.GetLikeBookResponse;
+import store.novabook.store.book.dto.response.LikeBookResponse;
 import store.novabook.store.book.service.LikesService;
+import store.novabook.store.common.security.aop.CurrentUser;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,18 +26,24 @@ import store.novabook.store.book.service.LikesService;
 public class LikesController implements LikesControllerDocs {
 	private final LikesService likesService;
 
-	private static final Long MEMBER_ID = 7L;
-
 	@GetMapping("/member")
-	public ResponseEntity<Page<GetLikeBookResponse>> getLikes(Pageable pageable) {
-		Page<GetLikeBookResponse> responses = likesService.myLikes(MEMBER_ID, pageable);
+	public ResponseEntity<Page<GetLikeBookResponse>> getLikes(@CurrentUser Long memberId, Pageable pageable) {
+		Page<GetLikeBookResponse> responses = likesService.myLikes(memberId, pageable);
 		return ResponseEntity.ok().body(responses);
 	}
 
+	// @PostMapping
+	// public ResponseEntity<CreateLikesResponse> createLikes(@CurrentUser Long memberId,
+	// 	@Valid @RequestParam Long bookId) {
+	// 	CreateLikesResponse createLikesResponse = likesService.createLikes(memberId, bookId);
+	// 	return ResponseEntity.status(HttpStatus.CREATED).body(createLikesResponse);
+	// }
+
 	@PostMapping
-	public ResponseEntity<CreateLikesResponse> createLikes(@Valid @RequestParam Long bookId) {
-		CreateLikesResponse createLikesResponse = likesService.createLikes(MEMBER_ID, bookId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(createLikesResponse);
+	public ResponseEntity<LikeBookResponse> createLikeBook(@CurrentUser Long memberId,
+		@RequestBody LikeBookRequest likeBookRequest) {
+		LikeBookResponse response = likesService.createLikes(memberId, likeBookRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@DeleteMapping("/{likesId}")
