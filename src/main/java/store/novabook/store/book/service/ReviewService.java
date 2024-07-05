@@ -15,16 +15,14 @@ import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.dto.response.SearchBookResponse;
 
 public interface ReviewService {
-	@Transactional(readOnly = true)
-	Page<SearchBookResponse> myReviews(Long memberId, Pageable pageable);
 
 	@Transactional(readOnly = true)
 	GetReviewListResponse bookReviews(Long bookId);
 
 	@Transactional(readOnly = true)
-	Page<GetOrdersBookReviewIdResponse> getOrdersBookReviewIds(Long memberId, Pageable pageable);
+	GetReviewResponse getReviewById(Long reviewId);
 
 	CreateReviewResponse createReview(Long orderId, CreateReviewRequest request, Long memberId);
 
-	void updateReview(Long ordersId, UpdateReviewRequest request, Long reviewId);
+	void updateReview(UpdateReviewRequest request, Long reviewId);
 }

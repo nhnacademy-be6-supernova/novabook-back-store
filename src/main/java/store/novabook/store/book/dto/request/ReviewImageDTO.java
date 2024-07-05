@@ -1,7 +1,6 @@
 package store.novabook.store.book.dto.request;
 
 import lombok.Builder;
-import lombok.Getter;
 
 @Builder
 public record ReviewImageDTO(

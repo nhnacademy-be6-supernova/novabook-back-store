@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,60 +87,23 @@ public class ReviewServiceImpl implements ReviewService {
 	private static final String REVIEW_POINT = "리뷰 작성 포인트";
 
 	/**
-	 * 특정 회원이 작성한 모든 리뷰에 대한 책 목록을 페이지네이션으로 반환한다.
-	 * @param memberId 회원 ID
-	 * @param pageable 페이징 정보
-	 * @return 리뷰된 책 목록의 페이지
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Page<SearchBookResponse> myReviews(Long memberId, Pageable pageable) {
-		Page<Review> reviewList = reviewRepository.findByOrdersBookId(memberId, pageable);
-		List<SearchBookResponse> searchBookResponses = new ArrayList<>();
-		//TODO review 수정중
-		for (Review review : reviewList) {
-			// searchBookResponses.add(SearchBookResponse.from(review.getBook()));
-		}
-		return new PageImpl<>(searchBookResponses, pageable, searchBookResponses.size());
-	}
-
-	/**
 	 * 주어진 책 ID와 관련된 모든 리뷰를 읽기 전용으로 조회합니다.
 	 *
 	 * @param bookId 리뷰를 조회할 책의 ID
 	 * @return 해당 책과 관련된 리뷰 목록을 포함하는 {@link GetReviewResponse} 객체 리스트
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public GetReviewListResponse bookReviews(Long bookId) {
 		List<ReviewImageDto> reviewImageDtoList = reviewRepository.findReviewByBookId(bookId);
-
-		Map<Long, GetReviewResponse> reviewMap = new HashMap<>();
-		for (ReviewImageDto dto : reviewImageDtoList) {
-			reviewMap.computeIfAbsent(dto.reviewId(),
-				id -> new GetReviewResponse(maskString(dto.nickName()), dto.reviewId(), dto.orderBookId(), dto.content(),
-					new ArrayList<>(),
-					dto.score(), dto.createdAt())).reviewImages().add(dto.reviewImage());
-		}
-
-		return GetReviewListResponse.builder().getReviewResponses(new ArrayList<>(reviewMap.values())).build();
+		return GetReviewListResponse.builder()
+			.getReviewResponses(new ArrayList<>(GetReviewResponse.of(reviewImageDtoList).values()))
+			.build();
 	}
 
-	/**
-	 * 특정 회원이 구매한 책에 목록을 페이지네이션으로 반환한다.
-	 * @param memberId 회원 아이디
-	 * @param pageable 페이징 정보
-	 * @return 구매한 책 목록 페이지
-	 */
 	@Override
-	@Transactional(readOnly = true)
-	public Page<GetOrdersBookReviewIdResponse> getOrdersBookReviewIds(Long memberId, Pageable pageable) {
-		Page<Review> reviews = reviewRepository.findAllByOrdersBookOrdersMemberId(memberId, pageable);
-		List<GetOrdersBookReviewIdResponse> reviewResponses = new ArrayList<>();
-		for (Review review : reviews) {
-			reviewResponses.add(GetOrdersBookReviewIdResponse.form(review));
-		}
-		return new PageImpl<>(reviewResponses, pageable, reviewResponses.size());
+	public GetReviewResponse getReviewById(Long reviewId) {
+		List<ReviewImageDto> reviewImageDtoList = reviewRepository.findReviewByReviewId(reviewId);
+		return GetReviewResponse.of(reviewImageDtoList).get(reviewId);
 	}
 
 	/**
@@ -150,32 +114,32 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Override
 	public CreateReviewResponse createReview(Long ordersBookId, CreateReviewRequest request, Long memberId) {
+		//2번 리뷰 남기는거 방지
 		if (reviewRepository.existsByOrdersBookId(ordersBookId)) {
 			throw new AlreadyExistException(OrdersBook.class, ordersBookId);
 		}
 
 		OrdersBook ordersbook = ordersBookRepository.findById(ordersBookId)
 			.orElseThrow(() -> new EntityNotFoundException(OrdersBook.class, ordersBookId));
-
 		Review review = reviewRepository.save(Review.of(request, ordersbook));
-
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class));
 
-		//리뷰 이미지를 저장
-		String basepath = bucketName + "review";
-		//NHN클라우드 설정
-		String paramsJson = "{\"basepath\": \"" + basepath + "\", \"overwrite\": true, \"autorename\": \"true\"}";
+		if (!(request.reviewImageDTOs().getFirst().fileName().isEmpty() && request.reviewImageDTOs().size() == 1)) {
+			//리뷰 이미지를 저장
+			String basepath = bucketName + "review";
+			//NHN클라우드 설정
+			String paramsJson = "{\"basepath\": \"" + basepath + "\", \"overwrite\": true, \"autorename\": \"true\"}";
 
-		List<String> imageList = uploadImage(accessKey, paramsJson, secretKey, request.reviewImageDTOs());
+			List<String> imageList = uploadImage(accessKey, paramsJson, secretKey, request.reviewImageDTOs());
 
-		imageList.forEach(imageUrl -> {
-			Image image1 = imageRepository.save(new Image(imageUrl));
-			reviewImageRepository.save(new ReviewImage(review, image1));
-		});
+			imageList.forEach(imageUrl -> {
+				Image image1 = imageRepository.save(new Image(imageUrl));
+				reviewImageRepository.save(new ReviewImage(review, image1));
+			});
+		}
 		// 리뷰를 달면 포인트 적립
 		PointHistory pointHistory = PointHistory.of(pointPolicy, null, member, REVIEW_POINT,
 			pointPolicy.getReviewPointRate());
@@ -185,18 +149,13 @@ public class ReviewServiceImpl implements ReviewService {
 
 	/**
 	 * 기존의 리뷰를 업데이트한다.
-	 * @param ordersId 주문 ID
 	 * @param request 리뷰 업데이트 요청 데이터
 	 * @param reviewId 수정할 리뷰의 ID
 	 */
 	@Override
-	public void updateReview(Long ordersId, UpdateReviewRequest request, Long reviewId) {
+	public void updateReview(UpdateReviewRequest request, Long reviewId) {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new EntityNotFoundException(Review.class, reviewId));
-
-		if (ordersId.equals(review.getOrdersBook().getId())) {
-			throw new AlreadyExistException(Review.class);  // 다른 사람이 수정하지 못하도록 예외 처리
-		}
 		review.update(request);
 	}
 
@@ -206,13 +165,10 @@ public class ReviewServiceImpl implements ReviewService {
 			List<MultipartFile> resource = FileConverter.convertToMultipartFile(reviewImageDTO);
 			String jsonResponse = nhnCloudClient.uploadImagesAndGetRecord(appKey, params, resource, secretKey)
 				.getBody();
-
 			// JSON 응답을 파싱하여 URL 필드를 추출
-			List<String> response = extractUrls(jsonResponse);
-
-			return response;
+			return extractUrls(jsonResponse);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			return Collections.emptyList();
 		}
 	}
 
@@ -235,9 +191,4 @@ public class ReviewServiceImpl implements ReviewService {
 		return urls;
 	}
 
-	public static String maskString(String input) {
-		return input != null && input.length() > 3
-			? input.substring(0, 3) + "*".repeat(input.length() - 3)
-			: input;
-	}
 }

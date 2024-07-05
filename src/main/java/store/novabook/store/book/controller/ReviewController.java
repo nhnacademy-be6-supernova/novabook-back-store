@@ -35,12 +35,11 @@ import store.novabook.store.common.security.aop.CurrentUser;
 public class ReviewController implements ReviewControllerDocs {
 
 	private final ReviewService reviewService;
-	private static final Long MEMBER_ID = 7L;
 
-	@GetMapping("/members/books")
-	public ResponseEntity<Page<SearchBookResponse>> getReviewedBooks(@CurrentUser Long memberId, Pageable pageable) {
-		Page<SearchBookResponse> searchBookResponses = reviewService.myReviews(memberId, pageable);
-		return ResponseEntity.ok(searchBookResponses);
+	@GetMapping("/{reviewId}")
+	public ResponseEntity<GetReviewResponse> getReview(@PathVariable Long reviewId) {
+		GetReviewResponse response = reviewService.getReviewById(reviewId);
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/books/{bookId}")
@@ -52,7 +51,7 @@ public class ReviewController implements ReviewControllerDocs {
 
 	@PostMapping("/{ordersBookId}")
 	public ResponseEntity<CreateReviewResponse> createReviewed(
-		@Valid @PathVariable Long ordersBookId,
+		@PathVariable Long ordersBookId,
 		@Valid @RequestBody CreateReviewRequest request,
 		@CurrentUser Long memberId) {
 		CreateReviewResponse createReviewResponse = reviewService.createReview(ordersBookId, request, memberId);
@@ -61,9 +60,8 @@ public class ReviewController implements ReviewControllerDocs {
 
 	@PutMapping("/reviews/{reviewsId}")
 	public ResponseEntity<Void> updateReviewed(
-		@CurrentUser Long memberId,
 		@Valid @RequestBody UpdateReviewRequest request, @PathVariable Long reviewsId) {
-		reviewService.updateReview(memberId, request, reviewsId);
+		reviewService.updateReview( request, reviewsId);
 		return ResponseEntity.ok().build();
 	}
 }
