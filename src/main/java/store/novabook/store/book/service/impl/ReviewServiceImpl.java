@@ -141,7 +141,7 @@ public class ReviewServiceImpl implements ReviewService {
 		review.update(request);
 	}
 
-	public List<String> uploadImage(String appKey, String params, String secretKey,
+	private List<String> uploadImage(String appKey, String params, String secretKey,
 		List<ReviewImageDTO> reviewImageDTO) {
 		try {
 			List<MultipartFile> resource = FileConverter.convertToMultipartFile(reviewImageDTO);
@@ -154,7 +154,7 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 	}
 
-	public static List<String> extractUrls(String jsonString) throws IOException {
+	private List<String> extractUrls(String jsonString) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode rootNode = mapper.readTree(jsonString);
 

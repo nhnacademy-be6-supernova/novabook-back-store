@@ -30,8 +30,6 @@ import store.novabook.store.orders.service.OrdersBookService;
 @RequiredArgsConstructor
 public class OrdersBookController implements OrdersBookControllerDocs {
 	private final OrdersBookService ordersBookService;
-	private static final Long MEMBER_ID = 7L;
-	private final OrdersBookQueryRepositoryImpl ordersBookQueryRepository;
 
 	@PostMapping
 	public ResponseEntity<CreateResponse> createOrdersBook(@Valid @RequestBody CreateOrdersBookRequest request) {
@@ -49,7 +47,7 @@ public class OrdersBookController implements OrdersBookControllerDocs {
 	@GetMapping("/members")
 	public ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(
 		@CurrentUser Long memberId, Pageable pageable) {
-		Page<GetOrdersBookReviewIdResponse> responses = ordersBookQueryRepository.getOrdersBookReviewIdByMemberId(
+		Page<GetOrdersBookReviewIdResponse> responses = ordersBookService.getOrdersBookReviewByMemberId(
 			memberId,
 			pageable);
 		return ResponseEntity.ok(responses);
