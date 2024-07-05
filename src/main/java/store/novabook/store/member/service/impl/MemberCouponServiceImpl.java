@@ -24,6 +24,7 @@ import store.novabook.store.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.response.PageResponse;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
+import store.novabook.store.member.dto.request.DownloadCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.dto.response.GetCouponIdsResponse;
 import store.novabook.store.member.entity.Member;
@@ -118,6 +119,21 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			.toList();
 
 		return GetCouponIdsResponse.builder().couponIds(couponIds).build();
+	}
+
+	@Override
+	public CreateMemberCouponResponse downloadCoupon(Long memberId, DownloadCouponRequest request) {
+		List<Long> couponList = memberCouponRepository.findByMemberId(memberId)
+			.stream()
+			.map(MemberCoupon::getCouponId)
+			.toList();
+
+		ApiResponse<CreateCouponResponse> response = couponAdapter.createCoupon(CreateCouponRequest.builder()
+			.couponIdList(couponList)
+			.couponTemplateId(request.couponTemplateId())
+			.build());
+
+		return CreateMemberCouponResponse.builder().couponId(response.getBody().id()).build();
 	}
 
 }

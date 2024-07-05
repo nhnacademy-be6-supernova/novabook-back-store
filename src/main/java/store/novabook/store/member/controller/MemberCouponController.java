@@ -19,6 +19,7 @@ import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
 import store.novabook.store.common.security.aop.CurrentUser;
 import store.novabook.store.member.controller.docs.MemberCouponControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
+import store.novabook.store.member.dto.request.DownloadCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.dto.response.GetCouponIdsResponse;
 import store.novabook.store.member.service.MemberCouponService;
@@ -63,4 +64,12 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	public ResponseEntity<GetCouponIdsResponse> getMemberCoupon(@CurrentUser Long memberId) {
 		return ResponseEntity.ok().body(memberCouponService.getMemberCoupon(memberId));
 	}
+
+	@PostMapping("/download")
+	ResponseEntity<CreateMemberCouponResponse> downloadCoupon(@CurrentUser Long memberId,
+		@RequestBody DownloadCouponRequest request) {
+		CreateMemberCouponResponse response = memberCouponService.downloadCoupon(memberId, request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+
 }
