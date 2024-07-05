@@ -35,7 +35,7 @@ public class DeliveryFeeController implements DeliveryFeeControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping(params = {"size", "page", "order"})
+	@GetMapping(params = {"size", "page"})
 	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll(Pageable pageable) {
 		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees(pageable);
 		return ResponseEntity.ok().body(deliveryFeeResponses);

@@ -22,6 +22,7 @@ import store.novabook.store.orders.service.DeliveryFeeService;
 @RequiredArgsConstructor
 @Transactional
 public class DeliveryFeeServiceImpl implements DeliveryFeeService {
+
 	private final DeliveryFeeRepository deliveryFeeRepository;
 
 	@Override
@@ -29,12 +30,6 @@ public class DeliveryFeeServiceImpl implements DeliveryFeeService {
 		DeliveryFee deliveryFee = new DeliveryFee(request);
 		deliveryFeeRepository.save(deliveryFee);
 		return new CreateResponse(deliveryFee.getId());
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public long latestDeliveryFee() {
-		return deliveryFeeRepository.findTopFeeByOrderByIdDesc();
 	}
 
 	@Override
@@ -70,7 +65,7 @@ public class DeliveryFeeServiceImpl implements DeliveryFeeService {
 	@Transactional(readOnly = true)
 	public GetDeliveryFeeResponse getRecentDeliveryFee() {
 		return GetDeliveryFeeResponse.from(
-		deliveryFeeRepository.findByIdOrderByCreatedAtDesc()
-			.orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class)));
+			deliveryFeeRepository.findFirstByOrderByCreatedAtDesc()
+				.orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class)));
 	}
 }

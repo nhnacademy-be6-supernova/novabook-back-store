@@ -35,8 +35,6 @@ class DeliveryFeeServiceImplTest {
 	@InjectMocks
 	private DeliveryFeeServiceImpl deliveryFeeService;
 
-
-
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
@@ -55,17 +53,6 @@ class DeliveryFeeServiceImplTest {
 		assertNotNull(response);
 		assertEquals(deliveryFee.getId(), response.id());
 		verify(deliveryFeeRepository, times(1)).save(any(DeliveryFee.class));
-	}
-
-	@Test
-	void testLatestDeliveryFee() {
-		long expectedFee = 1000L;
-		when(deliveryFeeRepository.findTopFeeByOrderByIdDesc()).thenReturn(expectedFee);
-
-		long actualFee = deliveryFeeService.latestDeliveryFee();
-
-		assertEquals(expectedFee, actualFee);
-		verify(deliveryFeeRepository, times(1)).findTopFeeByOrderByIdDesc();
 	}
 
 	@Test
