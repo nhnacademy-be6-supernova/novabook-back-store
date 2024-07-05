@@ -22,7 +22,7 @@ public interface LikesControllerDocs {
 
 	//좋아요 누르면 하기 ( 프론트에서 좋아요를 눌렀었는지 아닌지 판단
 	@Operation(summary = "좋아요 생성", description = "해당 도서에 좋아요 생성합니다")
-	ResponseEntity<CreateLikesResponse> createLikes(@CurrentUser Long memberId, @Valid @RequestParam Long bookId);
+	ResponseEntity<CreateLikesResponse> createLikes(@CurrentUser Long memberId, @RequestParam Long bookId);
 
 	//좋아요 삭제
 	@Operation(summary = "좋아요 삭제", description = "좋아요를 삭제 합니다.")

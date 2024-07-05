@@ -33,7 +33,7 @@ public class LikesController implements LikesControllerDocs {
 	}
 
 	@PostMapping
-	public ResponseEntity<CreateLikesResponse> createLikes(@CurrentUser Long memberId, @Valid @RequestParam Long bookId) {
+	public ResponseEntity<CreateLikesResponse> createLikes(@CurrentUser Long memberId, @RequestParam Long bookId) {
 		CreateLikesResponse createLikesResponse = likesService.createLikes(memberId, bookId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createLikesResponse);
 	}
