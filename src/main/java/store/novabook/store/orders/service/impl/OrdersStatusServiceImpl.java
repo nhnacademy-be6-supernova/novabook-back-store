@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
@@ -46,14 +47,14 @@ public class OrdersStatusServiceImpl implements OrdersStatusService {
 	@Transactional(readOnly = true)
 	public GetOrdersStatusResponse getOrdersStatus(Long id) {
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(OrdersStatus.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
 		return GetOrdersStatusResponse.form(ordersStatus);
 	}
 
 	@Override
 	public void updateOrdersStatus(Long id, UpdateOrdersStatusRequest request) {
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(OrdersStatus.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
 		ordersStatus.update(request);
 	}
 

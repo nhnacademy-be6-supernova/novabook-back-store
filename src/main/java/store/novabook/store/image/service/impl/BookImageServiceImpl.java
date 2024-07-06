@@ -6,7 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.image.dto.request.CreateBookImageRequest;
 import store.novabook.store.image.entity.BookImage;
 import store.novabook.store.image.entity.Image;
@@ -24,15 +25,13 @@ public class BookImageServiceImpl implements BookImageService {
 	private final BookImageRepository bookImageRepository;
 
 	@Override
-	public CreateResponse createBookImage(CreateBookImageRequest request){
+	public CreateResponse createBookImage(CreateBookImageRequest request) {
 		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(()-> new EntityNotFoundException(Book.class, request.bookId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 		Image image = imageRepository.findById(request.imageId())
-			.orElseThrow(()-> new EntityNotFoundException(Image.class, request.imageId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.IMAGE_NOT_FOUND));
 		BookImage bookImage = new BookImage(book, image);
-
-		 bookImageRepository.save(bookImage);
-
+		bookImageRepository.save(bookImage);
 		return new CreateResponse(bookImage.getId());
 	}
 }

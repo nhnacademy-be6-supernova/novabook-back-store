@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.tag.dto.request.CreateTagRequest;
 import store.novabook.store.tag.dto.request.UpdateTagRequest;
 import store.novabook.store.tag.dto.response.CreateTagResponse;
@@ -44,16 +45,13 @@ public class TagServiceImpl implements TagService {
 		for (Tag tag : tags) {
 			tagAllResponses.add(GetTagResponse.fromEntity(tag));
 		}
-		return GetTagListResponse.builder()
-			.getTagResponseList(tagAllResponses)
-			.build();
+		return GetTagListResponse.builder().getTagResponseList(tagAllResponses).build();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public GetTagResponse getTag(Long id) {
-		Tag tag = tagRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(Tag.class,id));
+		Tag tag = tagRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.TAG_NOT_FOUND));
 		return GetTagResponse.fromEntity(tag);
 	}
 
@@ -64,9 +62,8 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
-	public void updateTag(Long id, UpdateTagRequest updateTagRequest){
-		Tag tag = tagRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(Tag.class,id));
+	public void updateTag(Long id, UpdateTagRequest updateTagRequest) {
+		Tag tag = tagRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.TAG_NOT_FOUND));
 		tag.update(updateTagRequest.name());
 	}
 
