@@ -41,6 +41,7 @@ import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.DeliveryFeeRepository;
 import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
+import store.novabook.store.orders.repository.RedisOrderRepository;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
 import store.novabook.store.orders.service.OrdersService;
 
@@ -55,6 +56,7 @@ public class OrdersServiceImpl implements OrdersService {
 	private final WrappingPaperRepository wrappingPaperRepository;
 	private final OrdersStatusRepository ordersStatusRepository;
 	private final MemberRepository memberRepository;
+	private final RedisOrderRepository redisOrderRepository;
 
 	@Override
 	public JSONObject create(TossPaymentRequest request) {
@@ -126,6 +128,13 @@ public class OrdersServiceImpl implements OrdersService {
 		Orders orders = ordersRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(Orders.class, id));
 		return GetOrdersResponse.form(orders);
+	}
+
+	/**
+	 * 가주문서 검증 비지니스 로직
+	 */
+	public void confirmOrderForm() {
+		// redisOrderRepository.,
 	}
 
 	@Override

@@ -17,18 +17,24 @@ public class OrdersSagaManagerImpl {
 	private final RabbitTemplate rabbitTemplate;
 	private PaymentRequest paymentRequest;
 
-
 	/**
 	 * 주문 로직 (트랜잭션)
+	 * 0. 주문서 검증 (총 결제 금액)
 	 * 1. 재고 감소 시작
 	 * 2. 포인트 감소
 	 * 3. 쿠폰 사용 상태 변경
 	 * 4. 결제 승인
+	 * <비동기 처리>
+	 * 적립포인트 충전
+	 * 장바구니 제거
+	 * 가주문 제거
 	 */
+
 	public void orderInvoke(PaymentRequest paymentRequest) {
 		this.paymentRequest = paymentRequest;
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange" ,  "api1-consumer-routing-key");
+		rabbitTemplate.convertAndSend("nova.orders.saga.exchange" ,  "api-주문서-검증-routing-key");
 	}
+
 
 	@RabbitListener(queues = "api1-producer-queue")
 	public void handleApiResponse(SagaMessage message) {
@@ -66,6 +72,8 @@ public class OrdersSagaManagerImpl {
 				new SagaMessage("Fail", message.getOrderId()));
 		}
 	}
+
+
 
 
 
