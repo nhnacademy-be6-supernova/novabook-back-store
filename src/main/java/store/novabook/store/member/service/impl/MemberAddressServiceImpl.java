@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.AddressLimitExceededException;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.BadRequestException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
 import store.novabook.store.member.dto.response.CreateMemberAddressResponse;
@@ -35,7 +36,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 	public CreateMemberAddressResponse createMemberAddress(CreateMemberAddressRequest createMemberAddressRequest,
 		Long memberId) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 		validateMemberAddress(member);
 
@@ -60,14 +61,10 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 	public List<GetMemberAddressResponse> getMemberAddressAll(Long memberId) {
 		List<MemberAddress> memberAddressList = memberAddressRepository.findAllByMemberId(memberId);
 		return memberAddressList.stream()
-			.map(memberAddress -> new GetMemberAddressResponse(
-				memberAddress.getId(),
-				memberAddress.getStreetAddress().getId(),
-				memberAddress.getMember().getId(),
-				memberAddress.getStreetAddress().getZipcode(),
-				memberAddress.getNickname(),
-				memberAddress.getStreetAddress().getStreetAddress(),
-				memberAddress.getMemberAddressDetail()))
+			.map(memberAddress -> new GetMemberAddressResponse(memberAddress.getId(),
+				memberAddress.getStreetAddress().getId(), memberAddress.getMember().getId(),
+				memberAddress.getStreetAddress().getZipcode(), memberAddress.getNickname(),
+				memberAddress.getStreetAddress().getStreetAddress(), memberAddress.getMemberAddressDetail()))
 			.toList();
 	}
 
@@ -75,27 +72,20 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 	@Transactional(readOnly = true)
 	public GetMemberAddressResponse getMemberAddress(Long id) {
 		MemberAddress memberAddress = memberAddressRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(MemberAddress.class, id));
-		return new GetMemberAddressResponse(
-			memberAddress.getId(),
-			memberAddress.getStreetAddress().getId(),
-			memberAddress.getMember().getId(),
-			memberAddress.getStreetAddress().getZipcode(),
-			memberAddress.getNickname(),
-			memberAddress.getStreetAddress().getStreetAddress(),
-			memberAddress.getMemberAddressDetail()
-		);
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_ADDRESS_NOT_FOUND));
+		return new GetMemberAddressResponse(memberAddress.getId(), memberAddress.getStreetAddress().getId(),
+			memberAddress.getMember().getId(), memberAddress.getStreetAddress().getZipcode(),
+			memberAddress.getNickname(), memberAddress.getStreetAddress().getStreetAddress(),
+			memberAddress.getMemberAddressDetail());
 	}
 
 	@Override
 	public void updateMemberAddress(Long id, UpdateMemberAddressRequest updateMemberAddressRequest) {
 		MemberAddress memberAddress = memberAddressRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(MemberAddress.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_ADDRESS_NOT_FOUND));
 
 		StreetAddress streetAddress = streetAddressRepository.findByZipcodeAndStreetAddress(
-			updateMemberAddressRequest.zipcode(),
-			updateMemberAddressRequest.streetAddress()
-		);
+			updateMemberAddressRequest.zipcode(), updateMemberAddressRequest.streetAddress());
 
 		if (streetAddress == null) {
 			streetAddress = StreetAddress.builder()
@@ -105,9 +95,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 			streetAddressRepository.save(streetAddress);
 		}
 
-		memberAddress.update(
-			streetAddress,
-			updateMemberAddressRequest.nickname(),
+		memberAddress.update(streetAddress, updateMemberAddressRequest.nickname(),
 			updateMemberAddressRequest.memberAddressDetail()
 
 		);
@@ -117,7 +105,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 	@Override
 	public void deleteMemberAddress(Long id) {
 		MemberAddress memberAddress = memberAddressRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(MemberAddress.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_ADDRESS_NOT_FOUND));
 		memberAddressRepository.delete(memberAddress);
 	}
 
@@ -125,7 +113,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 	public void validateMemberAddress(Member member) {
 		int currentMemberAddressCount = memberAddressRepository.countByMember(member);
 		if (currentMemberAddressCount >= 10) {
-			throw new AddressLimitExceededException(member.getId());
+			throw new BadRequestException(ErrorCode.LIMITED_ADDRESS_OVER);
 		}
 	}
 

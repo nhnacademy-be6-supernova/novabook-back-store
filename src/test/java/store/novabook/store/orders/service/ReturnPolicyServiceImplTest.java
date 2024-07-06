@@ -14,8 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 
-import store.novabook.store.common.exception.EntityNotFoundException;
-
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateReturnPolicyRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetReturnPolicyResponse;
@@ -23,7 +22,7 @@ import store.novabook.store.orders.entity.ReturnPolicy;
 import store.novabook.store.orders.repository.ReturnPolicyRepository;
 import store.novabook.store.orders.service.impl.ReturnPolicyServiceImpl;
 
-public class ReturnPolicyServiceImplTest {
+class ReturnPolicyServiceImplTest {
 	@Mock
 	private ReturnPolicyRepository returnPolicyRepository;
 
@@ -34,6 +33,7 @@ public class ReturnPolicyServiceImplTest {
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
 	}
+
 	@Test
 	void testSave() {
 		CreateReturnPolicyRequest request = CreateReturnPolicyRequest.builder()
@@ -79,7 +79,8 @@ public class ReturnPolicyServiceImplTest {
 	@Test
 	void testGetReturnPolicyById() {
 		Long id = 1L;
-		ReturnPolicy returnPolicy = new ReturnPolicy(CreateReturnPolicyRequest.builder().content("Policy Content").build());
+		ReturnPolicy returnPolicy = new ReturnPolicy(
+			CreateReturnPolicyRequest.builder().content("Policy Content").build());
 		when(returnPolicyRepository.findById(id)).thenReturn(Optional.of(returnPolicy));
 
 		GetReturnPolicyResponse response = returnPolicyServiceImpl.getReturnPolicyById(id);
@@ -94,7 +95,7 @@ public class ReturnPolicyServiceImplTest {
 		Long id = 1L;
 		when(returnPolicyRepository.findById(id)).thenReturn(Optional.empty());
 
-		assertThrows(EntityNotFoundException.class, () -> {
+		assertThrows(NotFoundException.class, () -> {
 			returnPolicyServiceImpl.getReturnPolicyById(id);
 		});
 
