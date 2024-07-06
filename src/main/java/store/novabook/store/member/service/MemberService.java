@@ -35,6 +35,8 @@ public interface MemberService {
 
 	void updateMemberStatusToWithdraw(Long memberId, DeleteMemberRequest deleteMemberRequest);
 
+	void updateMemberStatusToActive(Long memberId, String authCode);
+
 	LoginMemberResponse matches(LoginMemberRequest loginMemberRequest);
 
 	FindMemberLoginResponse findMemberLogin(String loginId);

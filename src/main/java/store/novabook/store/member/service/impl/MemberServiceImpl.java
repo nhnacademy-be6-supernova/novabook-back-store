@@ -1,10 +1,13 @@
 package store.novabook.store.member.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,6 +57,7 @@ public class MemberServiceImpl implements MemberService {
 	public static final String STATUS_WITHDRAW = "탈퇴";
 	public static final String REGISTER_POINT = "회원가입 적립금";
 	public static final String LOGIN_FAIL_MESSAGE = "비밀번호가 일치하지 않습니다.";
+	public static final long AUTH_CODE_EXPIRATION = 10;
 
 	private final MemberRepository memberRepository;
 	private final PointHistoryRepository pointHistoryRepository;
@@ -66,6 +70,7 @@ public class MemberServiceImpl implements MemberService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final CouponSender couponSender;
+	private final RedisTemplate redisTemplate;
 
 	@Override
 	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
@@ -182,6 +187,25 @@ public class MemberServiceImpl implements MemberService {
 		memberRepository.save(member);
 	}
 
+	// 휴면 회원 해지 인증
+	@Override
+	public void updateMemberStatusToActive(Long memberId, String authCode) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+
+		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
+			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class, memberId));
+
+		if (!validateAuthCode(memberId, authCode)) {
+			throw new BadCredentialsException("인증코드가 유효하지 않습니다.");
+		}
+
+		member.updateMemberStatus(newMemberStatus);
+		memberRepository.save(member);
+
+		removeAuthCodeFromRedis(memberId);
+	}
+
 	@Override
 	public LoginMemberResponse matches(LoginMemberRequest loginMemberRequest) {
 		Member member = memberRepository.findByLoginIdAndLoginPassword(loginMemberRequest.loginId(),
@@ -217,5 +241,29 @@ public class MemberServiceImpl implements MemberService {
 	public DuplicateResponse isDuplicateEmail(String email) {
 		return new DuplicateResponse(memberRepository.existsByEmail(email));
 	}
+
+	// 인증 코드 생성하고 저장하기
+	private String createAndStoreAuthCode(Long memberId) {
+		String authCode = UUID.randomUUID().toString().substring(0, 6);
+		redisTemplate.opsForValue().set("authCode: " + memberId, authCode, AUTH_CODE_EXPIRATION, TimeUnit.MINUTES);
+		return authCode;
+	}
+
+	// 유효한 인증코드인지 검사
+	private boolean validateAuthCode(Long memberId, String authCode) {
+		String saveCode = (String)redisTemplate.opsForValue().get("authCode: " + memberId);
+		return saveCode != null && authCode.equals(authCode);
+	}
+
+	// 레디스에서 인증코드 지우기
+	private void removeAuthCodeFromRedis(Long memberId) {
+		redisTemplate.delete("authCode: " + memberId);
+	}
+
+	private boolean isUserDormant(Long memberId) {
+		// 실제 휴면 상태 체크 로직 추가
+		return true; // 임시로 항상 true 반환
+	}
+
 }
 
