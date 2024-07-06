@@ -16,6 +16,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.persistence.PersistenceException;
+import store.novabook.store.common.response.CouponErrorBody;
+import store.novabook.store.common.response.ErrorResponse;
+import store.novabook.store.common.response.ValidErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -29,8 +32,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
 		String errorMessage = "중복된 값 입니다.";
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorStatus.from(errorMessage, 404,
-			LocalDateTime.now()));
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+			.body(ErrorStatus.from(errorMessage, 404, LocalDateTime.now()));
 	}
 
 	@ExceptionHandler(PersistenceException.class)
@@ -65,15 +68,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorStatus> handleException(Exception e) {
-		ErrorStatus errorStatus = new ErrorStatus(e.getMessage(), 500, LocalDateTime.now());
-		return new ResponseEntity<>(errorStatus, HttpStatus.INTERNAL_SERVER_ERROR);
+	@ExceptionHandler(FeignClientException.class)
+	public ResponseEntity<CouponErrorBody> handleFeignClientException(FeignClientException e) {
+		ErrorResponse<CouponErrorBody> errorResponse = e.getErrorResponse();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse.getBody());
 	}
+
+	// @ExceptionHandler(Exception.class)
+	// public ResponseEntity<ErrorStatus> handleException(Exception e) {
+	// 	ErrorStatus errorStatus = new ErrorStatus(e.getMessage(), 500, LocalDateTime.now());
+	// 	return new ResponseEntity<>(errorStatus, HttpStatus.INTERNAL_SERVER_ERROR);
+	// }
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
 		return new ResponseEntity<>("해당 카테고리 등록된 도서가 있어 삭제할 수 없습니다.", HttpStatus.CONFLICT);
 	}
+
 }

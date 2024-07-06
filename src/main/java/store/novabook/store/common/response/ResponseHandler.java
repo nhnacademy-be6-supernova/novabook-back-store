@@ -13,8 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.Nullable;
-import store.novabook.store.common.exception.ErrorStatus;
-import store.novabook.store.common.exception.ValidErrorResponse;
+import store.novabook.store.exception.ErrorCode;
 
 @Slf4j
 @RestControllerAdvice(basePackages = {"store.novabook.store"})
@@ -32,16 +31,19 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
 		@Nullable Class<? extends HttpMessageConverter<?>> selectedConverterType, @Nullable ServerHttpRequest request,
 		@Nullable ServerHttpResponse response) {
 
-		if (body instanceof ErrorStatus errorStatus) {
-			return new ErrorResponse<>(errorStatus.getMessage(), body);
-		}
-
 		if (body instanceof ProblemDetail problemDetail) {
-			return new ErrorResponse<>(problemDetail.getDetail(), body);
+			return ApiResponse.error(ErrorResponse.from(problemDetail));
+			// return new ErrorResponse(problemDetail.getDetail(), body);
 		}
 
-		if (body instanceof ValidErrorResponse(var result)) {
-			return new ErrorResponse<>("ServerError", result);
+		if (body instanceof ValidErrorResponse validErrorResponse) {
+			return ApiResponse.error(ErrorResponse.from(validErrorResponse));
+			// return new ErrorResponse<>("ServerError", result);
+		}
+
+		if (body instanceof CouponErrorBody errorBody) {
+			return ApiResponse.error(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errorBody.getMessage()));
+			// return new ErrorResponse<>("FeignError", errorBody);
 		}
 
 		if (body instanceof Page<?> page) {

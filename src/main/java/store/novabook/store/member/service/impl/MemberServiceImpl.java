@@ -16,6 +16,9 @@ import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.messaging.CouponSender;
 import store.novabook.store.common.messaging.dto.CreateCouponMessage;
+import store.novabook.store.exception.BadRequestException;
+import store.novabook.store.exception.ErrorCode;
+import store.novabook.store.exception.NotFoundException;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
@@ -76,7 +79,8 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		MemberStatus memberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
-			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
+		// .orElseThrow(() -> new EntityNotFoundException(MemberStatus.class));
 
 		LocalDateTime birth = LocalDateTime.of(createMemberRequest.birthYear(), createMemberRequest.birthMonth(),
 			createMemberRequest.birthDay(), 0, 0);
@@ -86,13 +90,14 @@ public class MemberServiceImpl implements MemberService {
 		Member member = Member.of(createMemberRequest, memberStatus, birth, encodedPassword);
 
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
-			throw new AlreadyExistException(Member.class);
+			throw new BadRequestException(ErrorCode.DUPLICATED_LOGIN_ID);
+			// throw new AlreadyExistException(Member.class);
 		}
 
 		Member newMember = memberRepository.save(member);
 
 		MemberGradePolicy memberGradePolicy = memberGradePolicyRepository.findByName(GRADE_COMMON)
-			.orElseThrow(() -> new EntityNotFoundException(MemberGradePolicy.class));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_POLICY_NOT_FOUND));
 
 		MemberGradeHistory memberGradeHistory = MemberGradeHistory.builder()
 			.member(newMember)
@@ -198,7 +203,7 @@ public class MemberServiceImpl implements MemberService {
 	public FindMemberLoginResponse findMemberLogin(String loginId) {
 		Member member = memberRepository.findByLoginId(loginId);
 		if (member == null) {
-			throw new EntityNotFoundException(Member.class);
+			throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
 		}
 		return new FindMemberLoginResponse(member.getId(), member.getLoginId(), member.getLoginPassword(), "ROLE_USER");
 	}

@@ -17,12 +17,14 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.ws.rs.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.book.dto.request.CreateBookRequest;
@@ -46,6 +48,8 @@ import store.novabook.store.category.service.impl.CategoryServiceImpl;
 import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.exception.FailedCreateBookException;
 import store.novabook.store.common.image.NHNCloudClient;
+import store.novabook.store.exception.ErrorCode;
+import store.novabook.store.exception.InternalServerException;
 import store.novabook.store.image.entity.BookImage;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.repository.BookImageRepository;
@@ -123,7 +127,10 @@ public class BookServiceImpl implements BookService {
 				log.error("Failed to delete file : {}", outputFilePath);
 			}
 			log.error("Failed to download file : {}", e.getMessage());
-			throw new FailedCreateBookException();
+
+			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
+			// throw new FailedCreateBookException();
+
 		}
 
 		String nhnUrl = uploadImage(accessKey, secretKey, bucketName + fileName, false, outputFilePath);
@@ -189,7 +196,8 @@ public class BookServiceImpl implements BookService {
 
 		} catch (Exception e) {
 			log.error("Failed to nhnCloud : {}", e.getMessage());
-			throw new FailedCreateBookException();
+			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
+			// throw new FailedCreateBookException();
 		}
 	}
 }

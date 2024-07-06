@@ -17,4 +17,11 @@ public class ErrorResponse<T> {
 		this.body = body;
 	}
 
+	public static ErrorResponse from(ProblemDetail problemDetail) {
+		return new ErrorResponse(ErrorCode.PROBLEM_DETAIL, problemDetail.getDetail());
+	}
+
+	public static ErrorResponse from(ValidErrorResponse validErrorResponse) {
+		return new ErrorResponse(ErrorCode.INVALID_REQUEST_ARGUMENT, validErrorResponse.message());
+	}
 }

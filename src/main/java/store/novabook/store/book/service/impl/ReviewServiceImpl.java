@@ -23,12 +23,11 @@ import store.novabook.store.book.repository.ReviewRepository;
 import store.novabook.store.book.service.ReviewService;
 import store.novabook.store.common.exception.AlreadyExistException;
 import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.member.entity.Member;
+import store.novabook.store.exception.BadRequestException;
+import store.novabook.store.exception.ErrorCode;
 import store.novabook.store.member.repository.MemberRepository;
-import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
 import store.novabook.store.orders.repository.OrdersBookRepository;
-import store.novabook.store.orders.repository.OrdersRepository;
 
 /**
  * 책 리뷰와 관련된 서비스를 제공하는 클래스.
@@ -121,7 +120,8 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public CreateReviewResponse createReview(Long orderId, CreateReviewRequest request) {
 		if (existsByBookIdAndMemberId(orderId, request)) {
-			throw new AlreadyExistException(Review.class);
+			throw new BadRequestException(ErrorCode.ALREADY_EXISTS_REVIEW);
+			// throw new AlreadyExistException(Review.class);
 		}
 		OrdersBook ordersbook = ordersBookRepository.findById(request.bookId())
 			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.bookId()));
@@ -155,7 +155,9 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new EntityNotFoundException(Review.class, reviewId));
 
+		// TODO 이거 무슨 코드인가요??
 		if (ordersId.equals(review.getOrdersBook().getId())) {
+			// throw new BadRequestException(ErrorCode.)
 			throw new AlreadyExistException(Review.class);  // 다른 사람이 수정하지 못하도록 예외 처리
 		}
 		review.update(request);

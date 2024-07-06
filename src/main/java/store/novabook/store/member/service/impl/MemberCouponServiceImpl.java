@@ -23,6 +23,9 @@ import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.response.PageResponse;
+import store.novabook.store.exception.BadRequestException;
+import store.novabook.store.exception.ErrorCode;
+import store.novabook.store.exception.NotFoundException;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.request.DownloadCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
@@ -45,7 +48,8 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	@Override
 	public CreateMemberCouponResponse createMemberCoupon(Long memberId, CreateMemberCouponRequest request) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+		// .orElseThrow(() -> new EntityNotFoundException(Member.class));
 
 		CreateCouponResponse couponResponse = couponAdapter.createCoupon(
 			CreateCouponRequest.builder().couponTemplateId(request.couponTemplateId()).build()).getBody();
@@ -59,7 +63,9 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	@Override
 	public void createMemberCouponByMessage(@Valid RegisterCouponMessage message) {
 		Member member = memberRepository.findById(message.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(Member.class));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+		// .orElseThrow(() -> new EntityNotFoundException(Member.class));
+
 		MemberCoupon memberCoupon = MemberCoupon.builder().member(member).couponId(message.couponId()).build();
 		memberCouponRepository.save(memberCoupon);
 	}

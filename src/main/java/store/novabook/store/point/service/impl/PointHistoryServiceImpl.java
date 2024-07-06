@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.exception.BadRequestException;
+import store.novabook.store.exception.ErrorCode;
+import store.novabook.store.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.entity.Orders;
@@ -42,7 +45,8 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 	public Page<GetPointHistoryResponse> getPointHistoryList(Pageable pageable) {
 		Page<PointHistory> pointHistoryList = pointHistoryRepository.findAll(pageable);
 		if (pointHistoryList.isEmpty()) {
-			throw new EntityNotFoundException(PointHistory.class);
+			throw new NotFoundException(ErrorCode.POINT_HISTORY_NOT_FOUND);
+			// throw new EntityNotFoundException(PointHistory.class);
 		}
 		return pointHistoryList.map(pointHistory -> new GetPointHistoryResponse(
 			pointHistory.getPointContent(),

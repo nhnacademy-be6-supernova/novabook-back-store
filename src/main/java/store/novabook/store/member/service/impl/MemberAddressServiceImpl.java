@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.AddressLimitExceededException;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.exception.BadRequestException;
+import store.novabook.store.exception.ErrorCode;
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
 import store.novabook.store.member.dto.request.UpdateMemberAddressRequest;
 import store.novabook.store.member.dto.response.CreateMemberAddressResponse;
@@ -125,7 +126,8 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 	public void validateMemberAddress(Member member) {
 		int currentMemberAddressCount = memberAddressRepository.countByMember(member);
 		if (currentMemberAddressCount >= 10) {
-			throw new AddressLimitExceededException(member.getId());
+			throw new BadRequestException(ErrorCode.LIMITED_ADDRESS_OVER);
+			// throw new AddressLimitExceededException(member.getId());
 		}
 	}
 

@@ -5,6 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.exception.BadRequestException;
+import store.novabook.store.exception.ErrorCode;
+import store.novabook.store.exception.NotFoundException;
 import store.novabook.store.payment.dto.request.CreatePaymentRequest;
 import store.novabook.store.payment.dto.response.CreatePaymentResponse;
 import store.novabook.store.payment.dto.response.GetPaymentResponse;
@@ -39,7 +42,8 @@ public class PaymentServiceImpl implements PaymentService {
 	public GetPaymentResponse getPaymentByOrderId(Long ordersId) {
 		Payment payment = paymentRepository.findByOrdersId(ordersId);
 		if (payment == null) {
-			throw new EntityNotFoundException(Payment.class);
+			throw new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND);
+			// throw new EntityNotFoundException(Payment.class);
 		}
 		return GetPaymentResponse.from(payment);
 	}
