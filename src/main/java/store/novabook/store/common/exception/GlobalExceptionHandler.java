@@ -64,12 +64,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorStatus errorStatus = e.getErrorStatus();
 		return new ResponseEntity<>(errorStatus, errorStatus.toHttpStatus());
 	}
-
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorStatus> handleException(Exception e) {
-		ErrorStatus errorStatus = new ErrorStatus(e.getMessage(), 500, LocalDateTime.now());
-		return new ResponseEntity<>(errorStatus, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+	//
+	// @ExceptionHandler(Exception.class)
+	// public ResponseEntity<ErrorStatus> handleException(Exception e) {
+	// 	ErrorStatus errorStatus = new ErrorStatus(e.getMessage(), 500, LocalDateTime.now());
+	// 	return new ResponseEntity<>(errorStatus, HttpStatus.INTERNAL_SERVER_ERROR);
+	// }
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	@ResponseStatus(HttpStatus.CONFLICT)
