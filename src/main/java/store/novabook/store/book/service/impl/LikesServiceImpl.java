@@ -1,23 +1,20 @@
 package store.novabook.store.book.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.response.CreateLikesResponse;
 import store.novabook.store.book.dto.response.GetLikeBookResponse;
+import store.novabook.store.book.dto.response.LikeBookResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Likes;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.LikesRepository;
 import store.novabook.store.book.service.LikesService;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
@@ -36,28 +33,32 @@ public class LikesServiceImpl implements LikesService {
 	@Transactional(readOnly = true)
 	public Page<GetLikeBookResponse> myLikes(Long memberId, Pageable pageable) {
 		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId, pageable);
-		List<GetLikeBookResponse> responses = new ArrayList<>();
-		for (Likes like : likesList) {
-			responses.add(GetLikeBookResponse.from(like));
-		}
-		return new PageImpl<>(responses, pageable, responses.size());
+		return likesList.map(GetLikeBookResponse::from);
 	}
 
-	//생성
+	//좋아요가 있는지 없는지 불러오기
 	@Override
-	public CreateLikesResponse createLikes(Long memberId, Long bookId) {
+	public LikeBookResponse getLikeResponse(Long memberId, Long bookId) {
+		return new LikeBookResponse(likesRepository.existsByMemberIdAndBookId(memberId, bookId));
+	}
+
+	@Override
+	public LikeBookResponse likeButton(Long memberId, Long bookId) {
+		// 삭제
+		if (likesRepository.existsByMemberIdAndBookId(memberId, bookId)) {
+			likesRepository.deleteAllByMemberIdAndBookId(memberId, bookId);
+			return LikeBookResponse.builder().isLiked(false).build();
+		}
+
+		//생성
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-		Likes likes = likesRepository.save(Likes.of(book, member));
-		return CreateLikesResponse.from(likes);
-	}
 
-	// 삭제
-	@Override
-	public HttpStatus deleteLikes(Long likesId) {
-		likesRepository.deleteById(likesId);
-		return HttpStatus.NO_CONTENT;
+		likesRepository.save(Likes.of(book, member));
+
+		return LikeBookResponse.builder().isLiked(true).build();
+
 	}
 
 }
