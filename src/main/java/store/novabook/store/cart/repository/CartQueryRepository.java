@@ -15,14 +15,14 @@ import jakarta.persistence.PersistenceContext;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.QBook;
 import store.novabook.store.cart.dto.request.CreateCartBookRequest;
-import store.novabook.store.cart.dto.response.CreateCartBookResponse;
 import store.novabook.store.cart.dto.response.GetCartBookResponse;
 import store.novabook.store.cart.dto.response.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.entity.QCart;
 import store.novabook.store.cart.entity.QCartBook;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.image.entity.QBookImage;
 import store.novabook.store.image.entity.QImage;
 import store.novabook.store.member.entity.Member;
@@ -130,7 +130,7 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 			.fetchOne();
 
 		if (book == null) {
-			throw new EntityNotFoundException(Book.class, createCartBookRequest.bookId());
+			throw new NotFoundException(ErrorCode.BOOK_NOT_FOUND);
 		}
 
 		// CartBook 조회

@@ -15,6 +15,7 @@ import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.cart.dto.request.CreateCartBookListRequest;
 import store.novabook.store.cart.dto.request.CreateCartBookRequest;
 import store.novabook.store.cart.dto.request.DeleteCartBookListRequest;
+import store.novabook.store.cart.dto.request.UpdateCartBookQuantityRequest;
 import store.novabook.store.cart.dto.response.CreateCartBookListResponse;
 import store.novabook.store.cart.dto.response.CreateCartBookResponse;
 import store.novabook.store.cart.dto.response.GetCartResponse;
@@ -41,38 +42,11 @@ public class CartBookServiceImpl implements CartBookService {
 	public CreateCartBookResponse createCartBook(Long memberId, CreateCartBookRequest createCartBookRequest) {
 		CartBook cartBook = queryRepository.createCartBook(memberId, createCartBookRequest);
 		return new CreateCartBookResponse(cartBookRepository.save(cartBook).getId());
-
-
-		// Cart cart = cartRepository.findById(createCartBookRequest.cartId())
-		// 	.orElseThrow(() -> new EntityNotFoundException(Cart.class, createCartBookRequest.cartId()));
-		//
-		// Book book = bookRepository.findById(createCartBookRequest.bookId())
-		// 	.orElseThrow(() -> new EntityNotFoundException(Book.class, createCartBookRequest.bookId()));
-		//
-		// Optional<CartBook> cartBook = cartBookRepository.findByCartIdAndBookId(
-		// 	createCartBookRequest.cartId(),
-		// 	createCartBookRequest.bookId());
-		//
-		// if (cartBook.isPresent()) {
-		// 	CartBook newCartbook = cartBookRepository.save(
-		// 		CartBook.builder()
-		// 			.cart(cartBook.get().getCart())
-		// 			.book(cartBook.get().getBook())
-		// 			.quantity(cartBook.get().getQuantity() + createCartBookRequest.quantity())
-		// 			.build());
-		// 	return new CreateCartBookResponse(newCartbook.getId());
-		// }else{
-		// 	CartBook newCartbook = cartBookRepository.save(
-		// 		CartBook.builder()
-		// 			.cart(cart)
-		// 			.book(book)
-		// 			.quantity(createCartBookRequest.quantity())
-		// 			.build());
-		// 	return new CreateCartBookResponse(newCartbook.getId());
-		// }
 	}
+
 	@Override
-	public CreateCartBookListResponse createCartBooks( Long memberId, CreateCartBookListRequest createCartBookListRequest) {
+	public CreateCartBookListResponse createCartBooks(Long memberId,
+		CreateCartBookListRequest createCartBookListRequest) {
 		// 카트 존재 여부 확인
 		Cart cart = cartRepository.findByMemberId(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.CART_NOT_FOUND));
@@ -122,8 +96,9 @@ public class CartBookServiceImpl implements CartBookService {
 	@Override
 	public void deleteCartBook(Long memberId, Long bookId) {
 		Optional<Cart> cart = cartRepository.findByMemberId(memberId);
-		if(cart.isPresent()) {
-			Optional<CartBook> cartBook = cartBookRepository.findByCartIdAndBookIdAndIsExposed(cart.get().getId(), bookId, true);
+		if (cart.isPresent()) {
+			Optional<CartBook> cartBook = cartBookRepository.findByCartIdAndBookIdAndIsExposed(cart.get().getId(),
+				bookId, true);
 			cartBook.ifPresent(book -> book.updateIsExposed(false));
 		}
 	}
@@ -141,7 +116,22 @@ public class CartBookServiceImpl implements CartBookService {
 
 			// 삭제 처리: 각 CartBook 엔티티의 isExposed를 false로 설정하고 저장
 			cartBooksToDelete.forEach(cartBook -> cartBook.updateIsExposed(false));
-			cartBookRepository.saveAll(cartBooksToDelete);
+			// cartBookRepository.saveAll(cartBooksToDelete);
+		}
+	}
+
+	@Override
+	public void updateCartBookQuantity(Long memberId, UpdateCartBookQuantityRequest request) {
+		// 회원 ID로 장바구니 조회
+		Optional<Cart> optionalCart = cartRepository.findByMemberId(memberId);
+
+		if (optionalCart.isPresent()) {
+			Cart cart = optionalCart.get();
+
+			// 요청된 도서 ID 리스트로 해당하는 CartBook 엔티티들 조회
+			CartBook cartBook = cartBookRepository.findByCartAndBookId(cart, request.bookId());
+			cartBook.updateQuantity(request.quantity());
+
 		}
 	}
 
