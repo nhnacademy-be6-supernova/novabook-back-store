@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
 	public static final String STATUS_WITHDRAW = "탈퇴";
 	public static final String REGISTER_POINT = "회원가입 적립금";
 	public static final String LOGIN_FAIL_MESSAGE = "비밀번호가 일치하지 않습니다.";
-	public static final long AUTH_CODE_EXPIRATION = 10;
+	public static final long AUTH_CODE_EXPIRATION = 1;
 
 	private final MemberRepository memberRepository;
 	private final PointHistoryRepository pointHistoryRepository;
@@ -205,7 +205,7 @@ public class MemberServiceImpl implements MemberService {
 		member.updateMemberStatus(newMemberStatus);
 		memberRepository.save(member);
 
-		removeAuthCodeFromRedis(memberId);
+		deleteAuthCodeFromRedis(memberId);
 	}
 
 	@Override
@@ -256,26 +256,32 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	// 인증 코드 생성하고 저장하기
-	private String createAndStoreAuthCode(Long memberId) {
+	@Override
+	public String createAndSaveAuthCode(Long memberId) {
 		String authCode = UUID.randomUUID().toString().substring(0, 6);
 		redisTemplate.opsForValue().set("authCode: " + memberId, authCode, AUTH_CODE_EXPIRATION, TimeUnit.MINUTES);
 		return authCode;
 	}
 
 	// 유효한 인증코드인지 검사
-	private boolean validateAuthCode(Long memberId, String authCode) {
+	@Override
+	public boolean validateAuthCode(Long memberId, String authCode) {
 		String saveCode = (String)redisTemplate.opsForValue().get("authCode: " + memberId);
 		return saveCode != null && authCode.equals(authCode);
 	}
 
 	// 레디스에서 인증코드 지우기
-	private void removeAuthCodeFromRedis(Long memberId) {
+	@Override
+	public void deleteAuthCodeFromRedis(Long memberId) {
 		redisTemplate.delete("authCode: " + memberId);
 	}
 
-	private boolean isUserDormant(Long memberId) {
-		// 실제 휴면 상태 체크 로직 추가
-		return true; // 임시로 항상 true 반환
+	@Override
+	public boolean isDormantMember(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+
+		return member.getMemberStatus().getName().equals(STATUS_DORMANT);
 	}
 
 }

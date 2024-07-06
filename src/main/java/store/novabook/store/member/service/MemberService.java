@@ -50,4 +50,12 @@ public interface MemberService {
 	DuplicateResponse isDuplicateLoginId(String loginId);
 
 	DuplicateResponse isDuplicateEmail(String email);
+
+	boolean isDormantMember(Long memberId);
+
+	String createAndSaveAuthCode(Long memberId);
+
+	boolean validateAuthCode(Long memberId, String authCode);
+
+	void deleteAuthCodeFromRedis(Long memberId);
 }
