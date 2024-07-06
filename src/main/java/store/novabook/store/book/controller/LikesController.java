@@ -15,7 +15,7 @@ import store.novabook.store.book.controller.docs.LikesControllerDocs;
 import store.novabook.store.book.dto.response.GetLikeBookResponse;
 import store.novabook.store.book.dto.response.LikeBookResponse;
 import store.novabook.store.book.service.LikesService;
-import store.novabook.store.common.security.aop.CurrentUser;
+import store.novabook.store.common.security.aop.CurrentMembers;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,19 +24,19 @@ public class LikesController implements LikesControllerDocs {
 	private final LikesService likesService;
 
 	@GetMapping("/member")
-	public ResponseEntity<Page<GetLikeBookResponse>> getLikes(@CurrentUser Long memberId, Pageable pageable) {
+	public ResponseEntity<Page<GetLikeBookResponse>> getLikes(@CurrentMembers Long memberId, Pageable pageable) {
 		Page<GetLikeBookResponse> responses = likesService.myLikes(memberId, pageable);
 		return ResponseEntity.ok().body(responses);
 	}
 
 	@PostMapping("/{bookId}")
-	public ResponseEntity<LikeBookResponse> likeButton(@CurrentUser Long memberId, @PathVariable Long bookId) {
+	public ResponseEntity<LikeBookResponse> likeButton(@CurrentMembers Long memberId, @PathVariable Long bookId) {
 		LikeBookResponse response = likesService.likeButton(memberId, bookId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@GetMapping("/{bookId}")
-	public ResponseEntity<LikeBookResponse> isLiked(@PathVariable Long bookId, @CurrentUser Long memberId) {
+	public ResponseEntity<LikeBookResponse> isLiked(@PathVariable Long bookId, @CurrentMembers Long memberId) {
 		return ResponseEntity.ok().body(likesService.getLikeResponse(memberId, bookId));
 	}
 }

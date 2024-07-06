@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import store.novabook.store.book.dto.response.GetLikeBookResponse;
 import store.novabook.store.book.dto.response.LikeBookResponse;
-import store.novabook.store.common.security.aop.CurrentUser;
+import store.novabook.store.common.security.aop.CurrentMembers;
 
 /**
  * LikesControllerDocs 인터페이스는 좋아요 기능에 대한 API 문서를 제공합니다.
@@ -25,7 +25,7 @@ public interface LikesControllerDocs {
 	 * @return 좋아요를 누른 책들의 페이지
 	 */
 	@Operation(summary = "좋아요 페이지 조회", description = "좋아요를 누른 모든 책들을 받습니다.")
-	ResponseEntity<Page<GetLikeBookResponse>> getLikes(@CurrentUser Long memberId, Pageable pageable);
+	ResponseEntity<Page<GetLikeBookResponse>> getLikes(@CurrentMembers Long memberId, Pageable pageable);
 
 	/**
 	 * 좋아요 생성
@@ -35,7 +35,7 @@ public interface LikesControllerDocs {
 	 * @return 생성된 좋아요 정보
 	 */
 	@Operation(summary = "좋아요 생성", description = "해당 도서에 좋아요 생성합니다")
-	ResponseEntity<LikeBookResponse> likeButton(@CurrentUser Long memberId, @PathVariable Long bookId);
+	ResponseEntity<LikeBookResponse> likeButton(@CurrentMembers Long memberId, @PathVariable Long bookId);
 
 	/**
 	 * 좋아요 삭제
@@ -45,5 +45,5 @@ public interface LikesControllerDocs {
 	 * @return 좋아요 상태 유무
 	 */
 	@Operation(summary = "좋아요 상태 유무", description = "좋아요 상태 유무를 확인합니다.")
-	ResponseEntity<LikeBookResponse> isLiked(@PathVariable Long bookId, @CurrentUser Long memberId);
+	ResponseEntity<LikeBookResponse> isLiked(@PathVariable Long bookId, @CurrentMembers Long memberId);
 }

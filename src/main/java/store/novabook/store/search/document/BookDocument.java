@@ -23,28 +23,28 @@ import store.novabook.store.tag.entity.Tag;
 public class BookDocument {
 	@Id
 	@Field(type = FieldType.Long)
-	private Long id;
+	private final Long id;
 
 	@Field(type = FieldType.Text, analyzer = "nori_analyzer")
-	private String title;
+	private final String title;
 
 	@Field(type = FieldType.Text)
-	private String author;
+	private final String author;
 
 	@Field(type = FieldType.Text)
-	private String publisher;
+	private final String publisher;
 
 	@Field(type = FieldType.Text)
-	private String image;
+	private final String image;
 
 	@Field(type = FieldType.Text)
-	private List<String> tagList;
+	private final List<String> tagList;
 
 	@Field(type = FieldType.Text)
-	private List<String> categoryList;
+	private final List<String> categoryList;
 
 	@Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
-	private LocalDateTime createdAt;
+	private final LocalDateTime createdAt;
 
 	@Builder
 	public BookDocument(Long id, String title, String author, String publisher, String image, List<String> tagList,

@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.NonNull;
 import store.novabook.store.common.security.dto.CustomUserDetails;
-import store.novabook.store.common.security.entity.Users;
+import store.novabook.store.common.security.entity.Members;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.service.AuthMembersClient;
@@ -44,14 +44,14 @@ public class JWTFilter extends OncePerRequestFilter {
 		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getMembersId(getMembersUUIDRequest);
 
 		//userEntity를 생성하여 값 set
-		Users userEntity = new Users();
-		userEntity.setId(Long.parseLong(getMembersUUIDResponse.membersId()));
-		userEntity.setUsername(getMembersUUIDResponse.membersId());
-		userEntity.setPassword("temppassword");
-		userEntity.setRole(role);
+		Members members = new Members();
+		members.setId(Long.parseLong(getMembersUUIDResponse.membersId()));
+		members.setUsername(getMembersUUIDResponse.membersId());
+		members.setPassword("temppassword");
+		members.setRole(role);
 
 		//UserDetails에 회원 정보 객체 담기
-		CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
+		CustomUserDetails customUserDetails = new CustomUserDetails(members);
 
 		//스프링 시큐리티 인증 토큰 생성
 		Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,

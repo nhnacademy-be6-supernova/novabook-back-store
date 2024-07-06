@@ -18,7 +18,7 @@ import store.novabook.store.cart.dto.response.CreateCartBookResponse;
 import store.novabook.store.cart.dto.response.GetCartResponse;
 import store.novabook.store.cart.service.CartBookService;
 import store.novabook.store.cart.service.CartService;
-import store.novabook.store.common.security.aop.CurrentUser;
+import store.novabook.store.common.security.aop.CurrentMembers;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class CartController implements CartControllerDocs {
 
 
 	@GetMapping
-	public ResponseEntity<CartIdResponse> getCartIdByMemberId(@CurrentUser Long memberId) {
+	public ResponseEntity<CartIdResponse> getCartIdByMemberId(@CurrentMembers Long memberId) {
 		return ResponseEntity.ok().body(cartService.getCartIdByMemberId(memberId));
 	}
 
@@ -41,12 +41,12 @@ public class CartController implements CartControllerDocs {
 	}
 
 	@GetMapping("/member")
-	public ResponseEntity<GetCartResponse> getCartBookAllByMemberId(@CurrentUser Long memberId) {
+	public ResponseEntity<GetCartResponse> getCartBookAllByMemberId(@CurrentMembers Long memberId) {
 		return ResponseEntity.ok().body(cartBookService.getCartBookAllByMemberId(memberId));
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<CartIdResponse> createCartIdByMemberId(@CurrentUser Long memberId) {
+	public ResponseEntity<CartIdResponse> createCartIdByMemberId(@CurrentMembers Long memberId) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(cartService.createCartId(memberId));
 	}
 
