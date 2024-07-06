@@ -42,11 +42,7 @@ public class DeliveryFeeServiceImpl implements DeliveryFeeService {
 	@Transactional(readOnly = true)
 	public Page<GetDeliveryFeeResponse> findAllDeliveryFees(Pageable pageable) {
 		Page<DeliveryFee> deliveryFees = deliveryFeeRepository.findAll(pageable);
-		List<GetDeliveryFeeResponse> responses = new ArrayList<>();
-		for (DeliveryFee deliveryFee : deliveryFees) {
-			responses.add(GetDeliveryFeeResponse.from(deliveryFee));
-		}
-		return new PageImpl<>(responses, pageable, deliveryFees.getTotalElements());
+		return deliveryFees.map(GetDeliveryFeeResponse::from);
 	}
 
 	@Override

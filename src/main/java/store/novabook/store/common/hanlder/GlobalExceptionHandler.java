@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.FeignClientException;
 import store.novabook.store.common.exception.ForbiddenException;
@@ -24,24 +25,28 @@ import store.novabook.store.common.exception.NovaException;
 import store.novabook.store.common.response.ErrorResponse;
 import store.novabook.store.common.response.ValidErrorResponse;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
 		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		log.error(exception.getMessage(), exception);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidErrorResponse.from(exception));
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex,
+	public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception,
 		WebRequest request) {
+		log.error(exception.getMessage(), exception);
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.from(ErrorCode.DUPLICATED_VALUE));
 	}
 
 	@ExceptionHandler(PersistenceException.class)
-	public ResponseEntity<ErrorResponse> handlePersistenceException(PersistenceException ex, WebRequest request) {
-		Throwable cause = ex.getCause();
+	public ResponseEntity<ErrorResponse> handlePersistenceException(PersistenceException exception, WebRequest request) {
+		log.error(exception.getMessage(), exception);
+		Throwable cause = exception.getCause();
 		if (cause instanceof ConstraintViolationException constraintViolationException) {
 			return handleConstraintViolationException(constraintViolationException, request);
 		}
@@ -57,6 +62,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<ErrorResponse> handle(NotFoundException exception, HttpServletRequest request) {
+		log.error(exception.getMessage(), exception);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception));
 	}
 
@@ -69,6 +75,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(ForbiddenException.class)
 	public ResponseEntity<ErrorResponse> handle(ForbiddenException exception, HttpServletRequest request) {
+		log.error(exception.getMessage(), exception);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.from(exception));
 	}
 
@@ -81,12 +88,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(NovaException.class)
 	protected ResponseEntity<Object> handleNovaException(NovaException exception, WebRequest request) {
+		log.error(exception.getMessage(), exception);
 		ErrorResponse errorResponse = ErrorResponse.from(exception);
 		return handleExceptionInternal(exception, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
 	@ExceptionHandler(FeignClientException.class)
 	public ResponseEntity<ErrorResponse> handleFeignClientException(FeignClientException exception) {
+		log.error(exception.getMessage(), exception);
 		return ResponseEntity.status(exception.getStatus()).body(ErrorResponse.from(exception));
 	}
 
@@ -105,18 +114,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	@ResponseStatus(HttpStatus.CONFLICT)
-	public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+	public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
+		log.error(exception.getMessage(), exception);
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.from(ErrorCode.ORDER_BOOK_ALREADY_EXISTS));
 	}
 
 	/**
 	 * {@code MethodArgumentTypeMismatchException}을 처리하여 {@link ErrorResponse}를 반환합니다.
 	 *
-	 * @param ex {@code MethodArgumentTypeMismatchException}
+	 * @param exception {@code MethodArgumentTypeMismatchException}
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException exception) {
+		log.error(exception.getMessage(), exception);
 		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT_TYPE));
 	}
 
