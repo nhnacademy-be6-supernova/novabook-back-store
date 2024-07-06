@@ -1,5 +1,7 @@
 package store.novabook.store.common.response;
 
+import java.io.Serializable;
+
 import org.springframework.http.ProblemDetail;
 
 import store.novabook.store.common.exception.ErrorCode;
@@ -9,7 +11,7 @@ import store.novabook.store.common.exception.NovaException;
  * 에러 응답을 나타내는 레코드입니다.
  * 오류 코드와 메시지를 포함합니다.
  */
-public record ErrorResponse(ErrorCode errorCode, String message) {
+public record ErrorResponse(ErrorCode errorCode, String message) implements Serializable {
 
 	/**
 	 * {@link NovaException}에서 {@code ErrorResponse}를 생성합니다.
