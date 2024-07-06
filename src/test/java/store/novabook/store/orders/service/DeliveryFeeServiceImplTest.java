@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -18,8 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import store.novabook.store.common.exception.EntityNotFoundException;
-
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetDeliveryFeeResponse;
@@ -35,8 +33,6 @@ class DeliveryFeeServiceImplTest {
 	@InjectMocks
 	private DeliveryFeeServiceImpl deliveryFeeService;
 
-
-
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
@@ -44,9 +40,7 @@ class DeliveryFeeServiceImplTest {
 
 	@Test
 	void testCreateFee() {
-		CreateDeliveryFeeRequest request = CreateDeliveryFeeRequest.builder()
-			.fee(1000L)
-			.build();
+		CreateDeliveryFeeRequest request = CreateDeliveryFeeRequest.builder().fee(1000L).build();
 		DeliveryFee deliveryFee = new DeliveryFee(request);
 		when(deliveryFeeRepository.save(any(DeliveryFee.class))).thenReturn(deliveryFee);
 
@@ -107,7 +101,7 @@ class DeliveryFeeServiceImplTest {
 		Long id = 1L;
 		when(deliveryFeeRepository.findById(id)).thenReturn(Optional.empty());
 
-		assertThrows(EntityNotFoundException.class, () -> deliveryFeeService.getDeliveryFee(id));
+		assertThrows(NotFoundException.class, () -> deliveryFeeService.getDeliveryFee(id));
 		verify(deliveryFeeRepository, times(1)).findById(id);
 	}
 }
