@@ -17,7 +17,7 @@ public class DoorayServiceImpl implements DoorayService {
 	@Override
 	public void sendAuthCode(Long memberId, String authCode) {
 		Map<String, Object> message = new HashMap<>();
-		message.put("botName", "novabook Bot");
+		message.put("botName", memberId);
 		message.put("text", "휴면 계정 해지를 위한 인증코드" + authCode);
 
 		restTemplate.postForObject(DOORAY_WEBHOOK_URL, message, String.class);

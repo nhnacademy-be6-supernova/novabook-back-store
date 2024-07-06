@@ -15,7 +15,7 @@ import store.novabook.store.member.service.DoorayService;
 import store.novabook.store.member.service.MemberService;
 
 @RestController
-@RequestMapping("/dooray")
+@RequestMapping("/api/v1/store/dooray")
 @RequiredArgsConstructor
 public class DoorayHookController {
 	private final MemberService memberService;
@@ -39,6 +39,7 @@ public class DoorayHookController {
 
 		if (memberService.validateAuthCode(memberId, inputCode)) {
 			memberService.deleteAuthCodeFromRedis(memberId);
+			memberService.updateMemberStatusToActive(memberId, inputCode);
 			return ResponseEntity.ok("해지가 성공적으로 완료되었습니다.");
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 코드입니다.");
