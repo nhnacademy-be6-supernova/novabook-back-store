@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.FeignClientException;
 import store.novabook.store.common.exception.ForbiddenException;
@@ -24,23 +25,27 @@ import store.novabook.store.common.exception.NovaException;
 import store.novabook.store.common.response.ErrorResponse;
 import store.novabook.store.common.response.ValidErrorResponse;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
 		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		logError(exception);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidErrorResponse.from(exception));
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex,
 		WebRequest request) {
+		logError(ex);
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.from(ErrorCode.DUPLICATED_VALUE));
 	}
 
 	@ExceptionHandler(PersistenceException.class)
 	public ResponseEntity<ErrorResponse> handlePersistenceException(PersistenceException ex, WebRequest request) {
+		logError(ex);
 		Throwable cause = ex.getCause();
 		if (cause instanceof ConstraintViolationException constraintViolationException) {
 			return handleConstraintViolationException(constraintViolationException, request);
@@ -48,76 +53,52 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.internalServerError().body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
 	}
 
-	/**
-	 * {@code NotFoundException}을 처리하여 {@link ErrorResponse}를 반환합니다.
-	 *
-	 * @param exception {@code NotFoundException}
-	 * @param request   HTTP 요청
-	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
-	 */
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<ErrorResponse> handle(NotFoundException exception, HttpServletRequest request) {
+		logError(exception);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception));
 	}
 
-	/**
-	 * {@code ForbiddenException}을 처리하여 {@link ErrorResponse}를 반환합니다.
-	 *
-	 * @param exception {@code ForbiddenException}
-	 * @param request   HTTP 요청
-	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
-	 */
 	@ExceptionHandler(ForbiddenException.class)
 	public ResponseEntity<ErrorResponse> handle(ForbiddenException exception, HttpServletRequest request) {
+		logError(exception);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.from(exception));
 	}
 
-	/**
-	 * {@code NovaException}을 처리하여 {@link ErrorResponse}를 반환합니다.
-	 *
-	 * @param exception      {@code NovaException}
-	 * @param request 웹 요청
-	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
-	 */
 	@ExceptionHandler(NovaException.class)
 	protected ResponseEntity<Object> handleNovaException(NovaException exception, WebRequest request) {
+		logError(exception);
 		ErrorResponse errorResponse = ErrorResponse.from(exception);
 		return handleExceptionInternal(exception, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
 	@ExceptionHandler(FeignClientException.class)
 	public ResponseEntity<ErrorResponse> handleFeignClientException(FeignClientException exception) {
+		logError(exception);
 		return ResponseEntity.status(exception.getStatus()).body(ErrorResponse.from(exception));
 	}
 
-	// /**
-	//  * 일반 {@code Exception}을 처리하여 {@link ErrorResponse}를 반환합니다.
-	//  *
-	//  * @param exception 일반 {@code Exception}
-	//  * @param request   HTTP 요청
-	//  * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
-	//  */
-	// @ExceptionHandler(Exception.class)
-	// public ResponseEntity<ErrorResponse> handleException(Exception exception, HttpServletRequest request) {
-	// 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	// 		.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
-	// }
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleException(Exception exception, HttpServletRequest request) {
+		logError(exception);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
+	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+		logError(ex);
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.from(ErrorCode.ORDER_BOOK_ALREADY_EXISTS));
 	}
 
-	/**
-	 * {@code MethodArgumentTypeMismatchException}을 처리하여 {@link ErrorResponse}를 반환합니다.
-	 *
-	 * @param ex {@code MethodArgumentTypeMismatchException}
-	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
-	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+		logError(ex);
 		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT_TYPE));
 	}
 
+	private void logError(Exception ex) {
+		ex.printStackTrace();
+	}
 }
