@@ -1,7 +1,10 @@
 package store.novabook.store.common.response;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * {@code ApiResponse} 클래스는 API 응답을 표준 형식으로 감싸기 위한 클래스입니다.
@@ -9,7 +12,7 @@ import java.util.Map;
  *
  * @param <T> 응답 본문의 타입
  */
-public class ApiResponse<T> {
+public class ApiResponse<T> implements Serializable {
 
 	private final Map<String, Object> header = new HashMap<>();
 	private final T body;
@@ -21,7 +24,10 @@ public class ApiResponse<T> {
 	 * @param isSuccessful  성공 여부
 	 * @param body          응답 본문
 	 */
-	public ApiResponse(String resultMessage, boolean isSuccessful, T body) {
+	@JsonCreator
+	public ApiResponse(@JsonProperty("resultMessage") String resultMessage,
+		@JsonProperty("isSuccessful") boolean isSuccessful,
+		@JsonProperty("body") T body) {
 		this.header.put("resultMessage", resultMessage);
 		this.header.put("isSuccessful", isSuccessful);
 		this.body = body;

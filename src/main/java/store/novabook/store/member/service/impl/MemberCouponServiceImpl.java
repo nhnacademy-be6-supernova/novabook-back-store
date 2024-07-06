@@ -125,17 +125,21 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 
 	@Override
 	public CreateMemberCouponResponse downloadCoupon(Long memberId, DownloadCouponRequest request) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
 		List<Long> couponList = memberCouponRepository.findByMemberId(memberId)
 			.stream()
 			.map(MemberCoupon::getCouponId)
 			.toList();
 
-		ApiResponse<CreateCouponResponse> response = couponAdapter.createCoupon(CreateCouponRequest.builder()
-			.couponIdList(couponList)
-			.couponTemplateId(request.couponTemplateId())
-			.build());
+		CreateCouponResponse response = couponAdapter.createCoupon(
+				CreateCouponRequest.builder().couponIdList(couponList).couponTemplateId(request.couponTemplateId()).build())
+			.getBody();
+		MemberCoupon saved = memberCouponRepository.save(
+			MemberCoupon.builder().couponId(response.id()).member(member).build());
 
-		return CreateMemberCouponResponse.builder().couponId(response.getBody().id()).build();
+		return CreateMemberCouponResponse.fromEntity(saved);
 	}
 
 }

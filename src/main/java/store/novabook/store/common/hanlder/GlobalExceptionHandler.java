@@ -75,7 +75,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	/**
 	 * {@code NovaException}을 처리하여 {@link ErrorResponse}를 반환합니다.
 	 *
-	 * @param ex      {@code NovaException}
+	 * @param exception      {@code NovaException}
 	 * @param request 웹 요청
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(FeignClientException.class)
 	public ResponseEntity<ErrorResponse> handleFeignClientException(FeignClientException exception) {
-		return ResponseEntity.status(exception.getStatus()).body(exception.getErrorResponse());
+		return ResponseEntity.status(exception.getStatus()).body(ErrorResponse.from(exception));
 	}
 
 	// /**

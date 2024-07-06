@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.Nullable;
 import store.novabook.store.common.response.ApiResponse;
-import store.novabook.store.common.response.ErrorBody;
 import store.novabook.store.common.response.ErrorResponse;
 import store.novabook.store.common.response.PageResponse;
 import store.novabook.store.common.response.ValidErrorResponse;
@@ -45,10 +44,6 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
 
 		if (body instanceof ErrorResponse errorResponse) {
 			return ApiResponse.error(errorResponse);
-		}
-
-		if (body instanceof ErrorBody errorBody) {
-			return ApiResponse.error(errorBody.getMessage());
 		}
 
 		if (body instanceof Page<?> page) {

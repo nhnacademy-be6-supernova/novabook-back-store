@@ -67,7 +67,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	}
 
 	@PostMapping("/download")
-	ResponseEntity<CreateMemberCouponResponse> downloadCoupon(@CurrentUser Long memberId,
+	ResponseEntity<CreateMemberCouponResponse> downloadCoupon(@CurrentMembers Long memberId,
 		@RequestBody DownloadCouponRequest request) {
 		CreateMemberCouponResponse response = memberCouponService.downloadCoupon(memberId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);

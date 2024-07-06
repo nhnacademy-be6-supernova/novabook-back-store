@@ -68,6 +68,26 @@ public enum ErrorCode {
 	INTERNAL_SERVER_ERROR("서버 내부에 문제가 발생했습니다."),
 	FAILED_CREATE_BOOK("도서 저장에 실패해였습니다."),
 	PROBLEM_DETAIL("문제 발생!"),
+
+
+	// Coupon
+	// 400
+	EXPIRED_COUPON("만료된 쿠폰입니다."),
+	INVALID_COUPON("유효하지 않은 쿠폰입니다."),
+	INVALID_COUPON_TYPE("유효하지 않은 쿠폰 타입입니다."),
+	WELCOME_COUPON_NOT_FOUND("웰컴 쿠폰이 존재하지 않습니다. "),
+	BIRTHDAY_COUPON_NOT_FOUND("생일 쿠폰이 존재하지 않습니다. "),
+	ALREADY_USED_COUPON("이미 사용된 쿠폰입니다."),
+	COUPON_ALREADY_EXIST("이미 다운받은 쿠폰입니다."),
+
+	// 404
+	COUPON_NOT_FOUND("해당 쿠폰이 존재하지 않습니다."),
+	BOOK_COUPON_NOT_FOUND("해당 도서에 대한 쿠폰이 존재하지 않습니다."),
+	CATEGORY_COUPON_NOT_FOUND("해당 카테고리에 대한 쿠폰이 존재하지 않습니다."),
+	COUPON_TEMPLATE_NOT_FOUND("해당 쿠폰 템플릿이 존재하지 않습니다."),
+
+
+
 	;
 
 	private final String message;

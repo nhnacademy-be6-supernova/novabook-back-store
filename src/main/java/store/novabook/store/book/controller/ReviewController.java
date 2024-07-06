@@ -20,7 +20,6 @@ import store.novabook.store.book.dto.response.GetReviewListResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.service.ReviewService;
 import store.novabook.store.common.security.aop.CurrentMembers;
-import store.novabook.store.common.security.aop.CurrentUser;
 
 @RestController
 @RequiredArgsConstructor
