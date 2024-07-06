@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.point.controller.docs.PointHistoryControllerDocs;
-import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.request.GetPointHistoryRequest;
 import store.novabook.store.point.dto.response.GetPointHistoryListResponse;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
-import store.novabook.store.point.entity.PointHistory;
+import store.novabook.store.point.dto.response.GetPointResponse;
 import store.novabook.store.point.service.PointHistoryService;
 
 @RestController
@@ -33,15 +32,23 @@ public class PointHistoryController implements PointHistoryControllerDocs {
 		return ResponseEntity.status(HttpStatus.OK).body(pointHistoryList);
 	}
 
-	@PostMapping("/member")
-	public ResponseEntity<GetPointHistoryListResponse> getPointHistoryListByMemberId(@RequestBody GetPointHistoryRequest getPointHistoryRequest) {
-		return ResponseEntity.ok().body(pointHistoryService.getPointHistory(getPointHistoryRequest));
+	@GetMapping("/member/point")
+	public ResponseEntity<GetPointResponse> getPointTotalByMemberId(@CurrentMembers Long memberId) {
+		GetPointResponse response = pointHistoryService.getPointTotalByMemberId(memberId);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@PostMapping
-	public ResponseEntity<PointHistory> createPointHistory(
-		@Valid @RequestBody CreatePointHistoryRequest createPointHistoryRequest) {
-		pointHistoryService.createPointHistory(createPointHistoryRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	@GetMapping(value = "/member", params = {"page", "size"})
+	public ResponseEntity<Page<GetPointHistoryResponse>> getPointHistoryByMemberIdPage(
+		@CurrentMembers Long memberId, Pageable pageable) {
+		Page<GetPointHistoryResponse> pointHistoryResponses = pointHistoryService.getPointHistoryByMemberIdPage(
+			memberId, pageable);
+		return ResponseEntity.ok(pointHistoryResponses);
+	}
+
+	@PostMapping("/member")
+	public ResponseEntity<GetPointHistoryListResponse> getPointHistoryListByMemberId(
+		@RequestBody GetPointHistoryRequest getPointHistoryRequest) {
+		return ResponseEntity.ok().body(pointHistoryService.getPointHistory(getPointHistoryRequest));
 	}
 }

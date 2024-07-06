@@ -19,6 +19,7 @@ import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
@@ -27,6 +28,7 @@ import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
+import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberGradeHistory;
@@ -52,9 +54,7 @@ public class MemberServiceImpl implements MemberService {
 	public static final String STATUS_ACTIVE = "활동";
 	public static final String STATUS_DORMANT = "휴면";
 	public static final String STATUS_WITHDRAW = "탈퇴";
-	public static final long ID = 1L;
 	public static final String REGISTER_POINT = "회원가입 적립금";
-	public static final long POINT_AMOUNT = 5000L;
 	public static final String LOGIN_FAIL_MESSAGE = "비밀번호가 일치하지 않습니다.";
 
 	private final MemberRepository memberRepository;
@@ -101,10 +101,11 @@ public class MemberServiceImpl implements MemberService {
 			.build();
 		memberGradeHistoryRepository.save(memberGradeHistory);
 
-		PointPolicy pointPolicy = pointPolicyRepository.findById(ID)
-			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class, ID));
+		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
+			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, POINT_AMOUNT);
+		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT,
+			pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 
 		couponSender.sendToHighTrafficQueue(
@@ -195,12 +196,23 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public FindMemberLoginResponse findMemberLogin(String loginId) {
+	public FindMemberLoginResponse findMembersLogin(String loginId) {
 		Member member = memberRepository.findByLoginId(loginId);
 		if (member == null) {
 			throw new EntityNotFoundException(Member.class);
 		}
-		return new FindMemberLoginResponse(member.getId(), member.getLoginId(), member.getLoginPassword(), "ROLE_USER");
+		return new FindMemberLoginResponse(member.getId(), member.getLoginId(), member.getLoginPassword(),
+			"ROLE_MEMBERS");
+	}
+
+	@Override
+	public GetPaycoMembersResponse getPaycoMembers(GetPaycoMembersRequest getPaycoMembersRequest) {
+		Member member = memberRepository.findByPaycoId(getPaycoMembersRequest.paycoId());
+		if (member == null) {
+			// throw new EntityNotFoundException(Member.class);
+			return null;
+		}
+		return new GetPaycoMembersResponse(member.getId());
 	}
 
 	@Override
