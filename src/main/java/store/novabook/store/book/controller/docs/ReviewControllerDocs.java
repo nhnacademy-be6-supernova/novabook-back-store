@@ -13,7 +13,7 @@ import store.novabook.store.book.dto.request.UpdateReviewRequest;
 import store.novabook.store.book.dto.response.CreateReviewResponse;
 import store.novabook.store.book.dto.response.GetReviewListResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
-import store.novabook.store.common.security.aop.CurrentUser;
+import store.novabook.store.common.security.aop.CurrentMembers;
 
 /**
  * 리뷰 관련 API 요청을 처리하는 컨트롤러.
@@ -48,7 +48,7 @@ public interface ReviewControllerDocs {
 	ResponseEntity<CreateReviewResponse> createReviewed(
 		@Parameter(description = "주문 도서 ID", required = true) @Valid @PathVariable Long ordersBookId,
 		@Parameter(description = "리뷰 생성 요청 데이터", required = true) @Valid @RequestBody CreateReviewRequest request,
-		@Parameter(description = "현재 사용자 ID", required = true) @CurrentUser Long memberId);
+		@Parameter(description = "현재 사용자 ID", required = true) @CurrentMembers Long memberId);
 
 	/**
 	 * 특정 리뷰를 업데이트합니다.

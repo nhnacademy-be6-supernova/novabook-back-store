@@ -8,13 +8,13 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.security.aop.CurrentUserArgumentResolver;
+import store.novabook.store.common.security.aop.CurrentMembersArgumentResolver;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-	private final CurrentUserArgumentResolver currentUserArgumentResolver;
+	private final CurrentMembersArgumentResolver currentMembersArgumentResolver;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -24,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-		resolvers.add(currentUserArgumentResolver);
+		resolvers.add(currentMembersArgumentResolver);
 	}
 
 }

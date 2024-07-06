@@ -1,9 +1,5 @@
 package store.novabook.store.book.controller;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -21,13 +16,10 @@ import store.novabook.store.book.controller.docs.ReviewControllerDocs;
 import store.novabook.store.book.dto.request.CreateReviewRequest;
 import store.novabook.store.book.dto.request.UpdateReviewRequest;
 import store.novabook.store.book.dto.response.CreateReviewResponse;
-import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.book.dto.response.GetReviewListResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
-import store.novabook.store.book.dto.response.SearchBookResponse;
 import store.novabook.store.book.service.ReviewService;
-import store.novabook.store.book.service.impl.ReviewServiceImpl;
-import store.novabook.store.common.security.aop.CurrentUser;
+import store.novabook.store.common.security.aop.CurrentMembers;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,7 +45,7 @@ public class ReviewController implements ReviewControllerDocs {
 	public ResponseEntity<CreateReviewResponse> createReviewed(
 		@PathVariable Long ordersBookId,
 		@Valid @RequestBody CreateReviewRequest request,
-		@CurrentUser Long memberId) {
+		@CurrentMembers Long memberId) {
 		CreateReviewResponse createReviewResponse = reviewService.createReview(ordersBookId, request, memberId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createReviewResponse);
 	}

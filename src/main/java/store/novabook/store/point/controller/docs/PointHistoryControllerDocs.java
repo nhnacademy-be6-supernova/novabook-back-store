@@ -3,17 +3,12 @@ package store.novabook.store.point.controller.docs;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import store.novabook.store.common.security.aop.CurrentUser;
-import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
+import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.dto.response.GetPointResponse;
-import store.novabook.store.point.entity.PointHistory;
 
 /**
  * 포인트 내역 관련 API 요청을 처리하는 컨트롤러.
@@ -38,7 +33,7 @@ public interface PointHistoryControllerDocs {
 	 * @return 회원의 포인트 총합
 	 */
 	@Operation(summary = "회원 포인트 총합 조회", description = "특정 회원의 포인트 총합을 조회합니다.")
-	ResponseEntity<GetPointResponse> getPointTotalByMemberId(@CurrentUser Long memberId);
+	ResponseEntity<GetPointResponse> getPointTotalByMemberId(@CurrentMembers Long memberId);
 
 	/**
 	 * 특정 회원의 포인트 내역을 페이지네이션으로 반환합니다.
@@ -49,5 +44,5 @@ public interface PointHistoryControllerDocs {
 	 */
 	@Operation(summary = "회원 포인트 내역 조회", description = "특정 회원의 포인트 내역을 조회합니다.")
 	ResponseEntity<Page<GetPointHistoryResponse>> getPointHistoryByMemberIdPage(
-		@CurrentUser Long memberId, Pageable pageable);
+		@CurrentMembers Long memberId, Pageable pageable);
 }
