@@ -19,6 +19,7 @@ import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
@@ -27,6 +28,7 @@ import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
+import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberGradeHistory;
@@ -195,12 +197,23 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public FindMemberLoginResponse findMemberLogin(String loginId) {
+	public FindMemberLoginResponse findMembersLogin(String loginId) {
 		Member member = memberRepository.findByLoginId(loginId);
 		if (member == null) {
 			throw new EntityNotFoundException(Member.class);
 		}
-		return new FindMemberLoginResponse(member.getId(), member.getLoginId(), member.getLoginPassword(), "ROLE_USER");
+		return new FindMemberLoginResponse(member.getId(), member.getLoginId(), member.getLoginPassword(),
+			"ROLE_MEMBERS");
+	}
+
+	@Override
+	public GetPaycoMembersResponse getPaycoMembers(GetPaycoMembersRequest getPaycoMembersRequest) {
+		Member member = memberRepository.findByPaycoId(getPaycoMembersRequest.paycoId());
+		if (member == null) {
+			// throw new EntityNotFoundException(Member.class);
+			return null;
+		}
+		return new GetPaycoMembersResponse(member.getId());
 	}
 
 	@Override
