@@ -24,10 +24,11 @@ import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.entity.Review;
 import store.novabook.store.book.repository.ReviewRepository;
 import store.novabook.store.book.service.ReviewService;
-import store.novabook.store.common.exception.AlreadyExistException;
-import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.image.NHNCloudMutilpartClient;
 import store.novabook.store.common.util.FileConverter;
+import store.novabook.store.common.exception.BadRequestException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.entity.ReviewImage;
 import store.novabook.store.image.repository.ImageRepository;
@@ -90,24 +91,25 @@ public class ReviewServiceImpl implements ReviewService {
 
 	/**
 	 * 새로운 리뷰를 생성하고 그 결과를 반환한다.
+	 *
 	 * @param ordersBookId 주문책 ID
-	 * @param request 리뷰 생성 요청 데이터
+	 * @param request      리뷰 생성 요청 데이터
 	 * @return 생성된 리뷰 응답
 	 */
 	@Override
 	public CreateReviewResponse createReview(Long ordersBookId, CreateReviewRequest request, Long memberId) {
 		//2번 리뷰 남기는거 방지
 		if (reviewRepository.existsByOrdersBookId(ordersBookId)) {
-			throw new AlreadyExistException(OrdersBook.class, ordersBookId);
+			throw new BadRequestException(ErrorCode.ORDER_BOOK_ALREADY_EXISTS);
 		}
 
 		OrdersBook ordersbook = ordersBookRepository.findById(ordersBookId)
-			.orElseThrow(() -> new EntityNotFoundException(OrdersBook.class, ordersBookId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_BOOK_NOT_FOUND));
 		Review review = reviewRepository.save(Review.of(request, ordersbook));
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
-			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
 		if (!(request.reviewImageDTOs().getFirst().fileName().isEmpty() && request.reviewImageDTOs().size() == 1)) {
 			//리뷰 이미지를 저장
@@ -131,13 +133,14 @@ public class ReviewServiceImpl implements ReviewService {
 
 	/**
 	 * 기존의 리뷰를 업데이트한다.
-	 * @param request 리뷰 업데이트 요청 데이터
+	 *
+	 * @param request  리뷰 업데이트 요청 데이터
 	 * @param reviewId 수정할 리뷰의 ID
 	 */
 	@Override
 	public void updateReview(UpdateReviewRequest request, Long reviewId) {
 		Review review = reviewRepository.findById(reviewId)
-			.orElseThrow(() -> new EntityNotFoundException(Review.class, reviewId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
 		review.update(request);
 	}
 

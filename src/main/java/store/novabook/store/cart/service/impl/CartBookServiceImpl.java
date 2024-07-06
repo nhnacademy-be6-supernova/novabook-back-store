@@ -24,7 +24,8 @@ import store.novabook.store.cart.repository.CartBookRepository;
 import store.novabook.store.cart.repository.CartQueryRepository;
 import store.novabook.store.cart.repository.CartRepository;
 import store.novabook.store.cart.service.CartBookService;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +75,7 @@ public class CartBookServiceImpl implements CartBookService {
 	public CreateCartBookListResponse createCartBooks( Long memberId, CreateCartBookListRequest createCartBookListRequest) {
 		// 카트 존재 여부 확인
 		Cart cart = cartRepository.findByMemberId(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Cart.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.CART_NOT_FOUND));
 
 		// 책 ID 목록 생성
 		List<Long> bookIds = createCartBookListRequest.cartBookList().stream()
@@ -95,7 +96,7 @@ public class CartBookServiceImpl implements CartBookService {
 		for (CreateCartBookRequest bookRequest : createCartBookListRequest.cartBookList()) {
 			Book book = bookMap.get(bookRequest.bookId());
 			if (book == null) {
-				throw new EntityNotFoundException(Book.class, bookRequest.bookId());
+				throw new NotFoundException(ErrorCode.BOOK_NOT_FOUND);
 			}
 
 			CartBook cartBook = existingCartBookMap.get(bookRequest.bookId());

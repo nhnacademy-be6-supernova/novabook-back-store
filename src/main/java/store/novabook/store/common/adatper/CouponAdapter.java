@@ -15,11 +15,10 @@ import store.novabook.store.common.adatper.dto.CreateCouponRequest;
 import store.novabook.store.common.adatper.dto.CreateCouponResponse;
 import store.novabook.store.common.adatper.dto.GetCouponAllRequest;
 import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
-import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
 import store.novabook.store.common.adatper.dto.GetCouponResponse;
-import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.response.PageResponse;
+// import store.novabook.store.common.response.decoder.ErrorDecoder;
 
 @FeignClient(name = "couponClient")
 public interface CouponAdapter {

@@ -19,11 +19,13 @@ import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
 import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
 import store.novabook.store.common.adatper.dto.GetCouponResponse;
 import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
-import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.response.PageResponse;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
+import store.novabook.store.member.dto.request.DownloadCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.dto.response.GetCouponIdsResponse;
 import store.novabook.store.member.entity.Member;
@@ -44,7 +46,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	@Override
 	public CreateMemberCouponResponse createMemberCoupon(Long memberId, CreateMemberCouponRequest request) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 		CreateCouponResponse couponResponse = couponAdapter.createCoupon(
 			CreateCouponRequest.builder().couponTemplateId(request.couponTemplateId()).build()).getBody();
@@ -58,7 +60,8 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	@Override
 	public void createMemberCouponByMessage(@Valid RegisterCouponMessage message) {
 		Member member = memberRepository.findById(message.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(Member.class));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
 		MemberCoupon memberCoupon = MemberCoupon.builder().member(member).couponId(message.couponId()).build();
 		memberCouponRepository.save(memberCoupon);
 	}
@@ -118,6 +121,25 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			.toList();
 
 		return GetCouponIdsResponse.builder().couponIds(couponIds).build();
+	}
+
+	@Override
+	public CreateMemberCouponResponse downloadCoupon(Long memberId, DownloadCouponRequest request) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+		List<Long> couponList = memberCouponRepository.findByMemberId(memberId)
+			.stream()
+			.map(MemberCoupon::getCouponId)
+			.toList();
+
+		CreateCouponResponse response = couponAdapter.createCoupon(
+				CreateCouponRequest.builder().couponIdList(couponList).couponTemplateId(request.couponTemplateId()).build())
+			.getBody();
+		MemberCoupon saved = memberCouponRepository.save(
+			MemberCoupon.builder().couponId(response.id()).member(member).build());
+
+		return CreateMemberCouponResponse.fromEntity(saved);
 	}
 
 }
