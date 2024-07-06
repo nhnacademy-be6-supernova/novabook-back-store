@@ -80,16 +80,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@ExceptionHandler(NovaException.class)
-	protected ResponseEntity<Object> handleNovaException(NovaException ex, WebRequest request) {
-		ErrorResponse errorResponse = ErrorResponse.from(ex);
-		return handleExceptionInternal(ex, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	protected ResponseEntity<Object> handleNovaException(NovaException exception, WebRequest request) {
+		ErrorResponse errorResponse = ErrorResponse.from(exception);
+		return handleExceptionInternal(exception, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
 	@ExceptionHandler(FeignClientException.class)
-	public ResponseEntity<ErrorResponse> handleFeignClientException(FeignClientException e) {
-		// ErrorResponse<CouponErrorBody> errorResponse = e.getErrorResponse();
-		// return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse.getBody());
-		return null;
+	public ResponseEntity<ErrorResponse> handleFeignClientException(FeignClientException exception) {
+		return ResponseEntity.status(exception.getStatus()).body(exception.getErrorResponse());
 	}
 
 	// /**
