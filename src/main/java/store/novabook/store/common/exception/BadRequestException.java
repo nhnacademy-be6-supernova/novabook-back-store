@@ -1,4 +1,4 @@
-package store.novabook.store.exception;
+package store.novabook.store.common.exception;
 
 /**
  * 잘못된 요청 오류를 나타내기 위해 발생하는 예외로, HTTP 상태 코드 400에 해당합니다.

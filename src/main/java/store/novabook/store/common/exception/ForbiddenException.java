@@ -1,4 +1,4 @@
-package store.novabook.store.exception;
+package store.novabook.store.common.exception;
 
 /**
  * {@code ForbiddenException} 클래스는 접근이 금지된 경우 발생하는 예외를 나타냅니다.

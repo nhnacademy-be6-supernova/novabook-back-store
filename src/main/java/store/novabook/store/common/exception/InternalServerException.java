@@ -1,4 +1,4 @@
-package store.novabook.store.exception;
+package store.novabook.store.common.exception;
 
 public class InternalServerException extends NovaException {
 	public InternalServerException(ErrorCode errorCode) {

@@ -8,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
-public class CouponErrorBody {
+public class ErrorBody {
 
 	private String errorCode;
 	private String message;
 	private Map<String, Object> result;
 
 	@JsonCreator
-	public CouponErrorBody(@JsonProperty("errorCode") String errorCode, @JsonProperty("message") String message,
+	public ErrorBody(@JsonProperty("errorCode") String errorCode, @JsonProperty("message") String message,
 		@JsonProperty("result") Map<String, Object> result) {
 		this.errorCode = errorCode;
 		this.message = message;

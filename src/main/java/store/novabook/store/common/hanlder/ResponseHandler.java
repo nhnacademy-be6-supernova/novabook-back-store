@@ -1,4 +1,4 @@
-package store.novabook.store.common.response;
+package store.novabook.store.common.hanlder;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
@@ -13,7 +13,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.Nullable;
-import store.novabook.store.exception.ErrorCode;
+import store.novabook.store.common.response.ApiResponse;
+import store.novabook.store.common.response.ErrorBody;
+import store.novabook.store.common.response.ErrorResponse;
+import store.novabook.store.common.response.PageResponse;
+import store.novabook.store.common.response.ValidErrorResponse;
 
 @Slf4j
 @RestControllerAdvice(basePackages = {"store.novabook.store"})
@@ -33,17 +37,18 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
 
 		if (body instanceof ProblemDetail problemDetail) {
 			return ApiResponse.error(ErrorResponse.from(problemDetail));
-			// return new ErrorResponse(problemDetail.getDetail(), body);
 		}
 
 		if (body instanceof ValidErrorResponse validErrorResponse) {
 			return ApiResponse.error(ErrorResponse.from(validErrorResponse));
-			// return new ErrorResponse<>("ServerError", result);
 		}
 
-		if (body instanceof CouponErrorBody errorBody) {
-			return ApiResponse.error(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errorBody.getMessage()));
-			// return new ErrorResponse<>("FeignError", errorBody);
+		if (body instanceof ErrorResponse errorResponse) {
+			return ApiResponse.error(errorResponse);
+		}
+
+		if (body instanceof ErrorBody errorBody) {
+			return ApiResponse.error(errorBody.getMessage());
 		}
 
 		if (body instanceof Page<?> page) {

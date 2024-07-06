@@ -18,9 +18,9 @@ import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
 import store.novabook.store.common.adatper.dto.GetCouponResponse;
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.response.PageResponse;
-import store.novabook.store.common.response.decoder.CouponErrorDecoder;
+// import store.novabook.store.common.response.decoder.ErrorDecoder;
 
-@FeignClient(name = "couponClient", configuration = CouponErrorDecoder.class)
+@FeignClient(name = "couponClient")
 public interface CouponAdapter {
 
 	@GetMapping

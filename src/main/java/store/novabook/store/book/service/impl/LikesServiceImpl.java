@@ -18,7 +18,8 @@ import store.novabook.store.book.entity.Likes;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.LikesRepository;
 import store.novabook.store.book.service.LikesService;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
 
@@ -45,10 +46,9 @@ public class LikesServiceImpl implements LikesService {
 	//생성
 	@Override
 	public CreateLikesResponse createLikes(Long memberId, Long bookId) {
-		Book book = bookRepository.findById(bookId)
-			.orElseThrow(() -> new EntityNotFoundException(Book.class,bookId));
+		Book book = bookRepository.findById(bookId).orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		Likes likes = likesRepository.save(Likes.of(book, member));
 		return CreateLikesResponse.from(likes);
 	}

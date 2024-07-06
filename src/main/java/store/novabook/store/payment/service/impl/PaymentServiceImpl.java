@@ -4,10 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.exception.BadRequestException;
-import store.novabook.store.exception.ErrorCode;
-import store.novabook.store.exception.NotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.payment.dto.request.CreatePaymentRequest;
 import store.novabook.store.payment.dto.response.CreatePaymentResponse;
 import store.novabook.store.payment.dto.response.GetPaymentResponse;
@@ -26,7 +24,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional(readOnly = true)
 	public GetPaymentResponse getPayment(Long paymentId) {
 		Payment payment = paymentRepository.findById(paymentId)
-			.orElseThrow(() -> new EntityNotFoundException(Payment.class, paymentId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
 		return GetPaymentResponse.from(payment);
 	}
 
@@ -43,7 +41,6 @@ public class PaymentServiceImpl implements PaymentService {
 		Payment payment = paymentRepository.findByOrdersId(ordersId);
 		if (payment == null) {
 			throw new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND);
-			// throw new EntityNotFoundException(Payment.class);
 		}
 		return GetPaymentResponse.from(payment);
 	}

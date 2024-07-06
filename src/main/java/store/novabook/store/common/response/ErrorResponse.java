@@ -2,8 +2,8 @@ package store.novabook.store.common.response;
 
 import org.springframework.http.ProblemDetail;
 
-import store.novabook.store.exception.ErrorCode;
-import store.novabook.store.exception.NovaException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NovaException;
 
 /**
  * 에러 응답을 나타내는 레코드입니다.

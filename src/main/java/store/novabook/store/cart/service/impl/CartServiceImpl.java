@@ -10,7 +10,8 @@ import store.novabook.store.cart.dto.response.CartIdResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.repository.CartRepository;
 import store.novabook.store.cart.service.CartService;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
 
@@ -22,10 +23,10 @@ public class CartServiceImpl implements CartService {
 	private final CartRepository cartRepository;
 	private final MemberRepository memberRepository;
 
-
 	@Override
-	public CartIdResponse createCartId(Long memberId){
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(Member.class,memberId));
+	public CartIdResponse createCartId(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		Cart cart = cartRepository.save(Cart.of(member));
 		return new CartIdResponse(cart.getId());
 	}

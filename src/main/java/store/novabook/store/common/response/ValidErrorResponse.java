@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import store.novabook.store.exception.ErrorCode;
+import store.novabook.store.common.exception.ErrorCode;
 
 /**
  * 유효성 검사 오류에 대한 응답을 나타내는 레코드입니다.

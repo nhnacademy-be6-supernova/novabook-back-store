@@ -12,13 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.CouponType;
-import store.novabook.store.common.exception.AlreadyExistException;
-import store.novabook.store.common.exception.EntityNotFoundException;
 import store.novabook.store.common.messaging.CouponSender;
 import store.novabook.store.common.messaging.dto.CreateCouponMessage;
-import store.novabook.store.exception.BadRequestException;
-import store.novabook.store.exception.ErrorCode;
-import store.novabook.store.exception.NotFoundException;
+import store.novabook.store.common.exception.BadRequestException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
@@ -80,7 +78,6 @@ public class MemberServiceImpl implements MemberService {
 
 		MemberStatus memberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
-		// .orElseThrow(() -> new EntityNotFoundException(MemberStatus.class));
 
 		LocalDateTime birth = LocalDateTime.of(createMemberRequest.birthYear(), createMemberRequest.birthMonth(),
 			createMemberRequest.birthDay(), 0, 0);
@@ -91,7 +88,6 @@ public class MemberServiceImpl implements MemberService {
 
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
 			throw new BadRequestException(ErrorCode.DUPLICATED_LOGIN_ID);
-			// throw new AlreadyExistException(Member.class);
 		}
 
 		Member newMember = memberRepository.save(member);
@@ -107,9 +103,10 @@ public class MemberServiceImpl implements MemberService {
 		memberGradeHistoryRepository.save(memberGradeHistory);
 
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
-			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, pointPolicy.getRegisterPoint());
+		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT,
+			pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 
 		couponSender.sendToHighTrafficQueue(
@@ -130,14 +127,14 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional(readOnly = true)
 	public GetMemberResponse getMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		return GetMemberResponse.fromEntity(member);
 	}
 
 	@Override
 	public void updateMemberNumberOrName(Long memberId, UpdateMemberRequest updateMemberRequest) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 		if (updateMemberRequest.name() != null) {
 			member.updateName(updateMemberRequest.name());
@@ -155,7 +152,7 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		String encodedPassword = bCryptPasswordEncoder.encode(updateMemberPasswordRequest.loginPassword());
 		member.updateLoginPassword(encodedPassword);
 		memberRepository.save(member);
@@ -164,10 +161,10 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void updateMemberStatusToDormant(Long memberId) {
 		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_DORMANT)
-			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
 
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		member.updateMemberStatus(newMemberStatus);
 		memberRepository.save(member);
 	}
@@ -175,10 +172,10 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void updateMemberStatusToWithdraw(Long memberId, DeleteMemberRequest deleteMemberRequest) {
 		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_WITHDRAW)
-			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
 
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 		if (!bCryptPasswordEncoder.matches(deleteMemberRequest.loginPassword(), member.getLoginPassword())) {
 			throw new BadCredentialsException(LOGIN_FAIL_MESSAGE);

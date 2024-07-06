@@ -1,4 +1,4 @@
-package store.novabook.store.exception;
+package store.novabook.store.common.exception;
 
 /**
  * 인증되지 않은 요청에 대한 예외 클래스.

@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.exception.ErrorCode;
-import store.novabook.store.exception.NotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.point.dto.request.CreatePointPolicyRequest;
 import store.novabook.store.point.dto.response.GetPointPolicyResponse;
 import store.novabook.store.point.entity.PointPolicy;
@@ -28,7 +27,6 @@ public class PointPolicyServiceImpl implements PointPolicyService {
 		Page<PointPolicy> pointPolicyList = pointPolicyRepository.findAll(pageable);
 		if (pointPolicyList.isEmpty()) {
 			throw new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND);
-			// throw new EntityNotFoundException(PointPolicy.class);
 		}
 		return pointPolicyList.map(
 			pointPolicy -> new GetPointPolicyResponse(pointPolicy.getReviewPointRate(), pointPolicy.getBasicPoint(),
@@ -40,7 +38,6 @@ public class PointPolicyServiceImpl implements PointPolicyService {
 	public GetPointPolicyResponse getLatestPointPolicy() {
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
-		// () -> new EntityNotFoundException(PointPolicy.class));
 		return GetPointPolicyResponse.builder()
 			.reviewPointRate(pointPolicy.getReviewPointRate())
 			.basicPoint(pointPolicy.getBasicPoint())

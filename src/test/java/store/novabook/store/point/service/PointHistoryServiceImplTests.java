@@ -18,12 +18,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.repository.OrdersRepository;
-import store.novabook.store.common.exception.EntityNotFoundException;
-
 import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.entity.PointHistory;
@@ -110,7 +109,7 @@ public class PointHistoryServiceImplTests {
 	void getPointHistoryListTest_EntityNotFoundException() {
 		when(pointHistoryRepository.findAll(any(Pageable.class))).thenReturn(Page.empty());
 
-		assertThrows(EntityNotFoundException.class, () -> {
+		assertThrows(NotFoundException.class, () -> {
 			pointHistoryServiceImpl.getPointHistoryList(PageRequest.of(0, 10));
 		});
 	}

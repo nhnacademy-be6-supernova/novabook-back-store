@@ -1,4 +1,4 @@
-package store.novabook.store.exception;
+package store.novabook.store.common.exception;
 
 /**
  * 리소스를 찾을 수 없을 때 발생하는 예외입니다.
