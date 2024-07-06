@@ -2,12 +2,10 @@ package store.novabook.store.book.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.dto.request.LikeBookRequest;
 import store.novabook.store.book.dto.response.GetLikeBookResponse;
 import store.novabook.store.book.dto.response.LikeBookResponse;
 import store.novabook.store.book.entity.Book;
@@ -35,22 +33,30 @@ public class LikesServiceImpl implements LikesService {
 		return likesList.map(GetLikeBookResponse::from);
 	}
 
-	//생성
+	//좋아요가 있는지 없는지 불러오기
 	@Override
-	public LikeBookResponse createLikes(Long memberId, LikeBookRequest likeBookRequest) {
-		Book book = bookRepository.findById(likeBookRequest.bookId())
-			.orElseThrow(() -> new EntityNotFoundException(Book.class, likeBookRequest.bookId()));
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
-		Likes likes = likesRepository.save(Likes.of(book, member));
-		return LikeBookResponse.builder().build();
+	public LikeBookResponse getLikeResponse(Long memberId, Long bookId) {
+		return new LikeBookResponse(likesRepository.existsByMemberIdAndBookId(memberId, bookId));
 	}
 
-	// 삭제
 	@Override
-	public HttpStatus deleteLikes(Long likesId) {
-		likesRepository.deleteById(likesId);
-		return HttpStatus.NO_CONTENT;
+	public LikeBookResponse likeButton(Long memberId, Long bookId) {
+		// 삭제
+		if (likesRepository.existsByMemberIdAndBookId(memberId, bookId)) {
+			likesRepository.deleteAllByMemberIdAndBookId(memberId, bookId);
+			return LikeBookResponse.builder().isLiked(false).build();
+		}
+
+		//생성
+		Book book = bookRepository.findById(bookId)
+			.orElseThrow(() -> new EntityNotFoundException(Book.class, bookId));
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+
+		likesRepository.save(Likes.of(book, member));
+
+		return LikeBookResponse.builder().isLiked(true).build();
+
 	}
 
 }
