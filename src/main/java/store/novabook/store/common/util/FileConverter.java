@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import store.novabook.store.book.dto.request.ReviewImageDTO;
 
 public class FileConverter {
-
 	public static List<MultipartFile> convertToMultipartFile(List<ReviewImageDTO> imageDTO) throws IOException {
 		List<MultipartFile> files = new ArrayList<>();
 		for (ReviewImageDTO dto : imageDTO) {

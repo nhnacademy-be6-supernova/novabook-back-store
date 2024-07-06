@@ -8,13 +8,16 @@ import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
 import store.novabook.store.point.dto.request.GetPointHistoryRequest;
 import store.novabook.store.point.dto.response.GetPointHistoryListResponse;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
+import store.novabook.store.point.dto.response.GetPointResponse;
 
 public interface PointHistoryService {
-	@Transactional(readOnly = true)
 	Page<GetPointHistoryResponse> getPointHistoryList(Pageable pageable);
 
-	@Transactional(readOnly = true)
 	GetPointHistoryListResponse getPointHistory(GetPointHistoryRequest getPointHistoryRequest);
 
+	Page<GetPointHistoryResponse> getPointHistoryByMemberIdPage(Long memberId, Pageable pageable);
+
 	void createPointHistory(CreatePointHistoryRequest createPointHistoryRequest);
+
+	GetPointResponse getPointTotalByMemberId(Long memberId);
 }
