@@ -10,5 +10,4 @@ public interface PointPolicyRepository extends JpaRepository<PointPolicy, Long> 
 
 	Optional<PointPolicy> findTopByOrderByCreatedAtDesc();
 
-
 }

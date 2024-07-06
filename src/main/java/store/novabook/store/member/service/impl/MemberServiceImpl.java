@@ -106,10 +106,10 @@ public class MemberServiceImpl implements MemberService {
 			.build();
 		memberGradeHistoryRepository.save(memberGradeHistory);
 
-		PointPolicy pointPolicy = pointPolicyRepository.findById(ID)
-			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class, ID));
+		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
+			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, POINT_AMOUNT);
+		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 
 		couponSender.sendToHighTrafficQueue(

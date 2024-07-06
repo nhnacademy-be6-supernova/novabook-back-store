@@ -48,12 +48,12 @@ public class ReviewImage {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public ReviewImage(Review review, Image image){
+	public ReviewImage(Review review, Image image) {
 		this.review = review;
 		this.image = image;
 	}
 
-	public static ReviewImage of(Review review, Image image){
+	public static ReviewImage of(Review review, Image image) {
 		return ReviewImage.builder().review(review).image(image).build();
 	}
 
