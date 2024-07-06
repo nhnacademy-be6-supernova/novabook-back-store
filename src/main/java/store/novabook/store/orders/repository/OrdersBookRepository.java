@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import store.novabook.store.orders.entity.OrdersBook;
 
-public interface OrdersBookRepository extends JpaRepository<OrdersBook, Long> {
+public interface OrdersBookRepository extends JpaRepository<OrdersBook, Long>, OrdersBookQueryRepository {
 }

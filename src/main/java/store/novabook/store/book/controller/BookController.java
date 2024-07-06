@@ -22,7 +22,6 @@ import store.novabook.store.book.dto.response.CreateBookResponse;
 import store.novabook.store.book.dto.response.GetBookAllResponse;
 import store.novabook.store.book.dto.response.GetBookResponse;
 import store.novabook.store.book.service.BookService;
-import store.novabook.store.image.service.ImageService;
 
 @RestController
 @RequiredArgsConstructor

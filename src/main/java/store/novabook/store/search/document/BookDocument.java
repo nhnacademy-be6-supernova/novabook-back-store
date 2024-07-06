@@ -47,7 +47,8 @@ public class BookDocument {
 	private final LocalDateTime createdAt;
 
 	@Builder
-	public BookDocument(Long id, String title, String author, String publisher, String image, List<String> tagList, List<String> categoryList) {
+	public BookDocument(Long id, String title, String author, String publisher, String image, List<String> tagList,
+		List<String> categoryList) {
 		this.id = id;
 		this.title = title;
 		this.author = author;
@@ -69,6 +70,7 @@ public class BookDocument {
 			.categoryList(categoryNames(categories))
 			.build();
 	}
+
 	public static List<String> categoryNames(List<Category> categories) {
 		Set<String> categoryNames = new HashSet<>();
 		for (Category category : categories) {

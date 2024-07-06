@@ -28,6 +28,5 @@ public record UpdateBookRequest(
 			.discountPrice(book.getDiscountPrice())
 			.isPackaged(book.isPackaged())
 			.build();
-
 	}
 }

@@ -54,9 +54,7 @@ public class MemberServiceImpl implements MemberService {
 	public static final String STATUS_ACTIVE = "활동";
 	public static final String STATUS_DORMANT = "휴면";
 	public static final String STATUS_WITHDRAW = "탈퇴";
-	public static final long ID = 1L;
 	public static final String REGISTER_POINT = "회원가입 적립금";
-	public static final long POINT_AMOUNT = 5000L;
 	public static final String LOGIN_FAIL_MESSAGE = "비밀번호가 일치하지 않습니다.";
 
 	private final MemberRepository memberRepository;
@@ -103,10 +101,11 @@ public class MemberServiceImpl implements MemberService {
 			.build();
 		memberGradeHistoryRepository.save(memberGradeHistory);
 
-		PointPolicy pointPolicy = pointPolicyRepository.findById(ID)
-			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class, ID));
+		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
+			.orElseThrow(() -> new EntityNotFoundException(PointPolicy.class));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT, POINT_AMOUNT);
+		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT,
+			pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 
 		couponSender.sendToHighTrafficQueue(
