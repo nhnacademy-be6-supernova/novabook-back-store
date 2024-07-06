@@ -4,22 +4,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import lombok.RequiredArgsConstructor;
-import store.novabook.store.member.service.DoorayHookClient;
 import store.novabook.store.member.service.DoorayService;
 
 @Service
-@RequiredArgsConstructor
 public class DoorayServiceImpl implements DoorayService {
 
-	private final DoorayHookClient doorayHookClient;
-	
+	private final RestTemplate restTemplate = new RestTemplate();
+	private final String DOORAY_WEBHOOK_URL = "https://hook.dooray.com/services/3204376758577275363/3841573584705463142/XgrMG9YtRw65XfNFuTYFDg";
+
 	@Override
 	public void sendAuthCode(Long memberId, String authCode) {
 		Map<String, Object> message = new HashMap<>();
-		message.put("botName", memberId.toString());
+		message.put("botName", "novabook Bot");
 		message.put("text", "휴면 계정 해지를 위한 인증코드" + authCode);
 
+		restTemplate.postForObject(DOORAY_WEBHOOK_URL, message, String.class);
 	}
 }

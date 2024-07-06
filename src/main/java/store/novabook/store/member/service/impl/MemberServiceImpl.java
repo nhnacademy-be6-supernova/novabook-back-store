@@ -15,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.CouponType;
-import store.novabook.store.common.messaging.CouponSender;
-import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.common.messaging.CouponSender;
+import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
@@ -194,10 +194,10 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void updateMemberStatusToActive(Long memberId, String authCode) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
-			.orElseThrow(() -> new EntityNotFoundException(MemberStatus.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
 
 		if (!validateAuthCode(memberId, authCode)) {
 			throw new BadCredentialsException("인증코드가 유효하지 않습니다.");
@@ -280,7 +280,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public boolean isDormantMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, memberId));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 		return member.getMemberStatus().getName().equals(STATUS_DORMANT);
 	}
