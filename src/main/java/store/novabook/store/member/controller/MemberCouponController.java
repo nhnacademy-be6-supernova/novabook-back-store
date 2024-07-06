@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
 import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
 import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
-import store.novabook.store.common.security.aop.CurrentUser;
+import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.member.controller.docs.MemberCouponControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.request.DownloadCouponRequest;
@@ -32,14 +32,15 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	private final MemberCouponService memberCouponService;
 
 	@PostMapping
-	public ResponseEntity<CreateMemberCouponResponse> createMemberCoupon(@CurrentUser Long memberId,
+	public ResponseEntity<CreateMemberCouponResponse> createMemberCoupon(@CurrentMembers Long memberId,
 		@RequestBody CreateMemberCouponRequest request) {
 		CreateMemberCouponResponse saved = memberCouponService.createMemberCoupon(memberId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
 	@GetMapping("/history")
-	public ResponseEntity<Page<GetCouponHistoryResponse>> getMemberCouponHistoryByMemberId(@CurrentUser Long memberId,
+	public ResponseEntity<Page<GetCouponHistoryResponse>> getMemberCouponHistoryByMemberId(
+		@CurrentMembers Long memberId,
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 		Page<GetCouponHistoryResponse> response = memberCouponService.getMemberCouponHistory(memberId, pageable);
 		return ResponseEntity.ok(response);
@@ -47,7 +48,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 
 	@GetMapping("/history/used")
 	public ResponseEntity<Page<GetUsedCouponHistoryResponse>> getMemberUsedCouponHistoryByMemberId(
-		@CurrentUser Long memberId,
+		@CurrentMembers Long memberId,
 		@PageableDefault(sort = "usedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 		Page<GetUsedCouponHistoryResponse> response = memberCouponService.getMemberUsedCouponHistory(memberId,
 			pageable);
@@ -55,13 +56,13 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	}
 
 	@GetMapping("/is-valid")
-	public ResponseEntity<GetCouponAllResponse> getMemberCouponByMemberId(@CurrentUser Long memberId) {
+	public ResponseEntity<GetCouponAllResponse> getMemberCouponByMemberId(@CurrentMembers Long memberId) {
 		GetCouponAllResponse response = memberCouponService.getValidAllByMemberId(memberId);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<GetCouponIdsResponse> getMemberCoupon(@CurrentUser Long memberId) {
+	public ResponseEntity<GetCouponIdsResponse> getMemberCoupon(@CurrentMembers Long memberId) {
 		return ResponseEntity.ok().body(memberCouponService.getMemberCoupon(memberId));
 	}
 

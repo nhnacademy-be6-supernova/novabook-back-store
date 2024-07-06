@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
-import store.novabook.store.common.security.aop.CurrentUser;
+import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersBookRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
@@ -43,5 +43,6 @@ public interface OrdersBookControllerDocs {
 
 	@Operation(summary = "<주문도서> 회원 조회", description = "<주문도서> 회원으로 전체 조회합니다.")
 	@GetMapping("/members")
-	ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(@CurrentUser Long memberId, Pageable pageable);
+	ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(@CurrentMembers Long memberId,
+		Pageable pageable);
 }

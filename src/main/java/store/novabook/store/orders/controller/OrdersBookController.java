@@ -16,13 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
-import store.novabook.store.common.security.aop.CurrentUser;
+import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.orders.controller.docs.OrdersBookControllerDocs;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersBookRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
-import store.novabook.store.orders.repository.impl.OrdersBookQueryRepositoryImpl;
 import store.novabook.store.orders.service.OrdersBookService;
 
 @RestController
@@ -46,7 +45,7 @@ public class OrdersBookController implements OrdersBookControllerDocs {
 	//마이페이지에서 사용
 	@GetMapping("/members")
 	public ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(
-		@CurrentUser Long memberId, Pageable pageable) {
+		@CurrentMembers Long memberId, Pageable pageable) {
 		Page<GetOrdersBookReviewIdResponse> responses = ordersBookService.getOrdersBookReviewByMemberId(
 			memberId,
 			pageable);

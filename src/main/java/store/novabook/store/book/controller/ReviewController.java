@@ -19,6 +19,7 @@ import store.novabook.store.book.dto.response.CreateReviewResponse;
 import store.novabook.store.book.dto.response.GetReviewListResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.service.ReviewService;
+import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.common.security.aop.CurrentUser;
 
 @RestController
@@ -42,8 +43,10 @@ public class ReviewController implements ReviewControllerDocs {
 	}
 
 	@PostMapping("/{ordersBookId}")
-	public ResponseEntity<CreateReviewResponse> createReviewed(@PathVariable Long ordersBookId,
-		@Valid @RequestBody CreateReviewRequest request, @CurrentUser Long memberId) {
+	public ResponseEntity<CreateReviewResponse> createReviewed(
+		@PathVariable Long ordersBookId,
+		@Valid @RequestBody CreateReviewRequest request,
+		@CurrentMembers Long memberId) {
 		CreateReviewResponse createReviewResponse = reviewService.createReview(ordersBookId, request, memberId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createReviewResponse);
 	}
