@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.orders.dto.request.TossPaymentRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
+import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersResponse;
 
 @Tag(name = "Orders API")
@@ -18,7 +20,7 @@ public interface OrdersControllerDocs {
 
 	//생성
 	@Operation(summary = "주문 생성", description = "주문을 생성합니다")
-	ResponseEntity<JSONObject> createOrders(@RequestBody TossPaymentRequest request);
+	ResponseEntity<CreateResponse> createOrders(@Valid @RequestBody CreateOrdersRequest request) ;
 
 	//전체 조회
 	@Operation(summary = "주문 전체 조회", description = "주문을 전체 조회합니다.")
