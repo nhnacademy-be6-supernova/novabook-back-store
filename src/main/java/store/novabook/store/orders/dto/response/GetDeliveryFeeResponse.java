@@ -8,7 +8,7 @@ import store.novabook.store.orders.entity.DeliveryFee;
 @Builder
 public record GetDeliveryFeeResponse(
 	Long id,
-	long fee,
+	Long fee,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
 ) {
