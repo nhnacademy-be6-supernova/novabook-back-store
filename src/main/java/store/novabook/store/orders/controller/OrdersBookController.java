@@ -1,6 +1,7 @@
 package store.novabook.store.orders.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
+import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.orders.controller.docs.OrdersBookControllerDocs;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersBookRequest;
@@ -40,6 +43,16 @@ public class OrdersBookController implements OrdersBookControllerDocs {
 		return ResponseEntity.ok(responses);
 	}
 
+	//마이페이지에서 사용
+	@GetMapping("/members")
+	public ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(
+		@CurrentMembers Long memberId, Pageable pageable) {
+		Page<GetOrdersBookReviewIdResponse> responses = ordersBookService.getOrdersBookReviewByMemberId(
+			memberId,
+			pageable);
+		return ResponseEntity.ok(responses);
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<GetOrdersBookResponse> getOrdersBook(@PathVariable Long id) {
 		GetOrdersBookResponse response = ordersBookService.getOrdersBook(id);
@@ -58,4 +71,5 @@ public class OrdersBookController implements OrdersBookControllerDocs {
 		ordersBookService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
+
 }

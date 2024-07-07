@@ -6,35 +6,35 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import store.novabook.store.common.security.entity.Users;
+import store.novabook.store.common.security.entity.Members;
 
 public class CustomUserDetails implements UserDetails {
-	private final transient Users users;
+	private final transient Members members;
 
-	public CustomUserDetails(Users users) {
-		this.users = users;
+	public CustomUserDetails(Members members) {
+		this.members = members;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> collection = new ArrayList<>();
-		collection.add((GrantedAuthority)users::getRole);
+		collection.add((GrantedAuthority)members::getRole);
 
 		return collection;
 	}
 
 	public long getId() {
-		return users.getId();
+		return members.getId();
 	}
 
 	@Override
 	public String getPassword() {
-		return users.getPassword();
+		return members.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return Long.toString(users.getId());
+		return Long.toString(members.getId());
 	}
 
 	@Override
@@ -58,6 +58,6 @@ public class CustomUserDetails implements UserDetails {
 	}
 
 	public Object getDetails() {
-		return users;
+		return members;
 	}
 }

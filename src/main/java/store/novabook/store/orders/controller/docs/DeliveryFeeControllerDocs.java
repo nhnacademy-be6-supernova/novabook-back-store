@@ -22,14 +22,14 @@ public interface DeliveryFeeControllerDocs {
 	ResponseEntity<CreateResponse> createDeliveryFee(@Valid @RequestBody CreateDeliveryFeeRequest request);
 
 	//전체 조회
-	@Operation(summary = "택배비 조회", description = "택배비를 페이지 조회 합니다")
-	ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll(Pageable pageable);
+	@Operation(summary = "택배비 조회", description = "택배비를 페이지 조회 합니다.")
+	ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryAllPage(Pageable pageable);
 
-	@Operation(summary = "택배비 전체 조회", description = "전체 조회 합니다")
+	@Operation(summary = "택배비 전체 조회", description = "전체 조회 합니다.")
 	ResponseEntity<GetDeliveryFeeListResponse> getDeliveryFeeAllList();
 
 	//단건 조회
-	@Operation(summary = "택배비 단건 조회", description = "택배비 ID로 조회 합니다")
+	@Operation(summary = "택배비 단건 조회", description = "택배비 ID로 조회 합니다.")
 	ResponseEntity<GetDeliveryFeeResponse> getDeliveryFee(@PathVariable Long id);
 
 	@Operation(summary = "최근 택배비를 조회합니다", description = "생성일이 최근인 택배비 정책을 가져옵니다")

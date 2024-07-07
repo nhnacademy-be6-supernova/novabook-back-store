@@ -1,21 +1,37 @@
 package store.novabook.store.book.dto.response;
 
-import lombok.Builder;
-import store.novabook.store.book.entity.Review;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@Builder
+import store.novabook.store.book.dto.ReviewImageDto;
+
 public record GetReviewResponse(
-	Long id,
+	String nickName,
+	Long reviewId,
 	Long orderBookId,
 	String content,
-	int score
+	List<String> reviewImages,
+	int score,
+	LocalDateTime createdAt
 ) {
-	public static GetReviewResponse from(Review review) {
-		return GetReviewResponse.builder()
-			.id(review.getId())
-			.orderBookId(review.getOrdersBook().getId())
-			.content(review.getContent())
-			.score(review.getScore())
-			.build();
+	public static Map<Long, GetReviewResponse> of(List<ReviewImageDto> reviewImageDtoList) {
+		Map<Long, GetReviewResponse> reviewMap = new HashMap<>();
+		for (ReviewImageDto dto : reviewImageDtoList) {
+			reviewMap.computeIfAbsent(dto.reviewId(),
+				id -> new GetReviewResponse(maskString(dto.nickName()), dto.reviewId(), dto.orderBookId(),
+					dto.content(),
+					new ArrayList<>(),
+					dto.score(), dto.createdAt())).reviewImages().add(dto.reviewImage());
+		}
+		return reviewMap;
+	}
+
+	public static String maskString(String input) {
+		return input != null && input.length() > 3
+			? input.substring(0, 3) + "*".repeat(input.length() - 3)
+			: input;
 	}
 }

@@ -19,7 +19,8 @@ import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
 import store.novabook.store.category.service.CategoryService;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +33,11 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public CreateCategoryResponse create(CreateCategoryRequest request) {
 		Category newCategory;
-
 		if (request.topCategoryId() == null) {
 			newCategory = new Category(request.name());
 		} else {
 			Category topCategory = categoryRepository.findById(request.topCategoryId())
-				.orElseThrow(() -> new EntityNotFoundException(Category.class, request.topCategoryId()));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
 			newCategory = new Category(topCategory, request.name());
 		}
 
@@ -49,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional(readOnly = true)
 	public GetCategoryResponse getCategory(Long id) {
 		Category category = categoryRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(Category.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
 		return GetCategoryResponse.fromEntity(category, null);
 	}
 
@@ -78,7 +78,6 @@ public class CategoryServiceImpl implements CategoryService {
 				subCategoryDTOs.add(subCategoryDTO);
 			}
 		}
-
 		return GetCategoryResponse.fromEntity(category, subCategoryDTOs);
 	}
 

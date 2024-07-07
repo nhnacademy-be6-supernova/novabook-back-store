@@ -9,6 +9,7 @@ import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
 import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
 import store.novabook.store.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
+import store.novabook.store.member.dto.request.DownloadCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.dto.response.GetCouponIdsResponse;
 
@@ -24,4 +25,6 @@ public interface MemberCouponService {
 	Page<GetCouponHistoryResponse> getMemberCouponHistory(Long memberId, Pageable pageable);
 
 	Page<GetUsedCouponHistoryResponse> getMemberUsedCouponHistory(Long memberId, Pageable pageable);
+
+	CreateMemberCouponResponse downloadCoupon(Long memberId, DownloadCouponRequest request);
 }

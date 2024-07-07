@@ -1,5 +1,13 @@
 package store.novabook.store.orders.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -7,8 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 
-import store.novabook.store.common.exception.EntityNotFoundException;
-
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
@@ -16,14 +23,6 @@ import store.novabook.store.orders.dto.response.GetOrdersStatusResponse;
 import store.novabook.store.orders.entity.OrdersStatus;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
 import store.novabook.store.orders.service.impl.OrdersStatusServiceImpl;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class OrdersStatusServiceImplTest {
 
@@ -40,9 +39,7 @@ class OrdersStatusServiceImplTest {
 
 	@Test
 	void testSave() {
-		CreateOrdersStatusRequest request = CreateOrdersStatusRequest.builder()
-			.name("Processing")
-			.build();
+		CreateOrdersStatusRequest request = CreateOrdersStatusRequest.builder().name("Processing").build();
 		OrdersStatus ordersStatus = new OrdersStatus(request);
 		when(ordersStatusRepository.save(any(OrdersStatus.class))).thenReturn(ordersStatus);
 
@@ -55,12 +52,8 @@ class OrdersStatusServiceImplTest {
 
 	@Test
 	void testGetOrdersStatus() {
-		OrdersStatus status1 = new OrdersStatus(CreateOrdersStatusRequest.builder()
-			.name("Processing")
-			.build());
-		OrdersStatus status2 = new OrdersStatus(CreateOrdersStatusRequest.builder()
-			.name("Delivered")
-			.build());
+		OrdersStatus status1 = new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build());
+		OrdersStatus status2 = new OrdersStatus(CreateOrdersStatusRequest.builder().name("Delivered").build());
 		List<OrdersStatus> statusList = Arrays.asList(status1, status2);
 		when(ordersStatusRepository.findAll()).thenReturn(statusList);
 
@@ -76,9 +69,7 @@ class OrdersStatusServiceImplTest {
 	@Test
 	void testGetOrdersStatusById() {
 		Long id = 1L;
-		OrdersStatus ordersStatus = new OrdersStatus(CreateOrdersStatusRequest.builder()
-			.name("Processing")
-			.build());
+		OrdersStatus ordersStatus = new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build());
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.of(ordersStatus));
 
 		GetOrdersStatusResponse response = ordersStatusServiceImpl.getOrdersStatus(id);
@@ -93,23 +84,20 @@ class OrdersStatusServiceImplTest {
 		Long id = 1L;
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.empty());
 
-		assertThrows(EntityNotFoundException.class, () -> {
+		assertThrows(NotFoundException.class, () -> {
 			ordersStatusServiceImpl.getOrdersStatus(id);
 		});
 
 		verify(ordersStatusRepository, times(1)).findById(id);
 	}
 
-
 	@Test
 	void testUpdateOrdersStatusNotFound() {
 		Long id = 1L;
-		UpdateOrdersStatusRequest updateRequest = UpdateOrdersStatusRequest.builder()
-			.name("Shipped")
-			.build();
+		UpdateOrdersStatusRequest updateRequest = UpdateOrdersStatusRequest.builder().name("Shipped").build();
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.empty());
 
-		assertThrows(EntityNotFoundException.class, () -> {
+		assertThrows(NotFoundException.class, () -> {
 			ordersStatusServiceImpl.updateOrdersStatus(id, updateRequest);
 		});
 

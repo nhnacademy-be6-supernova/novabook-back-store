@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
+import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
@@ -15,6 +16,7 @@ import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
+import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
 
 public interface MemberService {
@@ -37,7 +39,9 @@ public interface MemberService {
 
 	LoginMemberResponse matches(LoginMemberRequest loginMemberRequest);
 
-	FindMemberLoginResponse findMemberLogin(String loginId);
+	FindMemberLoginResponse findMembersLogin(String loginId);
+
+	GetPaycoMembersResponse getPaycoMembers(GetPaycoMembersRequest getPaycoMembersRequest);
 
 	GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest);
 

@@ -1,13 +1,17 @@
 package store.novabook.store.orders.controller.docs;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
+import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersBookRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
@@ -36,4 +40,9 @@ public interface OrdersBookControllerDocs {
 	//삭제
 	@Operation(summary = "<주문도서> 삭제", description = "<주문도서> 삭제 합니다.")
 	ResponseEntity<Void> deleteOrdersBook(@PathVariable Long id);
+
+	@Operation(summary = "<주문도서> 회원 조회", description = "<주문도서> 회원으로 전체 조회합니다.")
+	@GetMapping("/members")
+	ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(@CurrentMembers Long memberId,
+		Pageable pageable);
 }

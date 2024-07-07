@@ -60,7 +60,4 @@ public class OrdersBook {
 		this.quantity = request.quantity();
 		this.price = request.price();
 	}
-
-
-
 }

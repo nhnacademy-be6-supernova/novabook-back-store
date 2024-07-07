@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.search.service.BookSearchService;
 import store.novabook.store.search.document.BookDocument;
+import store.novabook.store.search.service.BookSearchService;
 
 @RestController
 @RequestMapping("/api/v1/store/search")
