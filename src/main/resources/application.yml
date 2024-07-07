@@ -65,6 +65,8 @@ spring:
         config:
           couponClient:
             url: http://localhost:8070/api/v1/coupon
+          keyManagerClient:
+            url: https://api-keymanager.nhncloudservice.com
 ---
 rabbitmq:
   queue:

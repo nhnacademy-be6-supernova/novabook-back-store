@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import feign.Headers;
-import store.novabook.store.common.util.ParamsDTO;
 
 @FeignClient(name = "nhnCloudMutilpartClient", url = "https://api-image.nhncloudservice.com")
 public interface NHNCloudMutilpartClient {
