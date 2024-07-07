@@ -32,7 +32,7 @@ public class OrdersSagaManagerImpl {
 
 	public void orderInvoke(PaymentRequest paymentRequest) {
 		this.paymentRequest = paymentRequest;
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange" ,  "api-주문서-검증-routing-key");
+		rabbitTemplate.convertAndSend("nova.orders.saga.exchange" ,  "api-주문서-검증-routing-key", paymentRequest.paymentInfo());
 	}
 
 

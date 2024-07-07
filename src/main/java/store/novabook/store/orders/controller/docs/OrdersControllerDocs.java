@@ -1,6 +1,5 @@
 package store.novabook.store.orders.controller.docs;
 
-import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
-import store.novabook.store.orders.dto.request.TossPaymentRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersResponse;

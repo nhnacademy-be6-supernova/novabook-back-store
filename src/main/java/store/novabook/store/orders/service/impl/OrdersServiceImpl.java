@@ -6,13 +6,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,15 +25,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.book.entity.Book;
+import store.novabook.store.book.entity.BookStatus;
+import store.novabook.store.book.entity.BookStatusEnum;
+import store.novabook.store.book.repository.BookRepository;
+import store.novabook.store.book.repository.BookStatusRepository;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
+import store.novabook.store.orders.dto.request.BookIdAndQuantityDTO;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.OrderTemporaryForm;
 import store.novabook.store.orders.dto.request.TossPaymentRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
@@ -53,12 +62,17 @@ import store.novabook.store.orders.service.OrdersService;
 @Transactional
 public class OrdersServiceImpl implements OrdersService {
 
+	// 보관용 재고
 	private final OrdersRepository ordersRepository;
 	private final DeliveryFeeRepository deliveryFeeRepository;
 	private final WrappingPaperRepository wrappingPaperRepository;
 	private final OrdersStatusRepository ordersStatusRepository;
 	private final MemberRepository memberRepository;
 	private final RedisOrderRepository redisOrderRepository;
+	private final BookRepository bookRepository;
+	private final BookStatusRepository bookStatusRepository;
+
+	private RabbitTemplate rabbitTemplate;
 
 	@Override
 	public JSONObject create(TossPaymentRequest request) {
@@ -71,8 +85,8 @@ public class OrdersServiceImpl implements OrdersService {
 
 		log.info("[TossPayment] 전달 받은 파라미터 값 : {}, {} , {}",
 			request.orderId()
-			,request.amount()
-			,request.paymentKey()
+			, request.amount()
+			, request.paymentKey()
 		);
 
 		// 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
@@ -143,11 +157,89 @@ public class OrdersServiceImpl implements OrdersService {
 	}
 
 	/**
+	 * @author 2-say
 	 * 가주문서 검증 비지니스 로직
+	 * 제고 감소도 함께 일어남
 	 */
-	public void confirmOrderForm() {
-		// redisOrderRepository.,
+	@Transactional
+	@RabbitListener(queues = "nova.orders.formConfirm.queue")
+	public void confirmOrderForm(Object paymentInfo) {
+		try {
+			// orderForm Fetch
+			TossPaymentRequest toss = (TossPaymentRequest)paymentInfo;
+			Optional<OrderTemporaryForm> orderForm = redisOrderRepository.findByOrderUUID(
+				UUID.fromString(toss.orderId()));
+
+			if (orderForm.isEmpty()) {
+				throw new IllegalArgumentException("주문 정보가 없습니다.");
+			}
+
+			OrderTemporaryForm orderTemporaryForm = orderForm.get();
+			List<BookIdAndQuantityDTO> books = orderTemporaryForm.books();
+
+			long totalPrice = 0;
+
+			// 조회를 한번만 하기 위해서 Cache 저장
+			Map<Long, Book> bookCache = new HashMap<>();
+
+			for (BookIdAndQuantityDTO bookDTO : books) {
+				Book book = bookCache.computeIfAbsent(bookDTO.id(), id -> {
+					Optional<Book> optionalBook = bookRepository.findById(id);
+					if (optionalBook.isEmpty()) {
+						throw new IllegalArgumentException("해당 도서가 존재하지 않습니다: " + id);
+					}
+					return optionalBook.get();
+				});
+
+				if (!book.getBookStatus().getName().equals(BookStatusEnum.FOR_SALE.getKoreanValue())) {
+					throw new IllegalArgumentException("판매중인 도서가 아닙니다: " + book.getId());
+				}
+
+				totalPrice += book.getPrice() * bookDTO.quantity();
+			}
+
+			if (totalPrice != toss.amount()) {
+				throw new IllegalArgumentException("가격 정보가 불일치 합니다.");
+			}
+
+			// 재고 감소는 총 가격 확인 후에 수행
+			for (BookIdAndQuantityDTO bookDTO : books) {
+				Book book = bookCache.get(bookDTO.id());
+				book.decreaseInventory((int)bookDTO.quantity());
+
+				// 판매 완료 시 상태 변경
+				if(book.getInventory() <= 0) {
+					Optional<BookStatus> statusOptional = bookStatusRepository.findById(BookStatusEnum.OUT_OF_STOCK.getValue());
+					if(statusOptional.isEmpty()) {
+						throw new IllegalArgumentException("책 상태를 찾을 수 없습니다.");
+					}
+					book.setBookStatus(statusOptional.get());
+				}
+
+				// 저장
+				bookRepository.save(book);
+			}
+		} catch (Exception e) {
+			// 예외가 발생하면 롤백 처리
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			// 실패 메시지 전송
+			rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key");
+			// 예외 다시 던지기
+			throw e;
+		}
 	}
+
+
+	/**
+	 * 상위 행위에서 에러 발생 시 보상 트랜잭션 행위
+	 */
+	@RabbitListener(queues = "nova.orders.compensate.formConfirm.queue")
+	void compensateConfirmOrderForm() {
+			// 재고 증가
+			// 만약 도서 수량이 많으면 도서 상태 변경
+			//
+	}
+
 
 	@Override
 	public void update(Long id, UpdateOrdersRequest request) {
