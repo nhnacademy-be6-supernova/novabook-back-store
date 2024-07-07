@@ -43,6 +43,8 @@ public interface MemberService {
 
 	GetPaycoMembersResponse getPaycoMembers(GetPaycoMembersRequest getPaycoMembersRequest);
 
+	// GetDormantMembersResponse getDormantMembers(GetDormantMembersRequest getDormantMembersRequest);
+
 	GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest);
 
 	DuplicateResponse isDuplicateLoginId(String loginId);

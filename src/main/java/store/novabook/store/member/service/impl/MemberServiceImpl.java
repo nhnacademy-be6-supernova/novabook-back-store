@@ -214,6 +214,13 @@ public class MemberServiceImpl implements MemberService {
 		}
 		return new GetPaycoMembersResponse(member.getId());
 	}
+	//
+	// @Override
+	// public GetDormantMembersResponse getDormantMembers(GetDormantMembersRequest getDormantMembersRequest) {
+	// 	Member member = memberRepository.findById(getDormantMembersRequest.membersId())
+	// 		.orElseThrow(() -> new EntityNotFoundException(Member.class));
+	// 	return new GetDormantMembersResponse(member.getMemberStatus());
+	// }
 
 	@Override
 	public GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest) {

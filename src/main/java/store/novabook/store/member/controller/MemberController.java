@@ -22,6 +22,7 @@ import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.DuplicateEmailRequest;
 import store.novabook.store.member.dto.request.DuplicateLoginIdRequest;
 import store.novabook.store.member.dto.request.FindMemberRequest;
+import store.novabook.store.member.dto.request.GetDormantMembersRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
@@ -30,6 +31,7 @@ import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
 import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
+import store.novabook.store.member.dto.response.GetDormantMembersResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
@@ -133,5 +135,13 @@ public class MemberController implements MemberControllerDocs {
 		GetMembersUUIDResponse membersId = authMembersClient.getMembersId(getMembersUUIDRequest);
 
 		return ResponseEntity.ok(membersId);
+	}
+
+	@PostMapping("/status")
+	public ResponseEntity<GetDormantMembersResponse> status(
+		@Valid @RequestBody GetDormantMembersRequest getDormantMembersRequest) {
+		GetMemberResponse member = memberService.getMember(getDormantMembersRequest.membersId());
+		// return ResponseEntity.ok(memberLoginResponse);
+		return null;
 	}
 }
