@@ -87,18 +87,7 @@ public class RabbitMQConfig {
 	public DirectExchange deadLetterExchange() {
 		return new DirectExchange(deadLetterExchange);
 	}
-
-	private final Environment environment;
-
-	@Bean
-	public ConnectionFactory connectionFactory() {
-		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment);
-		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
-		connectionFactory.setPort(config.port());
-		connectionFactory.setUsername(config.username());
-		connectionFactory.setPassword(config.password());
-		return connectionFactory;
-	}
+	
 
 	@Bean
 	public Queue couponCreateNormalQueue() {
