@@ -6,18 +6,25 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.cart.controller.docs.CartControllerDocs;
+import store.novabook.store.cart.dto.CartBookDTO;
+import store.novabook.store.cart.dto.CartBookIdDTO;
+import store.novabook.store.cart.dto.request.CreateCartBookListRequest;
 import store.novabook.store.cart.dto.request.CreateCartBookRequest;
-import store.novabook.store.cart.dto.response.CartIdResponse;
+import store.novabook.store.cart.dto.request.DeleteCartBookListRequest;
+import store.novabook.store.cart.dto.request.UpdateCartBookQuantityRequest;
+import store.novabook.store.cart.dto.CartBookListDTO;
+import store.novabook.store.cart.dto.response.CreateCartBookListResponse;
 import store.novabook.store.cart.dto.response.CreateCartBookResponse;
-import store.novabook.store.cart.dto.response.GetCartResponse;
+
 import store.novabook.store.cart.service.CartBookService;
-import store.novabook.store.cart.service.CartService;
 import store.novabook.store.common.security.aop.CurrentMembers;
 
 @RestController
@@ -25,39 +32,43 @@ import store.novabook.store.common.security.aop.CurrentMembers;
 @RequestMapping("/api/v1/store/carts")
 public class CartController implements CartControllerDocs {
 
-	private final CartService cartService;
 	private final CartBookService cartBookService;
 
-
-	@GetMapping
-	public ResponseEntity<CartIdResponse> getCartIdByMemberId(@CurrentMembers Long memberId) {
-		return ResponseEntity.ok().body(cartService.getCartIdByMemberId(memberId));
-	}
-
-	@GetMapping("/{cartId}")
-	public ResponseEntity<GetCartResponse> getCartListAll(@PathVariable Long cartId) {
-		GetCartResponse getCartResponse = cartBookService.getCartBookAll(cartId);
-		return ResponseEntity.status(HttpStatus.OK).body(getCartResponse);
-	}
-
 	@GetMapping("/member")
-	public ResponseEntity<GetCartResponse> getCartBookAllByMemberId(@CurrentMembers Long memberId) {
+	public ResponseEntity<CartBookListDTO> getCartBookAllByMemberId(@CurrentMembers Long memberId) {
 		return ResponseEntity.ok().body(cartBookService.getCartBookAllByMemberId(memberId));
 	}
 
-	@PostMapping("/create")
-	public ResponseEntity<CartIdResponse> createCartIdByMemberId(@CurrentMembers Long memberId) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(cartService.createCartId(memberId));
+	@PostMapping("/guest")
+	public ResponseEntity<CartBookListDTO> getCartBookAllByGuest(@Valid @RequestBody CartBookIdDTO request) {
+		return ResponseEntity.ok().body(cartBookService.getCartBookAllByGuest(request));
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<CreateCartBookResponse> createCartBook(@RequestBody CreateCartBookRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(cartBookService.createCartBook(request));
+	public ResponseEntity<CreateCartBookResponse> addCartBook(@CurrentMembers Long memberId, @Valid @RequestBody CartBookDTO request) {
+		return ResponseEntity.status(HttpStatus.OK).body(cartBookService.createCartBook(memberId, request));
 	}
 
-	@DeleteMapping("/{cartId}")
-	public ResponseEntity<Void> deleteCartBook(@PathVariable Long cartId) {
-		cartBookService.deleteCartBook(cartId);
+	@PostMapping("/adds")
+	public ResponseEntity<CreateCartBookListResponse> addCartBooks(@CurrentMembers Long memberId, @Valid  @RequestBody CartBookListDTO request) {
+		return ResponseEntity.status(HttpStatus.OK).body(cartBookService.createCartBooks(memberId ,request));
+	}
+
+	@PutMapping("/update")
+	public ResponseEntity<Void> updateCartBook(@CurrentMembers Long memberId, @Valid @RequestBody UpdateCartBookQuantityRequest request) {
+		cartBookService.updateCartBookQuantity(memberId ,request);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@DeleteMapping("/{bookId}")
+	public ResponseEntity<Void> deleteCartBook(@CurrentMembers Long memberId, @PathVariable Long bookId) {
+		cartBookService.deleteCartBook(memberId, bookId);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping
+	public ResponseEntity<Void> deleteCartBooks(@CurrentMembers Long memberId, @Valid @RequestBody DeleteCartBookListRequest request) {
+		cartBookService.deleteCartBooks(memberId, request);
 		return ResponseEntity.ok().build();
 	}
 

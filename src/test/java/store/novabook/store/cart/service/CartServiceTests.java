@@ -15,7 +15,7 @@
 // import org.mockito.MockitoAnnotations;
 //
 // import store.novabook.store.cart.dto.CreateCartRequest;
-// import store.novabook.store.cart.dto.GetCartResponse;
+// import store.novabook.store.cart.dto.CartBookListDTO;
 // import store.novabook.store.cart.entity.Cart;
 // import store.novabook.store.cart.repository.CartRepository;
 // import store.novabook.store.common.exception.EntityNotFoundException;
@@ -72,7 +72,7 @@
 // 		when(cartMock.getIsExposed()).thenReturn(true);
 // 		when(cartRepository.findByUsersId(anyLong())).thenReturn(Optional.of(cartMock));
 //
-// 		GetCartResponse result = cartService.getCartByMemberId(1L);
+// 		CartBookListDTO result = cartService.getCartByMemberId(1L);
 //
 // 		assertNotNull(result);
 // 		assertEquals(usersMock, result.users());

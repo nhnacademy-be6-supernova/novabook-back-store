@@ -48,8 +48,7 @@ public class MemberController implements MemberControllerDocs {
 	private final AuthMembersClient authMembersClient;
 
 	@PostMapping
-	public ResponseEntity<CreateMemberResponse> createMember(
-		@RequestBody @Valid CreateMemberRequest createMemberRequest) {
+	public ResponseEntity<CreateMemberResponse> createMember(@RequestBody @Valid CreateMemberRequest createMemberRequest) {
 		CreateMemberResponse saved = memberService.createMember(createMemberRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}

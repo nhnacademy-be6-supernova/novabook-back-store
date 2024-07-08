@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: 'store'
+  elasticsearch:
+    uris : http://115.94.72.198:9200
+    api-key: VzFydVpKQUJxeC1mdVBfZkYtX1Y6MXVJaEJqNXpSNHFqS2tkTGlJYnpYQQ==
+
+  datasource:
+    url: jdbc:mysql://133.186.241.167:3306/be6_supernova_dev
+    username: be6_supernova
+    password: Hv-]JRIyCw[[9O18
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: org.apache.commons.dbcp2.BasicDataSource  # 사용할 데이터 소스 타입 (DBCP2)
+
+    dbcp2:
+      initial-size: 20  # 처음 풀(pool)에 할당할 커넥션 개수
+      max-total: 50  # 풀에 허용할 최대 커넥션 개수
+      max-idle: 50  # 풀에 유지할 수 있는 최대 유휴 커넥션 개수
+      min-idle: 20  # 풀에 유지할 최소 유휴 커넥션 개수
+      validation-query: SELECT 1  # 커넥션 유효성 검사를 위한 쿼리
+      default-auto-commit: true  # 기본 자동 커밋 설정
+
+  rabbitmq:
+    host: 133.186.241.167
+    port: 5672
+    username: admin
+    password: nhnacademy123!
+    listener:
+      simple:
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          initial-interval: 3000  # 최초 메시지 처리 실패 후 재시도까지의 인터벌 (3초)
+          max-interval: 10000    # 최대 재시도 인터벌 (10초)
+          max-attempts: 3        # 최대 재시도 횟수
+          multiplier: 2.0 # 이전 interval * multiplier = 다음 interval
+
+
+#절대 변경 금지
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+
+
+jwt:
+  secret: vzxvgsjdgdfjgfdskgjdsfkgjdsfkgkdsfgjdfkgjdfsgdklgjadgslkjgsaklj
+
+
+nhn:
+  cloud:
+    imageManager:
+      endpointUrl: https://api-image.nhncloudservice.com
+      accessKey: vyiy4M85i8mJ5mgP
+      secretKey: ffpUQvzkmH8RsQDTuvpZD7U9tWlqExe4
+      bucketName: /supernova-image/
+      localStorage: image/
+
+
+#유레카 활성화
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+---
+spring:
+  data:
+    redis:
+      url: jdbc:redis://133.186.241.167:6379/31
+      host: 133.186.241.167
+      database: 31
+      password: "*N2vya7H@muDTwdNMR!"
+      port: 6379

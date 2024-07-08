@@ -56,13 +56,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<ErrorResponse> handle(NotFoundException exception, HttpServletRequest request) {
-		log.warn("NotFoundException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
+		log.error("NotFoundException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception));
 	}
 
 	@ExceptionHandler(ForbiddenException.class)
 	public ResponseEntity<ErrorResponse> handle(ForbiddenException exception, HttpServletRequest request) {
-		log.warn("ForbiddenException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
+		log.error("ForbiddenException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.from(exception));
 	}
 

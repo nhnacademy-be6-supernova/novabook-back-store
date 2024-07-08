@@ -1,8 +1,8 @@
 package store.novabook.store.common.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -11,29 +11,26 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.util.KeyManagerUtil;
+import store.novabook.store.common.util.dto.RedisConfigDto;
+
 @Configuration
 @EnableRedisRepositories
+@RequiredArgsConstructor
 public class RedisConfig {
-	@Value("${spring.data.redis.host}")
-	private String host;
-
-	@Value("${spring.data.redis.port}")
-	private int port;
-
-	@Value("${spring.data.redis.password}")
-	private String password;
-
-	@Value("${spring.data.redis.database}")
-	private int database;
+	private final Environment environment;
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 
+		RedisConfigDto redisConfig = KeyManagerUtil.getRedisConfig(environment);
+
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setHostName(host);
-		redisStandaloneConfiguration.setPort(port);
-		redisStandaloneConfiguration.setPassword(password);
-		redisStandaloneConfiguration.setDatabase(database);
+		redisStandaloneConfiguration.setHostName(redisConfig.host());
+		redisStandaloneConfiguration.setPort(redisConfig.port());
+		redisStandaloneConfiguration.setPassword(redisConfig.password());
+		redisStandaloneConfiguration.setDatabase(redisConfig.database());
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
 

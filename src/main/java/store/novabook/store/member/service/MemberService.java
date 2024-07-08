@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
+import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
@@ -39,6 +40,8 @@ public interface MemberService {
 
 	void updateMemberStatusToWithdraw(Long memberId, DeleteMemberRequest deleteMemberRequest);
 
+	void updateMemberStatusToActive(DoorayAuthCodeRequest authCode);
+
 	LoginMemberResponse matches(LoginMemberRequest loginMemberRequest);
 
 	FindMemberLoginResponse findMembersLogin(String loginId);
@@ -52,4 +55,10 @@ public interface MemberService {
 	DuplicateResponse isDuplicateLoginId(String loginId);
 
 	DuplicateResponse isDuplicateEmail(String email);
+
+	boolean isDormantMember(Long memberId);
+
+	// 인증 코드 생성하고 저장하기
+	String createAndSaveAuthCode(String authCode);
+
 }
