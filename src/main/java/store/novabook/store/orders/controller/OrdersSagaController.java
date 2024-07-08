@@ -1,6 +1,7 @@
 package store.novabook.store.orders.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +17,7 @@ public class OrdersSagaController {
 
 	private final OrdersSagaManagerImpl ordersSagaManager;
 
-	@GetMapping
+	@PostMapping
 	public void createOrder(@RequestBody PaymentRequest paymentRequest) {
 		ordersSagaManager.orderInvoke(paymentRequest);
 	}

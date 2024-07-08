@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +62,6 @@ public class DeliveryFeeServiceImpl implements DeliveryFeeService {
 	public GetDeliveryFeeResponse getRecentDeliveryFee() {
 		return GetDeliveryFeeResponse.from(
 			deliveryFeeRepository.findFirstByOrderByCreatedAtDesc()
-				.orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class)));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND)));
 	}
 }

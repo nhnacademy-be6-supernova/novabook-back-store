@@ -23,6 +23,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -38,6 +39,7 @@ import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
+import store.novabook.store.orders.dto.OrderSagaMessage;
 import store.novabook.store.orders.dto.request.BookIdAndQuantityDTO;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.orders.dto.request.OrderTemporaryForm;
@@ -72,7 +74,7 @@ public class OrdersServiceImpl implements OrdersService {
 	private final BookRepository bookRepository;
 	private final BookStatusRepository bookStatusRepository;
 
-	private RabbitTemplate rabbitTemplate;
+	private final RabbitTemplate rabbitTemplate;
 
 	@Override
 	public JSONObject create(TossPaymentRequest request) {
@@ -162,13 +164,13 @@ public class OrdersServiceImpl implements OrdersService {
 	 * 제고 감소도 함께 일어남
 	 */
 	@Transactional
-	@RabbitListener(queues = "nova.orders.formConfirm.queue")
-	public void confirmOrderForm(Object paymentInfo) {
+	@RabbitListener(queues = "nova.orders.form.confirm.queue")
+	public void confirmOrderForm(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
 			// orderForm Fetch
-			TossPaymentRequest toss = (TossPaymentRequest)paymentInfo;
+			UUID orderUUID = orderSagaMessage.getPaymentRequest().orderUUID();
 			Optional<OrderTemporaryForm> orderForm = redisOrderRepository.findByOrderUUID(
-				UUID.fromString(toss.orderId()));
+				orderUUID);
 
 			if (orderForm.isEmpty()) {
 				throw new IllegalArgumentException("주문 정보가 없습니다.");
@@ -176,8 +178,6 @@ public class OrdersServiceImpl implements OrdersService {
 
 			OrderTemporaryForm orderTemporaryForm = orderForm.get();
 			List<BookIdAndQuantityDTO> books = orderTemporaryForm.books();
-
-			long totalPrice = 0;
 
 			// 조회를 한번만 하기 위해서 Cache 저장
 			Map<Long, Book> bookCache = new HashMap<>();
@@ -194,12 +194,6 @@ public class OrdersServiceImpl implements OrdersService {
 				if (!book.getBookStatus().getName().equals(BookStatusEnum.FOR_SALE.getKoreanValue())) {
 					throw new IllegalArgumentException("판매중인 도서가 아닙니다: " + book.getId());
 				}
-
-				totalPrice += book.getPrice() * bookDTO.quantity();
-			}
-
-			if (totalPrice != toss.amount()) {
-				throw new IllegalArgumentException("가격 정보가 불일치 합니다.");
 			}
 
 			// 재고 감소는 총 가격 확인 후에 수행
@@ -208,14 +202,14 @@ public class OrdersServiceImpl implements OrdersService {
 				book.decreaseInventory((int)bookDTO.quantity());
 
 				// 판매 완료 시 상태 변경
-				if(book.getInventory() <= 0) {
-					Optional<BookStatus> statusOptional = bookStatusRepository.findById(BookStatusEnum.OUT_OF_STOCK.getValue());
-					if(statusOptional.isEmpty()) {
+				if (book.getInventory() <= 0) {
+					Optional<BookStatus> statusOptional = bookStatusRepository.findById(
+						BookStatusEnum.OUT_OF_STOCK.getValue());
+					if (statusOptional.isEmpty()) {
 						throw new IllegalArgumentException("책 상태를 찾을 수 없습니다.");
 					}
 					book.setBookStatus(statusOptional.get());
 				}
-
 				// 저장
 				bookRepository.save(book);
 			}
@@ -223,23 +217,22 @@ public class OrdersServiceImpl implements OrdersService {
 			// 예외가 발생하면 롤백 처리
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			// 실패 메시지 전송
-			rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key");
+			orderSagaMessage.setStatus("CONFIRM_FAIL");
+			rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key", orderSagaMessage);
 			// 예외 다시 던지기
 			throw e;
 		}
 	}
 
-
 	/**
 	 * 상위 행위에서 에러 발생 시 보상 트랜잭션 행위
 	 */
-	@RabbitListener(queues = "nova.orders.compensate.formConfirm.queue")
+	// @RabbitListener(queues = "nova.orders.compensate.formConfirm.queue")
 	void compensateConfirmOrderForm() {
-			// 재고 증가
-			// 만약 도서 수량이 많으면 도서 상태 변경
-			//
+		// 재고 증가
+		// 만약 도서 수량이 많으면 도서 상태 변경
+		//
 	}
-
 
 	@Override
 	public void update(Long id, UpdateOrdersRequest request) {
