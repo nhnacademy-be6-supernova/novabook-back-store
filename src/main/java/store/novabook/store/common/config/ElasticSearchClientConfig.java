@@ -7,31 +7,32 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.util.KeyManagerUtil;
+import store.novabook.store.common.util.dto.ElasticSearchConfigDto;
 
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "store.novabook.store.search")
-public class ElasticSearchClientConfig
-{
-	@Value("${spring.elasticsearch.uris}")
-	private String host;
-
-	@Value("${spring.elasticsearch.api-key}")
-	private String apiKey;
+@RequiredArgsConstructor
+public class ElasticSearchClientConfig {
+	private final Environment environment;
 
 	@Bean
 	public ElasticsearchClient getRestClient() {
+		ElasticSearchConfigDto config = KeyManagerUtil.getElasticSearchConfig(environment);
 
 		// Create the low-level client
 		RestClient restClient = RestClient
-			.builder(HttpHost.create(host))
-			.setDefaultHeaders(new Header[]{
-				new BasicHeader("Authorization", "ApiKey " + apiKey)
+			.builder(HttpHost.create(config.uris()))
+			.setDefaultHeaders(new Header[] {
+				new BasicHeader("Authorization", "ApiKey " + config.apiKey()),
 			})
 			.build();
 
