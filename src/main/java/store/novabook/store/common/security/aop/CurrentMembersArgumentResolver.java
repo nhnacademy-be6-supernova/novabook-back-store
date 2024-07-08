@@ -9,7 +9,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class CurrentMembersArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Override
@@ -22,6 +25,10 @@ public class CurrentMembersArgumentResolver implements HandlerMethodArgumentReso
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
+			if (authentication.getName().equals("anonymousUser")) {
+				log.error("CurrentMembersArgumentResolver anonymousUser, 로그인을 하고 @CurrentMembers를 사용해주세요.");
+				return null;
+			}
 			return Long.parseLong(authentication.getName());
 		}
 		return null;
