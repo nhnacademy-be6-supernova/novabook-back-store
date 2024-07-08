@@ -164,7 +164,7 @@ public class OrdersServiceImpl implements OrdersService {
 	 * 제고 감소도 함께 일어남
 	 */
 	@Transactional
-	@RabbitListener(queues = "nova.orders.form.confirm.queue")
+	// @RabbitListener(queues = "nova.orders.form.confirm.queue")
 	public void confirmOrderForm(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
 			// orderForm Fetch
@@ -218,7 +218,7 @@ public class OrdersServiceImpl implements OrdersService {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			// 실패 메시지 전송
 			orderSagaMessage.setStatus("CONFIRM_FAIL");
-			rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key", orderSagaMessage);
+			// rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key", orderSagaMessage);
 			// 예외 다시 던지기
 			throw e;
 		}
