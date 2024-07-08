@@ -18,10 +18,6 @@ spring:
       default-auto-commit: true  # 기본 자동 커밋 설정
 
   rabbitmq:
-    host: 133.186.241.167
-    port: 5672
-    username: admin
-    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto
@@ -43,10 +39,6 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
-
-
-jwt:
-  secret: vzxvgsjdgdfjgfdskgjdsfkgjdsfkgkdsfgjdfkgjdfsgdklgjadgslkjgsaklj
 
 
 nhn:
