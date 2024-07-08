@@ -22,8 +22,6 @@ import store.novabook.store.common.exception.UnauthorizedException;
 import store.novabook.store.common.messaging.CouponSender;
 import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.controller.DoorayAuthCodeRequest;
-import store.novabook.store.common.messaging.CouponSender;
-import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
@@ -198,8 +196,14 @@ public class MemberServiceImpl implements MemberService {
 
 	// 휴면 회원 해지 인증
 	@Override
-	public void updateMemberStatusToActive(Long memberId, DoorayAuthCodeRequest request) {
-		Member member = memberRepository.findById(memberId)
+	public void updateMemberStatusToActive(DoorayAuthCodeRequest request) {
+
+		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(request.uuid());
+
+		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getDormantMembersId(getMembersUUIDRequest);
+		getMembersUUIDResponse.membersId();
+
+		Member member = memberRepository.findById(Long.valueOf(getMembersUUIDResponse.membersId()))
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));

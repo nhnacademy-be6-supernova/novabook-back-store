@@ -40,7 +40,7 @@ public interface MemberService {
 
 	void updateMemberStatusToWithdraw(Long memberId, DeleteMemberRequest deleteMemberRequest);
 
-	void updateMemberStatusToActive(Long memberId, DoorayAuthCodeRequest authCode);
+	void updateMemberStatusToActive(DoorayAuthCodeRequest authCode);
 
 	LoginMemberResponse matches(LoginMemberRequest loginMemberRequest);
 
