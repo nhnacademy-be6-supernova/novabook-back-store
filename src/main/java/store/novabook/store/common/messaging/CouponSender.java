@@ -31,10 +31,9 @@ public class CouponSender {
 			addHeaders(token, refresh));
 	}
 
-	//welcome
-	public void sendToNormalQueue(String token, String refresh, CreateCouponMessage message) {
-		rabbitTemplate.convertAndSend(couponOperationExchange, couponCreateNormalRoutingKey, message,
-			addHeaders(token, refresh));
+	//welcome - token 이 없음
+	public void sendToNormalQueue(CreateCouponMessage message) {
+		rabbitTemplate.convertAndSend(couponOperationExchange, couponCreateNormalRoutingKey, message);
 	}
 
 	private MessagePostProcessor addHeaders(String token, String refresh) {

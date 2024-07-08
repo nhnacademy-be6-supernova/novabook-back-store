@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record RegisterCouponRequest(@NotNull Long couponId) {
+public record RegisterCouponMessage(@NotNull Long memberId, @NotNull Long couponId) {
 }

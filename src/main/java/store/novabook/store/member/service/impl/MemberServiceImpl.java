@@ -74,7 +74,7 @@ public class MemberServiceImpl implements MemberService {
 	private final CouponSender couponSender;
 
 	@Override
-	public CreateMemberResponse createMember(String token, String refresh, CreateMemberRequest createMemberRequest) {
+	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
 		if (!createMemberRequest.loginPassword().equals(createMemberRequest.loginPasswordConfirm())) {
 			throw new BadCredentialsException(LOGIN_FAIL_MESSAGE);
 		}
@@ -112,8 +112,7 @@ public class MemberServiceImpl implements MemberService {
 			pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 
-		couponSender.sendToNormalQueue(token, refresh,
-			CreateCouponMessage.fromEntity(newMember.getId(), new ArrayList<>(), CouponType.WELCOME, null));
+		couponSender.sendToNormalQueue(CreateCouponMessage.fromEntity(newMember.getId(), new ArrayList<>(), CouponType.WELCOME, null));
 		return CreateMemberResponse.fromEntity(newMember);
 	}
 

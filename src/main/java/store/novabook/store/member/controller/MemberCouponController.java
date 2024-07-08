@@ -17,12 +17,12 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
 import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
 import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
-import store.novabook.store.common.messaging.dto.RegisterCouponRequest;
 import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.member.controller.docs.MemberCouponControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
 import store.novabook.store.member.dto.request.DownloadCouponMessageRequest;
 import store.novabook.store.member.dto.request.DownloadCouponRequest;
+import store.novabook.store.member.dto.request.RegisterCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.dto.response.GetCouponIdsResponse;
 import store.novabook.store.member.service.MemberCouponService;
@@ -76,6 +76,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 		return ResponseEntity.ok().body(memberCouponService.getMemberCoupon(memberId));
 	}
 
+	// 쿠폰북 페이지 다운로드
 	@PostMapping("/download")
 	ResponseEntity<CreateMemberCouponResponse> downloadCoupon(@CurrentMembers Long memberId,
 		@RequestBody DownloadCouponRequest request) {
@@ -83,8 +84,9 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
+	// 선착순 쿠폰
 	@PostMapping("/download/limited")
-	ResponseEntity<Void> downloadLimitedCoupon(@RequestHeader("Authorization") String token,
+	ResponseEntity<Void> downloadLimitedCoupon(@RequestHeader(value = "Authorization", required = false) String token,
 		@RequestHeader("Refresh") String refresh, @CurrentMembers Long memberId,
 		@RequestBody DownloadCouponMessageRequest request) {
 		memberCouponService.downloadLimitedCoupon(token, refresh, memberId, request);
