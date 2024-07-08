@@ -12,19 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
-import store.novabook.store.cart.dto.request.CreateCartBookListRequest;
-import store.novabook.store.cart.dto.request.CreateCartBookRequest;
+import store.novabook.store.cart.dto.CartBookDTO;
+import store.novabook.store.cart.dto.CartBookIdDTO;
+import store.novabook.store.cart.dto.CartBookListDTO;
 import store.novabook.store.cart.dto.request.DeleteCartBookListRequest;
 import store.novabook.store.cart.dto.request.UpdateCartBookQuantityRequest;
 import store.novabook.store.cart.dto.response.CreateCartBookListResponse;
 import store.novabook.store.cart.dto.response.CreateCartBookResponse;
-import store.novabook.store.cart.dto.response.GetCartResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
 import store.novabook.store.cart.repository.CartQueryRepository;
 import store.novabook.store.cart.repository.CartRepository;
 import store.novabook.store.cart.service.CartBookService;
+import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 
@@ -39,56 +40,65 @@ public class CartBookServiceImpl implements CartBookService {
 	private final CartQueryRepository queryRepository;
 
 	@Override
-	public CreateCartBookResponse createCartBook(Long memberId, CreateCartBookRequest createCartBookRequest) {
-		CartBook cartBook = queryRepository.createCartBook(memberId, createCartBookRequest);
+	public CreateCartBookResponse createCartBook(Long memberId, CartBookDTO request) {
+		CartBook cartBook = queryRepository.createCartBook(memberId, request);
 		return new CreateCartBookResponse(cartBookRepository.save(cartBook).getId());
 	}
 
 	@Override
 	public CreateCartBookListResponse createCartBooks(Long memberId,
-		CreateCartBookListRequest createCartBookListRequest) {
+		CartBookListDTO request) {
 		// 카트 존재 여부 확인
 		Cart cart = cartRepository.findByMemberId(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.CART_NOT_FOUND));
 
 		// 책 ID 목록 생성
-		List<Long> bookIds = createCartBookListRequest.cartBookList().stream()
-			.map(CreateCartBookRequest::bookId)
-			.collect(Collectors.toList());
+		List<Long> bookIds = new ArrayList<>();
+		for (CartBookDTO cartBook : request.getCartBookList()) {
+			bookIds.add(cartBook.bookId());
+		}
 
 		// 책 목록 조회
 		List<Book> books = bookRepository.findAllByIdIn(bookIds);
 		Map<Long, Book> bookMap = books.stream().collect(Collectors.toMap(Book::getId, book -> book));
 
 		// 기존 카트북 조회
-		List<CartBook> existingCartBooks = cartBookRepository.findByCartIdAndBookIdIn(cart.getId(), bookIds);
+		List<CartBook> existingCartBooks = cartBookRepository.findByCartIdAndBookIdInAndIsExposedTrue(cart.getId(), bookIds);
 		Map<Long, CartBook> existingCartBookMap = existingCartBooks.stream()
 			.collect(Collectors.toMap(cartBook -> cartBook.getBook().getId(), cartBook -> cartBook));
 
 		// 카트에 책 추가 또는 업데이트
 		List<CartBook> cartBooksToSave = new ArrayList<>();
-		for (CreateCartBookRequest bookRequest : createCartBookListRequest.cartBookList()) {
-			Book book = bookMap.get(bookRequest.bookId());
+		for (CartBookDTO cartBookDTO : request.getCartBookList()) {
+			Long bookId = cartBookDTO.bookId();
+			Book book = bookMap.get(bookId);
 			if (book == null) {
 				throw new NotFoundException(ErrorCode.BOOK_NOT_FOUND);
 			}
 
-			CartBook cartBook = existingCartBookMap.get(bookRequest.bookId());
+			CartBook cartBook = existingCartBookMap.get(bookId);
 			if (cartBook != null) {
 				// 기존 카트북 업데이트
-				cartBook.updateQuantity(cartBook.getQuantity() + bookRequest.quantity());
+				int newQuantity = cartBook.getQuantity() + cartBookDTO.quantity();
+				if (newQuantity > book.getInventory()) {
+					newQuantity = book.getInventory();
+				}
+				cartBook.updateQuantity(newQuantity);
 				cartBooksToSave.add(cartBook);
 			} else {
 				// 새로운 카트북 생성
-				CartBook newCartBook = new CartBook(cart, book, bookRequest.quantity());
+				int initialQuantity = cartBookDTO.quantity();
+				if (initialQuantity > book.getInventory()) {
+					initialQuantity = book.getInventory();
+				}
+				CartBook newCartBook = new CartBook(cart, book, initialQuantity);
 				cartBooksToSave.add(newCartBook);
 			}
 		}
 
-		// 카트북 저장
+		// 변경된 카트북 저장
 		cartBookRepository.saveAll(cartBooksToSave);
 
-		// 응답 생성
 		return new CreateCartBookListResponse(
 			cartBooksToSave.stream().map(CartBook::getId).collect(Collectors.toList()));
 	}
@@ -112,11 +122,10 @@ public class CartBookServiceImpl implements CartBookService {
 			Cart cart = optionalCart.get();
 
 			// 요청된 도서 ID 리스트로 해당하는 CartBook 엔티티들 조회
-			List<CartBook> cartBooksToDelete = cartBookRepository.findAllByCartAndBookIdIn(cart, request.bookIds());
+			List<CartBook> cartBooksToDelete = cartBookRepository.findAllByCartAndBookIdInAndIsExposedTrue(cart, request.bookIds());
 
 			// 삭제 처리: 각 CartBook 엔티티의 isExposed를 false로 설정하고 저장
 			cartBooksToDelete.forEach(cartBook -> cartBook.updateIsExposed(false));
-			// cartBookRepository.saveAll(cartBooksToDelete);
 		}
 	}
 
@@ -128,21 +137,28 @@ public class CartBookServiceImpl implements CartBookService {
 		if (optionalCart.isPresent()) {
 			Cart cart = optionalCart.get();
 
-			// 요청된 도서 ID 리스트로 해당하는 CartBook 엔티티들 조회
-			CartBook cartBook = cartBookRepository.findByCartAndBookId(cart, request.bookId());
-			cartBook.updateQuantity(request.quantity());
+			// 요청된 도서 ID로 해당하는 CartBook 엔티티 조회
+			CartBook cartBook = cartBookRepository.findByCartAndBookIdAndIsExposedTrue(cart, request.bookId());
 
+			// Book의 inventory 및 상태 조회
+			Book book = bookRepository.findById(request.bookId()).orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+			// 요청된 수량이 inventory보다 작거나 같고, BookStatus가 1인 경우에만 업데이트
+			if (request.quantity() <= book.getInventory() && book.getBookStatus().getId() == 1) {
+				cartBook.updateQuantity(request.quantity());
+			} else {
+				throw new BadRequestException(ErrorCode.NOT_UPDATE_CART_QUANTITY);
+			}
 		}
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public GetCartResponse getCartBookAll(Long cartId) {
-		return queryRepository.getCartBookAll(cartId);
+	public CartBookListDTO getCartBookAllByGuest(CartBookIdDTO request) {
+		return queryRepository.getCartBookAllGuest(request);
 	}
 
 	@Override
-	public GetCartResponse getCartBookAllByMemberId(Long memberId) {
+	public CartBookListDTO getCartBookAllByMemberId(Long memberId) {
 		return queryRepository.getCartBookAllByMemberId(memberId);
 	}
 

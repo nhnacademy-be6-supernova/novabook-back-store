@@ -1,6 +1,8 @@
 package store.novabook.store.cart.dto.response;
 
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
 
-public record CreateCartBookResponse(Long id) {
+public record CreateCartBookResponse(
+	@NotNull
+	Long id) {
 }

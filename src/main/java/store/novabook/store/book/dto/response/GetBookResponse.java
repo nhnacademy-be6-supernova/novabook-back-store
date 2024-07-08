@@ -25,7 +25,8 @@ public record GetBookResponse(
 	List<String> categories,
 	int likes,
 	int score,
-	String image
+	String image,
+	Long bookStatusId
 
 ) {
 	public static GetBookResponse fromEntity(
@@ -53,6 +54,7 @@ public record GetBookResponse(
 			.discountPrice(book.getDiscountPrice())
 			.score(score)
 			.image(image.getSource())
+			.bookStatusId(book.getBookStatus().getId())
 			.build();
 	}
 }

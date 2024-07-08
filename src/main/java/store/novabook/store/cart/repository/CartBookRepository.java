@@ -14,11 +14,11 @@ public interface CartBookRepository extends JpaRepository<CartBook, Long> {
 
 	Optional<CartBook> findByCartIdAndBookIdAndIsExposed(Long cartId, Long bookId, Boolean exposed);
 
-	List<CartBook> findByCartIdAndBookIdIn(Long cartId, List<Long> bookIds);
+	List<CartBook> findByCartIdAndBookIdInAndIsExposedTrue(Long cartId, List<Long> bookIds);
 
 	Optional<CartBook> findByBookId(Long bookId);
 
-	List<CartBook> findAllByCartAndBookIdIn(Cart cart, List<Long> bookIds);
+	List<CartBook> findAllByCartAndBookIdInAndIsExposedTrue(Cart cart, List<Long> bookIds);
 
-	CartBook findByCartAndBookId(Cart cart, Long bookId);
+	CartBook findByCartAndBookIdAndIsExposedTrue(Cart cart, Long bookId);
 }
