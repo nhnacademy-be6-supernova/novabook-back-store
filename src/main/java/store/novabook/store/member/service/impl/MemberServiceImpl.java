@@ -18,8 +18,10 @@ import store.novabook.store.common.adatper.CouponType;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.common.exception.UnauthorizedException;
 import store.novabook.store.common.messaging.CouponSender;
 import store.novabook.store.common.messaging.dto.CreateCouponMessage;
+import store.novabook.store.member.controller.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
@@ -60,7 +62,7 @@ public class MemberServiceImpl implements MemberService {
 	public static final String STATUS_WITHDRAW = "탈퇴";
 	public static final String REGISTER_POINT = "회원가입 적립금";
 	public static final String LOGIN_FAIL_MESSAGE = "비밀번호가 일치하지 않습니다.";
-	public static final long AUTH_CODE_EXPIRATION = 1;
+	public static final long AUTH_CODE_EXPIRATION = 3;
 
 	private final MemberRepository memberRepository;
 	private final PointHistoryRepository pointHistoryRepository;
@@ -192,21 +194,15 @@ public class MemberServiceImpl implements MemberService {
 
 	// 휴면 회원 해지 인증
 	@Override
-	public void updateMemberStatusToActive(Long memberId, String authCode) {
+	public void updateMemberStatusToActive(Long memberId, DoorayAuthCodeRequest request) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-
 		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
 
-		if (!validateAuthCode(memberId, authCode)) {
-			throw new BadCredentialsException("인증코드가 유효하지 않습니다.");
-		}
-
+		validateAuthCode(request.uuid(), request.authCode());
 		member.updateMemberStatus(newMemberStatus);
-		memberRepository.save(member);
-
-		deleteAuthCodeFromRedis(memberId);
+		deleteAuthCodeFromRedis(request.uuid());
 	}
 
 	@Override
@@ -258,23 +254,26 @@ public class MemberServiceImpl implements MemberService {
 
 	// 인증 코드 생성하고 저장하기
 	@Override
-	public String createAndSaveAuthCode(Long memberId) {
+	public String createAndSaveAuthCode(String uuid) {
 		String authCode = UUID.randomUUID().toString().substring(0, 6);
-		redisTemplate.opsForValue().set("authCode: " + memberId, authCode, AUTH_CODE_EXPIRATION, TimeUnit.MINUTES);
+		redisTemplate.opsForValue().set("authCode: " + uuid, authCode, AUTH_CODE_EXPIRATION, TimeUnit.MINUTES);
 		return authCode;
 	}
 
 	// 유효한 인증코드인지 검사
-	@Override
-	public boolean validateAuthCode(Long memberId, String authCode) {
-		String saveCode = (String)redisTemplate.opsForValue().get("authCode: " + memberId);
-		return saveCode != null && authCode.equals(authCode);
+	private void validateAuthCode(String uuid, String authCode) {
+		String saveCode = String.valueOf(redisTemplate.opsForValue().get("authCode: " + uuid));
+		if (!authCode.equals(saveCode)) {
+			throw new UnauthorizedException(ErrorCode.UNAUTHORIZED_CODE);
+		}
 	}
 
 	// 레디스에서 인증코드 지우기
-	@Override
-	public void deleteAuthCodeFromRedis(Long memberId) {
-		redisTemplate.delete("authCode: " + memberId);
+	private void deleteAuthCodeFromRedis(String uuid) {
+		Boolean result = redisTemplate.delete("authCode: " + uuid);
+		if (result == null || !result) {
+			throw new NotFoundException(ErrorCode.UNAUTHORIZED_CODE);
+		}
 	}
 
 	@Override

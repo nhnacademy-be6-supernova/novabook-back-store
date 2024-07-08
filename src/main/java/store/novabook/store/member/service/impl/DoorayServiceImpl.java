@@ -18,8 +18,8 @@ public class DoorayServiceImpl implements DoorayService {
 	@Override
 	public void sendAuthCode(Long memberId, String authCode) {
 		Map<String, Object> message = new HashMap<>();
-		message.put("botName", memberId);
-		message.put("text", "휴면 계정 해지를 위한 인증코드" + authCode);
+		message.put("botName", "novabook Bot");
+		message.put("text", "휴면 계정 해지를 위한 인증코드: " + authCode);
 
 		doorayHookClient.sendMessage(message);
 	}

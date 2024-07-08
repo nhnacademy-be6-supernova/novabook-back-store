@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import store.novabook.store.member.controller.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
@@ -37,7 +38,7 @@ public interface MemberService {
 
 	void updateMemberStatusToWithdraw(Long memberId, DeleteMemberRequest deleteMemberRequest);
 
-	void updateMemberStatusToActive(Long memberId, String authCode);
+	void updateMemberStatusToActive(Long memberId, DoorayAuthCodeRequest authCode);
 
 	LoginMemberResponse matches(LoginMemberRequest loginMemberRequest);
 
@@ -53,9 +54,7 @@ public interface MemberService {
 
 	boolean isDormantMember(Long memberId);
 
-	String createAndSaveAuthCode(Long memberId);
+	// 인증 코드 생성하고 저장하기
+	String createAndSaveAuthCode(String authCode);
 
-	boolean validateAuthCode(Long memberId, String authCode);
-
-	void deleteAuthCodeFromRedis(Long memberId);
 }

@@ -22,6 +22,7 @@ public class CurrentMembersArgumentResolver implements HandlerMethodArgumentReso
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
+			
 			return Long.parseLong(authentication.getName());
 		}
 		return null;
