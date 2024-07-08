@@ -80,7 +80,7 @@ public class MemberServiceImpl implements MemberService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final CouponSender couponSender;
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	@Override
 	public CreateMemberResponse createMember(@Valid CreateMemberRequest createMemberRequest) {
