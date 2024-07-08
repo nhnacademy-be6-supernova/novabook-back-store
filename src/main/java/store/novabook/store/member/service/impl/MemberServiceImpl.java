@@ -18,6 +18,7 @@ import store.novabook.store.common.messaging.CouponSender;
 import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
+import store.novabook.store.member.dto.request.GetDormantMembersRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
@@ -26,6 +27,7 @@ import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
 import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
+import store.novabook.store.member.dto.response.GetDormantMembersResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
@@ -214,13 +216,14 @@ public class MemberServiceImpl implements MemberService {
 		}
 		return new GetPaycoMembersResponse(member.getId());
 	}
-	//
-	// @Override
-	// public GetDormantMembersResponse getDormantMembers(GetDormantMembersRequest getDormantMembersRequest) {
-	// 	Member member = memberRepository.findById(getDormantMembersRequest.membersId())
-	// 		.orElseThrow(() -> new EntityNotFoundException(Member.class));
-	// 	return new GetDormantMembersResponse(member.getMemberStatus());
-	// }
+
+	@Override
+	public GetDormantMembersResponse getDormantMembers(GetDormantMembersRequest getDormantMembersRequest) {
+		Member member = memberRepository.findById(getDormantMembersRequest.membersId())
+			.orElseThrow(() -> new EntityNotFoundException(Member.class));
+		MemberStatus memberStatus = member.getMemberStatus();
+		return new GetDormantMembersResponse(memberStatus.getId());
+	}
 
 	@Override
 	public GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest) {

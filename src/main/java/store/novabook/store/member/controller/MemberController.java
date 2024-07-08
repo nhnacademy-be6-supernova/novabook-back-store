@@ -138,10 +138,9 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@PostMapping("/status")
-	public ResponseEntity<GetDormantMembersResponse> status(
-		@Valid @RequestBody GetDormantMembersRequest getDormantMembersRequest) {
-		GetMemberResponse member = memberService.getMember(getDormantMembersRequest.membersId());
-		// return ResponseEntity.ok(memberLoginResponse);
-		return null;
+	public ResponseEntity<GetDormantMembersResponse> getMemberDormantStatus(
+		@RequestBody GetDormantMembersRequest getDormantMembersRequest) {
+		GetDormantMembersResponse getDormantMembersResponse = memberService.getDormantMembers(getDormantMembersRequest);
+		return ResponseEntity.ok(getDormantMembersResponse);
 	}
 }
