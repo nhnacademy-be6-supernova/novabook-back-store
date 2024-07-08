@@ -26,7 +26,7 @@
 //
 // import com.fasterxml.jackson.databind.ObjectMapper;
 //
-// import store.novabook.store.cart.dto.response.GetCartBookResponse;
+// import store.novabook.store.cart.dto.CartBookDTO;
 // import store.novabook.store.cart.service.impl.CartBookServiceImpl;
 //
 // @WebMvcTest(CartBookControllerTest.class)
@@ -50,10 +50,10 @@
 //
 // 	@Test
 // 	void getAllCartBookTest() throws Exception {
-// 		GetCartBookResponse mock = mock(GetCartBookResponse.class);
+// 		CartBookDTO mock = mock(CartBookDTO.class);
 //
-// 		List<GetCartBookResponse> getCartBookResponseList = Collections.singletonList(mock);
-// 		Page<GetCartBookResponse> page = new PageImpl<>(getCartBookResponseList, PageRequest.of(0, 10),
+// 		List<CartBookDTO> getCartBookResponseList = Collections.singletonList(mock);
+// 		Page<CartBookDTO> page = new PageImpl<>(getCartBookResponseList, PageRequest.of(0, 10),
 // 			getCartBookResponseList.size());
 //
 // 		when(cartBookServiceImpl.getCartBookListByCartId(anyLong(), any())).thenReturn(page);

@@ -22,7 +22,7 @@
 // import com.fasterxml.jackson.databind.ObjectMapper;
 //
 // import store.novabook.store.cart.dto.CreateCartRequest;
-// import store.novabook.store.cart.dto.GetCartResponse;
+// import store.novabook.store.cart.dto.CartBookListDTO;
 // import store.novabook.store.cart.service.CartService;
 // import store.novabook.store.user.member.entity.Users;
 //
@@ -51,7 +51,7 @@
 // 	@Test
 // 	void getCartByUserIDTest() throws Exception {
 // 		Users usersMock = mock(Users.class);
-// 		GetCartResponse getCartResponse = new GetCartResponse(usersMock, true);
+// 		CartBookListDTO getCartResponse = new CartBookListDTO(usersMock, true);
 // 		when(cartService.getCartByMemberId(anyLong())).thenReturn(getCartResponse);
 //
 // 		mockMvc.perform(get("/api/v1/store/carts/1"))

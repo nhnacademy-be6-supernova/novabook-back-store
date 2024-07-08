@@ -28,6 +28,8 @@ public enum ErrorCode {
 	ORDER_BOOK_ALREADY_EXISTS("주문건에 대한 해당 도서가 이미 존재합니다."),
 	DUPLICATED_LOGIN_ID("중복된 아이디입니다."),
 	NOT_DELETABLE_CATEGORY("해당 카테고리 등록된 도서가 있어 삭제할 수 없습니다."),
+	NOT_UPDATE_CART_QUANTITY("요청된 수량이 재고를 초과하거나 도서 상태가 유효하지 않습니다."),
+
 
 	// 401 로그인 안됨
 	UNAUTHORIZED("인증되지 않은 사용자입니다."),
