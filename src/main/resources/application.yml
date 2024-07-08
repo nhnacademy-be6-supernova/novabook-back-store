@@ -63,6 +63,8 @@ spring:
     openfeign:
       client:
         config:
+          doorayHookClient:
+            url: https://hook.dooray.com/services/3204376758577275363/3841573584705463142/XgrMG9YtRw65XfNFuTYFDg
           couponClient:
             url: http://localhost:8070/api/v1/coupon
 ---
