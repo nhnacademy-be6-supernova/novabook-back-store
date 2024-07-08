@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.CouponType;
 import store.novabook.store.common.exception.BadRequestException;
@@ -80,7 +81,7 @@ public class MemberServiceImpl implements MemberService {
 	private final RedisTemplate redisTemplate;
 
 	@Override
-	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
+	public CreateMemberResponse createMember(@Valid CreateMemberRequest createMemberRequest) {
 		if (!createMemberRequest.loginPassword().equals(createMemberRequest.loginPasswordConfirm())) {
 			throw new BadCredentialsException(LOGIN_FAIL_MESSAGE);
 		}
@@ -141,7 +142,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updateMemberNumberOrName(Long memberId, UpdateMemberRequest updateMemberRequest) {
+	public void updateMemberNumberOrName(Long memberId, @Valid UpdateMemberRequest updateMemberRequest) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -155,7 +156,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updateMemberPassword(Long memberId, UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+	public void updateMemberPassword(Long memberId, @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest) {
 		if (!updateMemberPasswordRequest.loginPassword().equals(updateMemberPasswordRequest.loginPasswordConfirm())) {
 			throw new BadCredentialsException(LOGIN_FAIL_MESSAGE);
 		}
@@ -179,7 +180,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updateMemberStatusToWithdraw(Long memberId, DeleteMemberRequest deleteMemberRequest) {
+	public void updateMemberStatusToWithdraw(Long memberId, @Valid DeleteMemberRequest deleteMemberRequest) {
 		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_WITHDRAW)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
 
@@ -196,7 +197,7 @@ public class MemberServiceImpl implements MemberService {
 
 	// 휴면 회원 해지 인증
 	@Override
-	public void updateMemberStatusToActive(DoorayAuthCodeRequest request) {
+	public void updateMemberStatusToActive(@Valid DoorayAuthCodeRequest request) {
 
 		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(request.uuid());
 

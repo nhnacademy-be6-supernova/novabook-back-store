@@ -19,7 +19,7 @@ public class DoorayHookController {
 	private final MemberService memberService;
 	private final DoorayService doorayService;
 
-	@PostMapping("/sendAuthCode")
+	@PostMapping("/send-auth-code")
 	public ResponseEntity<Void> sendMessage(@RequestBody DoorayAuthRequest request) {
 		String authCode = memberService.createAndSaveAuthCode(request.uuid());
 		doorayService.sendAuthCode(request.uuid(), authCode);
