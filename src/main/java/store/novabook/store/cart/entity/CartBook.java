@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -45,6 +46,7 @@ public class CartBook {
 	private int quantity;
 
 	@NotNull
+	@Column(name = "is_exposed")
 	private boolean isExposed;
 
 	@NotNull
@@ -59,6 +61,7 @@ public class CartBook {
 		this.cart = cart;
 		this.book = book;
 		this.quantity = quantity;
+		this.isExposed = true;
 	}
 
 	public static CartBook of(Cart cart, Book book, int quantity) {
@@ -67,6 +70,9 @@ public class CartBook {
 
 	public void updateIsExposed(boolean isExposed) {
 		this.isExposed = isExposed;
+	}
+	public void updateQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 
 }
