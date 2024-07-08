@@ -51,7 +51,6 @@ public class KeyManagerUtil {
 	}
 
 	public static DatabaseConfigDto getDatabaseConfig(Environment environment) {
-		// JSON 문자열을 DTO로 변환
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.storeKeyId");
 			return objectMapper.readValue(getDataSource(environment, keyid), DatabaseConfigDto.class);

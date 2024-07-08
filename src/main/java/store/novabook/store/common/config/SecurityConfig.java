@@ -34,8 +34,7 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/**").permitAll())
-			.addFilterAt(new JWTFilter(authMembersClient)
-				,
+			.addFilterAt(new JWTFilter(authMembersClient),
 				UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

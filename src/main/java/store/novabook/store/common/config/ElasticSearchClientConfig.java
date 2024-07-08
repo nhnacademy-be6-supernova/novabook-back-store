@@ -16,8 +16,7 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "store.novabook.store.search")
-public class ElasticSearchClientConfig
-{
+public class ElasticSearchClientConfig {
 	@Value("${spring.elasticsearch.uris}")
 	private String host;
 
@@ -30,7 +29,7 @@ public class ElasticSearchClientConfig
 		// Create the low-level client
 		RestClient restClient = RestClient
 			.builder(HttpHost.create(host))
-			.setDefaultHeaders(new Header[]{
+			.setDefaultHeaders(new Header[] {
 				new BasicHeader("Authorization", "ApiKey " + apiKey)
 			})
 			.build();

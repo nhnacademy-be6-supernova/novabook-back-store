@@ -1,6 +1,5 @@
 package store.novabook.store.common.config;
 
-import java.util.Map;
 import java.util.Objects;
 
 import javax.sql.DataSource;
