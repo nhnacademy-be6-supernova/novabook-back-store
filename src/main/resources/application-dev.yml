@@ -15,10 +15,6 @@ spring:
       default-auto-commit: true  # 기본 자동 커밋 설정
 
   rabbitmq:
-    host: 133.186.241.167
-    port: 5672
-    username: admin
-    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto
@@ -50,6 +46,7 @@ nhn:
       redisKey: 60427297022b4bdb9650789537e4b945
       storeKey: e0a81fc89a1d4c5196df53d3fdab0f64
       imageManagerKey: f1a359544d624274b58cac169b00d774
+      rabbitMQKey: 5070b197613e4db6a73e9db96c54789f
       elasticSearchKey: 74649bffcfbb40a9bcae7204e6863d05
       userAccessKey: J9VxQFQEsmerR1n7FeJ6
       secretAccessKey: zZEVopUHt6dxgRMt

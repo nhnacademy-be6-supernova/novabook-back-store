@@ -9,6 +9,7 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -16,6 +17,11 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.util.KeyManagerUtil;
+import store.novabook.store.common.util.dto.RabbitMQConfigDto;
 
 /**
  * RabbitMQ 설정 클래스.
@@ -23,7 +29,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @EnableRabbit
 @Configuration
+@RequiredArgsConstructor
 public class RabbitMQConfig {
+
+	private final Environment environment;
 
 	@Value("${rabbitmq.queue.couponCreateNormal}")
 	private String couponCreateNormalQueue;
@@ -57,6 +66,17 @@ public class RabbitMQConfig {
 
 	@Value("${rabbitmq.routing.couponRegisterHighTraffic}")
 	private String couponRegisterHighTrafficRoutingKey;
+
+	@Bean
+	public ConnectionFactory connectionFactory() {
+		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment);
+		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
+		connectionFactory.setPort(config.port());
+		connectionFactory.setUsername(config.username());
+		connectionFactory.setPassword(config.password());
+		return connectionFactory;
+	}
+
 
 	@Bean
 	public TopicExchange couponOperationExchange() {
