@@ -51,9 +51,9 @@ public class ReviewController implements ReviewControllerDocs {
 	}
 
 	@PutMapping("/reviews/{reviewsId}")
-	public ResponseEntity<Void> updateReviewed(
-		@Valid @RequestBody UpdateReviewRequest request, @PathVariable Long reviewsId) {
-		reviewService.updateReview( request, reviewsId);
+	public ResponseEntity<Void> updateReviewed(@Valid @RequestBody UpdateReviewRequest request,
+		@PathVariable Long reviewsId) {
+		reviewService.updateReview(request, reviewsId);
 		return ResponseEntity.ok().build();
 	}
 }

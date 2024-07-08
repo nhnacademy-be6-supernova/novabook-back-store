@@ -24,7 +24,7 @@ import store.novabook.store.orders.service.DeliveryFeeService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/store/orders/delivery/fee")
+@RequestMapping("/api/v1/store/orders/delivery-fee")
 public class DeliveryFeeController implements DeliveryFeeControllerDocs {
 
 	private final DeliveryFeeService deliveryFeeService;
@@ -35,8 +35,8 @@ public class DeliveryFeeController implements DeliveryFeeControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping(params = {"size", "page", "order"})
-	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryFeeAll(Pageable pageable) {
+	@GetMapping(params = {"page", "size"})
+	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryAllPage(Pageable pageable) {
 		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees(pageable);
 		return ResponseEntity.ok().body(deliveryFeeResponses);
 	}

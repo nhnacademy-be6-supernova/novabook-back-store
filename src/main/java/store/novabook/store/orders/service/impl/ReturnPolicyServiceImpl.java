@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateReturnPolicyRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetReturnPolicyResponse;
@@ -48,7 +49,7 @@ public class ReturnPolicyServiceImpl implements ReturnPolicyService {
 	@Transactional(readOnly = true)
 	public GetReturnPolicyResponse getReturnPolicyById(Long id) {
 		ReturnPolicy returnPolicy = returnPolicyRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(ReturnPolicy.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.RETURN_POLICY_NOT_FOUND));
 		return GetReturnPolicyResponse.from(returnPolicy);
 	}
 

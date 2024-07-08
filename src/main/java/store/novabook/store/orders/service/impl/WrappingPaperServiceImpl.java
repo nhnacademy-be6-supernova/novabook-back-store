@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
 import store.novabook.store.orders.dto.request.UpdateWrappingPaperRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
@@ -53,19 +54,18 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
 		return wrappingPaperResponses;
 	}
 
-
 	@Override
 	@Transactional(readOnly = true)
 	public GetWrappingPaperResponse getWrappingPaperById(Long id) {
 		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(WrappingPaper.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
 		return GetWrappingPaperResponse.from(wrappingPaper);
 	}
 
 	@Override
 	public void updateWrappingPaper(Long id, UpdateWrappingPaperRequest request) {
 		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(WrappingPaper.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
 		wrappingPaper.updated(request);
 	}
 }

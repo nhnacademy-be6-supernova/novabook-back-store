@@ -17,7 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
 import store.novabook.store.orders.dto.request.UpdateWrappingPaperRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
@@ -104,7 +104,7 @@ class WrappingPaperServiceImplTest {
 		Long id = 1L;
 		when(wrappingPaperRepository.findById(id)).thenReturn(Optional.empty());
 
-		assertThrows(EntityNotFoundException.class, () -> {
+		assertThrows(NotFoundException.class, () -> {
 			wrappingPaperServiceImpl.getWrappingPaperById(id);
 		});
 
@@ -142,7 +142,7 @@ class WrappingPaperServiceImplTest {
 			.build();
 		when(wrappingPaperRepository.findById(id)).thenReturn(Optional.empty());
 
-		assertThrows(EntityNotFoundException.class, () -> {
+		assertThrows(NotFoundException.class, () -> {
 			wrappingPaperServiceImpl.updateWrappingPaper(id, updateRequest);
 		});
 

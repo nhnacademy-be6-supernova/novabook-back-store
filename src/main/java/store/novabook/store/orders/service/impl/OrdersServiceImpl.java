@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
@@ -39,13 +40,13 @@ public class OrdersServiceImpl implements OrdersService {
 	@Override
 	public CreateResponse create(CreateOrdersRequest request) {
 		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, request.deliveryFeeId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
 		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(WrappingPaper.class, request.wrappingPaperId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(OrdersStatus.class, request.ordersStatusId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
 		Orders orders = new Orders(member, deliveryFee, wrappingPaper, ordersStatus, request);
 		ordersRepository.save(orders);
 		return new CreateResponse(orders.getId());
@@ -64,21 +65,22 @@ public class OrdersServiceImpl implements OrdersService {
 	@Override
 	public GetOrdersResponse getOrdersById(Long id) {
 		Orders orders = ordersRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(Orders.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 		return GetOrdersResponse.form(orders);
 	}
 
 	@Override
 	public void update(Long id, UpdateOrdersRequest request) {
 		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(Member.class, request.memberId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, request.deliveryFeeId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
 		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(WrappingPaper.class, request.wrappingPaperId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.memberId())
-			.orElseThrow(() -> new EntityNotFoundException(OrdersStatus.class, request.ordersStatusId()));
-		Orders orders = ordersRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Orders.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
+		Orders orders = ordersRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 		orders.update(member, deliveryFee, wrappingPaper, ordersStatus, request);
 	}
 

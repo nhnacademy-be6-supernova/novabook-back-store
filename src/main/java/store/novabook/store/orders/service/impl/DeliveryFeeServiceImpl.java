@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.exception.EntityNotFoundException;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetDeliveryFeeResponse;
@@ -41,11 +42,7 @@ public class DeliveryFeeServiceImpl implements DeliveryFeeService {
 	@Transactional(readOnly = true)
 	public Page<GetDeliveryFeeResponse> findAllDeliveryFees(Pageable pageable) {
 		Page<DeliveryFee> deliveryFees = deliveryFeeRepository.findAll(pageable);
-		List<GetDeliveryFeeResponse> responses = new ArrayList<>();
-		for (DeliveryFee deliveryFee : deliveryFees) {
-			responses.add(GetDeliveryFeeResponse.from(deliveryFee));
-		}
-		return new PageImpl<>(responses, pageable, deliveryFees.getTotalElements());
+		return deliveryFees.map(GetDeliveryFeeResponse::from);
 	}
 
 	@Override
@@ -62,7 +59,7 @@ public class DeliveryFeeServiceImpl implements DeliveryFeeService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetDeliveryFeeResponse getDeliveryFee(Long id) {
-		return GetDeliveryFeeResponse.from(
-			deliveryFeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(DeliveryFee.class, id)));
+		return GetDeliveryFeeResponse.from(deliveryFeeRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND)));
 	}
 }

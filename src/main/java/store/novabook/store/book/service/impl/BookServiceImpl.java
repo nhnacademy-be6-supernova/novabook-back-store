@@ -42,10 +42,10 @@ import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
 import store.novabook.store.category.service.CategoryService;
-import store.novabook.store.category.service.impl.CategoryServiceImpl;
-import store.novabook.store.common.exception.EntityNotFoundException;
-import store.novabook.store.common.exception.FailedCreateBookException;
 import store.novabook.store.common.image.NHNCloudClient;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.InternalServerException;
+import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.image.entity.BookImage;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.repository.BookImageRepository;
@@ -93,14 +93,12 @@ public class BookServiceImpl implements BookService {
 
 	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
-			.orElseThrow(() -> new EntityNotFoundException(BookStatus.class, request.bookStatusId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_STATUS_NOT_FOUND));
 
 		Book book = bookRepository.save(Book.of(request, bookStatus));
 
 		List<Tag> tags = tagRepository.findByIdIn(request.tags());
-		List<BookTag> bookTags = tags.stream()
-			.map(tag -> new BookTag(book, tag))
-			.toList();
+		List<BookTag> bookTags = tags.stream().map(tag -> new BookTag(book, tag)).toList();
 		bookTagRepository.saveAll(bookTags);
 
 		List<Category> categories = categoryRepository.findByIdIn(request.categories());
@@ -123,7 +121,8 @@ public class BookServiceImpl implements BookService {
 				log.error("Failed to delete file : {}", outputFilePath);
 			}
 			log.error("Failed to download file : {}", e.getMessage());
-			throw new FailedCreateBookException();
+
+			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
 		}
 
 		String nhnUrl = uploadImage(accessKey, secretKey, bucketName + fileName, false, outputFilePath);
@@ -151,20 +150,19 @@ public class BookServiceImpl implements BookService {
 
 	public void update(UpdateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
-			.orElseThrow(() -> new EntityNotFoundException(BookStatus.class, request.bookStatusId()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_STATUS_NOT_FOUND));
 
 		Book book = bookRepository.findById(request.id())
-			.orElseThrow(() -> new EntityNotFoundException(Book.class, request.id()));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
 		book.update(bookStatus, request);
 	}
 
 	public void delete(Long id) {
 		BookStatus bookStatus = bookStatusRepository.findById(4L)
-			.orElseThrow(() -> new EntityNotFoundException(BookStatus.class, id));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_STATUS_NOT_FOUND));
 
-		Book book = bookRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(Book.class, id));
+		Book book = bookRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 		book.updateBookStatus(bookStatus);
 	}
 
@@ -189,7 +187,7 @@ public class BookServiceImpl implements BookService {
 
 		} catch (Exception e) {
 			log.error("Failed to nhnCloud : {}", e.getMessage());
-			throw new FailedCreateBookException();
+			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
 		}
 	}
 }
