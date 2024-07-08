@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,8 @@ import store.novabook.store.common.util.FileConverter;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.common.util.KeyManagerUtil;
+import store.novabook.store.common.util.dto.ImageManagerDto;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.entity.ReviewImage;
 import store.novabook.store.image.repository.ImageRepository;
@@ -46,7 +49,6 @@ import store.novabook.store.point.repository.PointPolicyRepository;
  * 책 리뷰와 관련된 서비스를 제공하는 클래스.
  */
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class ReviewServiceImpl implements ReviewService {
 	private final ReviewRepository reviewRepository;
@@ -57,17 +59,24 @@ public class ReviewServiceImpl implements ReviewService {
 	private final PointHistoryRepository pointHistoryRepository;
 	private final PointPolicyRepository pointPolicyRepository;
 	private final MemberRepository memberRepository;
-
-	@Value("${nhn.cloud.imageManager.accessKey}")
-	private String accessKey;
-
-	@Value("${nhn.cloud.imageManager.secretKey}")
-	private String secretKey;
-
-	@Value("${nhn.cloud.imageManager.bucketName}")
-	private String bucketName;
+	private final ImageManagerDto imageManagerDto;
 
 	private static final String REVIEW_POINT = "리뷰 작성 포인트";
+
+	public ReviewServiceImpl(ReviewRepository reviewRepository, OrdersBookRepository ordersBookRepository,
+		NHNCloudMutilpartClient nhnCloudClient, ImageRepository imageRepository,
+		ReviewImageRepository reviewImageRepository, PointHistoryRepository pointHistoryRepository,
+		PointPolicyRepository pointPolicyRepository, MemberRepository memberRepository, Environment environment) {
+		this.reviewRepository = reviewRepository;
+		this.ordersBookRepository = ordersBookRepository;
+		this.nhnCloudClient = nhnCloudClient;
+		this.imageRepository = imageRepository;
+		this.reviewImageRepository = reviewImageRepository;
+		this.pointHistoryRepository = pointHistoryRepository;
+		this.pointPolicyRepository = pointPolicyRepository;
+		this.memberRepository = memberRepository;
+		this.imageManagerDto = KeyManagerUtil.getImageManager(environment);
+	}
 
 	/**
 	 * 주어진 책 ID와 관련된 모든 리뷰를 읽기 전용으로 조회합니다.
@@ -113,11 +122,11 @@ public class ReviewServiceImpl implements ReviewService {
 
 		if (!(request.reviewImageDTOs().getFirst().fileName().isEmpty() && request.reviewImageDTOs().size() == 1)) {
 			//리뷰 이미지를 저장
-			String basepath = bucketName + "review";
+			String basepath = imageManagerDto.bucketName() + "review";
 			//NHN클라우드 설정
 			String paramsJson = "{\"basepath\": \"" + basepath + "\", \"overwrite\": true, \"autorename\": \"true\"}";
 
-			List<String> imageList = uploadImage(accessKey, paramsJson, secretKey, request.reviewImageDTOs());
+			List<String> imageList = uploadImage(imageManagerDto.accessKey(), paramsJson, imageManagerDto.secretKey(), request.reviewImageDTOs());
 
 			imageList.forEach(imageUrl -> {
 				Image image1 = imageRepository.save(new Image(imageUrl));

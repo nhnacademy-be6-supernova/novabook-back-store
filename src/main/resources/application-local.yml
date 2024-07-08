@@ -46,12 +46,3 @@ eureka:
   instance:
     prefer-ip-address: true
 
----
-spring:
-  data:
-    redis:
-      url: jdbc:redis://133.186.241.167:6379/31
-      host: 133.186.241.167
-      database: 31
-      password: \*N2vya7H@muDTwdNMR!
-      port: 6379
