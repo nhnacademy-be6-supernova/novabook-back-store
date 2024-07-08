@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.CouponType;
-import store.novabook.store.common.messaging.CouponSender;
-import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.common.messaging.CouponSender;
+import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
@@ -221,7 +221,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public GetDormantMembersResponse getDormantMembers(GetDormantMembersRequest getDormantMembersRequest) {
 		Member member = memberRepository.findById(getDormantMembersRequest.membersId())
-			.orElseThrow(() -> new EntityNotFoundException(Member.class));
+			.orElseThrow();
 		MemberStatus memberStatus = member.getMemberStatus();
 		return new GetDormantMembersResponse(memberStatus.getId());
 	}
