@@ -14,6 +14,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import store.novabook.store.common.util.dto.DatabaseConfigDto;
+import store.novabook.store.common.util.dto.ElasticSearchConfigDto;
+import store.novabook.store.common.util.dto.ImageManagerDto;
 import store.novabook.store.common.util.dto.RedisConfigDto;
 
 public class KeyManagerUtil {
@@ -25,7 +27,7 @@ public class KeyManagerUtil {
 	private static String getDataSource(Environment environment, String keyid) {
 
 		String appkey = environment.getProperty("nhn.cloud.keyManager.appkey");
-		String userId = environment.getProperty("nhn.cloud.keyManager.userAccessKeyId");
+		String userId = environment.getProperty("nhn.cloud.keyManager.userAccessKey");
 		String secretKey = environment.getProperty("nhn.cloud.keyManager.secretAccessKey");
 
 		RestTemplate restTemplate = new RestTemplate();
@@ -52,7 +54,7 @@ public class KeyManagerUtil {
 
 	public static DatabaseConfigDto getDatabaseConfig(Environment environment) {
 		try {
-			String keyid = environment.getProperty("nhn.cloud.keyManager.storeKeyId");
+			String keyid = environment.getProperty("nhn.cloud.keyManager.storeKey");
 			return objectMapper.readValue(getDataSource(environment, keyid), DatabaseConfigDto.class);
 		} catch (JsonProcessingException e) {
 			//오류처리
@@ -62,8 +64,28 @@ public class KeyManagerUtil {
 
 	public static RedisConfigDto getRedisConfig(Environment environment) {
 		try {
-			String keyid = environment.getProperty("nhn.cloud.keyManager.redisKeyId");
+			String keyid = environment.getProperty("nhn.cloud.keyManager.redisKey");
 			return objectMapper.readValue(getDataSource(environment, keyid), RedisConfigDto.class);
+		} catch (JsonProcessingException e) {
+			//오류처리
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static ElasticSearchConfigDto getElasticSearchConfig(Environment environment) {
+		try {
+			String keyid = environment.getProperty("nhn.cloud.keyManager.elasticSearchKey");
+			return objectMapper.readValue(getDataSource(environment, keyid), ElasticSearchConfigDto.class);
+		} catch (JsonProcessingException e) {
+			//오류처리
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static ImageManagerDto getImageManager(Environment environment) {
+		try {
+			String keyid = environment.getProperty("nhn.cloud.keyManager.imageManagerKey");
+			return objectMapper.readValue(getDataSource(environment, keyid), ImageManagerDto.class);
 		} catch (JsonProcessingException e) {
 			//오류처리
 			throw new RuntimeException(e);
