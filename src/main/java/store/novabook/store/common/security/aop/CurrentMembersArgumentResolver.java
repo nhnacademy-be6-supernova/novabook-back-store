@@ -23,14 +23,24 @@ public class CurrentMembersArgumentResolver implements HandlerMethodArgumentReso
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null) {
-			if (authentication.getName().equals("anonymousUser")) {
-				log.error("CurrentMembersArgumentResolver anonymousUser, 로그인을 하고 @CurrentMembers를 사용해주세요.");
-				return null;
-			}
-			return Long.parseLong(authentication.getName());
+		CurrentMembers currentMembers = parameter.getParameterAnnotation(CurrentMembers.class);
+		if (currentMembers == null) {
+			return null;
 		}
-		return null;
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || "anonymousUser".equals(authentication.getName())) {
+			handleUnauthenticatedUser(currentMembers.required());
+			return null;
+		}
+
+		return Long.parseLong(authentication.getName());
+	}
+
+	private void handleUnauthenticatedUser(boolean required) {
+		if (required) {
+			log.error("CurrentMembersArgumentResolver anonymousUser, 로그인을 하고 @CurrentMembers를 사용해주세요.");
+			throw new IllegalStateException("로그인을 하고 @CurrentMembers를 사용해주세요.");
+		}
 	}
 }
