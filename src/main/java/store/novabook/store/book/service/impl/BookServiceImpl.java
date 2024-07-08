@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.book.dto.request.CreateBookRequest;
 import store.novabook.store.book.dto.request.UpdateBookRequest;
@@ -35,17 +34,17 @@ import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.book.repository.BookQueryRepository;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.BookStatusRepository;
-import store.novabook.store.book.repository.LikesRepository;
 import store.novabook.store.book.service.BookService;
 import store.novabook.store.category.entity.BookCategory;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
-import store.novabook.store.category.service.CategoryService;
-import store.novabook.store.common.image.NHNCloudClient;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.InternalServerException;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.common.image.NHNCloudClient;
+import store.novabook.store.common.util.KeyManagerUtil;
+import store.novabook.store.common.util.dto.ImageManagerDto;
 import store.novabook.store.image.entity.BookImage;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.repository.BookImageRepository;
@@ -58,13 +57,11 @@ import store.novabook.store.tag.repository.BookTagRepository;
 import store.novabook.store.tag.repository.TagRepository;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class BookServiceImpl implements BookService {
 	private final BookRepository bookRepository;
 	private final BookStatusRepository bookStatusRepository;
-	private final LikesRepository likesRepository;
 	private final BookTagRepository bookTagRepository;
 	private final CategoryRepository categoryRepository;
 	private final TagRepository tagRepository;
@@ -72,24 +69,32 @@ public class BookServiceImpl implements BookService {
 	private final BookQueryRepository queryRepository;
 	private final ImageRepository imageRepository;
 	private final BookImageRepository bookImageRepository;
-	private final CategoryService categoryService;
 	private final NHNCloudClient nhnCloudClient;
 	private final BookSearchRepository bookSearchRepository;
+	private final ImageManagerDto imageManagerDto;
 
-	@Value("${nhn.cloud.imageManager.endpointUrl}")
-	private String endpointUrl;
 
-	@Value("${nhn.cloud.imageManager.accessKey}")
-	private String accessKey;
+	public BookServiceImpl(BookRepository bookRepository, BookStatusRepository bookStatusRepository,
+		BookTagRepository bookTagRepository, CategoryRepository categoryRepository,
+		TagRepository tagRepository, BookCategoryRepository bookCategoryRepository, BookQueryRepository queryRepository,
+		ImageRepository imageRepository, BookImageRepository bookImageRepository,
+		NHNCloudClient nhnCloudClient, BookSearchRepository bookSearchRepository, Environment environment) {
 
-	@Value("${nhn.cloud.imageManager.secretKey}")
-	private String secretKey;
+		this.bookRepository = bookRepository;
+		this.bookStatusRepository = bookStatusRepository;
+		this.bookTagRepository = bookTagRepository;
+		this.categoryRepository = categoryRepository;
+		this.tagRepository = tagRepository;
+		this.bookCategoryRepository = bookCategoryRepository;
+		this.queryRepository = queryRepository;
+		this.imageRepository = imageRepository;
+		this.bookImageRepository = bookImageRepository;
+		this.nhnCloudClient = nhnCloudClient;
+		this.bookSearchRepository = bookSearchRepository;
+		this.imageManagerDto = KeyManagerUtil.getImageManager(environment);
+	}
 
-	@Value("${nhn.cloud.imageManager.bucketName}")
-	private String bucketName;
 
-	@Value("${nhn.cloud.imageManager.localStorage}")
-	private String localStorage;
 
 	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
@@ -109,7 +114,7 @@ public class BookServiceImpl implements BookService {
 
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-		String outputFilePath = localStorage + fileName;
+		String outputFilePath = imageManagerDto.localStorage() + fileName;
 		try (InputStream in = new URI(imageUrl).toURL().openStream()) {
 			Path imagePath = Paths.get(outputFilePath);
 			Files.copy(in, imagePath);
@@ -125,7 +130,7 @@ public class BookServiceImpl implements BookService {
 			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
 		}
 
-		String nhnUrl = uploadImage(accessKey, secretKey, bucketName + fileName, false, outputFilePath);
+		String nhnUrl = uploadImage(imageManagerDto.accessKey(), imageManagerDto.secretKey(), imageManagerDto.bucketName() + fileName, false, outputFilePath);
 
 		Image image = imageRepository.save(new Image(nhnUrl));
 		bookImageRepository.save(BookImage.of(book, image));
