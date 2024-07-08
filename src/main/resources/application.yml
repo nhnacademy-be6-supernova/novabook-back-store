@@ -12,6 +12,8 @@ server:
 logging:
   file:
     path: ${user.dir}/logs/${spring.application.name}
+  level:
+    org.springframework.amqp: DEBUG
 
 
 #공통 설정 내용
