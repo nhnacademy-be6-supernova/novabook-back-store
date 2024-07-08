@@ -40,7 +40,7 @@ logging:
 
 nhn:
   cloud:
-#키 매니저
+    #키 매니저
     keyManager:
       appkey: 2SxwmBzUfnqJaA2A
       redisKey: 60427297022b4bdb9650789537e4b945

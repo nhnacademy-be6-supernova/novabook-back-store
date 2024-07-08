@@ -1,25 +1,30 @@
 package store.novabook.store.member.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.CouponType;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.common.exception.UnauthorizedException;
 import store.novabook.store.common.messaging.CouponSender;
 import store.novabook.store.common.messaging.dto.CreateCouponMessage;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
+import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
@@ -60,6 +65,7 @@ public class MemberServiceImpl implements MemberService {
 	public static final String STATUS_WITHDRAW = "탈퇴";
 	public static final String REGISTER_POINT = "회원가입 적립금";
 	public static final String LOGIN_FAIL_MESSAGE = "비밀번호가 일치하지 않습니다.";
+	public static final long AUTH_CODE_EXPIRATION = 3;
 
 	private final MemberRepository memberRepository;
 	private final PointHistoryRepository pointHistoryRepository;
@@ -72,9 +78,10 @@ public class MemberServiceImpl implements MemberService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final CouponSender couponSender;
+	private final RedisTemplate redisTemplate;
 
 	@Override
-	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
+	public CreateMemberResponse createMember(@Valid CreateMemberRequest createMemberRequest) {
 		if (!createMemberRequest.loginPassword().equals(createMemberRequest.loginPasswordConfirm())) {
 			throw new BadCredentialsException(LOGIN_FAIL_MESSAGE);
 		}
@@ -134,7 +141,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updateMemberNumberOrName(Long memberId, UpdateMemberRequest updateMemberRequest) {
+	public void updateMemberNumberOrName(Long memberId, @Valid UpdateMemberRequest updateMemberRequest) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -148,7 +155,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updateMemberPassword(Long memberId, UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+	public void updateMemberPassword(Long memberId, @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest) {
 		if (!updateMemberPasswordRequest.loginPassword().equals(updateMemberPasswordRequest.loginPasswordConfirm())) {
 			throw new BadCredentialsException(LOGIN_FAIL_MESSAGE);
 		}
@@ -172,7 +179,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updateMemberStatusToWithdraw(Long memberId, DeleteMemberRequest deleteMemberRequest) {
+	public void updateMemberStatusToWithdraw(Long memberId, @Valid DeleteMemberRequest deleteMemberRequest) {
 		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_WITHDRAW)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
 
@@ -185,6 +192,25 @@ public class MemberServiceImpl implements MemberService {
 
 		member.updateMemberStatus(newMemberStatus);
 		memberRepository.save(member);
+	}
+
+	// 휴면 회원 해지 인증
+	@Override
+	public void updateMemberStatusToActive(@Valid DoorayAuthCodeRequest request) {
+
+		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(request.uuid());
+
+		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getDormantMembersId(getMembersUUIDRequest);
+		getMembersUUIDResponse.membersId();
+
+		Member member = memberRepository.findById(Long.valueOf(getMembersUUIDResponse.membersId()))
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));
+
+		validateAuthCode(request.uuid(), request.authCode());
+		member.updateMemberStatus(newMemberStatus);
+		deleteAuthCodeFromRedis(request.uuid());
 	}
 
 	@Override
@@ -241,5 +267,38 @@ public class MemberServiceImpl implements MemberService {
 	public DuplicateResponse isDuplicateEmail(String email) {
 		return new DuplicateResponse(memberRepository.existsByEmail(email));
 	}
+
+	// 인증 코드 생성하고 저장하기
+	@Override
+	public String createAndSaveAuthCode(String uuid) {
+		String authCode = UUID.randomUUID().toString().substring(0, 6);
+		redisTemplate.opsForValue().set("authCode: " + uuid, authCode, AUTH_CODE_EXPIRATION, TimeUnit.MINUTES);
+		return authCode;
+	}
+
+	// 유효한 인증코드인지 검사
+	private void validateAuthCode(String uuid, String authCode) {
+		String saveCode = String.valueOf(redisTemplate.opsForValue().get("authCode: " + uuid));
+		if (!authCode.equals(saveCode)) {
+			throw new UnauthorizedException(ErrorCode.UNAUTHORIZED_CODE);
+		}
+	}
+
+	// 레디스에서 인증코드 지우기
+	private void deleteAuthCodeFromRedis(String uuid) {
+		Boolean result = redisTemplate.delete("authCode: " + uuid);
+		if (result == null || !result) {
+			throw new NotFoundException(ErrorCode.UNAUTHORIZED_CODE);
+		}
+	}
+
+	@Override
+	public boolean isDormantMember(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+		return member.getMemberStatus().getName().equals(STATUS_DORMANT);
+	}
+
 }
 

@@ -20,6 +20,19 @@ spring:
     hibernate:
       ddl-auto: create
 
+
+rabbitmq:
+  queue:
+    coupon: nova.coupon.queue
+    dead: nova.dead.queue
+    member-coupon: nova.membercoupon.queue
+  exchange:
+    member: nova.member.exchange
+    coupon: nova.coupon.exchange
+  routing:
+    member: member.registration
+    couponCreated: coupon.created
+
 eureka:
   client:
     register-with-eureka: true
@@ -40,4 +53,3 @@ nhn:
       storeKey: e0a81fc89a1d4c5196df53d3fdab0f64
       imageManagerKey: f1a359544d624274b58cac169b00d774
       elasticSearchKey: 74649bffcfbb40a9bcae7204e6863d05
-
