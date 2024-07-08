@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
+import store.novabook.store.member.dto.request.DoorayAuthRequest;
 import store.novabook.store.member.service.DoorayService;
 import store.novabook.store.member.service.MemberService;
 

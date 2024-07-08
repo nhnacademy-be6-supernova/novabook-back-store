@@ -4,9 +4,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import store.novabook.store.member.controller.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
+import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
