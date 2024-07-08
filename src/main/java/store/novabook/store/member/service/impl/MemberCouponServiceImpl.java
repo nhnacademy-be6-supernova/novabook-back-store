@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.CouponAdapter;
 import store.novabook.store.common.adatper.CouponStatus;
@@ -19,12 +18,15 @@ import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
 import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
 import store.novabook.store.common.adatper.dto.GetCouponResponse;
 import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
-import store.novabook.store.common.messaging.dto.RegisterCouponMessage;
+import store.novabook.store.common.messaging.CouponSender;
+import store.novabook.store.common.messaging.dto.CreateCouponNotifyMessage;
+import store.novabook.store.common.messaging.dto.RegisterCouponRequest;
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.response.PageResponse;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
+import store.novabook.store.member.dto.request.DownloadCouponMessageRequest;
 import store.novabook.store.member.dto.request.DownloadCouponRequest;
 import store.novabook.store.member.dto.response.CreateMemberCouponResponse;
 import store.novabook.store.member.dto.response.GetCouponIdsResponse;
@@ -42,6 +44,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	private final MemberCouponRepository memberCouponRepository;
 	private final MemberRepository memberRepository;
 	private final CouponAdapter couponAdapter;
+	private final CouponSender couponSender;
 
 	@Override
 	public CreateMemberCouponResponse createMemberCoupon(Long memberId, CreateMemberCouponRequest request) {
@@ -53,17 +56,28 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 
 		MemberCoupon memberCoupon = MemberCoupon.builder().couponId(couponResponse.id()).member(member).build();
 		memberCouponRepository.save(memberCoupon);
-
 		return CreateMemberCouponResponse.fromEntity(memberCoupon);
 	}
 
 	@Override
-	public void createMemberCouponByMessage(@Valid RegisterCouponMessage message) {
-		Member member = memberRepository.findById(message.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+	public void downloadLimitedCoupon(String token, String refresh, Long memberId,
+		DownloadCouponMessageRequest request) {
+		List<Long> couponList = memberCouponRepository.findByMemberId(memberId)
+			.stream()
+			.map(MemberCoupon::getCouponId)
+			.toList();
 
-		MemberCoupon memberCoupon = MemberCoupon.builder().member(member).couponId(message.couponId()).build();
-		memberCouponRepository.save(memberCoupon);
+		couponSender.sendToNotifyQueue(token, refresh,
+			CreateCouponNotifyMessage.from(memberId, couponList, request));
+	}
+
+	@Override
+	public CreateMemberCouponResponse registerMemberCoupon(Long memberId, RegisterCouponRequest request) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+		MemberCoupon memberCoupon = MemberCoupon.builder().member(member).couponId(request.couponId()).build();
+		MemberCoupon saved = memberCouponRepository.save(memberCoupon);
+		return CreateMemberCouponResponse.fromEntity(saved);
 	}
 
 	@Override

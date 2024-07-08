@@ -5,5 +5,6 @@ public enum CouponType {
 	BIRTHDAY,
 	WELCOME,
 	BOOK,
-	CATEGORY;
+	CATEGORY,
+	LIMITED;
 }

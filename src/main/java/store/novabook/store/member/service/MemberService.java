@@ -20,7 +20,7 @@ import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
 
 public interface MemberService {
-	CreateMemberResponse createMember(CreateMemberRequest createMemberRequest);
+	CreateMemberResponse createMember(String token, String refresh, CreateMemberRequest createMemberRequest);
 
 	@Transactional(readOnly = true)
 	Page<GetMemberResponse> getMemberAll(Pageable pageable);

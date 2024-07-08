@@ -21,10 +21,10 @@ spring:
       default-auto-commit: true  # 기본 자동 커밋 설정
 
   rabbitmq:
-    host: localhost
+    host: 133.186.241.167
     port: 5672
-    username: supernova
-    password: 1234
+    username: admin
+    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto

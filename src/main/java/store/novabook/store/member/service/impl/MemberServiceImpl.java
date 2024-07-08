@@ -1,6 +1,7 @@
 package store.novabook.store.member.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -71,7 +72,7 @@ public class MemberServiceImpl implements MemberService {
 	private final CouponSender couponSender;
 
 	@Override
-	public CreateMemberResponse createMember(CreateMemberRequest createMemberRequest) {
+	public CreateMemberResponse createMember(String token, String refresh, CreateMemberRequest createMemberRequest) {
 		if (!createMemberRequest.loginPassword().equals(createMemberRequest.loginPasswordConfirm())) {
 			throw new BadCredentialsException(LOGIN_FAIL_MESSAGE);
 		}
@@ -109,8 +110,8 @@ public class MemberServiceImpl implements MemberService {
 			pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 
-		couponSender.sendToHighTrafficQueue(
-			CreateCouponMessage.fromEntity(newMember.getId(), CouponType.WELCOME, null));
+		couponSender.sendToNormalQueue(token, refresh,
+			CreateCouponMessage.fromEntity(newMember.getId(), new ArrayList<>(), CouponType.WELCOME, null));
 		return CreateMemberResponse.fromEntity(newMember);
 	}
 
