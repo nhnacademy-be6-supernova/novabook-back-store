@@ -179,7 +179,11 @@ public class OrdersRabbitMQConfig {
 			.with("compensate.coupon.apply.routing.key").noargs();
 	}
 
-
+	@Bean
+	public Binding compensateApprovePaymentBinding() {
+		return BindingBuilder.bind(compensateApprovePaymentQueue()).to(sagaExchange())
+			.with("compensate.approve.payment.routing.key").noargs();
+	}
 
 
 

@@ -36,7 +36,7 @@ public class OrdersSagaManagerImpl {
 	 * 메모: 마지막 로직에 토탈 금액 비교하는 로직 필요
 	 */
 
-	// 첫번째 로직 (가주문 검증)
+	// 첫번째 로직 (가주문 검증, 비동기처리 전송)
 	public void orderInvoke(PaymentRequest paymentRequest) {
 		// 주문 트랜잭션 시작 (가주문 검증)
 		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",

@@ -36,7 +36,6 @@ public class TossOrderService {
 	@Transactional
 	@RabbitListener(queues = "nova.orders.approve.payment.queue")
 	public void create(@Payload OrderSagaMessage orderSagaMessage) {
-
 		JSONParser parser = new JSONParser();
 		JSONObject obj = new JSONObject();
 
@@ -97,12 +96,57 @@ public class TossOrderService {
 	}
 
 
-
-	// 환불 처리
-
 	@RabbitListener(queues = "nova.orders.compensate.approve.payment.queue")
 	@Transactional
 	public void cancel(@Payload OrderSagaMessage orderSagaMessage) {
+		HashMap<String, String> paymentParam = (HashMap<String, String>) orderSagaMessage.getPaymentRequest().paymentInfo();
+		String paymentKey = paymentParam.get("paymentKey");
 
+		try {
+			JSONObject response = sendTossCancelRequest(paymentKey, "서버오류 결제 보상 트랜잭션");
+			orderSagaMessage.setStatus("SUCCESS_REFUND_PAYMENT");
+			log.info("환불 응답 내용 : {}", response.toString());
+		} catch (IOException | ParseException e) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			orderSagaMessage.setStatus("FAIL_REFUND_TOSS_PAYMENT");
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	private JSONObject sendTossCancelRequest(String paymentKey, String cancelReason) throws IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		JSONObject obj = new JSONObject();
+		obj.put("cancelReason", cancelReason);
+
+		String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
+		Base64.Encoder encoder = Base64.getEncoder();
+		byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+		String authorizations = "Basic " + new String(encodedBytes);
+
+		URL url = new URL("https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel");
+		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+		connection.setRequestProperty("Authorization", authorizations);
+		connection.setRequestProperty("Content-Type", "application/json");
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+
+		OutputStream outputStream = connection.getOutputStream();
+		outputStream.write(obj.toString().getBytes(StandardCharsets.UTF_8));
+
+		int code = connection.getResponseCode();
+		boolean isSuccess = code == 200;
+
+		InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
+		Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
+		JSONObject jsonObject = (JSONObject)parser.parse(reader);
+		responseStream.close();
+
+		if (!isSuccess) {
+			throw new RuntimeException("토스 환불 실패");
+		}
+
+		return jsonObject;
 	}
 }
