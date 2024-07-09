@@ -98,6 +98,7 @@ public class KeyManagerUtil {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.rabbitMQKey");
 			return objectMapper.readValue(getDataSource(environment, keyid), RabbitMQConfigDto.class);
 		} catch (JsonProcessingException e) {
+			//오류처리
 			throw new RuntimeException(e);
 		}
 	}

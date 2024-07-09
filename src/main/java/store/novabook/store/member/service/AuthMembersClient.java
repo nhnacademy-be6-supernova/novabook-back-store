@@ -12,4 +12,7 @@ public interface AuthMembersClient {
 	@PostMapping
 	GetMembersUUIDResponse getMembersId(@RequestBody GetMembersUUIDRequest getMembersUUIDRequest);
 
+	@PostMapping("/dormant")
+	GetMembersUUIDResponse getDormantMembersId(@RequestBody GetMembersUUIDRequest getMembersUUIDRequest);
+
 }
