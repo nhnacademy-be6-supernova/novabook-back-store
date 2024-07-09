@@ -32,16 +32,31 @@ public class OrdersSagaManagerImpl {
 	 * 적립포인트 충전 -> 등급 별로 다르게 적용 되어야함
 	 * 장바구니 제거
 	 * 가주문 제거
+	 *
+	 * 메모: 마지막 로직에 토탈 금액 비교하는 로직 필요
 	 */
 
 	// 첫번째 로직 (가주문 검증)
 	public void orderInvoke(PaymentRequest paymentRequest) {
-		// 가주문 검증 진행
+		// 주문 트랜잭션 시작 (가주문 검증)
 		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",
 			OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
+
+		//적립 포인트 충전 - 등급 별로 다르게 적용
+		// rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",
+		// 	OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
+
+		// 장바구니 제거
+		// rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",
+		// 	OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
+
+		// 가주문 제거
+		// rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",
+		// 	OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
+
 	}
 
-	// 두번째 로직 (포인트 감소)
+	// 두번째 로직 (쿠폰 적용)
 	@RabbitListener(queues = "nova.api1-producer-queue")
 	public void handleApiResponse(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
@@ -59,11 +74,12 @@ public class OrdersSagaManagerImpl {
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.apply.routing.key", orderSagaMessage);
 			}
 		} else if (orderSagaMessage.getStatus().equals("FAIL_CONFIRM_ORDER_FORM")) {
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
 			log.error("주문서 검증 실패");
 		}
 	}
 
-	// 세번째 로직 (결제 진행)
+	// 세번째 로직 (포인트 감소 진행)
 	@RabbitListener(queues = "nova.api2-producer-queue")
 	public void handleApi2Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
@@ -81,11 +97,14 @@ public class OrdersSagaManagerImpl {
 					orderSagaMessage);
 			}
 		} else if (orderSagaMessage.getStatus().equals("CONFIRM_FAIL")) {
-			log.error("API1 execution failed");
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			log.error("[주문:쿠폰 적용 실패] 보상 트랜잭션을 시작합니다.");
+
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
 		}
 	}
 
-	// 세번째 로직 (쿠폰 적용)
+	// 네번째 로직 (결제 진행)
 	@RabbitListener(queues = "nova.api3-producer-queue")
 	public void handleApi3Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
@@ -94,22 +113,57 @@ public class OrdersSagaManagerImpl {
 			orderSagaMessage.setStatus("PROCEED_APPROVE_PAYMENT");
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.approve.payment.routing.key",
 				orderSagaMessage);
-		} else if (orderSagaMessage.getStatus().equals("FAIL_POINT_DECREMENT")) {
-			log.error("포인트 감소 실패");
+
+		} else if(orderSagaMessage.getStatus().equals("FAIL_POINT_DECREMENT")) {
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			log.error("[주문:포인트 감소 실패] 보상 트랜잭션을 시작합니다.");
+
+			if(!orderSagaMessage.isNoUseCoupon())
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
 		}
 	}
 
-	// 네번째 로직 (성공 & 마무리)
-	// @RabbitListener(queues = "nova.api4-producer-queue")
+	// 네번째 로직 (결제 승인)
+	@RabbitListener(queues = "nova.api4-producer-queue")
 	public void handleApi4Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
 
-		if (!orderSagaMessage.isNoUsePoint() && orderSagaMessage.getStatus().equals("SUCCESS_APPROVE_PAYMENT")) {
+		if (orderSagaMessage.getStatus().equals("SUCCESS_APPROVE_PAYMENT")) {
 			orderSagaMessage.setStatus("SUCCESS_ALL_ORDER_SAGA");
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "완료시 가야할 큐", orderSagaMessage);
+			log.info("성공적으로 결제가 완료되었습니다");
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.save.database.routing.key", orderSagaMessage);
 		} else if (orderSagaMessage.getStatus().equals("FAIL_APPROVE_PAYMENT")) {
-			log.error("API1 execution failed");
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			log.error("[주문:결제 승인 실패] 보상 트랜잭션을 시작합니다.");
+
+			if(!orderSagaMessage.isNoUseCoupon())
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
+			if(!orderSagaMessage.isNoUsePoint())
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
 		}
 	}
 
+	// 다섯번째 로직 (성공 & DB 저장)
+	@RabbitListener(queues = "nova.api5-producer-queue")
+	public void handleApi5Response(@Payload OrderSagaMessage orderSagaMessage) {
+		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
+
+		if (orderSagaMessage.getStatus().equals("SUCCESS_SAVE_ORDERS_DATABASE")) {
+			orderSagaMessage.setStatus("SUCCESS_ALL_ORDER_SAGA");
+			log.info("성공적으로 모든 주문 트랜잭션이 완료되었습니다");
+		} else if (orderSagaMessage.getStatus().equals("FAIL_SAVE_ORDERS_DATABASE")) {
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			log.error("[주문:DB 저장 실패] 보상 트랜잭션을 시작합니다.");
+
+			if(!orderSagaMessage.isNoUseCoupon())
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
+			if(!orderSagaMessage.isNoUsePoint())
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
+
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.compensate.approve.payment.queue", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
+		}
+	}
 }

@@ -85,6 +85,7 @@ public class Orders {
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
 		CreateOrdersRequest request) {
+
 		this.member = member;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
@@ -96,6 +97,7 @@ public class Orders {
 		this.deliveryAddress = request.deliveryAddress();
 		this.receiverName = request.receiverName();
 		this.receiverNumber = request.receiverNumber();
+
 	}
 
 

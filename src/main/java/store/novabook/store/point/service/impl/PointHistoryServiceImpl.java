@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
@@ -33,6 +34,7 @@ import store.novabook.store.point.repository.PointPolicyRepository;
 import store.novabook.store.point.service.PointHistoryService;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class PointHistoryServiceImpl implements PointHistoryService {
@@ -131,21 +133,54 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
 			// 성공 메시지 전송
 			orderSagaMessage.setStatus("SUCCESS_POINT_DECREMENT");
-			rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api2-producer-routing-key", orderSagaMessage);
+			rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api3-producer-routing-key", orderSagaMessage);
 		} catch (Exception e) {
 			handleFailure(orderSagaMessage);
 			throw e;
 		}
 	}
 
-	/**
-	 * 트랜잭션 롤백 처리
-	 * 실패 메시지 전송
-	 * @param orderSagaMessage
-	 */
 	private void handleFailure(OrderSagaMessage orderSagaMessage) {
 		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		orderSagaMessage.setStatus("FAIL_POINT_DECREMENT");
 		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api2-producer-routing-key", orderSagaMessage);
+	}
+
+
+	@RabbitListener(queues = "nova.point.compensate.decrement.queue")
+	@Transactional
+	public void compensateDecrementPoint(@Payload OrderSagaMessage orderSagaMessage) {
+		try {
+			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
+
+			// 주문 정보 조회
+			OrderTemporaryForm orderTemporaryForm = redisOrderRepository.findById(memberId)
+				.orElseThrow(() -> new IllegalArgumentException("주문 정보가 없습니다."));
+
+			// 회원 정보 조회
+			Member member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+			// 최근 포인트 정책 조회
+			PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
+				.orElseThrow(() -> new IllegalArgumentException("포인트 정책을 조회할 수 없습니다"));
+
+			// 포인트 기록 생성 및 저장 (포인트 복구)
+			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "결제 취소로 인한 주문 포인트 환불", orderTemporaryForm.usePointAmount());
+			pointHistoryRepository.save(pointHistory);
+
+			// 성공 메시지 전송
+			orderSagaMessage.setStatus("SUCCESS_DECREMENT_POINT_COMPENSATE");
+			log.info("SUCCESS_DECREMENT_POINT_COMPENSATE");
+		} catch (Exception e) {
+			handleFailureCompensate(orderSagaMessage);
+			throw e;
+		}
+	}
+
+	private void handleFailureCompensate(OrderSagaMessage orderSagaMessage) {
+		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		orderSagaMessage.setStatus("FAIL_DECREMENT_POINT_COMPENSATE");
+		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key", orderSagaMessage);
 	}
 }

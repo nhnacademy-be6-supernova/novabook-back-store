@@ -149,6 +149,13 @@ public class Book {
 		inventory -= amount;
 	}
 
+	public void increaseInventory(int amount) {
+		if (amount <= 0) {
+			throw new IllegalArgumentException("부적절한 amount 입니다.");
+		}
+		inventory += amount;
+	}
+
 	public int getInventory() {
 		return inventory - EXTRA_STOCK;
 	}
