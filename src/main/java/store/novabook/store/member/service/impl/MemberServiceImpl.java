@@ -107,7 +107,7 @@ public class MemberServiceImpl implements MemberService {
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT,
+		PointHistory pointHistory = PointHistory.of(pointPolicy, newMember, REGISTER_POINT,
 			pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 

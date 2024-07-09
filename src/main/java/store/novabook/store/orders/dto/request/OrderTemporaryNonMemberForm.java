@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.index.Indexed;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
@@ -16,12 +15,9 @@ import lombok.Builder;
 
 @Builder
 @RedisHash("OrderForm")
-public record OrderTemporaryForm(
+public record OrderTemporaryNonMemberForm(
 	@Id
 	@NotNull
-	Long memberId,
-	@NotNull
-	@Indexed
 	UUID orderUUID,
 	@NotNull
 	@Valid
@@ -33,7 +29,6 @@ public record OrderTemporaryForm(
 	@Future(message = "배송일은 주문일 이후로 가능합니다.")
 	LocalDate deliveryDate,
 	@NotNull(message = "배송비 ID는 null 일 수 없습니다.")
-	@Indexed
 	Long deliveryId,
 	@Valid
 	@NotNull

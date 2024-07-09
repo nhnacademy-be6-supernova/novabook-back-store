@@ -87,7 +87,6 @@ public class PointHistoryServiceImplTests {
 	void getPointHistoryList() {
 
 		PointHistory pointHistory = PointHistory.builder()
-			.orders(mock(Orders.class))
 			.pointPolicy(mock(PointPolicy.class))
 			.member(mock(Member.class))
 			.pointContent("pointContent")

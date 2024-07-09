@@ -35,15 +35,60 @@ public class OrdersRabbitMQConfig {
 	// QUEUES
 	@Bean
 	public Queue ordersConfirmFormQueue() {
-		return QueueBuilder.durable("Queue nova.orders.form.confirm.queue").build();
+		return QueueBuilder.durable("nova.orders.form.confirm.queue").build();
 	}
+
+	@Bean
+	public Queue ordersDecrementPoint() {
+		return QueueBuilder.durable("nova.point.decrement.queue").build();
+	}
+
+	@Bean
+	public Queue ordersApplyCoupon() {
+		return QueueBuilder.durable("nova.coupon.apply.queue").build();
+	}
+
+	@Bean
+	public Queue ordersPaymentApprove() {
+		return QueueBuilder.durable("nova.orders.approve.payment.queue").build();
+	}
+
+	// SAGA QUEUE
+	@Bean
+	public Queue api1ProducerQueue() {
+		return QueueBuilder.durable("nova.api1-producer-queue").build();
+	}
+
+	@Bean
+	public Queue api2ProducerQueue() {
+		return QueueBuilder.durable("nova.api2-producer-queue").build();
+	}
+
+	@Bean
+	public Queue api3ProducerQueue() {
+		return QueueBuilder.durable("nova.api3-producer-queue").build();
+	}
+
 
 	// BINDING
 	@Bean
 	public Binding ordersConfirmBinding() {
 		return BindingBuilder.bind(ordersConfirmFormQueue()).to(sagaExchange())
-			.with("orders.form.confirm").noargs();
+			.with("orders.form.confirm.routing.key").noargs();
 	}
+
+	@Bean
+	public Binding decrementPointBinding() {
+		return BindingBuilder.bind(ordersDecrementPoint()).to(sagaExchange())
+			.with("point.decrement.routing.key").noargs();
+	}
+
+	@Bean
+	public Binding applyCouponBinding() {
+		return BindingBuilder.bind(ordersConfirmFormQueue()).to(sagaExchange())
+			.with("coupon.apply.routing.key").noargs();
+	}
+
 	@Bean
 	public RabbitTemplate ordersRabbitTemplate(ConnectionFactory connectionFactory) {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -57,6 +102,22 @@ public class OrdersRabbitMQConfig {
 		factory.setConnectionFactory(connectionFactory);
 		factory.setMessageConverter(converter());
 		return factory;
+	}
+
+	// SAGA BINDING
+	@Bean
+	public Binding api1ProducerBinding() {
+		return BindingBuilder.bind(api1ProducerQueue()).to(sagaExchange()).with("nova.api1-producer-routing-key").noargs();
+	}
+
+	@Bean
+	public Binding api2ProducerBinding() {
+		return BindingBuilder.bind(api2ProducerQueue()).to(sagaExchange()).with("nova.api2-producer-routing-key").noargs();
+	}
+
+	@Bean
+	public Binding api3ProducerBinding() {
+		return BindingBuilder.bind(api3ProducerQueue()).to(sagaExchange()).with("nova.api3-producer-routing-key").noargs();
 	}
 
 

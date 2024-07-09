@@ -13,6 +13,8 @@ import store.novabook.store.orders.dto.request.PaymentRequest;
 @Builder
 @JsonDeserialize(builder = OrderSagaMessage.OrderSagaMessageBuilder.class)
 public class OrderSagaMessage {
+	boolean noUsePoint;
+	boolean noUseCoupon;
 	String status;
 	PaymentRequest paymentRequest;
 	@JsonPOJOBuilder(withPrefix = "")

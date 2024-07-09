@@ -17,6 +17,10 @@ public class OrdersSagaController {
 
 	private final OrdersSagaManagerImpl ordersSagaManager;
 
+	/**
+	 * 주문 트랜잭션을 시작하는 Manager
+	 * @param paymentRequest
+	 */
 	@PostMapping
 	public void createOrder(@RequestBody PaymentRequest paymentRequest) {
 		ordersSagaManager.orderInvoke(paymentRequest);

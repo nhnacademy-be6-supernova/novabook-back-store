@@ -54,6 +54,7 @@ import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.DeliveryFeeRepository;
 import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
+import store.novabook.store.orders.repository.RedisOrderNonMemberRepository;
 import store.novabook.store.orders.repository.RedisOrderRepository;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
 import store.novabook.store.orders.service.OrdersService;
@@ -70,9 +71,10 @@ public class OrdersServiceImpl implements OrdersService {
 	private final WrappingPaperRepository wrappingPaperRepository;
 	private final OrdersStatusRepository ordersStatusRepository;
 	private final MemberRepository memberRepository;
-	private final RedisOrderRepository redisOrderRepository;
 	private final BookRepository bookRepository;
 	private final BookStatusRepository bookStatusRepository;
+	private final RedisOrderRepository redisOrderRepository;
+	private final RedisOrderNonMemberRepository redisOrderNonMemberRepository;
 
 	private final RabbitTemplate rabbitTemplate;
 
@@ -120,7 +122,6 @@ public class OrdersServiceImpl implements OrdersService {
 			JSONObject jsonObject = (JSONObject)parser.parse(reader);
 			responseStream.close();
 			return jsonObject;
-
 		} catch (IOException | ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -164,19 +165,32 @@ public class OrdersServiceImpl implements OrdersService {
 	 * 제고 감소도 함께 일어남
 	 */
 	@Transactional
-	// @RabbitListener(queues = "nova.orders.form.confirm.queue")
+	@RabbitListener(queues = "nova.orders.form.confirm.queue")
 	public void confirmOrderForm(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
 			// orderForm Fetch
-			UUID orderUUID = orderSagaMessage.getPaymentRequest().orderUUID();
-			Optional<OrderTemporaryForm> orderForm = redisOrderRepository.findByOrderUUID(
-				orderUUID);
+			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
+			// 비회원 일때
+			if(memberId == null) {
+				redisOrderNonMemberRepository.findById(orderSagaMessage.getPaymentRequest().orderId());
+			}
+
+			Optional<OrderTemporaryForm> orderForm = redisOrderRepository.findById(1L);
 
 			if (orderForm.isEmpty()) {
 				throw new IllegalArgumentException("주문 정보가 없습니다.");
 			}
 
 			OrderTemporaryForm orderTemporaryForm = orderForm.get();
+
+			if(orderTemporaryForm.usePointAmount() == 0) {
+				orderSagaMessage.setNoUsePoint(true);
+			}
+
+			if(orderTemporaryForm.couponId() == null) {
+				orderSagaMessage.setNoUseCoupon(true);
+			}
+
 			List<BookIdAndQuantityDTO> books = orderTemporaryForm.books();
 
 			// 조회를 한번만 하기 위해서 Cache 저장
@@ -212,13 +226,15 @@ public class OrdersServiceImpl implements OrdersService {
 				}
 				// 저장
 				bookRepository.save(book);
+				orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
+				rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key", orderSagaMessage);
 			}
 		} catch (Exception e) {
 			// 예외가 발생하면 롤백 처리
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			// 실패 메시지 전송
-			orderSagaMessage.setStatus("CONFIRM_FAIL");
-			// rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key", orderSagaMessage);
+			orderSagaMessage.setStatus("FAIL_CONFIRM_ORDER_FORM");
+			rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key", orderSagaMessage);
 			// 예외 다시 던지기
 			throw e;
 		}
