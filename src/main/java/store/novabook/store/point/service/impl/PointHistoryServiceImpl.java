@@ -42,8 +42,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 	private final PointHistoryRepository pointHistoryRepository;
 	private final PointPolicyRepository pointPolicyRepository;
 
-	private final RabbitTemplate rabbitTemplate;
-	private final RedisOrderRepository redisOrderRepository;
+
 
 	@Override
 	@Transactional(readOnly = true)
@@ -99,88 +98,5 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 			.build();
 	}
 
-	@RabbitListener(queues = "nova.point.decrement.queue")
-	@Transactional
-	public void decrementPoint(@Payload OrderSagaMessage orderSagaMessage) {
-		try {
-			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
 
-			// 주문 정보 조회
-			OrderTemporaryForm orderTemporaryForm = redisOrderRepository.findById(memberId)
-				.orElseThrow(() -> new IllegalArgumentException("주문 정보가 없습니다."));
-
-			Long availablePoint = pointHistoryRepository.findTotalPointAmountByMemberId(memberId);
-
-			if(availablePoint < orderTemporaryForm.usePointAmount()) {
-				throw new IllegalArgumentException("포인트 잔액이 부족합니다");
-			}
-
-			// 회원 정보 조회
-			Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-
-			// 최근 포인트 정책 조회
-			PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
-				.orElseThrow(() -> new IllegalArgumentException("포인트 정책을 조회할 수 없습니다"));
-
-			// 포인트 기록 생성 및 저장
-			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "주문 포인트 사용", -1 * orderTemporaryForm.usePointAmount());
-			pointHistoryRepository.save(pointHistory);
-
-			// 포인트 할인 값 기록
-			long pointDiscount = orderSagaMessage.getCalculateTotalAmount() - orderTemporaryForm.usePointAmount();
-			orderSagaMessage.setCalculateTotalAmount(pointDiscount);
-
-			// 성공 메시지 전송
-			orderSagaMessage.setStatus("SUCCESS_POINT_DECREMENT");
-			rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api3-producer-routing-key", orderSagaMessage);
-		} catch (Exception e) {
-			handleFailure(orderSagaMessage);
-			throw e;
-		}
-	}
-
-	private void handleFailure(OrderSagaMessage orderSagaMessage) {
-		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-		orderSagaMessage.setStatus("FAIL_POINT_DECREMENT");
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api2-producer-routing-key", orderSagaMessage);
-	}
-
-
-	@RabbitListener(queues = "nova.point.compensate.decrement.queue")
-	@Transactional
-	public void compensateDecrementPoint(@Payload OrderSagaMessage orderSagaMessage) {
-		try {
-			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
-
-			// 주문 정보 조회
-			OrderTemporaryForm orderTemporaryForm = redisOrderRepository.findById(memberId)
-				.orElseThrow(() -> new IllegalArgumentException("주문 정보가 없습니다."));
-
-			// 회원 정보 조회
-			Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-
-			// 최근 포인트 정책 조회
-			PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
-				.orElseThrow(() -> new IllegalArgumentException("포인트 정책을 조회할 수 없습니다"));
-
-			// 포인트 기록 생성 및 저장 (포인트 복구)
-			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "결제 취소로 인한 주문 포인트 환불", orderTemporaryForm.usePointAmount());
-			pointHistoryRepository.save(pointHistory);
-
-			// 성공 메시지 전송
-			orderSagaMessage.setStatus("SUCCESS_DECREMENT_POINT_COMPENSATE");
-			log.info("SUCCESS_DECREMENT_POINT_COMPENSATE");
-		} catch (Exception e) {
-			handleFailureCompensate(orderSagaMessage);
-			throw e;
-		}
-	}
-
-	private void handleFailureCompensate(OrderSagaMessage orderSagaMessage) {
-		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-		orderSagaMessage.setStatus("FAIL_DECREMENT_POINT_COMPENSATE");
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key", orderSagaMessage);
-	}
 }
