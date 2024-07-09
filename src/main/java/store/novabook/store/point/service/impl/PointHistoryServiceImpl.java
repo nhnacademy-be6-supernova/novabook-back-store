@@ -107,6 +107,12 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 			OrderTemporaryForm orderTemporaryForm = redisOrderRepository.findById(memberId)
 				.orElseThrow(() -> new IllegalArgumentException("주문 정보가 없습니다."));
 
+			Long availablePoint = pointHistoryRepository.findTotalPointAmountByMemberId(memberId);
+
+			if(availablePoint < orderTemporaryForm.usePointAmount()) {
+				throw new IllegalArgumentException("포인트 잔액이 부족합니다");
+			}
+
 			// 회원 정보 조회
 			Member member = memberRepository.findById(memberId)
 				.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
@@ -116,8 +122,12 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 				.orElseThrow(() -> new IllegalArgumentException("포인트 정책을 조회할 수 없습니다"));
 
 			// 포인트 기록 생성 및 저장
-			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "주문 포인트 사용", orderTemporaryForm.usePointAmount());
+			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "주문 포인트 사용", -1 * orderTemporaryForm.usePointAmount());
 			pointHistoryRepository.save(pointHistory);
+
+			// 포인트 할인 값 기록
+			long pointDiscount = orderSagaMessage.getCalculateTotalAmount() - orderTemporaryForm.usePointAmount();
+			orderSagaMessage.setCalculateTotalAmount(pointDiscount);
 
 			// 성공 메시지 전송
 			orderSagaMessage.setStatus("SUCCESS_POINT_DECREMENT");

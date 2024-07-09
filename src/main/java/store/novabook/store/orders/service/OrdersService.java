@@ -10,8 +10,6 @@ import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersResponse;
 
 public interface OrdersService {
-	JSONObject create(TossPaymentRequest request);
-	//생성
 	CreateResponse create(CreateOrdersRequest request);
 
 	Page<GetOrdersResponse> getOrdersResponsesAll();

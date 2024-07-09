@@ -1,5 +1,6 @@
 package store.novabook.store.orders.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,8 @@ public class OrdersSagaController {
 	 * @param paymentRequest
 	 */
 	@PostMapping
-	public void createOrder(@RequestBody PaymentRequest paymentRequest) {
+	public ResponseEntity<Void> createOrder(@RequestBody PaymentRequest paymentRequest) {
 		ordersSagaManager.orderInvoke(paymentRequest);
+		return ResponseEntity.ok().build();
 	}
 }

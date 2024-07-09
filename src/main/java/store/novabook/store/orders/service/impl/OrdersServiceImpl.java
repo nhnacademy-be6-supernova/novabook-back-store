@@ -1,24 +1,11 @@
 package store.novabook.store.orders.service.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
@@ -43,7 +30,7 @@ import store.novabook.store.orders.dto.OrderSagaMessage;
 import store.novabook.store.orders.dto.request.BookIdAndQuantityDTO;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.orders.dto.request.OrderTemporaryForm;
-import store.novabook.store.orders.dto.request.TossPaymentRequest;
+import store.novabook.store.orders.dto.request.OrderTemporaryNonMemberForm;
 import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersResponse;
@@ -77,55 +64,9 @@ public class OrdersServiceImpl implements OrdersService {
 	private final RedisOrderNonMemberRepository redisOrderNonMemberRepository;
 
 	private final RabbitTemplate rabbitTemplate;
+	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 
-	@Override
-	public JSONObject create(TossPaymentRequest request) {
-		JSONParser parser = new JSONParser();
-		JSONObject obj = new JSONObject();
 
-		obj.put("orderId", request.orderId());
-		obj.put("amount", request.amount());
-		obj.put("paymentKey", request.paymentKey());
-
-		log.info("[TossPayment] 전달 받은 파라미터 값 : {}, {} , {}",
-			request.orderId()
-			, request.amount()
-			, request.paymentKey()
-		);
-
-		// 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
-		// 비밀번호가 없다는 것을 알리기 위해 시크릿 키 뒤에 콜론을 추가합니다.
-		String widgetSecretKey = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
-		Base64.Encoder encoder = Base64.getEncoder();
-		byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
-		String authorizations = "Basic " + new String(encodedBytes);
-
-		try {
-			URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-			connection.setRequestProperty("Authorization", authorizations);
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestMethod("POST");
-			connection.setDoOutput(true);
-
-			OutputStream outputStream = connection.getOutputStream();
-			outputStream.write(obj.toString().getBytes(StandardCharsets.UTF_8));
-
-			// 결제를 승인하면 결제수단에서 금액이 차감돼요.
-			int code = connection.getResponseCode();
-			boolean isSuccess = code == 200;
-
-			InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
-
-			// 결제 성공 및 실패 비즈니스 로직을 구현하세요.
-			Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
-			JSONObject jsonObject = (JSONObject)parser.parse(reader);
-			responseStream.close();
-			return jsonObject;
-		} catch (IOException | ParseException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	@Override
 	public CreateResponse create(CreateOrdersRequest request) {
@@ -141,6 +82,22 @@ public class OrdersServiceImpl implements OrdersService {
 		ordersRepository.save(orders);
 		return new CreateResponse(orders.getId());
 	}
+
+	@Override
+	public void update(Long id, UpdateOrdersRequest request) {
+		Member member = memberRepository.findById(request.memberId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
+		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
+		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.memberId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
+		Orders orders = ordersRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
+		orders.update(member, deliveryFee, wrappingPaper, ordersStatus, request);
+	}
+
 
 	@Override
 	public Page<GetOrdersResponse> getOrdersResponsesAll() {
@@ -159,6 +116,12 @@ public class OrdersServiceImpl implements OrdersService {
 		return GetOrdersResponse.form(orders);
 	}
 
+
+
+
+
+
+
 	/**
 	 * @author 2-say
 	 * 가주문서 검증 비지니스 로직
@@ -168,77 +131,102 @@ public class OrdersServiceImpl implements OrdersService {
 	@RabbitListener(queues = "nova.orders.form.confirm.queue")
 	public void confirmOrderForm(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
-			// orderForm Fetch
 			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
-			// 비회원 일때
-			if(memberId == null) {
-				redisOrderNonMemberRepository.findById(orderSagaMessage.getPaymentRequest().orderId());
+
+			if (memberId == null) {
+				processNonMemberOrder(orderSagaMessage);
+			} else {
+				processMemberOrder(orderSagaMessage, memberId);
 			}
 
-			Optional<OrderTemporaryForm> orderForm = redisOrderRepository.findById(1L);
-
-			if (orderForm.isEmpty()) {
-				throw new IllegalArgumentException("주문 정보가 없습니다.");
-			}
-
-			OrderTemporaryForm orderTemporaryForm = orderForm.get();
-
-			if(orderTemporaryForm.usePointAmount() == 0) {
-				orderSagaMessage.setNoUsePoint(true);
-			}
-
-			if(orderTemporaryForm.couponId() == null) {
-				orderSagaMessage.setNoUseCoupon(true);
-			}
-
-			List<BookIdAndQuantityDTO> books = orderTemporaryForm.books();
-
-			// 조회를 한번만 하기 위해서 Cache 저장
-			Map<Long, Book> bookCache = new HashMap<>();
-
-			for (BookIdAndQuantityDTO bookDTO : books) {
-				Book book = bookCache.computeIfAbsent(bookDTO.id(), id -> {
-					Optional<Book> optionalBook = bookRepository.findById(id);
-					if (optionalBook.isEmpty()) {
-						throw new IllegalArgumentException("해당 도서가 존재하지 않습니다: " + id);
-					}
-					return optionalBook.get();
-				});
-
-				if (!book.getBookStatus().getName().equals(BookStatusEnum.FOR_SALE.getKoreanValue())) {
-					throw new IllegalArgumentException("판매중인 도서가 아닙니다: " + book.getId());
-				}
-			}
-
-			// 재고 감소는 총 가격 확인 후에 수행
-			for (BookIdAndQuantityDTO bookDTO : books) {
-				Book book = bookCache.get(bookDTO.id());
-				book.decreaseInventory((int)bookDTO.quantity());
-
-				// 판매 완료 시 상태 변경
-				if (book.getInventory() <= 0) {
-					Optional<BookStatus> statusOptional = bookStatusRepository.findById(
-						BookStatusEnum.OUT_OF_STOCK.getValue());
-					if (statusOptional.isEmpty()) {
-						throw new IllegalArgumentException("책 상태를 찾을 수 없습니다.");
-					}
-					book.setBookStatus(statusOptional.get());
-				}
-				// 저장
-				bookRepository.save(book);
-				orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
-				rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key", orderSagaMessage);
-			}
+			orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
 		} catch (Exception e) {
-			// 예외가 발생하면 롤백 처리
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			// 실패 메시지 전송
 			orderSagaMessage.setStatus("FAIL_CONFIRM_ORDER_FORM");
-			rabbitTemplate.convertAndSend("saga-exchange", "api1-producer-routing-key", orderSagaMessage);
-			// 예외 다시 던지기
 			throw e;
+		} finally {
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api1-producer-routing-key", orderSagaMessage);
 		}
 	}
+
+
+	private void processNonMemberOrder(OrderSagaMessage orderSagaMessage) {
+		Optional<OrderTemporaryNonMemberForm> repository = redisOrderNonMemberRepository.findById(
+			orderSagaMessage.getPaymentRequest().orderId());
+
+		if(repository.isEmpty()) {
+			throw new IllegalArgumentException("주문 정보가 조회되지 않습니다");
+		}
+
+		OrderTemporaryNonMemberForm orderForm = repository.get();
+		setOrderSagaMessageFlags(orderSagaMessage, orderForm.usePointAmount(), orderForm.couponId());
+
+		List<BookIdAndQuantityDTO> books = orderForm.books();
+		processBooksConfirm(books, orderSagaMessage);
+	}
+
+	private void processMemberOrder(OrderSagaMessage orderSagaMessage, Long memberId) {
+		Optional<OrderTemporaryForm> orderFormOptional = redisOrderRepository.findById(memberId);
+		if (orderFormOptional.isEmpty()) {
+			throw new IllegalArgumentException("주문 정보가 없습니다.");
+		}
+
+		OrderTemporaryForm orderForm = orderFormOptional.get();
+		setOrderSagaMessageFlags(orderSagaMessage, orderForm.usePointAmount(), orderForm.couponId());
+
+		List<BookIdAndQuantityDTO> books = orderForm.books();
+		processBooksConfirm(books ,orderSagaMessage);
+	}
+
+
+	/**
+	 * 만약 결제 포인트가 0원 이고, 사용 쿠폰이 없다면, 다음 로직에서 제외하도록 플래그 상태를 설정합니다.
+	 * @param orderSagaMessage
+	 * @param usePointAmount
+	 * @param couponId
+	 */
+	private void setOrderSagaMessageFlags(OrderSagaMessage orderSagaMessage, long usePointAmount, Long couponId) {
+		orderSagaMessage.setNoUsePoint(usePointAmount == 0);
+		orderSagaMessage.setNoUseCoupon(couponId == null);
+	}
+
+
+	private void processBooksConfirm(List<BookIdAndQuantityDTO> books, OrderSagaMessage orderSagaMessage) {
+		Map<Long, Book> bookCache = new HashMap<>();
+
+		for (BookIdAndQuantityDTO bookDTO : books) {
+			Book book = bookCache.computeIfAbsent(bookDTO.id(), id -> {
+				Optional<Book> optionalBook = bookRepository.findById(id);
+				if (optionalBook.isEmpty()) {
+					throw new IllegalArgumentException("해당 도서가 존재하지 않습니다: " + id);
+				}
+				return optionalBook.get();
+			});
+			if (!book.getBookStatus().getName().equals(BookStatusEnum.FOR_SALE.getKoreanValue())) {
+				throw new IllegalArgumentException("판매중인 도서가 아닙니다: " + book.getId());
+			}
+		}
+
+		for (BookIdAndQuantityDTO bookDTO : books) {
+			Book book = bookCache.get(bookDTO.id());
+			book.decreaseInventory((int) bookDTO.quantity());
+
+			// 계산해야할 금액 저장 (할인 미적용)
+			long bookPrice = orderSagaMessage.getCalculateTotalAmount() + book.getPrice() * bookDTO.quantity();
+			orderSagaMessage.setCalculateTotalAmount(bookPrice);
+
+			if (book.getInventory() <= 0) {
+				Optional<BookStatus> statusOptional = bookStatusRepository.findById(BookStatusEnum.OUT_OF_STOCK.getValue());
+				if (statusOptional.isEmpty()) {
+					throw new IllegalArgumentException("책 상태를 찾을 수 없습니다.");
+				}
+				book.setBookStatus(statusOptional.get());
+			}
+			bookRepository.save(book);
+		}
+	}
+
+
 
 	/**
 	 * 상위 행위에서 에러 발생 시 보상 트랜잭션 행위
@@ -250,19 +238,5 @@ public class OrdersServiceImpl implements OrdersService {
 		//
 	}
 
-	@Override
-	public void update(Long id, UpdateOrdersRequest request) {
-		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
-		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
-		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
-		Orders orders = ordersRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
-		orders.update(member, deliveryFee, wrappingPaper, ordersStatus, request);
-	}
 
 }

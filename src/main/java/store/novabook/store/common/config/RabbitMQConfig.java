@@ -67,17 +67,6 @@ public class RabbitMQConfig {
 	@Value("${rabbitmq.routing.couponRegisterHighTraffic}")
 	private String couponRegisterHighTrafficRoutingKey;
 
-	private final Environment environment;
-
-	@Bean
-	public ConnectionFactory connectionFactory() {
-		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment);
-		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
-		connectionFactory.setPort(config.port());
-		connectionFactory.setUsername(config.username());
-		connectionFactory.setPassword(config.password());
-		return connectionFactory;
-	}
 	@Bean
 	public ConnectionFactory connectionFactory() {
 		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment);

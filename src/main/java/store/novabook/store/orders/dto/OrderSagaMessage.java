@@ -13,6 +13,7 @@ import store.novabook.store.orders.dto.request.PaymentRequest;
 @Builder
 @JsonDeserialize(builder = OrderSagaMessage.OrderSagaMessageBuilder.class)
 public class OrderSagaMessage {
+	long calculateTotalAmount;
 	boolean noUsePoint;
 	boolean noUseCoupon;
 	String status;

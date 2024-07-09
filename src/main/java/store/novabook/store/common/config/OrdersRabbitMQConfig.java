@@ -90,6 +90,12 @@ public class OrdersRabbitMQConfig {
 	}
 
 	@Bean
+	public Binding approvePaymentBinding() {
+		return BindingBuilder.bind(ordersConfirmFormQueue()).to(sagaExchange())
+			.with("orders.approve.payment.routing.key").noargs();
+	}
+
+	@Bean
 	public RabbitTemplate ordersRabbitTemplate(ConnectionFactory connectionFactory) {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
 		rabbitTemplate.setMessageConverter(converter());
