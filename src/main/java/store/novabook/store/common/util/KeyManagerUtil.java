@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import store.novabook.store.common.util.dto.DatabaseConfigDto;
 import store.novabook.store.common.util.dto.ElasticSearchConfigDto;
 import store.novabook.store.common.util.dto.ImageManagerDto;
+import store.novabook.store.common.util.dto.RabbitMQConfigDto;
 import store.novabook.store.common.util.dto.RedisConfigDto;
 
 public class KeyManagerUtil {
@@ -88,6 +89,15 @@ public class KeyManagerUtil {
 			return objectMapper.readValue(getDataSource(environment, keyid), ImageManagerDto.class);
 		} catch (JsonProcessingException e) {
 			//오류처리
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static RabbitMQConfigDto getRabbitMQConfig(Environment environment) {
+		try {
+			String keyid = environment.getProperty("nhn.cloud.keyManager.rabbitMQKey");
+			return objectMapper.readValue(getDataSource(environment, keyid), RabbitMQConfigDto.class);
+		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}
