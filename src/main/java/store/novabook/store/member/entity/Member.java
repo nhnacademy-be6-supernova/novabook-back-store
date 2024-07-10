@@ -61,7 +61,7 @@ public class Member {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	private String paycoId;
+	private String oauthId;
 
 	private String role;
 
