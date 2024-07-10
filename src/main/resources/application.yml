@@ -18,10 +18,13 @@ logging:
 
 #공통 설정 내용
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoints:
     web:
       exposure:
-        include: health,info,pause,resume
+        include: health, info, pause, resume
 
 #swagger 설정
 springdoc:
