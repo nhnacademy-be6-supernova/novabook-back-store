@@ -96,7 +96,7 @@ public class MemberServiceImpl implements MemberService {
 
 		String encodedPassword = bCryptPasswordEncoder.encode(createMemberRequest.loginPassword());
 
-		Member member = Member.of(createMemberRequest, memberStatus, birth, encodedPassword);
+		Member member = Member.of(createMemberRequest, memberStatus, birth, encodedPassword, "ROLE_MEMBERS");
 
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
 			throw new BadRequestException(ErrorCode.DUPLICATED_LOGIN_ID);
@@ -239,7 +239,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public GetPaycoMembersResponse getPaycoMembers(GetPaycoMembersRequest getPaycoMembersRequest) {
-		Member member = memberRepository.findByPaycoId(getPaycoMembersRequest.paycoId());
+		Member member = memberRepository.findByOauthId(getPaycoMembersRequest.paycoId());
 		if (member == null) {
 			// throw new EntityNotFoundException(Member.class);
 			return null;
