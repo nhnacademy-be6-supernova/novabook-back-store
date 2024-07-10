@@ -31,8 +31,8 @@ public class OrdersRabbitMQConfig {
 
 	// QUEUES
 	@Bean
-	public Queue ordersConfirmFormQueue() {
-		return QueueBuilder.durable("nova.orders.form.confirm.queue").build();
+	public Queue ordersVerifyFormQueue() {
+		return QueueBuilder.durable("nova.orders.form.verify.queue").build();
 	}
 
 	@Bean
@@ -53,6 +53,11 @@ public class OrdersRabbitMQConfig {
 	@Bean
 	public Queue ordersSaveOrderDatabaseQueue() {
 		return QueueBuilder.durable("nova.orders.save.orders.database.queue").build();
+	}
+
+	@Bean
+	public Queue pointEarnQueue() {
+		return QueueBuilder.durable("nova.point.earn.queue").build();
 	}
 
 
@@ -115,12 +120,17 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.api5-producer-queue").build();
 	}
 
+	@Bean
+	public Queue api6ProducerQueue() {
+		return QueueBuilder.durable("nova.api6-producer-queue").build();
+	}
+
 
 	// BINDING
 	@Bean
-	public Binding ordersConfirmBinding() {
-		return BindingBuilder.bind(ordersConfirmFormQueue()).to(sagaExchange())
-			.with("orders.form.confirm.routing.key").noargs();
+	public Binding ordersConfirmBinding(Queue ordersVerifyFormQueue, Exchange sagaExchange) {
+		return BindingBuilder.bind(ordersVerifyFormQueue).to(sagaExchange)
+			.with("orders.form.verify.routing.key").noargs();
 	}
 
 	@Bean
@@ -145,6 +155,12 @@ public class OrdersRabbitMQConfig {
 	public Binding saveOrdersDatabaseBinding() {
 		return BindingBuilder.bind(ordersSaveOrderDatabaseQueue()).to(sagaExchange())
 			.with("orders.save.database.routing.key").noargs();
+	}
+
+	@Bean
+	public Binding earnPointBinding() {
+		return BindingBuilder.bind(pointEarnQueue()).to(sagaExchange())
+			.with("point.earn.routing.key").noargs();
 	}
 
 
@@ -185,8 +201,6 @@ public class OrdersRabbitMQConfig {
 		return BindingBuilder.bind(compensateApprovePaymentQueue()).to(sagaExchange())
 			.with("compensate.approve.payment.routing.key").noargs();
 	}
-
-
 
 
 
@@ -232,43 +246,11 @@ public class OrdersRabbitMQConfig {
 		return BindingBuilder.bind(api5ProducerQueue()).to(sagaExchange()).with("nova.api5-producer-routing-key").noargs();
 	}
 
-
-	// private Map<String, Object> queueArguments(String queueName) {
-	// 	Map<String, Object> args = new HashMap<>();
-	// 	args.put("x-dead-letter-exchange", "nova.orders.deadletter.exchange");
-	// 	args.put("x-dead-letter-routing-key", "orders.form.confirm");
-	// 	args.put("x-original-queue", queueName);
-	// 	args.put("x-queue-type", "classic");
-	// 	return args;
-	// }
-
-
-	public static final String EARN_QUEUE = "nova.point.earn.queue";
-	public static final String DLQ = "nova.point.earn.queue.dlq";
-	public static final String DLX = "nova.point.earn.queue.dlx";
-
-
-	// 포인트 적립 Dead letter 설정
 	@Bean
-	public Queue earnQueue() {
-		return QueueBuilder.durable(EARN_QUEUE)
-			.withArgument("x-dead-letter-exchange", DLX)
-			.withArgument("x-dead-letter-routing-key", DLQ)
-			.build();
+	public Binding api6ProducerBinding() {
+		return BindingBuilder.bind(api6ProducerQueue()).to(sagaExchange()).with("nova.api6-producer-routing-key").noargs();
 	}
 
-	@Bean
-	public Queue deadLetterQueue() {
-		return QueueBuilder.durable(DLQ).build();
-	}
 
-	@Bean
-	public DirectExchange deadLetterExchange() {
-		return new DirectExchange(DLX);
-	}
 
-	@Bean
-	public Binding deadLetterBinding() {
-		return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange()).with(DLQ);
-	}
 }
