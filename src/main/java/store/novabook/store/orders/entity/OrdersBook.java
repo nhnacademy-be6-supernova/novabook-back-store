@@ -60,4 +60,11 @@ public class OrdersBook {
 		this.quantity = request.quantity();
 		this.price = request.price();
 	}
+
+	public OrdersBook(Orders orders, Book book, int quantity, long price) {
+		this.orders = orders;
+		this.book = book;
+		this.quantity = quantity;
+		this.price = price;
+	}
 }
