@@ -26,7 +26,7 @@ spring:
           multiplier: 2.0 # 이전 interval * multiplier = 다음 interval
 
 
-  #절대 변경 금지
+#절대 변경 금지
   jpa:
     hibernate:
       ddl-auto: validate
@@ -34,7 +34,7 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: info
+    org.hibernate.SQL: debug
     org.hibernate.type: trace
 
   #로그 크러쉬 정보
@@ -49,6 +49,10 @@ logging:
     logType: log
     logLevel: INFO
     secretKey: JsGDL5oTWPImKY8nag9igsUAdnUOvLMI
+
+jwt:
+  secret: vzxvgsjdgdfjgfdskgjdsfkgjdsfkgkdsfgjdfkgjdfsgdklgjadgslkjgsaklj
+
 
 nhn:
   cloud:

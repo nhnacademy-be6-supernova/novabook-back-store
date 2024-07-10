@@ -1,6 +1,7 @@
 package store.novabook.store.member.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -66,6 +67,7 @@ public class MemberServiceImpl implements MemberService {
 	public static final String REGISTER_POINT = "회원가입 적립금";
 	public static final String LOGIN_FAIL_MESSAGE = "비밀번호가 일치하지 않습니다.";
 	public static final long AUTH_CODE_EXPIRATION = 3;
+	public static final String AUTH_CODE = "authCode:";
 
 	private final MemberRepository memberRepository;
 	private final PointHistoryRepository pointHistoryRepository;
@@ -78,7 +80,7 @@ public class MemberServiceImpl implements MemberService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final CouponSender couponSender;
-	private final RedisTemplate redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	@Override
 	public CreateMemberResponse createMember(@Valid CreateMemberRequest createMemberRequest) {
@@ -119,8 +121,8 @@ public class MemberServiceImpl implements MemberService {
 			pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 
-		couponSender.sendToHighTrafficQueue(
-			CreateCouponMessage.fromEntity(newMember.getId(), CouponType.WELCOME, null));
+		couponSender.sendToNormalQueue(
+			CreateCouponMessage.fromEntity(newMember.getId(), new ArrayList<>(), CouponType.WELCOME, null));
 		return CreateMemberResponse.fromEntity(newMember);
 	}
 
@@ -247,8 +249,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public GetDormantMembersResponse getDormantMembers(GetDormantMembersRequest getDormantMembersRequest) {
-		Member member = memberRepository.findById(getDormantMembersRequest.membersId())
-			.orElseThrow();
+		Member member = memberRepository.findById(getDormantMembersRequest.membersId()).orElseThrow();
 		MemberStatus memberStatus = member.getMemberStatus();
 		return new GetDormantMembersResponse(memberStatus.getId());
 	}
@@ -273,13 +274,13 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String createAndSaveAuthCode(String uuid) {
 		String authCode = UUID.randomUUID().toString().substring(0, 6);
-		redisTemplate.opsForValue().set("authCode: " + uuid, authCode, AUTH_CODE_EXPIRATION, TimeUnit.MINUTES);
+		redisTemplate.opsForValue().set(AUTH_CODE + uuid, authCode, AUTH_CODE_EXPIRATION, TimeUnit.MINUTES);
 		return authCode;
 	}
 
 	// 유효한 인증코드인지 검사
 	private void validateAuthCode(String uuid, String authCode) {
-		String saveCode = String.valueOf(redisTemplate.opsForValue().get("authCode: " + uuid));
+		String saveCode = String.valueOf(redisTemplate.opsForValue().get(AUTH_CODE + uuid));
 		if (!authCode.equals(saveCode)) {
 			throw new UnauthorizedException(ErrorCode.UNAUTHORIZED_CODE);
 		}
@@ -287,7 +288,7 @@ public class MemberServiceImpl implements MemberService {
 
 	// 레디스에서 인증코드 지우기
 	private void deleteAuthCodeFromRedis(String uuid) {
-		Boolean result = redisTemplate.delete("authCode: " + uuid);
+		Boolean result = redisTemplate.delete(AUTH_CODE + uuid);
 		if (result == null || !result) {
 			throw new NotFoundException(ErrorCode.UNAUTHORIZED_CODE);
 		}

@@ -18,6 +18,12 @@
               value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) - %msg %ex{5}%n"/>
 
 
+    <springProfile name="local">
+        <include resource="console-appender.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
     <springProfile name="dev">
         <!-- HTTP Appender 추가 -->
         <include resource="logstash/http-info-appender.xml"/>
@@ -54,4 +60,3 @@
         </root>
     </springProfile>
 </configuration>
-
