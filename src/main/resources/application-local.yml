@@ -53,3 +53,10 @@ nhn:
       elasticSearchKey: 74649bffcfbb40a9bcae7204e6863d05
       userAccessKey: J9VxQFQEsmerR1n7FeJ6
       secretAccessKey: zZEVopUHt6dxgRMt
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+
