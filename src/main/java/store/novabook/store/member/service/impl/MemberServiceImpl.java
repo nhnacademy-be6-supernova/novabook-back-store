@@ -96,7 +96,7 @@ public class MemberServiceImpl implements MemberService {
 
 		String encodedPassword = bCryptPasswordEncoder.encode(createMemberRequest.loginPassword());
 
-		Member member = Member.of(createMemberRequest, memberStatus, birth, encodedPassword);
+		Member member = Member.of(createMemberRequest, memberStatus, birth, encodedPassword, "ROLE_MEMBERS");
 
 		if (memberRepository.existsByLoginId(createMemberRequest.loginId())) {
 			throw new BadRequestException(ErrorCode.DUPLICATED_LOGIN_ID);
