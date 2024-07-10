@@ -73,12 +73,11 @@ public class BookServiceImpl implements BookService {
 	private final BookSearchRepository bookSearchRepository;
 	private final ImageManagerDto imageManagerDto;
 
-
 	public BookServiceImpl(BookRepository bookRepository, BookStatusRepository bookStatusRepository,
-		BookTagRepository bookTagRepository, CategoryRepository categoryRepository,
-		TagRepository tagRepository, BookCategoryRepository bookCategoryRepository, BookQueryRepository queryRepository,
-		ImageRepository imageRepository, BookImageRepository bookImageRepository,
-		NHNCloudClient nhnCloudClient, BookSearchRepository bookSearchRepository, Environment environment) {
+		BookTagRepository bookTagRepository, CategoryRepository categoryRepository, TagRepository tagRepository,
+		BookCategoryRepository bookCategoryRepository, BookQueryRepository queryRepository,
+		ImageRepository imageRepository, BookImageRepository bookImageRepository, NHNCloudClient nhnCloudClient,
+		BookSearchRepository bookSearchRepository, Environment environment) {
 
 		this.bookRepository = bookRepository;
 		this.bookStatusRepository = bookStatusRepository;
@@ -93,8 +92,6 @@ public class BookServiceImpl implements BookService {
 		this.bookSearchRepository = bookSearchRepository;
 		this.imageManagerDto = KeyManagerUtil.getImageManager(environment);
 	}
-
-
 
 	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
@@ -114,7 +111,9 @@ public class BookServiceImpl implements BookService {
 
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-		String outputFilePath = imageManagerDto.localStorage() + fileName;
+		String outputFilePath = "/Users/mun/novabook/novabook-back-store/src/main/resources/image/" + fileName;
+		// String outputFilePath = imageManagerDto.localStorage() + fileName;
+
 		try (InputStream in = new URI(imageUrl).toURL().openStream()) {
 			Path imagePath = Paths.get(outputFilePath);
 			Files.copy(in, imagePath);
@@ -130,12 +129,13 @@ public class BookServiceImpl implements BookService {
 			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
 		}
 
-		String nhnUrl = uploadImage(imageManagerDto.accessKey(), imageManagerDto.secretKey(), imageManagerDto.bucketName() + fileName, false, outputFilePath);
+		String nhnUrl = uploadImage(imageManagerDto.accessKey(), imageManagerDto.secretKey(),
+			imageManagerDto.bucketName() + fileName, false, outputFilePath);
 
 		Image image = imageRepository.save(new Image(nhnUrl));
 		bookImageRepository.save(BookImage.of(book, image));
 
-		bookSearchRepository.save(BookDocument.of(book, image, tags, categories));
+		bookSearchRepository.save(BookDocument.of(book, image, tags, categories, 0, 0));
 
 		return new CreateBookResponse(book.getId());
 	}
@@ -148,9 +148,7 @@ public class BookServiceImpl implements BookService {
 	@Transactional(readOnly = true)
 	public Page<GetBookAllResponse> getBookAll(Pageable pageable) {
 		Page<Book> books = bookRepository.findAll(pageable);
-		Page<GetBookAllResponse> booksResponse = books.map(GetBookAllResponse::fromEntity);
-
-		return new PageImpl<>(booksResponse.getContent(), pageable, books.getTotalElements());
+		return books.map(GetBookAllResponse::fromEntity);
 	}
 
 	public void update(UpdateBookRequest request) {
