@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.member.controller.docs.MemberControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
@@ -134,7 +133,6 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
-	@CheckRole("ROLE_USER")
 	@PostMapping("/uuid")
 	public ResponseEntity<GetMembersUUIDResponse> findUUID(@RequestHeader("Authorization") String authorization,
 		@RequestBody GetMembersUUIDRequest getMembersUUIDRequest) {
