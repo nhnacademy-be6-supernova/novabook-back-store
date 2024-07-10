@@ -42,6 +42,11 @@ eureka:
   instance:
     prefer-ip-address: true
 
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+
 nhn:
   cloud:
     #키 매니저
@@ -53,13 +58,5 @@ nhn:
       elasticSearchKey: 74649bffcfbb40a9bcae7204e6863d05
       userAccessKey: J9VxQFQEsmerR1n7FeJ6
       secretAccessKey: zZEVopUHt6dxgRMt
-      storeKey: e0a81fc89a1d4c5196df53d3fdab0f64
-      imageManagerKey: f1a359544d624274b58cac169b00d774
-      elasticSearchKey: 74649bffcfbb40a9bcae7204e6863d05
 
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.type: trace
 
