@@ -71,7 +71,7 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@GetMapping("/member")
-	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers Long memberId) {
+	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers(required = false) Long memberId) {
 		GetMemberResponse memberResponse = memberService.getMember(memberId);
 		return ResponseEntity.ok(memberResponse);
 	}

@@ -36,29 +36,34 @@ public class TossOrderService {
 	@Transactional
 	@RabbitListener(queues = "nova.orders.approve.payment.queue")
 	public void create(@Payload OrderSagaMessage orderSagaMessage) {
-		JSONParser parser = new JSONParser();
-		JSONObject obj = new JSONObject();
-
-		HashMap<String, String> paymentParam = (HashMap<String, String>)orderSagaMessage.getPaymentRequest().paymentInfo();
-
-		obj.put("orderId", orderSagaMessage.getPaymentRequest().orderId().toString());
-		obj.put("amount", paymentParam.get("amount"));
-		obj.put("paymentKey", paymentParam.get("paymentKey"));
-
-		log.info("[TossPayment] 전달 받은 파라미터 값 : {}, {} , {}",
-			orderSagaMessage.getPaymentRequest().orderId()
-			, paymentParam.get("amount")
-			, paymentParam.get("paymentKey")
-		);
-
-		// 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
-		// 비밀번호가 없다는 것을 알리기 위해 시크릿 키 뒤에 콜론을 추가합니다.
-		String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
-		Base64.Encoder encoder = Base64.getEncoder();
-		byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
-		String authorizations = "Basic " + new String(encodedBytes);
-
 		try {
+			JSONParser parser = new JSONParser();
+			JSONObject obj = new JSONObject();
+
+			HashMap<String, Object> paymentParam = (HashMap<String, Object>)orderSagaMessage.getPaymentRequest()
+				.paymentInfo();
+
+			Integer tossAmountInt = (Integer)paymentParam.get("amount");
+			long tossAmount = tossAmountInt.longValue();
+
+			if (tossAmount != orderSagaMessage.getCalculateTotalAmount()) {
+				throw new IllegalArgumentException("최종 결제 금액이 일치하지 않습니다.");
+			}
+
+			obj.put("orderId", orderSagaMessage.getPaymentRequest().orderId().toString());
+			obj.put("amount", paymentParam.get("amount"));
+			obj.put("paymentKey", paymentParam.get("paymentKey"));
+
+			log.info("[TossPayment] 전달 받은 파라미터 값 : {}, {} , {}", orderSagaMessage.getPaymentRequest().orderId(),
+				paymentParam.get("amount"), paymentParam.get("paymentKey"));
+
+			// 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
+			// 비밀번호가 없다는 것을 알리기 위해 시크릿 키 뒤에 콜론을 추가합니다.
+			String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
+			Base64.Encoder encoder = Base64.getEncoder();
+			byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+			String authorizations = "Basic " + new String(encodedBytes);
+
 			URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestProperty("Authorization", authorizations);
@@ -80,26 +85,26 @@ public class TossOrderService {
 			JSONObject jsonObject = (JSONObject)parser.parse(reader);
 			responseStream.close();
 
-			if(isSuccess) {
+			if (isSuccess) {
 				orderSagaMessage.setStatus("SUCCESS_APPROVE_PAYMENT");
 			} else {
 				orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
 			}
-			log.info("결제 응답 내용 : {}" , jsonObject.toString());
-		} catch (IOException | ParseException e) {
+			log.info("결제 응답 내용 : {}", jsonObject.toString());
+		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
-			throw new RuntimeException(e);
 		} finally {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api4-producer-routing-key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api4-producer-routing-key",
+				orderSagaMessage);
 		}
 	}
-
 
 	@RabbitListener(queues = "nova.orders.compensate.approve.payment.queue")
 	@Transactional
 	public void cancel(@Payload OrderSagaMessage orderSagaMessage) {
-		HashMap<String, String> paymentParam = (HashMap<String, String>) orderSagaMessage.getPaymentRequest().paymentInfo();
+		HashMap<String, String> paymentParam = (HashMap<String, String>)orderSagaMessage.getPaymentRequest()
+			.paymentInfo();
 		String paymentKey = paymentParam.get("paymentKey");
 
 		try {
@@ -109,13 +114,15 @@ public class TossOrderService {
 		} catch (IOException | ParseException e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_REFUND_TOSS_PAYMENT");
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+				orderSagaMessage);
 			throw new RuntimeException(e);
 		}
 	}
 
-
-	private JSONObject sendTossCancelRequest(String paymentKey, String cancelReason) throws IOException, ParseException {
+	public JSONObject sendTossCancelRequest(String paymentKey, String cancelReason) throws
+		IOException,
+		ParseException {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = new JSONObject();
 		obj.put("cancelReason", cancelReason);

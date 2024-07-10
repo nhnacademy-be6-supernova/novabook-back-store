@@ -83,7 +83,7 @@ public class RabbitMQConfig {
 
 	// retry factory
 	@Bean
-	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory,
+	public SimpleRabbitListenerContainerFactory rabbitRetryListenerContainerFactory(ConnectionFactory connectionFactory,
 		RetryOperationsInterceptor retryOperationsInterceptor) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
