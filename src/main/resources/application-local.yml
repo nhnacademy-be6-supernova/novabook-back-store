@@ -42,6 +42,11 @@ eureka:
   instance:
     prefer-ip-address: true
 
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+    
 nhn:
   cloud:
     keyManager:
