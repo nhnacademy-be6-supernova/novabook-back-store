@@ -32,6 +32,8 @@ import store.novabook.store.common.util.dto.RabbitMQConfigDto;
 @RequiredArgsConstructor
 public class RabbitMQConfig {
 
+	private final Environment environment;
+
 	@Value("${rabbitmq.queue.couponCreateNormal}")
 	private String couponCreateNormalQueue;
 
@@ -66,18 +68,6 @@ public class RabbitMQConfig {
 	private String couponRegisterHighTrafficRoutingKey;
 
 	@Bean
-	public TopicExchange couponOperationExchange() {
-		return new TopicExchange(couponOperationExchange);
-	}
-
-	@Bean
-	public DirectExchange deadLetterExchange() {
-		return new DirectExchange(deadLetterExchange);
-	}
-
-	private final Environment environment;
-
-	@Bean
 	public ConnectionFactory connectionFactory() {
 		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment);
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
@@ -86,6 +76,18 @@ public class RabbitMQConfig {
 		connectionFactory.setPassword(config.password());
 		return connectionFactory;
 	}
+
+
+	@Bean
+	public TopicExchange couponOperationExchange() {
+		return new TopicExchange(couponOperationExchange);
+	}
+
+	@Bean
+	public DirectExchange deadLetterExchange() {
+		return new DirectExchange(deadLetterExchange);
+	}
+	
 
 	@Bean
 	public Queue couponCreateNormalQueue() {
