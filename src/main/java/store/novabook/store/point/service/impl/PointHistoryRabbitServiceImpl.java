@@ -36,26 +36,38 @@ public class PointHistoryRabbitServiceImpl {
 	private final RedisOrderRepository redisOrderRepository;
 	private final RabbitTemplate rabbitTemplate;
 	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
-	private final MemberGradePolicyRepository memberGradePolicyRepository;
+
 
 	/**
 	 * 적립 포인트를 저장하는 메서드
-	 * @param orderSagaMessage
 	 */
-	@Transactional
+	@RabbitListener(queues = "nova.point.earn.queue", containerFactory = "rabbitListenerContainerFactory")
 	public void earnPoint(@Payload OrderSagaMessage orderSagaMessage) {
+		Long memberId = orderSagaMessage.getPaymentRequest().memberId();
 
-		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(
-			orderSagaMessage.getPaymentRequest().memberId()).get();
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
 
+		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("MemberGradeHistory not found for member id: " + memberId));
 
-		// memberGradePolicyRepository.findById(memberGradeHistory.)
+		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
+			.orElseThrow(() -> new IllegalArgumentException("PointPolicy not found"));
 
+		long pointPercent = pointPolicy.getBasicPoint() + memberGradeHistory.getMemberGradePolicy().getDiscountRate();
+
+		if(pointPercent >= 100) {
+			throw new IllegalArgumentException("포인트 적립률이 100%가 넘습니다");
+		}
+
+		long earnPointAmount = orderSagaMessage.getCalculateTotalAmount() * pointPercent;
+
+		pointHistoryRepository.save(PointHistory.of(pointPolicy, member, "주문으로 인한 포인트 적립", earnPointAmount));
 	}
 
 
+
 	@RabbitListener(queues = "nova.point.decrement.queue")
-	@Transactional
 	public void decrementPoint(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
 			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
@@ -103,7 +115,6 @@ public class PointHistoryRabbitServiceImpl {
 
 
 	@RabbitListener(queues = "nova.point.compensate.decrement.queue")
-	@Transactional
 	public void compensateDecrementPoint(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
 			Long memberId = orderSagaMessage.getPaymentRequest().memberId();

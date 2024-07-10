@@ -2,6 +2,7 @@ package store.novabook.store.common.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.Queue;
@@ -240,4 +241,34 @@ public class OrdersRabbitMQConfig {
 	// 	args.put("x-queue-type", "classic");
 	// 	return args;
 	// }
+
+
+	public static final String EARN_QUEUE = "nova.point.earn.queue";
+	public static final String DLQ = "nova.point.earn.queue.dlq";
+	public static final String DLX = "nova.point.earn.queue.dlx";
+
+
+	// 포인트 적립 Dead letter 설정
+	@Bean
+	public Queue earnQueue() {
+		return QueueBuilder.durable(EARN_QUEUE)
+			.withArgument("x-dead-letter-exchange", DLX)
+			.withArgument("x-dead-letter-routing-key", DLQ)
+			.build();
+	}
+
+	@Bean
+	public Queue deadLetterQueue() {
+		return QueueBuilder.durable(DLQ).build();
+	}
+
+	@Bean
+	public DirectExchange deadLetterExchange() {
+		return new DirectExchange(DLX);
+	}
+
+	@Bean
+	public Binding deadLetterBinding() {
+		return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange()).with(DLQ);
+	}
 }

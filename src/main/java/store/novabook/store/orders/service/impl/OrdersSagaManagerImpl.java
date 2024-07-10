@@ -151,8 +151,8 @@ public class OrdersSagaManagerImpl {
 		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_SAVE_ORDERS_DATABASE")) {
-			orderSagaMessage.setStatus("SUCCESS_ALL_ORDER_SAGA");
-			log.info("성공적으로 모든 주문 트랜잭션이 완료되었습니다");
+			orderSagaMessage.setStatus("PROCEED_EARN_POINT");
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.earn.routing.key", orderSagaMessage);
 		} else if (orderSagaMessage.getStatus().equals("FAIL_SAVE_ORDERS_DATABASE")) {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
 			log.error("[주문:DB 저장 실패] 보상 트랜잭션을 시작합니다.");
@@ -166,4 +166,21 @@ public class OrdersSagaManagerImpl {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.compensate.form.confirm.routing.key", orderSagaMessage);
 		}
 	}
+
+	// 포인트 적립 시작
+	@RabbitListener(queues = "nova.api6-producer-queue")
+	public void handleApi6Response(@Payload OrderSagaMessage orderSagaMessage) {
+		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
+
+		if (orderSagaMessage.getStatus().equals("SUCCESS_EARN_POINT")) {
+			orderSagaMessage.setStatus("SUCCESS_ALL_ORDER_SAGA");
+			log.info("성공적으로 모든 주문 트랜잭션이 완료되었습니다");
+		} else if (orderSagaMessage.getStatus().equals("FAIL_EARN_POINT")) {
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			log.error("[주문:DB 포인트 저장 실패]");
+		}
+	}
+
+
+
 }
