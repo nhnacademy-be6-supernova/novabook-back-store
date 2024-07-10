@@ -61,7 +61,9 @@ public class Member {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	private String paycoId;
+	private String oauthId;
+
+	private String role;
 
 	@NotNull
 	@ManyToOne
@@ -77,7 +79,8 @@ public class Member {
 		LocalDateTime birth,
 		LocalDateTime latestLoginAt,
 		int authentication,
-		MemberStatus memberStatus) {
+		MemberStatus memberStatus,
+		String role) {
 		this.loginId = loginId;
 		this.loginPassword = loginPassword;
 		this.name = name;
@@ -87,6 +90,7 @@ public class Member {
 		this.latestLoginAt = latestLoginAt;
 		this.authentication = authentication;
 		this.memberStatus = memberStatus;
+		this.role = role;
 	}
 
 	public void update(String loginPassword, String name, String number, String email) {
@@ -101,7 +105,7 @@ public class Member {
 	}
 
 	public static Member of(CreateMemberRequest createMemberRequest, MemberStatus memberStatus, LocalDateTime birth,
-		String encodedPassword) {
+		String encodedPassword, String role) {
 		return Member.builder()
 			.memberStatus(memberStatus)
 			.loginId(createMemberRequest.loginId())
@@ -112,6 +116,7 @@ public class Member {
 			.email(createMemberRequest.getEmailFull())
 			.birth(birth)
 			.latestLoginAt(LocalDateTime.now())
+			.role(role)
 			.build();
 	}
 
