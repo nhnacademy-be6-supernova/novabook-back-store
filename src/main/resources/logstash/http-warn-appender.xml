@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <appender name="HTTP-WARN" class="store.novabook.store.common.logging.HttpAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <url>${logUrl}</url>
+        <projectName>${projectName}</projectName>
+        <projectVersion>${projectVersion}</projectVersion>
+        <logVersion>${logVersion}</logVersion>
+        <logSource>${logSource}</logSource>
+        <logType>${logType}</logType>
+        <host>${logHost}</host>
+        <logLevel>WARN</logLevel>
+        <platform>${platform}</platform>
+        <secretKey>${secretKey}</secretKey>
+    </appender>
+</included>
