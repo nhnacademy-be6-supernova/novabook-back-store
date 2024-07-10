@@ -234,7 +234,7 @@ public class MemberServiceImpl implements MemberService {
 			throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
 		}
 		return new FindMemberLoginResponse(member.getId(), member.getLoginId(), member.getLoginPassword(),
-			"ROLE_MEMBERS");
+			member.getRole());
 	}
 
 	@Override
