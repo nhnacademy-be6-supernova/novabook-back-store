@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.point.controller.docs.PointPolicyControllerDocs;
 import store.novabook.store.point.dto.request.CreatePointPolicyRequest;
@@ -25,7 +26,7 @@ public class PointPolicyController implements PointPolicyControllerDocs {
 
 	private final PointPolicyService pointPolicyService;
 
-	// @CheckRole("ROLE_USER")
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping
 	public ResponseEntity<Page<GetPointPolicyResponse>> getPoint(@CurrentMembers Long id, Pageable pageable) {
 		Page<GetPointPolicyResponse> pointPolicyResponseList = pointPolicyService.getPointPolicyList(pageable);

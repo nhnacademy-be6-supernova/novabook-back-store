@@ -22,6 +22,7 @@ import store.novabook.store.common.exception.FeignClientException;
 import store.novabook.store.common.exception.ForbiddenException;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.common.exception.NovaException;
+import store.novabook.store.common.exception.UnauthorizedException;
 import store.novabook.store.common.response.ErrorResponse;
 import store.novabook.store.common.response.ValidErrorResponse;
 
@@ -32,14 +33,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
 		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		log.error("MethodArgumentNotValidException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
+		log.error("MethodArgumentNotValidException: {} | Location: {}", exception.getMessage(), getLocation(exception),
+			exception);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidErrorResponse.from(exception));
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception,
 		WebRequest request) {
-		log.error("ConstraintViolationException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
+		log.error("ConstraintViolationException: {} | Location: {}", exception.getMessage(), getLocation(exception),
+			exception);
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.from(ErrorCode.DUPLICATED_VALUE));
 	}
 
@@ -83,14 +86,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
 		DataIntegrityViolationException exception) {
-		log.error("DataIntegrityViolationException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
+		log.error("DataIntegrityViolationException: {} | Location: {}", exception.getMessage(), getLocation(exception),
+			exception);
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.from(ErrorCode.ORDER_BOOK_ALREADY_EXISTS));
 	}
 
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException exception) {
-		log.error("MethodArgumentTypeMismatchException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
+		log.error("MethodArgumentTypeMismatchException: {} | Location: {}", exception.getMessage(),
+			getLocation(exception), exception);
 		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT_TYPE));
+	}
+
+	@ExceptionHandler(UnauthorizedException.class)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException exception) {
+		log.error("UnauthorizedException: {} | Location: {}", exception.getMessage(), getLocation(exception),
+			exception);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse.from(exception));
 	}
 
 	/**
@@ -101,6 +114,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	private String getLocation(Throwable exception) {
 		StackTraceElement element = exception.getStackTrace()[0];
-		return String.format("%s.%s(%s:%d)", element.getClassName(), element.getMethodName(), element.getFileName(), element.getLineNumber());
+		return String.format("%s.%s(%s:%d)", element.getClassName(), element.getMethodName(), element.getFileName(),
+			element.getLineNumber());
 	}
 }
