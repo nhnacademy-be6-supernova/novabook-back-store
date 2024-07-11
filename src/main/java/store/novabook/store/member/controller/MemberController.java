@@ -128,7 +128,7 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@PostMapping("/payco/link")
-	public ResponseEntity<Void> linkPayco(@RequestBody LinkPaycoMembersRequest linkPaycoMembersRequest) {
+	public ResponseEntity<Void> linkPayco(@Valid @RequestBody LinkPaycoMembersRequest linkPaycoMembersRequest) {
 		memberService.linkPaycoMembers(linkPaycoMembersRequest);
 		return ResponseEntity.ok().build();
 	}
