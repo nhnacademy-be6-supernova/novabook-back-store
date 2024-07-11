@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,7 +45,6 @@ public class Orders {
 	@JoinColumn(name = "orders_status_id")
 	private OrdersStatus ordersStatus;
 
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
@@ -98,22 +96,8 @@ public class Orders {
 		this.receiverNumber = request.receiverNumber();
 	}
 
-
-	public void update(Member member,
-		DeliveryFee deliveryFee,
-		WrappingPaper wrappingPaper,
-		OrdersStatus ordersStatus,
-		UpdateOrdersRequest request) {
-		this.member = member;
-		this.deliveryFee = deliveryFee;
-		this.wrappingPaper = wrappingPaper;
+	public void updateStatus(
+		OrdersStatus ordersStatus) {
 		this.ordersStatus = ordersStatus;
-		this.ordersDate = LocalDateTime.now();
-		this.totalAmount = request.totalAmount();
-		this.deliveryDate = request.deliveryDate();
-		this.bookPurchaseAmount = request.bookPurchaseAmount();
-		this.deliveryAddress = request.deliveryAddress();
-		this.receiverName = request.receiverName();
-		this.receiverNumber = request.receiverNumber();
 	}
 }
