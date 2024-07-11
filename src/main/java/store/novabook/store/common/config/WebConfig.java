@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -15,6 +16,8 @@ import store.novabook.store.common.security.aop.CurrentMembersArgumentResolver;
 public class WebConfig implements WebMvcConfigurer {
 
 	private final CurrentMembersArgumentResolver currentMembersArgumentResolver;
+	private final CategoryResponseInterceptor categoryResponseInterceptor;
+
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -25,6 +28,12 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		resolvers.add(currentMembersArgumentResolver);
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(categoryResponseInterceptor)
+			.addPathPatterns("/api/v1/store/categories");
 	}
 
 }
