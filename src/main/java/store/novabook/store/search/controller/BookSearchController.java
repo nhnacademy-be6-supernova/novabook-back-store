@@ -2,7 +2,6 @@ package store.novabook.store.search.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +13,6 @@ import store.novabook.store.search.service.impl.BookSearchServiceImpl;
 
 @RestController
 @RequestMapping("/api/v1/store/search")
-// @Document(indexName = "books")
 @RequiredArgsConstructor
 public class BookSearchController {
 
