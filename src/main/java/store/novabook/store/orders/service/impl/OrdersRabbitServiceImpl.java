@@ -135,7 +135,8 @@ public class OrdersRabbitServiceImpl {
 	 * @param couponId
 	 */
 	private void setOrderSagaMessageFlags(OrderSagaMessage orderSagaMessage, long usePointAmount, Long couponId) {
-		orderSagaMessage.setNoUsePoint(usePointAmount == 0);
+		orderSagaMessage.setNoEarnPoint(orderSagaMessage.getPaymentRequest().memberId() == null);
+		orderSagaMessage.setNoUsePoint(usePointAmount == 0 );
 		orderSagaMessage.setNoUseCoupon(couponId == null);
 	}
 

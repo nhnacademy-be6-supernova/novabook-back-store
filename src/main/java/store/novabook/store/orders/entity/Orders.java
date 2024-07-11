@@ -46,7 +46,6 @@ public class Orders {
 	@JoinColumn(name = "orders_status_id")
 	private OrdersStatus ordersStatus;
 
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;

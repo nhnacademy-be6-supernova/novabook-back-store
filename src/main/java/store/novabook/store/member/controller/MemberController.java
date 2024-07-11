@@ -72,8 +72,11 @@ public class MemberController implements MemberControllerDocs {
 
 	@GetMapping("/member")
 	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers(required = false) Long memberId) {
-		GetMemberResponse memberResponse = memberService.getMember(memberId);
-		return ResponseEntity.ok(memberResponse);
+		if(memberId!=null) {
+			GetMemberResponse memberResponse = memberService.getMember(memberId);
+			return ResponseEntity.ok(memberResponse);
+		}
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/login")

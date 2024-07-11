@@ -61,13 +61,17 @@ public class OrdersSagaManagerImpl {
 		if (orderSagaMessage.getStatus().equals("SUCCESS_CONFIRM_ORDER_FORM")) {
 
 			// 쿠폰을 사용하지 않을 경우 -> 바로 포인트 로직
-			if (orderSagaMessage.isNoUseCoupon()) {
+			if (!orderSagaMessage.isNoUsePoint()) {
 				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key",
 					orderSagaMessage);
-			} else {
+			} else if(!orderSagaMessage.isNoUseCoupon()) {
 				orderSagaMessage.setStatus("PROCEED_APPLY_COUPON");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.apply.routing.key", orderSagaMessage);
+			} else {
+				orderSagaMessage.setStatus("PROCEED_APPROVE_PAYMENT");
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.approve.payment.routing.key",
+					orderSagaMessage);
 			}
 		} else if (orderSagaMessage.getStatus().equals("FAIL_CONFIRM_ORDER_FORM")) {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
@@ -146,7 +150,7 @@ public class OrdersSagaManagerImpl {
 	public void handleApi5Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
 
-		if (orderSagaMessage.getStatus().equals("SUCCESS_SAVE_ORDERS_DATABASE")) {
+		if (!orderSagaMessage.isNoEarnPoint() && orderSagaMessage.getStatus().equals("SUCCESS_SAVE_ORDERS_DATABASE")) {
 			orderSagaMessage.setStatus("PROCEED_EARN_POINT");
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.earn.routing.key", orderSagaMessage);
 		} else if (orderSagaMessage.getStatus().equals("FAIL_SAVE_ORDERS_DATABASE")) {
