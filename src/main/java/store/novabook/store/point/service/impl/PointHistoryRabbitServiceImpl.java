@@ -58,7 +58,7 @@ public class PointHistoryRabbitServiceImpl {
 				.orElseThrow(() -> new IllegalArgumentException("PointPolicy not found"));
 
 			long pointPercent =
-				pointPolicy.getBasicPoint() + (memberGradeHistory.getMemberGradePolicy().getDiscountRate() / 100);
+				pointPolicy.getBasicPoint() + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
 
 			if (pointPercent >= 100) {
 				throw new IllegalArgumentException("포인트 적립률이 100%가 넘습니다");

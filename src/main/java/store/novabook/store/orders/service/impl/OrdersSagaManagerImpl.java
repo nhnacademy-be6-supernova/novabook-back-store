@@ -181,6 +181,27 @@ public class OrdersSagaManagerImpl {
 		}
 	}
 
+	/**
+	 * 결제 취소 시
+	 * 1.주문 테이블에 총 적립 포인트량 -> DDL 에 넣어야함
+	 * 2.포인트는 사용량만큼 감소
+	 * 3.쿠폰은 비사용 처리
+	 * 4.
+	 *
+	 */
+	public void orderCancel() {
+		// DB 상태 업데이트 ->
+		// OrderSagaMessage.builder()
+		// 이어서 구현하겠습니다.
+
+
+
+
+
+
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "?");
+	}
+
 
 
 }

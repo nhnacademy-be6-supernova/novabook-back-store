@@ -42,6 +42,9 @@ public class Orders {
 	private WrappingPaper wrappingPaper;
 
 	@NotNull
+	private String uuid;
+
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "orders_status_id")
 	private OrdersStatus ordersStatus;
@@ -70,6 +73,10 @@ public class Orders {
 
 	@NotNull
 	private String receiverNumber;
+
+	private Long pointSaveAmount;
+
+	private Long couponDiscountAmount;
 
 	@NotNull
 	@CreatedDate
