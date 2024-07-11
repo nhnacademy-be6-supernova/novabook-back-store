@@ -63,6 +63,7 @@ public class Member {
 
 	private String oauthId;
 
+	@NotNull
 	private String role;
 
 	@NotNull
@@ -130,5 +131,9 @@ public class Member {
 
 	public void updateLoginPassword(String loginPassword) {
 		this.loginPassword = loginPassword;
+	}
+
+	public void updateOauthId(String oauthId) {
+		this.oauthId = oauthId;
 	}
 }
