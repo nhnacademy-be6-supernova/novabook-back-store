@@ -129,9 +129,6 @@ public class TossOrderService {
 		}
 	}
 
-
-
-	@RabbitListener()
 	public JSONObject sendTossCancelRequest(@Payload TossPaymentCancelRequest tossPaymentCancelRequest) throws
 		IOException,
 		ParseException {

@@ -159,7 +159,14 @@ public class OrdersSagaManagerImpl {
 		}
 	}
 
+	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
+	public void requestPayCancel(@Payload OrderSagaMessage orderSagaMessage) {
+		if(!orderSagaMessage.isNoUseCoupon())
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key", orderSagaMessage);
+		if(!orderSagaMessage.isNoUsePoint())
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key", orderSagaMessage);
 
-
-
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.approve.payment.routing.key", orderSagaMessage);
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.orders.form.confirm.routing.key", orderSagaMessage);
+	}
 }

@@ -132,6 +132,9 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.api6-producer-queue").build();
 	}
 
+	@Bean
+	public Queue requestPayCancelQueue() {return QueueBuilder.durable("nova.orders.request.pay.cancel.queue").build();}
+
 
 	// BINDING
 	@Bean
@@ -268,5 +271,13 @@ public class OrdersRabbitMQConfig {
 	@Bean
 	public Binding api6ProducerBinding() {
 		return BindingBuilder.bind(api6ProducerQueue()).to(sagaExchange()).with("nova.api6-producer-routing-key").noargs();
+	}
+
+	@Bean
+	public Binding requestPayCancelBinding() {
+		return BindingBuilder.bind(requestPayCancelQueue())
+			.to(sagaExchange())
+			.with("nova.orders.request.pay.cancel.routing.key")
+			.noargs();
 	}
 }
