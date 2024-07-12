@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.orders.dto.OrderSagaMessage;
+import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 
 @RequiredArgsConstructor
 @Service
@@ -111,7 +112,12 @@ public class TossOrderService {
 		String paymentKey = paymentParam.get(PAYMENT_KEY);
 
 		try {
-			JSONObject response = sendTossCancelRequest(paymentKey, "서버오류 결제 보상 트랜잭션");
+			TossPaymentCancelRequest tossPaymentCancel = TossPaymentCancelRequest.builder()
+				.cancelReason("서버오류 결제 보상 트랜잭션")
+				.paymentKey(paymentKey)
+				.build();
+
+			JSONObject response = sendTossCancelRequest(tossPaymentCancel);
 			orderSagaMessage.setStatus("SUCCESS_REFUND_PAYMENT");
 			log.info("환불 응답 내용 : {}", response.toString());
 		} catch (IOException | ParseException e) {
@@ -123,18 +129,21 @@ public class TossOrderService {
 		}
 	}
 
-	public JSONObject sendTossCancelRequest(String paymentKey, String cancelReason) throws
+
+
+	@RabbitListener()
+	public JSONObject sendTossCancelRequest(@Payload TossPaymentCancelRequest tossPaymentCancelRequest) throws
 		IOException,
 		ParseException {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = new JSONObject();
-		obj.put("cancelReason", cancelReason);
+		obj.put("cancelReason", tossPaymentCancelRequest.cancelReason());
 
 		Base64.Encoder encoder = Base64.getEncoder();
 		byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
 		String authorizations = "Basic " + new String(encodedBytes);
 
-		URL url = new URL("https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel");
+		URL url = new URL("https://api.tosspayments.com/v1/payments/" + tossPaymentCancelRequest.paymentKey() + "/cancel");
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestProperty("Authorization", authorizations);
 		connection.setRequestProperty("Content-Type", "application/json");

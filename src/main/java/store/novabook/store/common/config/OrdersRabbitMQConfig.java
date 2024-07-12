@@ -65,6 +65,10 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.cart.delete.queue").build();
 	}
 
+	@Bean
+	public Queue paymentCancelQueue() {
+		return QueueBuilder.durable("nova.payment.cancel.queue").build();
+	}
 
 
 
@@ -172,6 +176,12 @@ public class OrdersRabbitMQConfig {
 	public Binding deleteCartBinding() {
 		return BindingBuilder.bind(pointEarnQueue()).to(sagaExchange())
 			.with("cart.delete.routing.key").noargs();
+	}
+
+	@Bean
+	public Binding cancelPaymentBinding() {
+		return BindingBuilder.bind(pointEarnQueue()).to(sagaExchange())
+			.with("payment.cancel.routing.key").noargs();
 	}
 
 

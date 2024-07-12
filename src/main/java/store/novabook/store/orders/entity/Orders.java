@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
@@ -48,6 +49,7 @@ public class Orders {
 
 	@NotNull
 	@ManyToOne
+	@Setter
 	@JoinColumn(name = "orders_status_id")
 	private OrdersStatus ordersStatus;
 
