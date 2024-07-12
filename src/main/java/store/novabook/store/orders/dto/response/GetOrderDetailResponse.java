@@ -13,7 +13,6 @@ public record GetOrderDetailResponse(
 	Long ordersStatusId,
 	String ordersStatusName,
 	List<String> bookTitle,
-	Long price,
 	Integer quantity,
 	Long deliveryFee,
 	Long wrappingFee,
@@ -21,23 +20,18 @@ public record GetOrderDetailResponse(
 	String receiverNumber,
 	String receiverAddress,
 	LocalDateTime expectedDeliveryDate,
-	Long totalPrice
-	// Long couponDiscountPrice,
-	// Long finalPrice,
-	// Long pointsSave
+	Long totalPrice,
+	Long couponDiscountAmount,
+	Long finalAmount,
+	Long pointSaveAmount
 ) {
 	public static GetOrderDetailResponse of(List<OrdersBook> ordersBook) {
 		List<String> bookTitle = new ArrayList<>();
 		int quantity = 0;
-		long totalPrice = 0L;
-		// Long couponDiscountPrice = 0L;
-		// Long finalPrice = 0L;
-		// Long pointsSave = 0L;
+
 		for (OrdersBook book : ordersBook) {
 			bookTitle.add(book.getBook().getTitle());
 			quantity += book.getQuantity();
-			totalPrice += book.getPrice();
-			// couponDiscountPrice += book.getOrders().getCouponDiscounprice();
 		}
 
 		return GetOrderDetailResponse.builder()
@@ -52,10 +46,10 @@ public record GetOrderDetailResponse(
 			.receiverNumber(ordersBook.getFirst().getOrders().getReceiverNumber())
 			.receiverAddress(ordersBook.getLast().getOrders().getDeliveryAddress())
 			.expectedDeliveryDate(ordersBook.getFirst().getOrders().getDeliveryDate())
-			.totalPrice(totalPrice)
-			// .couponDiscountPrice(ordersBook.getOrders().getCouponDiscountPrice)
-			// .finalPrice(ordersBook.getPrice())
-			// .pointsSave(ordersBook.getOrders().getPointSave())
+			.totalPrice(ordersBook.getFirst().getOrders().getBookPurchaseAmount())
+			.couponDiscountAmount(ordersBook.getFirst().getOrders().getCouponDiscountAmount())
+			.finalAmount(ordersBook.getFirst().getOrders().getTotalAmount())
+			.pointSaveAmount(ordersBook.getFirst().getOrders().getPointSaveAmount())
 			.build();
 	}
 }
