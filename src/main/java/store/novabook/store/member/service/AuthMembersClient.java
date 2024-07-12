@@ -4,6 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.member.dto.request.GetDormantMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.response.GetDormantMembersUUIDResponse;
@@ -12,9 +13,10 @@ import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 @FeignClient(name = "authMembersClient", url = "http://localhost:9777/auth/members/uuid")
 public interface AuthMembersClient {
 	@PostMapping
-	GetMembersUUIDResponse getMembersId(@RequestBody GetMembersUUIDRequest getMembersUUIDRequest);
+	ApiResponse<GetMembersUUIDResponse> getMembersId(@RequestBody GetMembersUUIDRequest getMembersUUIDRequest);
 
 	@PostMapping("/dormant")
-	GetDormantMembersUUIDResponse getDormantMembersId(@RequestBody GetDormantMembersUUIDRequest getDormantMembersUUIDRequest);
+	ApiResponse<GetDormantMembersUUIDResponse> getDormantMembersId(
+		@RequestBody GetDormantMembersUUIDRequest getDormantMembersUUIDRequest);
 
 }

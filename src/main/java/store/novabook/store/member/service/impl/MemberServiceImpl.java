@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -218,7 +217,8 @@ public class MemberServiceImpl implements MemberService {
 
 		GetDormantMembersUUIDRequest getDormantMembersUUIDRequest = new GetDormantMembersUUIDRequest(request.uuid());
 
-		GetDormantMembersUUIDResponse getDormantMembersUUIDResponse = authMembersClient.getDormantMembersId(getDormantMembersUUIDRequest);
+		GetDormantMembersUUIDResponse getDormantMembersUUIDResponse = authMembersClient.getDormantMembersId(
+			getDormantMembersUUIDRequest).getBody();
 
 		Member member = memberRepository.findById(getDormantMembersUUIDResponse.membersId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
@@ -282,7 +282,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public GetMembersUUIDResponse findMembersId(GetMembersUUIDRequest getMembersUUIDRequest) {
 
-		return authMembersClient.getMembersId(getMembersUUIDRequest);
+		return authMembersClient.getMembersId(getMembersUUIDRequest).getBody();
 	}
 
 	@Override

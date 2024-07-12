@@ -149,7 +149,7 @@ public class MemberController implements MemberControllerDocs {
 	@PostMapping("/uuid")
 	public ResponseEntity<GetMembersUUIDResponse> findUUID(@RequestHeader("Authorization") String authorization,
 		@RequestBody GetMembersUUIDRequest getMembersUUIDRequest) {
-		GetMembersUUIDResponse membersId = authMembersClient.getMembersId(getMembersUUIDRequest);
+		GetMembersUUIDResponse membersId = authMembersClient.getMembersId(getMembersUUIDRequest).getBody();
 
 		return ResponseEntity.ok(membersId);
 	}
