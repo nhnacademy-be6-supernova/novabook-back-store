@@ -28,6 +28,7 @@ public class OrdersRabbitMQConfig {
 		return new Jackson2JsonMessageConverter();
 	}
 
+
 	// QUEUES
 	@Bean
 	public Queue ordersVerifyFormQueue() {
@@ -68,6 +69,19 @@ public class OrdersRabbitMQConfig {
 	public Queue paymentCancelQueue() {
 		return QueueBuilder.durable("nova.payment.cancel.queue").build();
 	}
+
+	@Bean
+	public Queue pointRequestPayAmountQueue() {
+		return QueueBuilder.durable("nova.point.request.pay.cancel.queue").build();
+	}
+
+	@Bean
+	public Queue paymentRequestPayAmountQueue() {
+		return QueueBuilder.durable("nova.payment.request.pay.cancel.queue").build();
+	}
+
+
+
 
 
 	/*보상 트랜잭션 큐*/
@@ -184,6 +198,20 @@ public class OrdersRabbitMQConfig {
 		return BindingBuilder.bind(paymentCancelQueue()).to(sagaExchange())
 			.with("payment.cancel.routing.key").noargs();
 	}
+
+	@Bean
+	public Binding pointRequestPayCancelBinding() {
+		return BindingBuilder.bind(requestPayCancelQueue()).to(sagaExchange())
+			.with("payment.cancel.routing.key").noargs();
+	}
+
+	@Bean
+	public Binding paymentRequestPayCancelBinding() {
+		return BindingBuilder.bind(paymentRequestPayAmountQueue()).to(sagaExchange())
+			.with("payment.pay.cancel.routing.key").noargs();
+	}
+
+
 
 
 

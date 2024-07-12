@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.orders.dto.OrderSagaMessage;
+import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.PaymentRequest;
 import store.novabook.store.orders.entity.Orders;
 
@@ -161,28 +162,13 @@ public class OrdersSagaManagerImpl {
 	}
 
 	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
-	public void requestPayCancel(@Payload PaymentRequest paymentRequest) {
+	public void requestPayCancel(@Payload RequestPayCancelMessage payCancelMessage) {
+		if(payCancelMessage.getCouponId() != null)
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.request.pay.cancel.routing.key", payCancelMessage);
+		if(payCancelMessage.getUsePointAmount() > 0)
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.request.pay.cancel.routing.key", payCancelMessage);
 
-		OrderSagaMessage orderSagaMessage = OrderSagaMessage.builder()
-			.status("PROCEED_PAY_CANCEL")
-			// 사용 포인트
-			// 쿠폰 사용량
-
-
-			.paymentRequest(paymentRequest)
-			.build();
-
-
-		// coupon Id 필요
-		// point 적립금액
-		// point 사용금액 반환
-
-		if(!orderSagaMessage.isNoUseCoupon())
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key", orderSagaMessage);
-		if(!orderSagaMessage.isNoUsePoint())
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key", orderSagaMessage);
-
-		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.approve.payment.routing.key", orderSagaMessage);
-		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.orders.form.confirm.routing.key", orderSagaMessage);
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "payment.pay.cancel.routing.key", payCancelMessage);
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.request.pay.cancel.routing.key", payCancelMessage);
 	}
 }

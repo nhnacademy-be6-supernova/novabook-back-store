@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.orders.dto.OrderSagaMessage;
+import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 
 @RequiredArgsConstructor
@@ -129,7 +130,8 @@ public class TossOrderService {
 		}
 	}
 
-	public JSONObject sendTossCancelRequest(@Payload TossPaymentCancelRequest tossPaymentCancelRequest) throws
+
+	public JSONObject sendTossCancelRequest(TossPaymentCancelRequest tossPaymentCancelRequest) throws
 		IOException,
 		ParseException {
 		JSONParser parser = new JSONParser();
@@ -163,5 +165,15 @@ public class TossOrderService {
 		}
 
 		return jsonObject;
+	}
+
+	@RabbitListener(queues = "nova.payment.request.pay.cancel.queue")
+	public void paymentRequestPayCancel(@Payload RequestPayCancelMessage message) {
+		try {
+			sendTossCancelRequest(TossPaymentCancelRequest.builder().paymentKey(message.getPaymentKey())
+				.cancelReason("결제 취소 요청").build());
+		} catch (IOException | ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

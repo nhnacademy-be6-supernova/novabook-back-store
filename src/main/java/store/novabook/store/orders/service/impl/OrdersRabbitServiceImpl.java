@@ -226,9 +226,10 @@ public class OrdersRabbitServiceImpl {
 			}
 
 		} catch (Exception e) {
-
+			log.error("주문서 검증 실패");
 		}
 	}
+
 
 	private void processNonMemberOrder(OrderSagaMessage orderSagaMessage) {
 		// 주문폼 조회
