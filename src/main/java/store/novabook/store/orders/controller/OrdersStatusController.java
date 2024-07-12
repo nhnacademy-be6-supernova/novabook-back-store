@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.orders.controller.docs.OrdersStatusControllerDocs;
 import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersStatusResponse;
 import store.novabook.store.orders.service.OrdersStatusService;
@@ -42,12 +40,5 @@ public class OrdersStatusController implements OrdersStatusControllerDocs {
 	public ResponseEntity<GetOrdersStatusResponse> getOrdersStatus(@PathVariable Long id) {
 		GetOrdersStatusResponse response = ordersStatusService.getOrdersStatus(id);
 		return ResponseEntity.ok(response);
-	}
-
-	@PutMapping("/{id}")
-	public ResponseEntity<Void> updateOrdersStatus(@PathVariable Long id,
-		@RequestBody UpdateOrdersStatusRequest request) {
-		ordersStatusService.updateOrdersStatus(id, request);
-		return ResponseEntity.noContent().build();
 	}
 }

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersAdminRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersResponse;
 
@@ -30,5 +30,5 @@ public interface OrdersControllerDocs {
 
 	//수정
 	@Operation(summary = "주문 수정", description = "해당 ID의 주문을 수정합니다.")
-	ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody UpdateOrdersRequest request);
+	ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody UpdateOrdersAdminRequest request);
 }
