@@ -45,12 +45,8 @@ public class OrdersSagaManagerImpl {
 			OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
 
 		// 장바구니 제거
-		// rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",
-		// 	OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
-
-		// 가주문 제거
-		// rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",
-		// 	OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "cart.delete.routing.key",
+			OrderSagaMessage.builder().status("PROCEED_DELELTE_CART").paymentRequest(paymentRequest).build());
 
 	}
 

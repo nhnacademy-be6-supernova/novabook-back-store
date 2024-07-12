@@ -60,6 +60,13 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.point.earn.queue").build();
 	}
 
+	@Bean
+	public Queue cartDeleteQueue() {
+		return QueueBuilder.durable("nova.cart.delete.queue").build();
+	}
+
+
+
 
 	/*보상 트랜잭션 큐*/
 	@Bean
@@ -83,13 +90,11 @@ public class OrdersRabbitMQConfig {
 
 
 
-
 	// Dead queue
 	@Bean
 	public Queue deadOrdersSagaQueue() {
 		return QueueBuilder.durable("nova.orders.saga.dead.queue").build();
 	}
-
 
 
 
@@ -163,7 +168,11 @@ public class OrdersRabbitMQConfig {
 			.with("point.earn.routing.key").noargs();
 	}
 
-
+	@Bean
+	public Binding deleteCartBinding() {
+		return BindingBuilder.bind(pointEarnQueue()).to(sagaExchange())
+			.with("cart.delete.routing.key").noargs();
+	}
 
 
 	// dead queue
