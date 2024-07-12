@@ -37,7 +37,7 @@ public class MemberGradePolicy {
 	private Long maxRange;
 
 	@NotNull
-	private Long discountRate;
+	private Long saveRate;
 
 	@NotNull
 	@CreatedDate
@@ -50,11 +50,11 @@ public class MemberGradePolicy {
 	public MemberGradePolicy(String name,
 		Long minRange,
 		Long maxRange,
-		Long discountRate) {
+		Long saveRate) {
 		this.name = name;
 		this.minRange = minRange;
 		this.maxRange = maxRange;
-		this.discountRate = discountRate;
+		this.saveRate = saveRate;
 	}
 
 }

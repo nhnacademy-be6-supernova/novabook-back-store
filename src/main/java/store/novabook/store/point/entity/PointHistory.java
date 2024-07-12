@@ -32,10 +32,6 @@ public class PointHistory {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "orders_id")
-	private Orders orders;
-
 	@NotNull
 	@OneToOne
 	@JoinColumn(name = "point_policy_id")
@@ -59,17 +55,15 @@ public class PointHistory {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public PointHistory(Orders orders, PointPolicy pointPolicy, Member member, String pointContent, long pointAmount){
-		this.orders = orders;
+	public PointHistory(PointPolicy pointPolicy, Member member, String pointContent, long pointAmount){
 		this.pointPolicy = pointPolicy;
 		this.member = member;
 		this.pointContent = pointContent;
 		this.pointAmount = pointAmount;
 	}
 
-	public static PointHistory of(PointPolicy pointPolicy, Orders orders, Member member, String pointContent, long pointAmount) {
+	public static PointHistory of(PointPolicy pointPolicy, Member member, String pointContent, long pointAmount) {
 		return PointHistory.builder()
-			.orders(orders)
 			.pointPolicy(pointPolicy)
 			.member(member)
 			.pointContent(pointContent)
