@@ -1,9 +1,12 @@
 package store.novabook.store.member.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import lombok.Builder;
 import store.novabook.store.member.entity.Member;
 
 @Builder
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public record GetMemberResponse(
 	Long id,
 	String loginId,
