@@ -172,13 +172,13 @@ public class OrdersRabbitMQConfig {
 
 	@Bean
 	public Binding deleteCartBinding() {
-		return BindingBuilder.bind(pointEarnQueue()).to(sagaExchange())
+		return BindingBuilder.bind(cartDeleteQueue()).to(sagaExchange())
 			.with("cart.delete.routing.key").noargs();
 	}
 
 	@Bean
 	public Binding cancelPaymentBinding() {
-		return BindingBuilder.bind(pointEarnQueue()).to(sagaExchange())
+		return BindingBuilder.bind(paymentCancelQueue()).to(sagaExchange())
 			.with("payment.cancel.routing.key").noargs();
 	}
 
