@@ -10,7 +10,6 @@ import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersResponse;
 
 public interface OrdersService {
-	CreateResponse create(CreateOrdersRequest request);
 
 	Page<GetOrdersResponse> getOrdersResponsesAll();
 

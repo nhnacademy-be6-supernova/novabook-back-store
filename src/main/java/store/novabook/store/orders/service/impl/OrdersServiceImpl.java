@@ -41,21 +41,6 @@ public class OrdersServiceImpl implements OrdersService {
 	private final MemberRepository memberRepository;
 
 	@Override
-	public CreateResponse create(CreateOrdersRequest request) {
-		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
-		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
-		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
-		Orders orders = new Orders(member, deliveryFee, wrappingPaper, ordersStatus, request);
-		ordersRepository.save(orders);
-		return new CreateResponse(orders.getId());
-	}
-
-	@Override
 	public void update(Long id, UpdateOrdersRequest request) {
 		Member member = memberRepository.findById(request.memberId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));

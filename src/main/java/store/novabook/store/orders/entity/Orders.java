@@ -89,8 +89,6 @@ public class Orders {
 
 	private Long couponDiscountAmount;
 
-
-
 	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
@@ -103,17 +101,22 @@ public class Orders {
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
+		Payment payment,
 		CreateOrdersRequest request) {
 
 		this.member = member;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
 		this.ordersStatus = ordersStatus;
+		this.payment = payment;
 		this.ordersDate = LocalDateTime.now();
 		this.totalAmount = request.totalAmount();
 		this.deliveryDate = request.deliveryDate();
 		this.bookPurchaseAmount = request.bookPurchaseAmount();
 		this.deliveryAddress = request.deliveryAddress();
+		this.uuid = request.uuid();
+		this.senderName = request.senderName();
+		this.senderNumber = request.senderNumber();
 		this.receiverName = request.receiverName();
 		this.receiverNumber = request.receiverNumber();
 		this.pointSaveAmount = request.pointSaveAmount();

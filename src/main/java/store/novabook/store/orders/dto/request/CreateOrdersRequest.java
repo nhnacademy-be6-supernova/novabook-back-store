@@ -17,8 +17,10 @@ public record CreateOrdersRequest(
 	Long wrappingPaperId,
 	@NotNull(message = "ordersStatusId 값은 필수 입니다")
 	Long ordersStatusId,
+	Long paymentId,
 	@NotNull(message = "ordersDate 값은 필수 입니다")
 	LocalDateTime ordersDate,
+	String uuid,
 	@NotNull(message = "totalAmount 값은 필수 입니다")
 	Long totalAmount,
 	@NotNull(message = "deliveryDate 값은 필수 입니다")
@@ -28,6 +30,10 @@ public record CreateOrdersRequest(
 	Long bookPurchaseAmount,
 	@NotBlank(message = "deliveryAddress 값은 필수 입니다")
 	String deliveryAddress,
+	@NotNull
+	String senderName,
+	@NotNull
+	String senderNumber,
 	@NotBlank(message = "recieverName 값은 필수 입니다")
 	String receiverName,
 	@NotBlank(message = "recieverNumber 값은 필수 입니다")

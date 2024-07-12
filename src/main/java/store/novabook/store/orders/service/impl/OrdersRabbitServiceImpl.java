@@ -44,6 +44,9 @@ import store.novabook.store.orders.repository.OrdersStatusRepository;
 import store.novabook.store.orders.repository.RedisOrderNonMemberRepository;
 import store.novabook.store.orders.repository.RedisOrderRepository;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
+import store.novabook.store.payment.dto.request.CreatePaymentRequest;
+import store.novabook.store.payment.entity.Payment;
+import store.novabook.store.payment.repository.PaymentRepository;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointPolicyRepository;
 
@@ -66,6 +69,7 @@ public class OrdersRabbitServiceImpl {
 	private final RedisOrderNonMemberRepository redisOrderNonMemberRepository;
 	private final RabbitTemplate rabbitTemplate;
 	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
+	private final PaymentRepository paymentRepository;
 
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 
@@ -85,13 +89,15 @@ public class OrdersRabbitServiceImpl {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_CONFIRM_ORDER_FORM");
 		} finally {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api1-producer-routing-key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api1-producer-routing-key",
+				orderSagaMessage);
 		}
 	}
 
 	private void processNonMemberOrder(OrderSagaMessage orderSagaMessage) {
 		// 주문폼 조회
-		OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(orderSagaMessage.getPaymentRequest().orderId());
+		OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(
+			orderSagaMessage.getPaymentRequest().orderId());
 		// 쿠폰, 포인트 사용 여부 설정
 		setOrderSagaMessageFlags(orderSagaMessage, orderForm.usePointAmount(), orderForm.couponId());
 		// 주문 도서 검증
@@ -110,7 +116,8 @@ public class OrdersRabbitServiceImpl {
 		orderSagaMessage.setNoUseCoupon(couponId == null);
 	}
 
-	private void processBooksConfirm(List<BookIdAndQuantityDTO> books, OrderSagaMessage orderSagaMessage, Long deliveryId, Long wrappingPaperId) {
+	private void processBooksConfirm(List<BookIdAndQuantityDTO> books, OrderSagaMessage orderSagaMessage,
+		Long deliveryId, Long wrappingPaperId) {
 		Map<Long, Book> bookCache = new HashMap<>();
 
 		for (BookIdAndQuantityDTO bookDTO : books) {
@@ -124,7 +131,7 @@ public class OrdersRabbitServiceImpl {
 
 		for (BookIdAndQuantityDTO bookDTO : books) {
 			Book book = bookCache.get(bookDTO.id());
-			book.decreaseInventory((int) bookDTO.quantity());
+			book.decreaseInventory((int)bookDTO.quantity());
 
 			// 순수금액 설정
 			long bookPrice = orderSagaMessage.getCalculateTotalAmount() +
@@ -156,7 +163,8 @@ public class OrdersRabbitServiceImpl {
 	}
 
 	private void validateDeliveryAndWrapping(Long deliveryId, Long wrappingPaperId) {
-		if (deliveryFeeRepository.findById(deliveryId).isEmpty() || wrappingPaperRepository.findById(wrappingPaperId).isEmpty()) {
+		if (deliveryFeeRepository.findById(deliveryId).isEmpty() || wrappingPaperRepository.findById(wrappingPaperId)
+			.isEmpty()) {
 			throw new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND);
 		}
 	}
@@ -167,11 +175,13 @@ public class OrdersRabbitServiceImpl {
 	 * @return
 	 */
 	private long calculatePointPercent(Long memberId) {
-		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(memberId)
+		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(
+				memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_HISTORY_NOT_FOUND));
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_POLICY_NOT_FOUND));
-		long pointPercent = pointPolicy.getBasicPoint() + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
+		long pointPercent =
+			pointPolicy.getBasicPoint() + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
 
 		if (pointPercent >= 100) {
 			throw new BadRequestException(ErrorCode.INVALID_POINT_DISCOUNT);
@@ -195,13 +205,15 @@ public class OrdersRabbitServiceImpl {
 			compensateBooks(books);
 		} catch (Exception e) {
 			orderSagaMessage.setStatus("FAIL_COMPENSATE_CONFIRM_ORDER_FORM");
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+				orderSagaMessage);
 		}
 	}
 
 	private List<BookIdAndQuantityDTO> getOrderBooks(OrderSagaMessage orderSagaMessage) {
 		if (orderSagaMessage.getPaymentRequest().memberId() == null) {
-			OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(orderSagaMessage.getPaymentRequest().orderId());
+			OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(
+				orderSagaMessage.getPaymentRequest().orderId());
 			return orderForm.books();
 		} else {
 			OrderTemporaryForm orderForm = getOrderTemporaryForm(orderSagaMessage.getPaymentRequest().memberId());
@@ -213,7 +225,7 @@ public class OrdersRabbitServiceImpl {
 		for (BookIdAndQuantityDTO bookDTO : books) {
 			Book book = bookRepository.findById(bookDTO.id())
 				.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
-			book.increaseInventory((int) bookDTO.quantity());
+			book.increaseInventory((int)bookDTO.quantity());
 			updateBookStatusForCompensation(book);
 			bookRepository.save(book);
 		}
@@ -234,15 +246,26 @@ public class OrdersRabbitServiceImpl {
 			Orders orders;
 			List<BookIdAndQuantityDTO> books;
 
+			HashMap<String, Object> paymentParam = (HashMap<String, Object>)orderSagaMessage.getPaymentRequest()
+				.paymentInfo();
+
+			Payment savePayment = Payment.builder().request(CreatePaymentRequest.builder()
+				.paymentKey((String)paymentParam.get("paymentKey"))
+				.provider("tempProvider")
+				.build()).build();
+			Payment payment = paymentRepository.save(savePayment);
+
 			if (orderSagaMessage.getPaymentRequest().memberId() == null) {
-				OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(orderSagaMessage.getPaymentRequest().orderId());
+				OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(
+					orderSagaMessage.getPaymentRequest().orderId());
 				request = createOrdersRequestForNonMember(orderSagaMessage, orderForm);
-				orders = createOrderForNonMember(request, orderForm);
+				orders = createOrderForNonMember(request, orderForm, payment);
 				books = orderForm.books();
 			} else {
 				OrderTemporaryForm orderForm = getOrderTemporaryForm(orderSagaMessage.getPaymentRequest().memberId());
 				request = createOrdersRequestForMember(orderSagaMessage, orderForm);
-				orders = createOrderForMember(request, orderForm, orderSagaMessage.getPaymentRequest().memberId());
+				orders = createOrderForMember(request, orderForm, orderSagaMessage.getPaymentRequest().memberId(),
+					payment);
 				books = orderForm.books();
 			}
 
@@ -254,7 +277,8 @@ public class OrdersRabbitServiceImpl {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_SAVE_ORDERS_DATABASE");
 		} finally {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api5-producer-routing-key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api5-producer-routing-key",
+				orderSagaMessage);
 		}
 	}
 
@@ -262,7 +286,7 @@ public class OrdersRabbitServiceImpl {
 		for (BookIdAndQuantityDTO bookDto : books) {
 			Book book = bookRepository.findById(bookDto.id())
 				.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
-			OrdersBook ordersBook = new OrdersBook(savedOrder, book, (int) bookDto.quantity(), book.getPrice());
+			OrdersBook ordersBook = new OrdersBook(savedOrder, book, (int)bookDto.quantity(), book.getPrice());
 			ordersBookRepository.save(ordersBook);
 		}
 	}
@@ -277,7 +301,8 @@ public class OrdersRabbitServiceImpl {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 	}
 
-	private CreateOrdersRequest createOrdersRequestForNonMember(OrderSagaMessage orderSagaMessage, OrderTemporaryNonMemberForm orderForm) {
+	private CreateOrdersRequest createOrdersRequestForNonMember(OrderSagaMessage orderSagaMessage,
+		OrderTemporaryNonMemberForm orderForm) {
 		return CreateOrdersRequest.builder()
 			.memberId(null)
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
@@ -293,7 +318,8 @@ public class OrdersRabbitServiceImpl {
 			.build();
 	}
 
-	private CreateOrdersRequest createOrdersRequestForMember(OrderSagaMessage orderSagaMessage, OrderTemporaryForm orderForm) {
+	private CreateOrdersRequest createOrdersRequestForMember(OrderSagaMessage orderSagaMessage,
+		OrderTemporaryForm orderForm) {
 		return CreateOrdersRequest.builder()
 			.memberId(orderSagaMessage.getPaymentRequest().memberId())
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
@@ -309,17 +335,19 @@ public class OrdersRabbitServiceImpl {
 			.build();
 	}
 
-	private Orders createOrderForNonMember(CreateOrdersRequest request, OrderTemporaryNonMemberForm orderForm) {
+	private Orders createOrderForNonMember(CreateOrdersRequest request, OrderTemporaryNonMemberForm orderForm,
+		Payment payment) {
 		DeliveryFee deliveryFee = deliveryFeeRepository.findById(orderForm.deliveryId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
 		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(orderForm.wrappingPaperId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(1L)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
-		return new Orders(null, deliveryFee, wrappingPaper, ordersStatus, request);
+		return new Orders(null, deliveryFee, wrappingPaper, ordersStatus, payment, request);
 	}
 
-	private Orders createOrderForMember(CreateOrdersRequest request, OrderTemporaryForm orderForm, Long memberId) {
+	private Orders createOrderForMember(CreateOrdersRequest request, OrderTemporaryForm orderForm, Long memberId,
+		Payment payment) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		DeliveryFee deliveryFee = deliveryFeeRepository.findById(orderForm.deliveryId())
@@ -328,6 +356,6 @@ public class OrdersRabbitServiceImpl {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(1L)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
-		return new Orders(member, deliveryFee, wrappingPaper, ordersStatus, request);
+		return new Orders(member, deliveryFee, wrappingPaper, ordersStatus, payment, request);
 	}
 }

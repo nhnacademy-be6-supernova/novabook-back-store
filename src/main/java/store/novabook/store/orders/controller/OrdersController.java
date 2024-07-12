@@ -27,11 +27,6 @@ public class OrdersController implements OrdersControllerDocs {
 
 	private final OrdersService ordersService;
 
-	@PostMapping
-	public ResponseEntity<CreateResponse> createOrders(@Valid @RequestBody CreateOrdersRequest request) {
-		CreateResponse response = ordersService.create(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	}
 
 	@GetMapping
 	public ResponseEntity<Page<GetOrdersResponse>> getOrdersAll() {
