@@ -36,7 +36,7 @@ public class TossOrderService {
 	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
 	private final RabbitTemplate rabbitTemplate;
 	private static final String AMOUNT = "amount";
-	private static final String PAYMENT_KEY = "amount";
+	private static final String PAYMENT_KEY = "paymentKey";
 	private static final String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
 
 
