@@ -20,7 +20,7 @@ public record CreateOrdersRequest(
 	Long paymentId,
 	@NotNull(message = "ordersDate 값은 필수 입니다")
 	LocalDateTime ordersDate,
-	String uuid,
+	String code,
 	@NotNull(message = "totalAmount 값은 필수 입니다")
 	Long totalAmount,
 	@NotNull(message = "deliveryDate 값은 필수 입니다")

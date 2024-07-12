@@ -141,7 +141,7 @@ public class OrdersRabbitServiceImpl {
 
 			if (orderSagaMessage.getPaymentRequest().memberId() == null) {
 				OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(
-					orderSagaMessage.getPaymentRequest().orderId());
+					orderSagaMessage.getPaymentRequest().orderCode());
 				request = createOrdersRequestForNonMember(orderSagaMessage, orderForm);
 				orders = createOrderForNonMember(request, orderForm, payment);
 				books = orderForm.books();
@@ -199,12 +199,12 @@ public class OrdersRabbitServiceImpl {
 			// 비회원일 경우
 			if (memberId == null) {
 				OrderTemporaryNonMemberForm orderForm = redisOrderNonMemberRepository.findById(
-						UUID.fromString(orders.getUuid()))
+						orders.getCode())
 					.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 
 				PaymentRequest payment = PaymentRequest.builder()
 					.memberId(null)
-					.orderId(UUID.fromString(orders.getUuid()))
+					.orderCode(orders.getCode())
 					.build();
 
 				OrderSagaMessage orderSagaMessage = OrderSagaMessage.builder().paymentRequest(payment)
@@ -233,7 +233,7 @@ public class OrdersRabbitServiceImpl {
 	private void processNonMemberOrder(OrderSagaMessage orderSagaMessage) {
 		// 주문폼 조회
 		OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(
-			orderSagaMessage.getPaymentRequest().orderId());
+			orderSagaMessage.getPaymentRequest().orderCode());
 		// 쿠폰, 포인트 사용 여부 설정
 		setOrderSagaMessageFlags(orderSagaMessage, orderForm.usePointAmount(), orderForm.couponId());
 		// 주문 도서 검증
@@ -322,7 +322,7 @@ public class OrdersRabbitServiceImpl {
 
 
 		float pointPercent =
-			(pointPolicy.getBasicPoint() / 100) + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
+			(pointPolicy.getBasicPointRate() / 100) + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
 
 		if (pointPercent >= 1) {
 			throw new BadRequestException(ErrorCode.INVALID_POINT_DISCOUNT);
@@ -342,7 +342,7 @@ public class OrdersRabbitServiceImpl {
 	private List<BookIdAndQuantityDTO> getOrderBooks(OrderSagaMessage orderSagaMessage) {
 		if (orderSagaMessage.getPaymentRequest().memberId() == null) {
 			OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(
-				orderSagaMessage.getPaymentRequest().orderId());
+				orderSagaMessage.getPaymentRequest().orderCode());
 			return orderForm.books();
 		} else {
 			OrderTemporaryForm orderForm = getOrderTemporaryForm(orderSagaMessage.getPaymentRequest().memberId());
@@ -377,8 +377,8 @@ public class OrdersRabbitServiceImpl {
 		}
 	}
 
-	private OrderTemporaryNonMemberForm getOrderTemporaryNonMemberForm(UUID orderId) {
-		return redisOrderNonMemberRepository.findById(orderId)
+	private OrderTemporaryNonMemberForm getOrderTemporaryNonMemberForm(String orderCode) {
+		return redisOrderNonMemberRepository.findById(orderCode)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 	}
 
@@ -400,7 +400,7 @@ public class OrdersRabbitServiceImpl {
 			.receiverNumber(orderForm.orderReceiverInfo().phone())
 			.senderName(orderForm.orderSenderInfo().name())
 			.senderNumber(orderForm.orderSenderInfo().phone())
-			.uuid(orderForm.orderUUID().toString())
+			.code(orderForm.orderCode())
 			.bookPurchaseAmount(orderSagaMessage.getBookAmount())
 			.couponDiscountAmount(orderSagaMessage.getCouponAmount())
 			.pointSaveAmount(orderSagaMessage.getEarnPointAmount())
@@ -418,7 +418,7 @@ public class OrdersRabbitServiceImpl {
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
 			.receiverName(orderForm.orderReceiverInfo().name())
 			.receiverNumber(orderForm.orderReceiverInfo().phone())
-			.uuid(orderForm.orderUUID().toString())
+			.code(orderForm.orderCode())
 			.senderName(orderForm.orderSenderInfo().name())
 			.senderNumber(orderForm.orderSenderInfo().phone())
 			.bookPurchaseAmount(orderSagaMessage.getBookAmount())

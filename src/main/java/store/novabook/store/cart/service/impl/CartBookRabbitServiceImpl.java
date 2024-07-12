@@ -33,7 +33,7 @@ public class CartBookRabbitServiceImpl {
 		// 비회원이면
 		if (orderSagaMessage.getPaymentRequest().memberId() == null) {
 			OrderTemporaryNonMemberForm orderForm = redisOrderNonMemberRepository.findById(
-				orderSagaMessage.getPaymentRequest().orderId()).get();
+				orderSagaMessage.getPaymentRequest().orderCode()).get();
 			redisCartRepository.deleteById(orderForm.cartUUID());
 		} else {
 			Long memberId = orderSagaMessage.getPaymentRequest().memberId();

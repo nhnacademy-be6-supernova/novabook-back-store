@@ -29,7 +29,7 @@ public class PointPolicyServiceImpl implements PointPolicyService {
 			throw new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND);
 		}
 		return pointPolicyList.map(
-			pointPolicy -> new GetPointPolicyResponse(pointPolicy.getReviewPointRate(), pointPolicy.getBasicPoint(),
+			pointPolicy -> new GetPointPolicyResponse(pointPolicy.getReviewPoint(), pointPolicy.getBasicPointRate(),
 				pointPolicy.getRegisterPoint()));
 	}
 
@@ -39,8 +39,8 @@ public class PointPolicyServiceImpl implements PointPolicyService {
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 		return GetPointPolicyResponse.builder()
-			.reviewPointRate(pointPolicy.getReviewPointRate())
-			.basicPoint(pointPolicy.getBasicPoint())
+			.reviewPointRate(pointPolicy.getReviewPoint())
+			.basicPoint(pointPolicy.getBasicPointRate())
 			.registerPoint(pointPolicy.getRegisterPoint())
 			.build();
 	}

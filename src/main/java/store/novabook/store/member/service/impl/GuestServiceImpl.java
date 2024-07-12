@@ -16,12 +16,13 @@ import store.novabook.store.orders.repository.OrdersBookRepository;
 @RequiredArgsConstructor
 @Transactional
 public class GuestServiceImpl implements GuestService {
+
 	private final OrdersBookRepository ordersBookRepository;
 
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderDetailResponse getOrderGuest(GetGuestOrderHistoryRequest request) {
-		List<OrdersBook> ordersBook = ordersBookRepository.findByOrdersUuid(request.uuid());
+		List<OrdersBook> ordersBook = ordersBookRepository.findByOrdersCode(request.code());
 		return GetOrderDetailResponse.of(ordersBook);
 	}
 }

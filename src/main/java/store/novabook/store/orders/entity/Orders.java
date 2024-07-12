@@ -44,7 +44,7 @@ public class Orders {
 	private WrappingPaper wrappingPaper;
 
 	@NotNull
-	private String uuid;
+	private String code;
 
 	@NotNull
 	@ManyToOne
@@ -115,7 +115,7 @@ public class Orders {
 		this.deliveryDate = request.deliveryDate();
 		this.bookPurchaseAmount = request.bookPurchaseAmount();
 		this.deliveryAddress = request.deliveryAddress();
-		this.uuid = request.uuid();
+		this.code = request.code();
 		this.senderName = request.senderName();
 		this.senderNumber = request.senderNumber();
 		this.receiverName = request.receiverName();

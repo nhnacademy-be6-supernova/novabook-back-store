@@ -27,10 +27,10 @@ public class PointPolicy {
 	private Long id;
 
 	@NotNull
-	private long reviewPointRate;
+	private long reviewPoint;
 
 	@NotNull
-	private long basicPoint;
+	private long basicPointRate;
 
 	@NotNull
 	private long registerPoint;
@@ -44,15 +44,15 @@ public class PointPolicy {
 
 
 	@Builder
-	public PointPolicy(long reviewPointRate, long basicPoint, long registerPoint) {
-		this.reviewPointRate = reviewPointRate;
-		this.basicPoint = basicPoint;
+	public PointPolicy(long reviewPoint, long basicPointRate, long registerPoint) {
+		this.reviewPoint = reviewPoint;
+		this.basicPointRate = basicPointRate;
 		this.registerPoint = registerPoint;
 
 	}
 
 	public static PointPolicy of(long reviewPointRate, long basicPoint, long registerPoint) {
-		return PointPolicy.builder().reviewPointRate(reviewPointRate).basicPoint(basicPoint).registerPoint(registerPoint).build();
+		return PointPolicy.builder().reviewPoint(reviewPointRate).basicPointRate(basicPoint).registerPoint(registerPoint).build();
 	}
 
 }
