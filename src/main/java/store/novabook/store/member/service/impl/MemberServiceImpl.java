@@ -152,8 +152,6 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	@CacheEvict(value = {"GetMemberResponse", }, key = "#memberId")
-
 	public void updateMemberNumberOrName(Long memberId, @Valid UpdateMemberRequest updateMemberRequest) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
@@ -165,6 +163,8 @@ public class MemberServiceImpl implements MemberService {
 			member.updateNumber(updateMemberRequest.number());
 		}
 		memberRepository.save(member);
+		Objects.requireNonNull(cacheManager.getCache("GetMemberResponse")).evict(member.getId());
+		Objects.requireNonNull(cacheManager.getCache("GetMemberName")).evict(member.getId());
 	}
 
 	@Override
@@ -227,7 +227,6 @@ public class MemberServiceImpl implements MemberService {
 		validateAuthCode(request.uuid(), request.authCode());
 		member.updateMemberStatus(newMemberStatus);
 		deleteAuthCodeFromRedis(request.uuid());
-		Objects.requireNonNull(cacheManager.getCache("GetMemberResponse")).evict(member.getId());
 	}
 
 	@Override
@@ -328,6 +327,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
+	@Cacheable(value = "GetMemberName", key = "#memberId")
 	public GetmemberNameResponse getMemberName(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
