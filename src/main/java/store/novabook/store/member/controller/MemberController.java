@@ -81,7 +81,10 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@GetMapping("/member/name")
-	public ResponseEntity<GetmemberNameResponse> getmemberName(@CurrentMembers Long memberId) {
+	public ResponseEntity<GetmemberNameResponse> getMemberName(@CurrentMembers(required = false) Long memberId) {
+		if (memberId == null) {
+			return ResponseEntity.ok(new GetmemberNameResponse("비회원"));
+		}
 		return ResponseEntity.ok().body(memberService.getMemberName(memberId));
 	}
 
