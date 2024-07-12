@@ -41,6 +41,9 @@ public class Orders {
 	private WrappingPaper wrappingPaper;
 
 	@NotNull
+	private String uuid;
+
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "orders_status_id")
 	private OrdersStatus ordersStatus;
@@ -70,6 +73,10 @@ public class Orders {
 	@NotNull
 	private String receiverNumber;
 
+	private Long pointSaveAmount;
+
+	private Long couponDiscountAmount;
+
 	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
@@ -83,6 +90,7 @@ public class Orders {
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
 		CreateOrdersRequest request) {
+
 		this.member = member;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
@@ -94,6 +102,8 @@ public class Orders {
 		this.deliveryAddress = request.deliveryAddress();
 		this.receiverName = request.receiverName();
 		this.receiverNumber = request.receiverNumber();
+		this.pointSaveAmount = request.pointSaveAmount();
+		this.couponDiscountAmount = request.couponDiscountAmount();
 	}
 
 	public void updateStatus(

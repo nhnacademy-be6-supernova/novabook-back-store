@@ -9,15 +9,19 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.util.KeyManagerUtil;
@@ -75,6 +79,24 @@ public class RabbitMQConfig {
 		connectionFactory.setUsername(config.username());
 		connectionFactory.setPassword(config.password());
 		return connectionFactory;
+	}
+
+	// retry factory
+	@Bean
+	public SimpleRabbitListenerContainerFactory rabbitRetryListenerContainerFactory(ConnectionFactory connectionFactory,
+		RetryOperationsInterceptor retryOperationsInterceptor) {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		factory.setConnectionFactory(connectionFactory);
+		factory.setAdviceChain(retryOperationsInterceptor);
+		return factory;
+	}
+
+	@Bean
+	public RetryOperationsInterceptor retryOperationsInterceptor() {
+		return RetryInterceptorBuilder.stateless()
+			.maxAttempts(3)
+			.recoverer(new RejectAndDontRequeueRecoverer())
+			.build();
 	}
 
 

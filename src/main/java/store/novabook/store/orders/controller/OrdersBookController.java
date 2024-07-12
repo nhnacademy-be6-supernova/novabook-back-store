@@ -25,7 +25,8 @@ import store.novabook.store.orders.service.OrdersBookService;
 @RestController
 @RequestMapping("/api/v1/store/orders/book")
 @RequiredArgsConstructor
-public class OrdersBookController {
+public class OrdersBookController implements OrdersBookControllerDocs {
+
 	private final OrdersBookService ordersBookService;
 
 	@PostMapping
