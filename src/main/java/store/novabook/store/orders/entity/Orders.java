@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,6 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
+import store.novabook.store.payment.entity.Payment;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -70,12 +73,23 @@ public class Orders {
 	@NotNull
 	private String receiverName;
 
+	@OneToOne
+	private Payment payment;
+
+	@NotNull
+	private String senderName;
+
+	@NotNull
+	private String senderNumber;
+
 	@NotNull
 	private String receiverNumber;
 
 	private Long pointSaveAmount;
 
 	private Long couponDiscountAmount;
+
+
 
 	@NotNull
 	@CreatedDate
@@ -105,6 +119,25 @@ public class Orders {
 		this.pointSaveAmount = request.pointSaveAmount();
 		this.couponDiscountAmount = request.couponDiscountAmount();
 	}
+
+	public void update(Member member,
+		DeliveryFee deliveryFee,
+		WrappingPaper wrappingPaper,
+		OrdersStatus ordersStatus,
+		UpdateOrdersRequest request) {
+		this.member = member;
+		this.deliveryFee = deliveryFee;
+		this.wrappingPaper = wrappingPaper;
+		this.ordersStatus = ordersStatus;
+		this.ordersDate = LocalDateTime.now();
+		this.totalAmount = request.totalAmount();
+		this.deliveryDate = request.deliveryDate();
+		this.bookPurchaseAmount = request.bookPurchaseAmount();
+		this.deliveryAddress = request.deliveryAddress();
+		this.receiverName = request.receiverName();
+		this.receiverNumber = request.receiverNumber();
+	}
+
 
 	public void updateStatus(
 		OrdersStatus ordersStatus) {

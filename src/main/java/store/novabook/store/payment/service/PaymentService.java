@@ -12,6 +12,6 @@ public interface PaymentService {
 
 	CreatePaymentResponse createPayment(CreatePaymentRequest request);
 
-	@Transactional(readOnly = true)
-	GetPaymentResponse getPaymentByOrderId(Long ordersId);
+	// @Transactional(readOnly = true)
+	// GetPaymentResponse getPaymentByOrderId(Long ordersId);
 }

@@ -17,7 +17,6 @@ public record GetPaymentResponse(
 	public static GetPaymentResponse from(Payment payment) {
 		return GetPaymentResponse.builder()
 			.id(payment.getId())
-			.ordersId(payment.getOrdersId())
 			.provider(payment.getProvider())
 			.paymentKey(payment.getPaymentKey())
 			.createdAt(payment.getCreatedAt())
