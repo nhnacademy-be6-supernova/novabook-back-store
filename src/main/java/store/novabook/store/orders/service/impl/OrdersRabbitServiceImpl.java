@@ -1,13 +1,11 @@
 package store.novabook.store.orders.service.impl;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.json.simple.parser.ParseException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -280,9 +278,12 @@ public class OrdersRabbitServiceImpl {
 
 			// 포인트 적립금 계산
 			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
-			long pointPercent = calculatePointPercent(memberId);
-			long earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
-			orderSagaMessage.setEarnPointAmount(earnPointAmount);
+
+			if(memberId != null) {
+				float pointPercent = calculatePointPercent(memberId);
+				float earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
+				orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
+			}
 
 			// 배달피, 포장비를 추가한 금액 산정
 			DeliveryFee deliveryFee = deliveryFeeRepository.findById(deliveryId)
@@ -312,16 +313,18 @@ public class OrdersRabbitServiceImpl {
 	/**
 	 * 포인트 적립률 계산
 	 */
-	private long calculatePointPercent(Long memberId) {
+	private float calculatePointPercent(Long memberId) {
 		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(
 				memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_HISTORY_NOT_FOUND));
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_POLICY_NOT_FOUND));
-		long pointPercent =
-			pointPolicy.getBasicPoint() + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
 
-		if (pointPercent >= 100) {
+
+		float pointPercent =
+			(pointPolicy.getBasicPoint() / 100) + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
+
+		if (pointPercent >= 1) {
 			throw new BadRequestException(ErrorCode.INVALID_POINT_DISCOUNT);
 		}
 
@@ -395,6 +398,9 @@ public class OrdersRabbitServiceImpl {
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
 			.receiverName(orderForm.orderReceiverInfo().name())
 			.receiverNumber(orderForm.orderReceiverInfo().phone())
+			.senderName(orderForm.orderSenderInfo().name())
+			.senderNumber(orderForm.orderSenderInfo().phone())
+			.uuid(orderForm.orderUUID().toString())
 			.bookPurchaseAmount(orderSagaMessage.getBookAmount())
 			.couponDiscountAmount(orderSagaMessage.getCouponAmount())
 			.pointSaveAmount(orderSagaMessage.getEarnPointAmount())
@@ -412,6 +418,9 @@ public class OrdersRabbitServiceImpl {
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
 			.receiverName(orderForm.orderReceiverInfo().name())
 			.receiverNumber(orderForm.orderReceiverInfo().phone())
+			.uuid(orderForm.orderUUID().toString())
+			.senderName(orderForm.orderSenderInfo().name())
+			.senderNumber(orderForm.orderSenderInfo().phone())
 			.bookPurchaseAmount(orderSagaMessage.getBookAmount())
 			.couponDiscountAmount(orderSagaMessage.getCouponAmount())
 			.pointSaveAmount(orderSagaMessage.getEarnPointAmount())

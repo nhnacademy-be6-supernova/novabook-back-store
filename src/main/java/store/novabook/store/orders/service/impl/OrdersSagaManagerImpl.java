@@ -27,7 +27,7 @@ public class OrdersSagaManagerImpl {
 
 		// 장바구니 제거
 		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "cart.delete.routing.key",
-			OrderSagaMessage.builder().status("PROCEED_DELELTE_CART").paymentRequest(paymentRequest).build());
+			OrderSagaMessage.builder().status("PROCEED_DELETE_CART").paymentRequest(paymentRequest).build());
 	}
 
 	// 두번째 로직 (쿠폰 적용)
