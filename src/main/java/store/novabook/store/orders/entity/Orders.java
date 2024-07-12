@@ -68,6 +68,10 @@ public class Orders {
 	@NotNull
 	private long bookPurchaseAmount;
 
+	private long usePointAmount;
+
+	private Long useCouponId;
+
 	@NotNull
 	private String deliveryAddress;
 
@@ -122,6 +126,8 @@ public class Orders {
 		this.receiverNumber = request.receiverNumber();
 		this.pointSaveAmount = request.pointSaveAmount();
 		this.couponDiscountAmount = request.couponDiscountAmount();
+		this.useCouponId = request.useCouponId();
+		this.usePointAmount = request.usePointAmount();
 	}
 
 	public void updateStatus(

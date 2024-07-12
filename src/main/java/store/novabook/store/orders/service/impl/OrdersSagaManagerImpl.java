@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.orders.dto.OrderSagaMessage;
 import store.novabook.store.orders.dto.request.PaymentRequest;
+import store.novabook.store.orders.entity.Orders;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -160,7 +161,22 @@ public class OrdersSagaManagerImpl {
 	}
 
 	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
-	public void requestPayCancel(@Payload OrderSagaMessage orderSagaMessage) {
+	public void requestPayCancel(@Payload PaymentRequest paymentRequest) {
+
+		OrderSagaMessage orderSagaMessage = OrderSagaMessage.builder()
+			.status("PROCEED_PAY_CANCEL")
+			// 사용 포인트
+			// 쿠폰 사용량
+
+
+			.paymentRequest(paymentRequest)
+			.build();
+
+
+		// coupon Id 필요
+		// point 적립금액
+		// point 사용금액 반환
+
 		if(!orderSagaMessage.isNoUseCoupon())
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key", orderSagaMessage);
 		if(!orderSagaMessage.isNoUsePoint())

@@ -107,6 +107,7 @@ public class PointHistoryRabbitServiceImpl {
 		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api2-producer-routing-key", orderSagaMessage);
 	}
 
+
 	@RabbitListener(queues = "nova.point.compensate.decrement.queue")
 	public void compensateDecrementPoint(@Payload OrderSagaMessage orderSagaMessage) {
 		try {

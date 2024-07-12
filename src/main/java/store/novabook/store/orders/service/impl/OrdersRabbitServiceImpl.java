@@ -404,6 +404,8 @@ public class OrdersRabbitServiceImpl {
 			.bookPurchaseAmount(orderSagaMessage.getBookAmount())
 			.couponDiscountAmount(orderSagaMessage.getCouponAmount())
 			.pointSaveAmount(orderSagaMessage.getEarnPointAmount())
+			.useCouponId(orderForm.couponId())
+			.usePointAmount(orderForm.usePointAmount())
 			.build();
 	}
 
@@ -424,6 +426,8 @@ public class OrdersRabbitServiceImpl {
 			.bookPurchaseAmount(orderSagaMessage.getBookAmount())
 			.couponDiscountAmount(orderSagaMessage.getCouponAmount())
 			.pointSaveAmount(orderSagaMessage.getEarnPointAmount())
+			.useCouponId(orderForm.couponId())
+			.usePointAmount(orderForm.usePointAmount())
 			.build();
 	}
 
