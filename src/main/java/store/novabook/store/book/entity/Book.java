@@ -21,6 +21,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import store.novabook.store.book.dto.request.CreateBookRequest;
 import store.novabook.store.book.dto.request.UpdateBookRequest;
+import store.novabook.store.common.exception.BadRequestException;
+import store.novabook.store.common.exception.ErrorCode;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -144,14 +146,14 @@ public class Book {
 	 */
 	public void decreaseInventory(int amount) {
 		if (amount > inventory - EXTRA_STOCK) {
-			throw new IllegalArgumentException("재고가 부족합니다");
+			throw new BadRequestException(ErrorCode.BOOK_STOCK_INSUFFICIENT);
 		}
 		inventory -= amount;
 	}
 
 	public void increaseInventory(int amount) {
 		if (amount <= 0) {
-			throw new IllegalArgumentException("부적절한 amount 입니다.");
+			throw new BadRequestException(ErrorCode.BOOK_STOCK_INSUFFICIENT);
 		}
 		inventory += amount;
 	}

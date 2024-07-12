@@ -1,5 +1,8 @@
 package store.novabook.store.book.entity;
 
+import store.novabook.store.common.exception.BadRequestException;
+import store.novabook.store.common.exception.ErrorCode;
+
 public enum BookStatusEnum {
 	FOR_SALE(1, "판매중"),
 	OUT_OF_STOCK(2, "일시품절"),
@@ -28,7 +31,7 @@ public enum BookStatusEnum {
 				return status;
 			}
 		}
-		throw new IllegalArgumentException("Unknown value: " + value);
+		throw new BadRequestException(ErrorCode.NOT_EXIST_BOOK_STATUS);
 	}
 
 	public static BookStatusEnum fromKoreanValue(String koreanValue) {
@@ -37,6 +40,6 @@ public enum BookStatusEnum {
 				return status;
 			}
 		}
-		throw new IllegalArgumentException("Unknown Korean value: " + koreanValue);
+		throw new BadRequestException(ErrorCode.NOT_EXIST_BOOK_STATUS);
 	}
 }

@@ -9,11 +9,10 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
-import store.novabook.store.member.entity.MemberGradeHistory;
-import store.novabook.store.member.repository.MemberGradeHistoryRepository;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.dto.OrderSagaMessage;
 import store.novabook.store.orders.dto.request.OrderTemporaryForm;
@@ -34,7 +33,8 @@ public class PointHistoryRabbitServiceImpl {
 	private final PointPolicyRepository pointPolicyRepository;
 	private final RedisOrderRepository redisOrderRepository;
 	private final RabbitTemplate rabbitTemplate;
-	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
+
+	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 
 	/**
 	 * 적립 포인트를 저장하는 메서드
@@ -47,30 +47,16 @@ public class PointHistoryRabbitServiceImpl {
 			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
 
 			Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
-
-			MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(
-					memberId)
-				.orElseThrow(
-					() -> new IllegalArgumentException("MemberGradeHistory not found for member id: " + memberId));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 			PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
-				.orElseThrow(() -> new IllegalArgumentException("PointPolicy not found"));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
-			long pointPercent =
-				pointPolicy.getBasicPoint() + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
-
-			if (pointPercent >= 100) {
-				throw new IllegalArgumentException("포인트 적립률이 100%가 넘습니다");
-			}
-
-			long earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
-
-			pointHistoryRepository.save(PointHistory.of(pointPolicy, member, "주문으로 인한 포인트 적립", earnPointAmount));
+			pointHistoryRepository.save(PointHistory.of(pointPolicy, member, "주문으로 인한 포인트 적립", orderSagaMessage.getEarnPointAmount()));
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_POINT_DECREMENT");
-			rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
 		}
 	}
 
@@ -81,12 +67,12 @@ public class PointHistoryRabbitServiceImpl {
 
 			// 주문 정보 조회
 			OrderTemporaryForm orderTemporaryForm = redisOrderRepository.findById(memberId)
-				.orElseThrow(() -> new IllegalArgumentException("주문 정보가 없습니다."));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 
 			Long availablePoint = pointHistoryRepository.findTotalPointAmountByMemberId(memberId);
 
 			if (availablePoint < orderTemporaryForm.usePointAmount()) {
-				throw new IllegalArgumentException("포인트 잔액이 부족합니다");
+				throw new BadRequestException(ErrorCode.LACK_POINT_AMOUNT);
 			}
 
 			// 회원 정보 조회
@@ -95,7 +81,7 @@ public class PointHistoryRabbitServiceImpl {
 
 			// 최근 포인트 정책 조회
 			PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
-				.orElseThrow(() -> new IllegalArgumentException("포인트 정책을 조회할 수 없습니다"));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
 			// 포인트 기록 생성 및 저장
 			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "주문 포인트 사용",
@@ -108,7 +94,7 @@ public class PointHistoryRabbitServiceImpl {
 
 			// 성공 메시지 전송
 			orderSagaMessage.setStatus("SUCCESS_POINT_DECREMENT");
-			rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api3-producer-routing-key",
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api3-producer-routing-key",
 				orderSagaMessage);
 		} catch (Exception e) {
 			handleFailure(orderSagaMessage);
@@ -118,7 +104,7 @@ public class PointHistoryRabbitServiceImpl {
 	private void handleFailure(OrderSagaMessage orderSagaMessage) {
 		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		orderSagaMessage.setStatus("FAIL_POINT_DECREMENT");
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api2-producer-routing-key", orderSagaMessage);
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api2-producer-routing-key", orderSagaMessage);
 	}
 
 	@RabbitListener(queues = "nova.point.compensate.decrement.queue")
@@ -128,7 +114,7 @@ public class PointHistoryRabbitServiceImpl {
 
 			// 주문 정보 조회
 			OrderTemporaryForm orderTemporaryForm = redisOrderRepository.findById(memberId)
-				.orElseThrow(() -> new IllegalArgumentException("주문 정보가 없습니다."));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 
 			// 회원 정보 조회
 			Member member = memberRepository.findById(memberId)
@@ -136,7 +122,7 @@ public class PointHistoryRabbitServiceImpl {
 
 			// 최근 포인트 정책 조회
 			PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
-				.orElseThrow(() -> new IllegalArgumentException("포인트 정책을 조회할 수 없습니다"));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
 			// 포인트 기록 생성 및 저장 (포인트 복구)
 			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "결제 취소로 인한 주문 포인트 환불",
@@ -154,7 +140,7 @@ public class PointHistoryRabbitServiceImpl {
 	private void handleFailureCompensate(OrderSagaMessage orderSagaMessage) {
 		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		orderSagaMessage.setStatus("FAIL_DECREMENT_POINT_COMPENSATE");
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key",
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
 			orderSagaMessage);
 	}
 }

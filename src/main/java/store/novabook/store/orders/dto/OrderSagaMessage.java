@@ -15,6 +15,8 @@ import store.novabook.store.orders.dto.request.PaymentRequest;
 public class OrderSagaMessage {
 	long bookAmount;   //순수 금액
 	long calculateTotalAmount;  //총 결제금액
+	long couponAmount; //쿠폰 사용 금액
+	long earnPointAmount; //적립금액
 	boolean noEarnPoint;
 	boolean noUsePoint;
 	boolean noUseCoupon;

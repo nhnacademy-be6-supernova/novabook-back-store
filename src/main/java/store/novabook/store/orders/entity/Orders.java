@@ -103,7 +103,8 @@ public class Orders {
 		this.deliveryAddress = request.deliveryAddress();
 		this.receiverName = request.receiverName();
 		this.receiverNumber = request.receiverNumber();
-
+		this.pointSaveAmount = request.pointSaveAmount();
+		this.couponDiscountAmount = request.couponDiscountAmount();
 	}
 
 

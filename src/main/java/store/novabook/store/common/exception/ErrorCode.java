@@ -29,11 +29,21 @@ public enum ErrorCode {
 	DUPLICATED_LOGIN_ID("중복된 아이디입니다."),
 	NOT_DELETABLE_CATEGORY("해당 카테고리 등록된 도서가 있어 삭제할 수 없습니다."),
 	NOT_UPDATE_CART_QUANTITY("요청된 수량이 재고를 초과하거나 도서 상태가 유효하지 않습니다."),
+	INVALID_POINT_DISCOUNT("포인트 적립률이 100%가 넘습니다"),
+	LACK_POINT_AMOUNT("포인트 잔액이 부족합니다"),
+	PAYMENT_AMOUNT_MISMATCH("최종 결제 금액이 일치하지 않습니다."),
+	BOOK_STOCK_INSUFFICIENT("도서 재고가 부족합니다."),
+	INVALID_BOOK_AMOUNT("부적절한 도서 수량입니다"),
+	NOT_EXIST_BOOK_STATUS("존재하지 않은 도서상태 입니다"),
+	DISCOUNTED_PRICE_BELOW_ZERO("할인이 적용된 가격이 0원보다 낮습니다."),
+
 
 
 	// 401 로그인 안됨
 	UNAUTHORIZED("인증되지 않은 사용자입니다."),
 	UNAUTHORIZED_CODE("유효하지 않은 코드입니다."),
+
+
 
 	// 403
 	NOT_ENOUGH_PERMISSION("해당 권한이 없습니다."),
@@ -52,6 +62,7 @@ public enum ErrorCode {
 	REVIEW_NOT_FOUND("해당 리뷰가 존재하지 않습니다."),
 	BOOK_NOT_FOUND("해당 도서가 존재하지 않습니다"),
 	BOOK_STATUS_NOT_FOUND("해당 도서상태가 존재하지 않습니다"),
+	BOOK_NOT_SAIL("해당 도서는 판매 중이 아닙니다"),
 	CART_NOT_FOUND("해당 장바구니가 존재하지 않습니다"),
 	CART_BOOK_NOT_FOUND("해당 장바구니에 도서가 존재하지 않습니다"),
 	CATEGORY_NOT_FOUND("해당 카테고리가 존재하지 않습니다"),
@@ -63,6 +74,7 @@ public enum ErrorCode {
 	ORDERS_BOOK_NOT_FOUND("주문건에 해당 도서가 존재하지 않습니다"),
 	ORDERS_STATUS_NOT_FOUND("주문상태가 존재하지 않습니다"),
 	TAG_NOT_FOUND("해당 태그가 존재하지 않습니다"),
+
 
 	// 409
 	DUPLICATED_VALUE("중복된 값입니다."),

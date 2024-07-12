@@ -1,5 +1,7 @@
 package store.novabook.store.orders.service.impl;
 
+import java.util.UUID;
+
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -189,10 +191,21 @@ public class OrdersSagaManagerImpl {
 	 * 4.
 	 *
 	 */
-	public void orderCancel() {
+	public void orderCancel(UUID uuid) {
 		// DB 상태 업데이트 ->
 		// OrderSagaMessage.builder()
 		// 이어서 구현하겠습니다.
+
+		PaymentRequest.builder()
+			.type(PaymentType.TOSS)
+			.orderId(uuid)
+			.memberId(1L)
+			.build();
+
+
+
+
+
 
 
 

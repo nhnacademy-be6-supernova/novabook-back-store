@@ -23,6 +23,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import store.novabook.store.common.exception.BadRequestException;
+import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.orders.dto.OrderSagaMessage;
 
 @RequiredArgsConstructor
@@ -31,7 +33,13 @@ import store.novabook.store.orders.dto.OrderSagaMessage;
 public class TossOrderService {
 
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
+	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
 	private final RabbitTemplate rabbitTemplate;
+	private static final String AMOUNT = "amount";
+	private static final String PAYMENT_KEY = "amount";
+	private static final String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
+
+
 
 	@Transactional
 	@RabbitListener(queues = "nova.orders.approve.payment.queue")
@@ -43,28 +51,24 @@ public class TossOrderService {
 			HashMap<String, Object> paymentParam = (HashMap<String, Object>)orderSagaMessage.getPaymentRequest()
 				.paymentInfo();
 
-			Integer tossAmountInt = (Integer)paymentParam.get("amount");
+			Integer tossAmountInt = (Integer)paymentParam.get(AMOUNT);
 			long tossAmount = tossAmountInt.longValue();
 
 			if (tossAmount != orderSagaMessage.getCalculateTotalAmount()) {
-				throw new IllegalArgumentException("최종 결제 금액이 일치하지 않습니다.");
+				throw new BadRequestException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
 			}
 
 			obj.put("orderId", orderSagaMessage.getPaymentRequest().orderId().toString());
-			obj.put("amount", paymentParam.get("amount"));
-			obj.put("paymentKey", paymentParam.get("paymentKey"));
-
-			log.info("[TossPayment] 전달 받은 파라미터 값 : {}, {} , {}", orderSagaMessage.getPaymentRequest().orderId(),
-				paymentParam.get("amount"), paymentParam.get("paymentKey"));
+			obj.put(AMOUNT, paymentParam.get(AMOUNT));
+			obj.put(PAYMENT_KEY, paymentParam.get(PAYMENT_KEY));
 
 			// 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
 			// 비밀번호가 없다는 것을 알리기 위해 시크릿 키 뒤에 콜론을 추가합니다.
-			String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
 			Base64.Encoder encoder = Base64.getEncoder();
 			byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
 			String authorizations = "Basic " + new String(encodedBytes);
 
-			URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");
+			URL url = new URL(TOSS_CONFIRM_URL);
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestProperty("Authorization", authorizations);
 			connection.setRequestProperty("Content-Type", "application/json");
@@ -105,7 +109,7 @@ public class TossOrderService {
 	public void cancel(@Payload OrderSagaMessage orderSagaMessage) {
 		HashMap<String, String> paymentParam = (HashMap<String, String>)orderSagaMessage.getPaymentRequest()
 			.paymentInfo();
-		String paymentKey = paymentParam.get("paymentKey");
+		String paymentKey = paymentParam.get(PAYMENT_KEY);
 
 		try {
 			JSONObject response = sendTossCancelRequest(paymentKey, "서버오류 결제 보상 트랜잭션");
@@ -127,7 +131,6 @@ public class TossOrderService {
 		JSONObject obj = new JSONObject();
 		obj.put("cancelReason", cancelReason);
 
-		String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
 		Base64.Encoder encoder = Base64.getEncoder();
 		byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
 		String authorizations = "Basic " + new String(encodedBytes);

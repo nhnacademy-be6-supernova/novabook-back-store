@@ -28,9 +28,12 @@ public class DataSourceConfig {
 
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setDriverClassName(environment.getProperty("spring.datasource.store.driver-class-name"));
-		dataSource.setUrl(config.url());
-		dataSource.setUsername(config.username());
-		dataSource.setPassword(config.password());
+		// dataSource.setUrl(config.url());
+		dataSource.setUrl("jdbc:mysql://localhost:3306");
+		dataSource.setUsername("root");
+		// dataSource.setUsername(config.username());
+		dataSource.setPassword("9eexju!@12");
+		// dataSource.setPassword(config.password());
 		dataSource.setInitialSize(Integer.parseInt(
 			Objects.requireNonNull(environment.getProperty("spring.datasource.dbcp2.initial-size"))));
 		dataSource.setMaxIdle(Integer.parseInt(
