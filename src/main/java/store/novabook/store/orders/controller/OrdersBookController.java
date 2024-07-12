@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,17 +16,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.common.security.aop.CurrentMembers;
-import store.novabook.store.orders.controller.docs.OrdersBookControllerDocs;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersBookRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrderDetailResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
 import store.novabook.store.orders.service.OrdersBookService;
 
 @RestController
 @RequestMapping("/api/v1/store/orders/book")
 @RequiredArgsConstructor
-public class OrdersBookController implements OrdersBookControllerDocs {
+public class OrdersBookController {
 
 	private final OrdersBookService ordersBookService;
 
@@ -37,33 +35,26 @@ public class OrdersBookController implements OrdersBookControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping
-	public ResponseEntity<Page<GetOrdersBookResponse>> getOrdersBookAll() {
-		Page<GetOrdersBookResponse> responses = ordersBookService.getOrdersBookAll();
+	@GetMapping("/member/orders")
+	public ResponseEntity<Page<GetOrdersBookResponse>> getOrdersBookAll(@CurrentMembers Long memberId,
+		Pageable pageable) {
+		Page<GetOrdersBookResponse> responses = ordersBookService.getOrdersBookByMemberId(memberId, pageable);
 		return ResponseEntity.ok(responses);
+	}
+
+	@GetMapping("/detail/{ordersId}")
+	public ResponseEntity<GetOrderDetailResponse> getOrderDetails(@PathVariable Long ordersId) {
+		GetOrderDetailResponse response = ordersBookService.getOrderDetail(ordersId);
+		return ResponseEntity.ok().body(response);
 	}
 
 	//마이페이지에서 사용
 	@GetMapping("/members")
 	public ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(
 		@CurrentMembers Long memberId, Pageable pageable) {
-		Page<GetOrdersBookReviewIdResponse> responses = ordersBookService.getOrdersBookReviewByMemberId(
-			memberId,
+		Page<GetOrdersBookReviewIdResponse> responses = ordersBookService.getOrdersBookReviewByMemberId(memberId,
 			pageable);
 		return ResponseEntity.ok(responses);
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<GetOrdersBookResponse> getOrdersBook(@PathVariable Long id) {
-		GetOrdersBookResponse response = ordersBookService.getOrdersBook(id);
-		return ResponseEntity.ok(response);
-	}
-
-	@PutMapping("/{id}")
-	public ResponseEntity<Void> updateOrdersBook(@PathVariable Long id,
-		@Valid @RequestBody UpdateOrdersBookRequest request) {
-		ordersBookService.update(id, request);
-		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{id}")

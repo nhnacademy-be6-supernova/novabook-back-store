@@ -24,7 +24,6 @@
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
-
     <springProfile name="dev">
         <!-- HTTP Appender 추가 -->
         <include resource="logstash/http-info-appender.xml"/>

@@ -17,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,10 +38,6 @@ public class OrdersStatus {
 
 	@Builder
 	public OrdersStatus(CreateOrdersStatusRequest request) {
-		this.name = request.name();
-	}
-
-	public void update(UpdateOrdersStatusRequest request) {
 		this.name = request.name();
 	}
 }
