@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersStatusResponse;
 import store.novabook.store.orders.entity.OrdersStatus;
@@ -49,13 +48,6 @@ public class OrdersStatusServiceImpl implements OrdersStatusService {
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
 		return GetOrdersStatusResponse.form(ordersStatus);
-	}
-
-	@Override
-	public void updateOrdersStatus(Long id, UpdateOrdersStatusRequest request) {
-		OrdersStatus ordersStatus = ordersStatusRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
-		ordersStatus.update(request);
 	}
 
 }

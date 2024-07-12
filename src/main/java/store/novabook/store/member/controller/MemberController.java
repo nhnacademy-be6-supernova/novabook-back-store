@@ -35,6 +35,7 @@ import store.novabook.store.member.dto.response.GetDormantMembersResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
+import store.novabook.store.member.dto.response.GetmemberNameResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
 import store.novabook.store.member.service.AuthMembersClient;
 import store.novabook.store.member.service.MemberService;
@@ -79,6 +80,11 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
+	@GetMapping("/member/name")
+	public ResponseEntity<GetmemberNameResponse> getmemberName(@CurrentMembers Long memberId) {
+		return ResponseEntity.ok().body(memberService.getMemberName(memberId));
+	}
+
 	@PostMapping("/login")
 	public ResponseEntity<LoginMemberResponse> login(@RequestBody LoginMemberRequest loginMemberRequest) {
 		return ResponseEntity.ok().body(memberService.matches(loginMemberRequest));
@@ -88,6 +94,7 @@ public class MemberController implements MemberControllerDocs {
 	public ResponseEntity<Void> updateMember(@CurrentMembers Long memberId,
 		@RequestBody UpdateMemberRequest updateMemberRequest) {
 		memberService.updateMemberNumberOrName(memberId, updateMemberRequest);
+
 		return ResponseEntity.ok().build();
 	}
 

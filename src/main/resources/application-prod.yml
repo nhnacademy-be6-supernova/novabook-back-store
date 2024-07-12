@@ -5,6 +5,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: org.apache.commons.dbcp2.BasicDataSource  # 사용할 데이터 소스 타입 (DBCP2)
+
     dbcp2:
       initial-size: 20  # 처음 풀(pool)에 할당할 커넥션 개수
       max-total: 50  # 풀에 허용할 최대 커넥션 개수
@@ -23,8 +24,9 @@ spring:
           max-interval: 10000    # 최대 재시도 인터벌 (10초)
           max-attempts: 3        # 최대 재시도 횟수
           multiplier: 2.0 # 이전 interval * multiplier = 다음 interval
-#절대 변경 금지
 
+
+#절대 변경 금지
   jpa:
     hibernate:
       ddl-auto: validate
@@ -32,7 +34,7 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: debug
+    org.hibernate.SQL: info
     org.hibernate.type: trace
 
   #로그 크러쉬 정보
@@ -48,6 +50,10 @@ logging:
     logLevel: INFO
     secretKey: JsGDL5oTWPImKY8nag9igsUAdnUOvLMI
 
+jwt:
+  secret: vzxvgsjdgdfjgfdskgjdsfkgjdsfkgkdsfgjdfkgjdfsgdklgjadgslkjgsaklj
+
+
 nhn:
   cloud:
     #키 매니저
@@ -61,12 +67,6 @@ nhn:
       userAccessKey: J9VxQFQEsmerR1n7FeJ6
       secretAccessKey: zZEVopUHt6dxgRMt
 
-
-
-jwt:
-  secret: vzxvgsjdgdfjgfdskgjdsfkgjdsfkgkdsfgjdfkgjdfsgdklgjadgslkjgsaklj
-
-
 #유레카 활성화
 eureka:
   client:
@@ -74,3 +74,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+

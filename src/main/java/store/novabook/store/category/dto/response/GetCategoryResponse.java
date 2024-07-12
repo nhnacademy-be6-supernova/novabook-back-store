@@ -2,6 +2,8 @@ package store.novabook.store.category.dto.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import store.novabook.store.category.dto.SubCategoryDTO;
 import store.novabook.store.category.entity.Category;
 

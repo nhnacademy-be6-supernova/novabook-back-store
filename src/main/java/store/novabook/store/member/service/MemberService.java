@@ -21,6 +21,7 @@ import store.novabook.store.member.dto.response.GetDormantMembersResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
+import store.novabook.store.member.dto.response.GetmemberNameResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
 
 public interface MemberService {
@@ -61,7 +62,8 @@ public interface MemberService {
 
 	boolean isDormantMember(Long memberId);
 
+	GetmemberNameResponse getMemberName(Long memberId);
+
 	// 인증 코드 생성하고 저장하기
 	String createAndSaveAuthCode(String authCode);
-
 }

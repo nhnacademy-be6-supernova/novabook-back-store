@@ -17,7 +17,6 @@ import org.springframework.data.domain.Page;
 
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersStatusRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrdersStatusResponse;
 import store.novabook.store.orders.entity.OrdersStatus;
@@ -91,16 +90,4 @@ class OrdersStatusServiceImplTest {
 		verify(ordersStatusRepository, times(1)).findById(id);
 	}
 
-	@Test
-	void testUpdateOrdersStatusNotFound() {
-		Long id = 1L;
-		UpdateOrdersStatusRequest updateRequest = UpdateOrdersStatusRequest.builder().name("Shipped").build();
-		when(ordersStatusRepository.findById(id)).thenReturn(Optional.empty());
-
-		assertThrows(NotFoundException.class, () -> {
-			ordersStatusServiceImpl.updateOrdersStatus(id, updateRequest);
-		});
-
-		verify(ordersStatusRepository, times(1)).findById(id);
-	}
 }

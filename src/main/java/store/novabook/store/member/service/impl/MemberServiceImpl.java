@@ -2,9 +2,13 @@ package store.novabook.store.member.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +46,7 @@ import store.novabook.store.member.dto.response.GetDormantMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
+import store.novabook.store.member.dto.response.GetmemberNameResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberGradeHistory;
@@ -83,6 +88,7 @@ public class MemberServiceImpl implements MemberService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final CouponSender couponSender;
+	private final CacheManager cacheManager;
 	private final RedisTemplate<String, String> redisTemplate;
 
 	@Override
@@ -140,6 +146,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(value = "GetMemberResponse", key = "#memberId")
 	public GetMemberResponse getMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
@@ -158,6 +165,8 @@ public class MemberServiceImpl implements MemberService {
 			member.updateNumber(updateMemberRequest.number());
 		}
 		memberRepository.save(member);
+		Objects.requireNonNull(cacheManager.getCache("GetMemberResponse")).evict(member.getId());
+		Objects.requireNonNull(cacheManager.getCache("GetMemberName")).evict(member.getId());
 	}
 
 	@Override
@@ -182,6 +191,8 @@ public class MemberServiceImpl implements MemberService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		member.updateMemberStatus(newMemberStatus);
 		memberRepository.save(member);
+
+		Objects.requireNonNull(cacheManager.getCache("GetMemberResponse")).evict(memberId);
 	}
 
 	@Override
@@ -198,6 +209,7 @@ public class MemberServiceImpl implements MemberService {
 
 		member.updateMemberStatus(newMemberStatus);
 		memberRepository.save(member);
+		Objects.requireNonNull(cacheManager.getCache("GetMemberResponse")).evict(memberId);
 	}
 
 	// 휴면 회원 해지 인증
@@ -313,6 +325,14 @@ public class MemberServiceImpl implements MemberService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 		return member.getMemberStatus().getName().equals(STATUS_DORMANT);
+	}
+
+	@Override
+	@Cacheable(value = "GetMemberName", key = "#memberId")
+	public GetmemberNameResponse getMemberName(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+		return new GetmemberNameResponse(member.getName());
 	}
 
 }
