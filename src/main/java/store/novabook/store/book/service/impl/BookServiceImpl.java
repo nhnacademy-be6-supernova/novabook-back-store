@@ -111,8 +111,9 @@ public class BookServiceImpl implements BookService {
 
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-		String outputFilePath = "/Users/mun/novabook/novabook-back-store/src/main/resources/image/" + fileName;
-		// String outputFilePath = imageManagerDto.localStorage() + fileName;
+		// String outputFilePath = "/Users/mun/novabook/novabook-back-store/src/main/resources/image/" + fileName;
+		//
+		String outputFilePath = imageManagerDto.localStorage() + fileName;
 
 		try (InputStream in = new URI(imageUrl).toURL().openStream()) {
 			Path imagePath = Paths.get(outputFilePath);

@@ -18,10 +18,13 @@ logging:
 
 #공통 설정 내용
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoints:
     web:
       exposure:
-        include: health,info,pause,resume
+        include: health, info, pause, resume
 
 #swagger 설정
 springdoc:
@@ -40,14 +43,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka
-
-
-# 유레카 비활성화
-#eureka:
-#  client:
-#    register-with-eureka: false
-#    fetch-registry: false
+      defaultZone: http://localhost:8761/eureka
 
 ---
 # mysql

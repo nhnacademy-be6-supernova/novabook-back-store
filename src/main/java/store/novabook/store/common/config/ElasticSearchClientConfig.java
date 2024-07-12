@@ -4,7 +4,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.RestClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -29,16 +28,12 @@ public class ElasticSearchClientConfig {
 		ElasticSearchConfigDto config = KeyManagerUtil.getElasticSearchConfig(environment);
 
 		// Create the low-level client
-		RestClient restClient = RestClient
-			.builder(HttpHost.create(config.uris()))
-			.setDefaultHeaders(new Header[] {
-				new BasicHeader("Authorization", "ApiKey " + config.apiKey()),
-			})
+		RestClient restClient = RestClient.builder(HttpHost.create(config.uris()))
+			.setDefaultHeaders(new Header[] {new BasicHeader("Authorization", "ApiKey " + config.apiKey())})
 			.build();
 
 		// Create the transport with a Jackson mapper
-		ElasticsearchTransport transport = new RestClientTransport(
-			restClient, new JacksonJsonpMapper());
+		ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
 
 		// And create the API client
 		return new ElasticsearchClient(transport);

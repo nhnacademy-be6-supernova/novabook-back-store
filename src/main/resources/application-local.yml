@@ -4,6 +4,8 @@ spring:
     url: jdbc:h2:mem:test
     username: sa
     password:
+
+
   rabbitmq:
     listener:
       simple:
