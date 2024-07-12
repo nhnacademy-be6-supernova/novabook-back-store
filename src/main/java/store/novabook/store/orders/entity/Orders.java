@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
+import store.novabook.store.payment.entity.Payment;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,11 +44,13 @@ public class Orders {
 	private WrappingPaper wrappingPaper;
 
 	@NotNull
+	private String uuid;
+
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "orders_status_id")
 	private OrdersStatus ordersStatus;
 
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
@@ -69,8 +73,23 @@ public class Orders {
 	@NotNull
 	private String receiverName;
 
+	@OneToOne
+	private Payment payment;
+
+	@NotNull
+	private String senderName;
+
+	@NotNull
+	private String senderNumber;
+
 	@NotNull
 	private String receiverNumber;
+
+	private Long pointSaveAmount;
+
+	private Long couponDiscountAmount;
+
+
 
 	@NotNull
 	@CreatedDate
@@ -85,6 +104,7 @@ public class Orders {
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
 		CreateOrdersRequest request) {
+
 		this.member = member;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
@@ -96,6 +116,8 @@ public class Orders {
 		this.deliveryAddress = request.deliveryAddress();
 		this.receiverName = request.receiverName();
 		this.receiverNumber = request.receiverNumber();
+		this.pointSaveAmount = request.pointSaveAmount();
+		this.couponDiscountAmount = request.couponDiscountAmount();
 	}
 
 

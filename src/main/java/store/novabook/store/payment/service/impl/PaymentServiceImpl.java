@@ -34,14 +34,14 @@ public class PaymentServiceImpl implements PaymentService {
 		paymentRepository.save(payment);
 		return new CreatePaymentResponse(payment.getId());
 	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public GetPaymentResponse getPaymentByOrderId(Long ordersId) {
-		Payment payment = paymentRepository.findByOrdersId(ordersId);
-		if (payment == null) {
-			throw new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND);
-		}
-		return GetPaymentResponse.from(payment);
-	}
+	//
+	// @Override
+	// @Transactional(readOnly = true)
+	// public GetPaymentResponse getPaymentByOrderId(Long ordersId) {
+	// 	Payment payment = paymentRepository.findByOrdersId(ordersId);
+	// 	if (payment == null) {
+	// 		throw new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND);
+	// 	}
+	// 	return GetPaymentResponse.from(payment);
+	// }
 }

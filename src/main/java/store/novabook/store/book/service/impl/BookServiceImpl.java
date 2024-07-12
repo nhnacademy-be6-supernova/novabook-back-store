@@ -111,23 +111,24 @@ public class BookServiceImpl implements BookService {
 
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-		// String outputFilePath = "/Users/mun/novabook/novabook-back-store/src/main/resources/image/" + fileName;
-		//
-		String outputFilePath = imageManagerDto.localStorage() + fileName;
+		String outputFilePath = "/" + imageManagerDto.localStorage() + fileName;
+
+		Path imagePath = Paths.get(outputFilePath);
 
 		try (InputStream in = new URI(imageUrl).toURL().openStream()) {
-			Path imagePath = Paths.get(outputFilePath);
 			Files.copy(in, imagePath);
 		} catch (IOException | URISyntaxException e) {
-			Path imagePath = Paths.get(outputFilePath);
-			try {
-				Files.delete(imagePath);
-			} catch (IOException ex) {
-				log.error("Failed to delete file : {}", outputFilePath);
-			}
-			log.error("Failed to download file : {}", e.getMessage());
+			log.error("Failed to download file: {}. Error: {}", imageUrl, e.getMessage(), e);
 
-			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
+			// 파일이 존재하는 경우에만 삭제 시도
+			if (Files.exists(imagePath)) {
+				try {
+					Files.delete(imagePath);
+					log.info("Successfully deleted file: {}", outputFilePath);
+				} catch (IOException ex) {
+					log.error("Failed to delete file: {}. Error: {}", outputFilePath, ex.getMessage(), ex);
+				}
+			}
 		}
 
 		String nhnUrl = uploadImage(imageManagerDto.accessKey(), imageManagerDto.secretKey(),

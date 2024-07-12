@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
@@ -27,10 +28,12 @@ import store.novabook.store.orders.repository.OrdersStatusRepository;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
 import store.novabook.store.orders.service.OrdersService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class OrdersServiceImpl implements OrdersService {
+
 	private final OrdersRepository ordersRepository;
 	private final DeliveryFeeRepository deliveryFeeRepository;
 	private final WrappingPaperRepository wrappingPaperRepository;
@@ -53,6 +56,22 @@ public class OrdersServiceImpl implements OrdersService {
 	}
 
 	@Override
+	public void update(Long id, UpdateOrdersRequest request) {
+		Member member = memberRepository.findById(request.memberId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
+		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
+		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.memberId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
+		Orders orders = ordersRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
+		orders.update(member, deliveryFee, wrappingPaper, ordersStatus, request);
+	}
+
+
+	@Override
 	public Page<GetOrdersResponse> getOrdersResponsesAll() {
 		List<Orders> orders = ordersRepository.findAll();
 		List<GetOrdersResponse> responses = new ArrayList<>();
@@ -68,20 +87,4 @@ public class OrdersServiceImpl implements OrdersService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 		return GetOrdersResponse.form(orders);
 	}
-
-	@Override
-	public void update(Long id, UpdateOrdersRequest request) {
-		Member member = memberRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
-		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
-		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.memberId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
-		Orders orders = ordersRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
-		orders.update(member, deliveryFee, wrappingPaper, ordersStatus, request);
-	}
-
 }

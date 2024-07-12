@@ -18,7 +18,7 @@ public interface OrdersControllerDocs {
 
 	//생성
 	@Operation(summary = "주문 생성", description = "주문을 생성합니다")
-	ResponseEntity<CreateResponse> createOrders(@Valid @RequestBody CreateOrdersRequest request);
+	ResponseEntity<CreateResponse> createOrders(@Valid @RequestBody CreateOrdersRequest request) ;
 
 	//전체 조회
 	@Operation(summary = "주문 전체 조회", description = "주문을 전체 조회합니다.")
