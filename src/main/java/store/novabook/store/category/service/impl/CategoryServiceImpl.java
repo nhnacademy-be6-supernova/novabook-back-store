@@ -2,7 +2,10 @@ package store.novabook.store.category.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	private final CategoryRepository categoryRepository;
 	private final BookCategoryRepository bookCategoryRepository;
+	private final CacheManager cacheManager;
 
 	@Override
 	public CreateCategoryResponse create(CreateCategoryRequest request) {
@@ -47,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(value = "categories", key = "#id")
 	public GetCategoryResponse getCategory(Long id) {
 		Category category = categoryRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -55,6 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(value = "getCategoryListResponse", key = "'allCategories'")
 	public GetCategoryListResponse getAllCategories() {
 		List<Category> categories = categoryRepository.findAllByOrderByTopCategoryDesc();
 
@@ -70,6 +76,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	@Cacheable(value = "categoryCache", key = "#category.getId()")
 	public GetCategoryResponse convertToDTO(Category category) {
 		List<SubCategoryDTO> subCategoryDTOs = new ArrayList<>();
 		if (category.getSubCategories() != null) {
@@ -84,14 +91,21 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public DeleteResponse delete(Long id) {
 		if (bookCategoryRepository.existsByCategoryId(id)) {
+			Objects.requireNonNull(cacheManager.getCache("categoryCache")).evict(id);
+			Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict(id);
 			return new DeleteResponse(false);
 		} else {
+
+			Objects.requireNonNull(cacheManager.getCache("categoryCache")).evict(id);
+			Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict(id);
 			categoryRepository.deleteById(id);
 			return new DeleteResponse(true);
 		}
+
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public GetCategoryIdsByBookIdResponse getCategoryIdsByBookId(Long id) {
 		List<BookCategory> bookCategoryList = bookCategoryRepository.findAllByBookId(id);
 

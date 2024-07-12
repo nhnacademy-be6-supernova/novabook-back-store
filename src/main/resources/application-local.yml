@@ -48,15 +48,17 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
-    
+
 nhn:
   cloud:
+    #키 매니저
     keyManager:
       appkey: 2SxwmBzUfnqJaA2A
       redisKey: 60427297022b4bdb9650789537e4b945
+      imageManagerKey: f1a359544d624274b58cac169b00d774
       rabbitMQKey: 57e5b5f62b404b58b7a7cc79352d5d82
+      elasticSearchKey: 74649bffcfbb40a9bcae7204e6863d05
       userAccessKey: J9VxQFQEsmerR1n7FeJ6
       secretAccessKey: zZEVopUHt6dxgRMt
-      storeKey: e0a81fc89a1d4c5196df53d3fdab0f64
-      imageManagerKey: f1a359544d624274b58cac169b00d774
-      elasticSearchKey: 74649bffcfbb40a9bcae7204e6863d05
+
+
