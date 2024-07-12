@@ -47,6 +47,12 @@ public class OrdersBookController {
 		return ResponseEntity.ok().body(response);
 	}
 
+	@GetMapping("/guest/{ordersId}")
+	public ResponseEntity<GetOrderDetailResponse> getOrdersGuest(@PathVariable Long ordersId) {
+		GetOrderDetailResponse response = ordersBookService.getGuestOrderHistory(ordersId);
+		return ResponseEntity.ok(response);
+	}
+
 	//마이페이지에서 사용
 	@GetMapping("/members")
 	public ResponseEntity<Page<GetOrdersBookReviewIdResponse>> getOrdersBookReviewIdByMemberId(

@@ -58,4 +58,5 @@ public class OrdersController implements OrdersControllerDocs {
 		Page<GetOrdersAdminResponse> responses = ordersService.getOrdersAdminResponsesAll(pageable);
 		return ResponseEntity.ok().body(responses);
 	}
+
 }

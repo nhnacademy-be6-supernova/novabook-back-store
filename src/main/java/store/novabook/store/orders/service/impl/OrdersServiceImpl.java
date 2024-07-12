@@ -91,4 +91,11 @@ public class OrdersServiceImpl implements OrdersService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 		orders.updateStatus(ordersStatus);
 	}
+
+	// @Override
+	// public GetOrdersResponse getGuestOrderHistory(GetGuestOrderHistoryRequest request) {
+	// 	Orders orders = ordersRepository.findByIdAndPhoneNumber(request.ordersId(), request.phoneNumber())
+	// 		.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
+	// 	return GetOrdersResponse.form(orders);
+	// }
 }

@@ -20,4 +20,6 @@ public interface OrdersBookService {
 
 	GetOrderDetailResponse getOrderDetail(Long ordersId);
 
+	GetOrderDetailResponse getGuestOrderHistory(Long ordersId);
+
 }
