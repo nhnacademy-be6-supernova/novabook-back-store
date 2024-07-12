@@ -179,7 +179,7 @@ public class OrdersRabbitServiceImpl {
 	 *
 	 */
 
-	// @RabbitListener(queues = "nova.payment.cancel.queue")
+	@RabbitListener(queues = "nova.payment.cancel.queue")
 	public void orderCancel(Long orderId, Long memberId) {
 		try {
 			// 주문 DB 정보 상태 변경

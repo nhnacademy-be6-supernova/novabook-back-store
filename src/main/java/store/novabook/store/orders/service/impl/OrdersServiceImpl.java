@@ -32,6 +32,7 @@ import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
 import store.novabook.store.orders.service.OrdersService;
+import store.novabook.store.payment.entity.Payment;
 
 @Slf4j
 @Service
@@ -47,7 +48,7 @@ public class OrdersServiceImpl implements OrdersService {
 	private final MemberRepository memberRepository;
 
 	@Override
-	public CreateResponse create(CreateOrdersRequest request) {
+	public CreateResponse create(CreateOrdersRequest request, Payment payment) {
 		Member member = memberRepository.findById(request.memberId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		DeliveryFee deliveryFee = deliveryFeeRepository.findById(request.memberId())
@@ -56,7 +57,8 @@ public class OrdersServiceImpl implements OrdersService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
 		OrdersStatus ordersStatus = ordersStatusRepository.findById(request.memberId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_STATUS_NOT_FOUND));
-		Orders orders = new Orders(member, deliveryFee, wrappingPaper, ordersStatus, request);
+
+		Orders orders = new Orders(member, deliveryFee, wrappingPaper, ordersStatus, payment, request);
 		ordersRepository.save(orders);
 		return new CreateResponse(orders.getId());
 	}

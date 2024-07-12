@@ -2,7 +2,6 @@ package store.novabook.store.common.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.Queue;
@@ -69,7 +68,6 @@ public class OrdersRabbitMQConfig {
 	public Queue paymentCancelQueue() {
 		return QueueBuilder.durable("nova.payment.cancel.queue").build();
 	}
-
 
 
 	/*보상 트랜잭션 큐*/
@@ -185,6 +183,8 @@ public class OrdersRabbitMQConfig {
 	}
 
 
+
+
 	// dead queue
 	@Bean
 	public Binding deadOrdersSagaBinding() {
@@ -269,7 +269,4 @@ public class OrdersRabbitMQConfig {
 	public Binding api6ProducerBinding() {
 		return BindingBuilder.bind(api6ProducerQueue()).to(sagaExchange()).with("nova.api6-producer-routing-key").noargs();
 	}
-
-
-
 }
