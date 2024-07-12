@@ -21,7 +21,7 @@ public class DataSourceConfig {
 	private final Environment environment;
 
 	@Bean
-	@Profile({"dev","prod"})
+	@Profile({"dev", "prod"})
 	public DataSource storeDataSource() {
 
 		DatabaseConfigDto config = KeyManagerUtil.getDatabaseConfig(environment);
