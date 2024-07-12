@@ -27,6 +27,7 @@ import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
+import store.novabook.store.member.dto.request.GetDormantMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LinkPaycoMembersRequest;
@@ -37,6 +38,7 @@ import store.novabook.store.member.dto.response.CreateMemberResponse;
 import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetDormantMembersResponse;
+import store.novabook.store.member.dto.response.GetDormantMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
@@ -202,12 +204,11 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void updateMemberStatusToActive(@Valid DoorayAuthCodeRequest request) {
 
-		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(request.uuid());
+		GetDormantMembersUUIDRequest getDormantMembersUUIDRequest = new GetDormantMembersUUIDRequest(request.uuid());
 
-		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getDormantMembersId(getMembersUUIDRequest);
-		getMembersUUIDResponse.membersId();
+		GetDormantMembersUUIDResponse getDormantMembersUUIDResponse = authMembersClient.getDormantMembersId(getDormantMembersUUIDRequest);
 
-		Member member = memberRepository.findById(Long.valueOf(getMembersUUIDResponse.membersId()))
+		Member member = memberRepository.findById(getDormantMembersUUIDResponse.membersId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 		MemberStatus newMemberStatus = memberStatusRepository.findByName(STATUS_ACTIVE)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_STATUS_NOT_FOUND));

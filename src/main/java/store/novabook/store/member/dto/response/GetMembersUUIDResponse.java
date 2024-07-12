@@ -1,6 +1,7 @@
 package store.novabook.store.member.dto.response;
 
 public record GetMembersUUIDResponse(
-	String membersId
+	Long membersId,
+	String role
 ) {
 }
