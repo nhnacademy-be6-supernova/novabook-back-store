@@ -66,5 +66,4 @@ public interface MemberService {
 
 	// 인증 코드 생성하고 저장하기
 	String createAndSaveAuthCode(String authCode);
-
 }

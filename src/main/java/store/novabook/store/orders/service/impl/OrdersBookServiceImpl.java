@@ -1,10 +1,8 @@
 package store.novabook.store.orders.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +14,8 @@ import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersBookRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
+import store.novabook.store.orders.dto.response.GetOrderDetailResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
@@ -45,36 +43,6 @@ public class OrdersBookServiceImpl implements OrdersBookService {
 	}
 
 	@Override
-	public Page<GetOrdersBookResponse> getOrdersBookAll() {
-		List<OrdersBook> ordersBooks = ordersBookRepository.findAll();
-		List<GetOrdersBookResponse> responses = new ArrayList<>();
-		for (OrdersBook ordersBook : ordersBooks) {
-			responses.add(GetOrdersBookResponse.from(ordersBook));
-		}
-		return new PageImpl<>(responses);
-	}
-
-	@Override
-	public GetOrdersBookResponse getOrdersBook(Long id) {
-		OrdersBook ordersBook = ordersBookRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_BOOK_NOT_FOUND));
-		return GetOrdersBookResponse.from(ordersBook);
-	}
-
-	@Override
-	public void update(Long id, UpdateOrdersBookRequest request) {
-		Orders orders = ordersRepository.findById(request.ordersId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
-		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
-		OrdersBook ordersBook = ordersBookRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_BOOK_NOT_FOUND));
-
-		// TODO: UPDATE 구현해주세요.
-		// ordersBook.update(orders, book, request);
-	}
-
-	@Override
 	public void delete(Long id) {
 		ordersBookRepository.deleteById(id);
 	}
@@ -83,5 +51,18 @@ public class OrdersBookServiceImpl implements OrdersBookService {
 	@Override
 	public Page<GetOrdersBookReviewIdResponse> getOrdersBookReviewByMemberId(Long memberId, Pageable pageable) {
 		return ordersBookRepository.getOrdersBookReviewIdByMemberId(memberId, pageable);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetOrdersBookResponse> getOrdersBookByMemberId(Long memberId, Pageable pageable) {
+		return ordersBookRepository.getOrdersBookByMemberId(memberId, pageable);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetOrderDetailResponse getOrderDetail(Long ordersId) {
+		List<OrdersBook> ordersBook = ordersBookRepository.getOrderDetailByOrdersId(ordersId);
+		return GetOrderDetailResponse.of(ordersBook);
 	}
 }

@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
-import store.novabook.store.orders.dto.request.UpdateOrdersRequest;
 import store.novabook.store.payment.entity.Payment;
 
 @Getter
@@ -125,22 +124,8 @@ public class Orders {
 		this.couponDiscountAmount = request.couponDiscountAmount();
 	}
 
-
-	public void update(Member member,
-		DeliveryFee deliveryFee,
-		WrappingPaper wrappingPaper,
-		OrdersStatus ordersStatus,
-		UpdateOrdersRequest request) {
-		this.member = member;
-		this.deliveryFee = deliveryFee;
-		this.wrappingPaper = wrappingPaper;
+	public void updateStatus(
+		OrdersStatus ordersStatus) {
 		this.ordersStatus = ordersStatus;
-		this.ordersDate = LocalDateTime.now();
-		this.totalAmount = request.totalAmount();
-		this.deliveryDate = request.deliveryDate();
-		this.bookPurchaseAmount = request.bookPurchaseAmount();
-		this.deliveryAddress = request.deliveryAddress();
-		this.receiverName = request.receiverName();
-		this.receiverNumber = request.receiverNumber();
 	}
 }
