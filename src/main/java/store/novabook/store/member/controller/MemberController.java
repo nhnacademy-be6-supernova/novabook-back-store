@@ -25,6 +25,7 @@ import store.novabook.store.member.dto.request.FindMemberRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
+import store.novabook.store.member.dto.request.LinkPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
@@ -72,9 +73,12 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@GetMapping("/member")
-	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers Long memberId) {
-		GetMemberResponse memberResponse = memberService.getMember(memberId);
-		return ResponseEntity.ok(memberResponse);
+	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers(required = false) Long memberId) {
+		if(memberId!=null) {
+			GetMemberResponse memberResponse = memberService.getMember(memberId);
+			return ResponseEntity.ok(memberResponse);
+		}
+		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/member/name")
@@ -132,6 +136,12 @@ public class MemberController implements MemberControllerDocs {
 		@Valid @RequestBody GetPaycoMembersRequest getPaycoMembersRequest) {
 		GetPaycoMembersResponse getPaycoMembersResponse = memberService.getPaycoMembers(getPaycoMembersRequest);
 		return ResponseEntity.ok(getPaycoMembersResponse);
+	}
+
+	@PostMapping("/payco/link")
+	public ResponseEntity<Void> linkPayco(@RequestBody LinkPaycoMembersRequest linkPaycoMembersRequest) {
+		memberService.linkPaycoMembers(linkPaycoMembersRequest);
+		return ResponseEntity.ok().build();
 	}
 
 	@CheckRole("ROLE_USER")

@@ -18,8 +18,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import store.novabook.store.book.dto.request.CreateBookRequest;
 import store.novabook.store.book.dto.request.UpdateBookRequest;
+import store.novabook.store.common.exception.BadRequestException;
+import store.novabook.store.common.exception.ErrorCode;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +34,7 @@ public class Book {
 	private Long id;
 
 	@NotNull
+	@Setter
 	@ManyToOne
 	@JoinColumn(name = "book_status_id")
 	private BookStatus bookStatus;
@@ -57,6 +61,7 @@ public class Book {
 	@NotNull
 	private LocalDateTime publicationDate;
 
+	@Getter(AccessLevel.NONE)
 	@NotNull
 	int inventory;
 
@@ -75,6 +80,8 @@ public class Book {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
+
+	public static final int EXTRA_STOCK = 5;
 
 	@Builder
 	public Book(BookStatus bookStatus,
@@ -101,8 +108,9 @@ public class Book {
 		this.price = price;
 		this.discountPrice = discountPrice;
 		this.isPackaged = isPackaged;
-
 	}
+
+
 
 
 	public static Book of(CreateBookRequest request, BookStatus bookStatus) {
@@ -129,6 +137,29 @@ public class Book {
 		this.discountPrice = request.discountPrice();
 		this.isPackaged = request.isPackaged();
 		this.updatedAt = LocalDateTime.now();
+	}
+
+	/**
+	 * @param amount
+	 * 재고 감소 메서드
+	 * setter 대신 사용
+	 */
+	public void decreaseInventory(int amount) {
+		if (amount > inventory - EXTRA_STOCK) {
+			throw new BadRequestException(ErrorCode.BOOK_STOCK_INSUFFICIENT);
+		}
+		inventory -= amount;
+	}
+
+	public void increaseInventory(int amount) {
+		if (amount <= 0) {
+			throw new BadRequestException(ErrorCode.BOOK_STOCK_INSUFFICIENT);
+		}
+		inventory += amount;
+	}
+
+	public int getInventory() {
+		return inventory - EXTRA_STOCK;
 	}
 
 	public void updateBookStatus(BookStatus bookStatus) {

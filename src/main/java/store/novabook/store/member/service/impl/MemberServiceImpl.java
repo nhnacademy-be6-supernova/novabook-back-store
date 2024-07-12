@@ -33,6 +33,7 @@ import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
+import store.novabook.store.member.dto.request.LinkPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
 import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
@@ -123,7 +124,7 @@ public class MemberServiceImpl implements MemberService {
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
-		PointHistory pointHistory = PointHistory.of(pointPolicy, null, newMember, REGISTER_POINT,
+		PointHistory pointHistory = PointHistory.of(pointPolicy, newMember, REGISTER_POINT,
 			pointPolicy.getRegisterPoint());
 		pointHistoryRepository.save(pointHistory);
 
@@ -258,6 +259,17 @@ public class MemberServiceImpl implements MemberService {
 			return null;
 		}
 		return new GetPaycoMembersResponse(member.getId());
+	}
+
+	@Override
+	public void linkPaycoMembers(LinkPaycoMembersRequest linkPaycoMembersRequest) {
+		Long membersId = linkPaycoMembersRequest.membersId();
+		Member member = memberRepository.findById(membersId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+		member.updateOauthId(linkPaycoMembersRequest.oauthId());
+
+		memberRepository.save(member);
 	}
 
 	@Override

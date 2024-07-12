@@ -10,6 +10,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import lombok.extern.slf4j.Slf4j;
+import store.novabook.store.common.exception.ErrorCode;
+import store.novabook.store.common.exception.UnauthorizedException;
 
 @Component
 @Slf4j
@@ -40,7 +42,7 @@ public class CurrentMembersArgumentResolver implements HandlerMethodArgumentReso
 	private void handleUnauthenticatedUser(boolean required) {
 		if (required) {
 			log.error("CurrentMembersArgumentResolver anonymousUser, 로그인을 하고 @CurrentMembers를 사용해주세요.");
-			throw new IllegalStateException("로그인을 하고 @CurrentMembers를 사용해주세요.");
+			throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
 		}
 	}
 }
