@@ -16,5 +16,5 @@ public interface PaymentControllerDocs {
 	//결제 번호로 조회
 	ResponseEntity<GetPaymentResponse> getPayment(@PathVariable Long paymentId);
 	//주문 번호로 조회
-	ResponseEntity<GetPaymentResponse> getPaymentByOrderId(@PathVariable Long ordersId);
+	// ResponseEntity<GetPaymentResponse> getPaymentByOrderId(@PathVariable Long ordersId);
 }

@@ -27,8 +27,6 @@ public class Payment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Long ordersId;
-
 	@NotNull
 	private String provider;
 
@@ -43,7 +41,6 @@ public class Payment {
 
 	@Builder
 	public Payment(CreatePaymentRequest request) {
-		this.ordersId = request.ordersId();
 		this.provider = request.provider();
 		this.paymentKey = request.paymentKey();
 	}
