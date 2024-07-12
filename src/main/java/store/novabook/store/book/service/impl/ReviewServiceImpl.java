@@ -134,7 +134,7 @@ public class ReviewServiceImpl implements ReviewService {
 			});
 		}
 		// 리뷰를 달면 포인트 적립
-		PointHistory pointHistory = PointHistory.of(pointPolicy, null, member, REVIEW_POINT,
+		PointHistory pointHistory = PointHistory.of(pointPolicy, member, REVIEW_POINT,
 			pointPolicy.getReviewPointRate());
 		pointHistoryRepository.save(pointHistory);
 		return CreateReviewResponse.from(review);

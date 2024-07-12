@@ -52,17 +52,6 @@ class DeliveryFeeServiceImplTest {
 	}
 
 	@Test
-	void testLatestDeliveryFee() {
-		long expectedFee = 1000L;
-		when(deliveryFeeRepository.findTopFeeByOrderByIdDesc()).thenReturn(expectedFee);
-
-		long actualFee = deliveryFeeService.latestDeliveryFee();
-
-		assertEquals(expectedFee, actualFee);
-		verify(deliveryFeeRepository, times(1)).findTopFeeByOrderByIdDesc();
-	}
-
-	@Test
 	void testFindAllDeliveryFees() {
 		DeliveryFee fee1 = new DeliveryFee(CreateDeliveryFeeRequest.builder().fee(1000L).build());
 		DeliveryFee fee2 = new DeliveryFee(CreateDeliveryFeeRequest.builder().fee(2000L).build());

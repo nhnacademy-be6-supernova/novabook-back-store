@@ -18,7 +18,7 @@ import store.novabook.store.orders.dto.response.GetDeliveryFeeResponse;
 public interface DeliveryFeeControllerDocs {
 
 	//생성
-	@Operation(summary = "택배비 금액 생성", description = "택배비를 추가합니다.")
+	@Operation(summary = "택배비 금액 생성", description = "택배비를 추가합니다")
 	ResponseEntity<CreateResponse> createDeliveryFee(@Valid @RequestBody CreateDeliveryFeeRequest request);
 
 	//전체 조회
@@ -31,5 +31,8 @@ public interface DeliveryFeeControllerDocs {
 	//단건 조회
 	@Operation(summary = "택배비 단건 조회", description = "택배비 ID로 조회 합니다.")
 	ResponseEntity<GetDeliveryFeeResponse> getDeliveryFee(@PathVariable Long id);
+
+	@Operation(summary = "최근 택배비를 조회합니다", description = "생성일이 최근인 택배비 정책을 가져옵니다")
+	ResponseEntity<GetDeliveryFeeResponse> getRecentDeliveryFee();
 
 }
