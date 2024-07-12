@@ -65,10 +65,4 @@ public class OrdersBookServiceImpl implements OrdersBookService {
 		List<OrdersBook> ordersBook = ordersBookRepository.getOrderDetailByOrdersId(ordersId);
 		return GetOrderDetailResponse.of(ordersBook);
 	}
-
-	@Override
-	public GetOrderDetailResponse getGuestOrderHistory(Long ordersId) {
-		List<OrdersBook> ordersBook = ordersBookRepository.getOrderDetailByOrdersId(ordersId);
-		return GetOrderDetailResponse.of(ordersBook);
-	}
 }

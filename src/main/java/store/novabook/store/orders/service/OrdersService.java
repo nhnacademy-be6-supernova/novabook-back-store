@@ -20,8 +20,4 @@ public interface OrdersService {
 	GetOrdersResponse getOrdersById(Long id);
 
 	void update(Long id, UpdateOrdersAdminRequest request);
-
-	// 비회원 주문 내역 조회
-	// GetOrdersResponse getGuestOrderHistory(
-	// 	GetGuestOrderHistoryRequest getGuestOrderHistoryRequest);
 }

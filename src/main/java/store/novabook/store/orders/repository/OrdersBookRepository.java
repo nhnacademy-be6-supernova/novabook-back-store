@@ -10,4 +10,6 @@ public interface OrdersBookRepository extends JpaRepository<OrdersBook, Long>, O
 	List<OrdersBook> findAllByOrdersMemberId(Long memberId);
 
 	List<OrdersBook> getOrderDetailByOrdersId(Long ordersId);
+
+	List<OrdersBook> findByOrdersUuid(String uuid);
 }

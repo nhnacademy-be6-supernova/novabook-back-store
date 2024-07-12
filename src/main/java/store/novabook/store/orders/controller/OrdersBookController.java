@@ -25,7 +25,7 @@ import store.novabook.store.orders.service.OrdersBookService;
 @RestController
 @RequestMapping("/api/v1/store/orders/book")
 @RequiredArgsConstructor
-public class OrdersBookController implements OrdersBookControllerDocs {
+public class OrdersBookController {
 
 	private final OrdersBookService ordersBookService;
 
@@ -46,12 +46,6 @@ public class OrdersBookController implements OrdersBookControllerDocs {
 	public ResponseEntity<GetOrderDetailResponse> getOrderDetails(@PathVariable Long ordersId) {
 		GetOrderDetailResponse response = ordersBookService.getOrderDetail(ordersId);
 		return ResponseEntity.ok().body(response);
-	}
-
-	@GetMapping("/guest/{ordersId}")
-	public ResponseEntity<GetOrderDetailResponse> getOrdersGuest(@PathVariable Long ordersId) {
-		GetOrderDetailResponse response = ordersBookService.getGuestOrderHistory(ordersId);
-		return ResponseEntity.ok(response);
 	}
 
 	//마이페이지에서 사용

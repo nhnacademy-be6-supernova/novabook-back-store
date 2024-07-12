@@ -62,28 +62,11 @@ public class OrdersServiceImpl implements OrdersService {
 	}
 
 	@Override
-	public Page<GetOrdersResponse> getOrdersResponsesAll() {
-		List<Orders> orders = ordersRepository.findAll();
-		List<GetOrdersResponse> responses = new ArrayList<>();
-		for (Orders order : orders) {
-			responses.add(GetOrdersResponse.form(order));
-		}
-		return new PageImpl<>(responses);
-	}
-
-	@Override
 	public Page<GetOrdersAdminResponse> getOrdersAdminResponsesAll(Pageable pageable) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
 		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 		Page<Orders> orders = ordersRepository.findAll(pageable);
-		return orders.map(order -> GetOrdersAdminResponse.from(order));
-	}
-
-	@Override
-	public GetOrdersResponse getOrdersById(Long id) {
-		Orders orders = ordersRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
-		return GetOrdersResponse.form(orders);
+		return orders.map(GetOrdersAdminResponse::from);
 	}
 
 	@Override
@@ -94,13 +77,6 @@ public class OrdersServiceImpl implements OrdersService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 		orders.updateStatus(ordersStatus);
 	}
-
-	// @Override
-	// public GetOrdersResponse getGuestOrderHistory(GetGuestOrderHistoryRequest request) {
-	// 	Orders orders = ordersRepository.findByIdAndPhoneNumber(request.ordersId(), request.phoneNumber())
-	// 		.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
-	// 	return GetOrdersResponse.form(orders);
-	// }
 
 	@Override
 	public Page<GetOrdersResponse> getOrdersResponsesAll() {

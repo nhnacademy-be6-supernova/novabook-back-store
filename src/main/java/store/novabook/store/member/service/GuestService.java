@@ -1,9 +1,9 @@
 package store.novabook.store.member.service;
 
 import store.novabook.store.orders.dto.request.GetGuestOrderHistoryRequest;
-import store.novabook.store.orders.dto.response.GetOrdersResponse;
+import store.novabook.store.orders.dto.response.GetOrderDetailResponse;
 
 public interface GuestService {
 
-	GetOrdersResponse getOrderGuest(GetGuestOrderHistoryRequest request);
+	GetOrderDetailResponse getOrderGuest(GetGuestOrderHistoryRequest request);
 }
