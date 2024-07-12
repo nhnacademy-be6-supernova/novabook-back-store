@@ -50,7 +50,8 @@ public class MemberController implements MemberControllerDocs {
 	private final AuthMembersClient authMembersClient;
 
 	@PostMapping
-	public ResponseEntity<CreateMemberResponse> createMember(@RequestBody @Valid CreateMemberRequest createMemberRequest) {
+	public ResponseEntity<CreateMemberResponse> createMember(
+		@RequestBody @Valid CreateMemberRequest createMemberRequest) {
 		CreateMemberResponse saved = memberService.createMember(createMemberRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
@@ -74,7 +75,7 @@ public class MemberController implements MemberControllerDocs {
 
 	@GetMapping("/member")
 	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers(required = false) Long memberId) {
-		if(memberId!=null) {
+		if (memberId != null) {
 			GetMemberResponse memberResponse = memberService.getMember(memberId);
 			return ResponseEntity.ok(memberResponse);
 		}
@@ -82,7 +83,10 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@GetMapping("/member/name")
-	public ResponseEntity<GetmemberNameResponse> getmemberName(@CurrentMembers Long memberId) {
+	public ResponseEntity<GetmemberNameResponse> getmemberName(@CurrentMembers(required = false) Long memberId) {
+		if (memberId == null) {
+			return ResponseEntity.ok(new GetmemberNameResponse("비회원"));
+		}
 		return ResponseEntity.ok().body(memberService.getMemberName(memberId));
 	}
 
