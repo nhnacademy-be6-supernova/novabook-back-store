@@ -1,7 +1,5 @@
 package store.novabook.store.orders.service.impl;
 
-import java.util.UUID;
-
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -10,9 +8,9 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.orders.dto.OrderSagaMessage;
-import store.novabook.store.orders.dto.PaymentType;
-import store.novabook.store.orders.dto.SagaMessage;
+import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.PaymentRequest;
+import store.novabook.store.orders.entity.Orders;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -23,21 +21,6 @@ public class OrdersSagaManagerImpl {
 	private final RabbitTemplate rabbitTemplate;
 
 
-	/**
-	 * 주문 로직 (트랜잭션) -> 비회원도 고려해야함
-	 * 0. 주문서 검증 (총 결제 금액)
-	 * 1. 재고 감소 시작
-	 * 2. 포인트 감소
-	 * 3. 쿠폰 사용 상태 변경
-	 * 3.a -> 총 결제 가격 검증
-	 * 4. 결제 승인
-	 * <비동기 처리>
-	 * 적립포인트 충전 -> 등급 별로 다르게 적용 되어야함
-	 * 장바구니 제거
-	 * 가주문 제거
-	 * 메모: 마지막 로직에 토탈 금액 비교하는 로직 필요
-	 */
-
 	// 첫번째 로직 (가주문 검증, 비동기처리 전송)
 	public void orderInvoke(PaymentRequest paymentRequest) {
 		// 주문 트랜잭션 시작 (가주문 검증)
@@ -45,13 +28,8 @@ public class OrdersSagaManagerImpl {
 			OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
 
 		// 장바구니 제거
-		// rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",
-		// 	OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
-
-		// 가주문 제거
-		// rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.form.confirm.routing.key",
-		// 	OrderSagaMessage.builder().status("PROCEED_CONFIRM_ORDER_FORM").paymentRequest(paymentRequest).build());
-
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "cart.delete.routing.key",
+			OrderSagaMessage.builder().status("PROCEED_DELETE_CART").paymentRequest(paymentRequest).build());
 	}
 
 	// 두번째 로직 (쿠폰 적용)
@@ -183,38 +161,14 @@ public class OrdersSagaManagerImpl {
 		}
 	}
 
-	/**
-	 * 결제 취소 시
-	 * 1.주문 테이블에 총 적립 포인트량 -> DDL 에 넣어야함
-	 * 2.포인트는 사용량만큼 감소
-	 * 3.쿠폰은 비사용 처리
-	 * 4.
-	 *
-	 */
-	public void orderCancel(UUID uuid) {
-		// DB 상태 업데이트 ->
-		// OrderSagaMessage.builder()
-		// 이어서 구현하겠습니다.
+	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
+	public void requestPayCancel(@Payload RequestPayCancelMessage payCancelMessage) {
+		if(payCancelMessage.getCouponId() != null)
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.request.pay.cancel.routing.key", payCancelMessage);
+		if(payCancelMessage.getUsePointAmount() > 0)
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.request.pay.cancel.routing.key", payCancelMessage);
 
-		PaymentRequest.builder()
-			.type(PaymentType.TOSS)
-			.orderId(uuid)
-			.memberId(1L)
-			.build();
-
-
-
-
-
-
-
-
-
-
-
-		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "?");
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "payment.pay.cancel.routing.key", payCancelMessage);
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.request.pay.cancel.routing.key", payCancelMessage);
 	}
-
-
-
 }

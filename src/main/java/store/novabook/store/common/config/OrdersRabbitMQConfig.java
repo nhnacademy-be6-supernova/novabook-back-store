@@ -2,7 +2,6 @@ package store.novabook.store.common.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.Queue;
@@ -28,6 +27,7 @@ public class OrdersRabbitMQConfig {
 	public MessageConverter converter() {
 		return new Jackson2JsonMessageConverter();
 	}
+
 
 	// QUEUES
 	@Bean
@@ -60,6 +60,29 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.point.earn.queue").build();
 	}
 
+	@Bean
+	public Queue cartDeleteQueue() {
+		return QueueBuilder.durable("nova.cart.delete.queue").build();
+	}
+
+	@Bean
+	public Queue paymentCancelQueue() {
+		return QueueBuilder.durable("nova.payment.cancel.queue").build();
+	}
+
+	@Bean
+	public Queue pointRequestPayAmountQueue() {
+		return QueueBuilder.durable("nova.point.request.pay.cancel.queue").build();
+	}
+
+	@Bean
+	public Queue paymentRequestPayAmountQueue() {
+		return QueueBuilder.durable("nova.payment.request.pay.cancel.queue").build();
+	}
+
+
+
+
 
 	/*보상 트랜잭션 큐*/
 	@Bean
@@ -83,13 +106,11 @@ public class OrdersRabbitMQConfig {
 
 
 
-
 	// Dead queue
 	@Bean
 	public Queue deadOrdersSagaQueue() {
 		return QueueBuilder.durable("nova.orders.saga.dead.queue").build();
 	}
-
 
 
 
@@ -124,6 +145,9 @@ public class OrdersRabbitMQConfig {
 	public Queue api6ProducerQueue() {
 		return QueueBuilder.durable("nova.api6-producer-queue").build();
 	}
+
+	@Bean
+	public Queue requestPayCancelQueue() {return QueueBuilder.durable("nova.orders.request.pay.cancel.queue").build();}
 
 
 	// BINDING
@@ -162,6 +186,32 @@ public class OrdersRabbitMQConfig {
 		return BindingBuilder.bind(pointEarnQueue()).to(sagaExchange())
 			.with("point.earn.routing.key").noargs();
 	}
+
+	@Bean
+	public Binding deleteCartBinding() {
+		return BindingBuilder.bind(cartDeleteQueue()).to(sagaExchange())
+			.with("cart.delete.routing.key").noargs();
+	}
+
+	@Bean
+	public Binding cancelPaymentBinding() {
+		return BindingBuilder.bind(paymentCancelQueue()).to(sagaExchange())
+			.with("payment.cancel.routing.key").noargs();
+	}
+
+	@Bean
+	public Binding pointRequestPayCancelBinding() {
+		return BindingBuilder.bind(requestPayCancelQueue()).to(sagaExchange())
+			.with("payment.cancel.routing.key").noargs();
+	}
+
+	@Bean
+	public Binding paymentRequestPayCancelBinding() {
+		return BindingBuilder.bind(paymentRequestPayAmountQueue()).to(sagaExchange())
+			.with("payment.pay.cancel.routing.key").noargs();
+	}
+
+
 
 
 
@@ -251,6 +301,11 @@ public class OrdersRabbitMQConfig {
 		return BindingBuilder.bind(api6ProducerQueue()).to(sagaExchange()).with("nova.api6-producer-routing-key").noargs();
 	}
 
-
-
+	@Bean
+	public Binding requestPayCancelBinding() {
+		return BindingBuilder.bind(requestPayCancelQueue())
+			.to(sagaExchange())
+			.with("nova.orders.request.pay.cancel.routing.key")
+			.noargs();
+	}
 }
