@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -33,13 +32,10 @@ import store.novabook.store.orders.dto.request.BookIdAndQuantityDTO;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.orders.dto.request.OrderTemporaryForm;
 import store.novabook.store.orders.dto.request.OrderTemporaryNonMemberForm;
-import store.novabook.store.orders.dto.request.PaymentRequest;
-import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 import store.novabook.store.orders.entity.DeliveryFee;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
 import store.novabook.store.orders.entity.OrdersStatus;
-import store.novabook.store.orders.entity.OrdersStatusEnum;
 import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.DeliveryFeeRepository;
 import store.novabook.store.orders.repository.OrdersBookRepository;
@@ -74,14 +70,12 @@ public class OrdersRabbitServiceImpl {
 	private final RabbitTemplate rabbitTemplate;
 	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
 	private final PaymentRepository paymentRepository;
-	private final TossOrderService tossOrderService;
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 
 	/**
 	 * 가주문서를 검증
 	 * 가격, 수량 체크
 	 * @param orderSagaMessage 주문에 필요한 메세지 목록
-	 *
 	 */
 	@RabbitListener(queues = "nova.orders.form.verify.queue")
 	public void confirmOrderForm(@Payload OrderSagaMessage orderSagaMessage) {
@@ -93,7 +87,6 @@ public class OrdersRabbitServiceImpl {
 			} else {
 				processMemberOrder(orderSagaMessage, memberId);
 			}
-
 			orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -139,6 +132,7 @@ public class OrdersRabbitServiceImpl {
 					.provider("tempProvider")
 					.build())
 				.build();
+
 			Payment payment = paymentRepository.save(savePayment);
 
 			if (orderSagaMessage.getPaymentRequest().memberId() == null) {
@@ -168,16 +162,6 @@ public class OrdersRabbitServiceImpl {
 		}
 	}
 
-	/**
-	 * 결제 취소 시
-	 * -1. toss 결제 취소 (완)
-	 * 0. db 결제 상태 결제 취소로 변경
-	 * 1. 주문 테이블에 총 적립 포인트량 -> DDL 에 넣어야함
-	 * 2. 포인트는 사용량만큼 감소
-	 * 3. 쿠폰은 비사용 처리
-	 * 4. 뭐하지~
-	 *
-	 */
 
 	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
 	public void orderCancel(@Payload RequestPayCancelMessage requestPayCancelMessage) {
@@ -187,13 +171,12 @@ public class OrdersRabbitServiceImpl {
 			for (OrdersBook orders : ordersBook) {
 				Book book = bookRepository.findById(orders.getBook().getId())
 					.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
-
 				// 	재고 다시 증가
 				book.increaseInventory(orders.getQuantity());
 				bookRepository.save(book);
 			}
 		} catch (Exception e) {
-			log.error("주문서 검증 실패");
+			log.error("주문서 검증 실패 {} ", e.getMessage());
 		}
 	}
 
@@ -256,6 +239,10 @@ public class OrdersRabbitServiceImpl {
 			float pointPercent = calculatePointPercent(memberId);
 			float earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
 			orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
+
+			if((long)earnPointAmount == 0) {
+				orderSagaMessage.setNoEarnPoint(true);
+			}
 		}
 
 		// 배달피, 포장비를 추가한 금액 산정
@@ -270,8 +257,6 @@ public class OrdersRabbitServiceImpl {
 		}
 
 		log.info("현재 계산 금액 : {}", orderSagaMessage.getCalculateTotalAmount());
-
-
 	}
 
 	private void validateDeliveryAndWrapping(Long deliveryId, Long wrappingPaperId) {

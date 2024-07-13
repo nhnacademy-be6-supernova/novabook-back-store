@@ -68,6 +68,9 @@ spring:
         config:
           doorayHookClient:
             url: https://hook.dooray.com/services/3204376758577275363/3841573584705463142/XgrMG9YtRw65XfNFuTYFDg
+          deadOrdersQueueDoorayHookClient:
+            url: https://hook.dooray.com/services/3204376758577275363/3846032559099339784/uuota3uCT5mPjX2v1oG2JQ
+
           couponClient:
             url: http://localhost:8070/api/v1/coupon
 ---
