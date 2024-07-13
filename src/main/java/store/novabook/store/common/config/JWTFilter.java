@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.NonNull;
 import store.novabook.store.common.security.dto.CustomUserDetails;
-import store.novabook.store.common.security.entity.Members;
+import store.novabook.store.common.security.entity.AuthenticationMembers;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.service.AuthMembersClient;
@@ -40,20 +40,18 @@ public class JWTFilter extends OncePerRequestFilter {
 		}
 
 		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(username);
-
 		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getMembersId(getMembersUUIDRequest).getBody();
+		AuthenticationMembers authenticationMembers = AuthenticationMembers.of(
+			getMembersUUIDResponse.membersId(),
+			null,
+			null,
+			getMembersUUIDResponse.role()
+		);
 
-		Members members = new Members();
-		members.setId(getMembersUUIDResponse.membersId());
-		members.setUsername(Long.toString(getMembersUUIDResponse.membersId()));
-		members.setPassword("temppassword");
-		members.setRole(getMembersUUIDResponse.role());
-
-		CustomUserDetails customUserDetails = new CustomUserDetails(members);
-
-		Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,
+		CustomUserDetails customUserDetails = new CustomUserDetails(authenticationMembers);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null,
 			customUserDetails.getAuthorities());
-		SecurityContextHolder.getContext().setAuthentication(authToken);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		filterChain.doFilter(request, response);
 	}

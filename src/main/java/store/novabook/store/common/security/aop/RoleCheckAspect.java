@@ -18,7 +18,7 @@ import store.novabook.store.common.exception.UnauthorizedException;
 public class RoleCheckAspect {
 
 	@Before("@annotation(checkRole)")
-	public void checkRole(JoinPoint joinPoint, CheckRole checkRole) throws Exception {
+	public void checkRole(JoinPoint joinPoint, CheckRole checkRole) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		if (authentication == null || !authentication.isAuthenticated()) {
