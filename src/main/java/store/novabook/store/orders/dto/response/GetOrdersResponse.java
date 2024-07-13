@@ -7,7 +7,8 @@ import store.novabook.store.orders.entity.Orders;
 
 @Builder
 public record GetOrdersResponse(
-	Long memberId,
+	String code,
+	Long memberId, //회원 id
 	Long deliveryFeeId,
 	Long wrappingPaperId,
 	Long ordersStatusId,
@@ -16,14 +17,27 @@ public record GetOrdersResponse(
 	LocalDateTime deliveryDate,
 	long bookPurchaseAmount,
 	String deliveryAddress,
+	Long couponId,
+	Long usePointAmount,
+	Long pointSaveAmount,
+	String paymentKey,
 	String receiverName,
 	String receiverNumber,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
 ) {
 	public static GetOrdersResponse form(Orders orders) {
+		Long memberId;
+
+		if (orders.getMember() == null) {
+			memberId = null;
+		} else {
+			memberId = orders.getMember().getId();
+		}
+
 		return GetOrdersResponse.builder()
-			.memberId(orders.getId())
+			.code(orders.getCode())
+			.memberId(memberId)
 			.deliveryFeeId(orders.getDeliveryFee().getId())
 			.wrappingPaperId(orders.getWrappingPaper().getId())
 			.ordersStatusId(orders.getOrdersStatus().getId())
@@ -32,6 +46,10 @@ public record GetOrdersResponse(
 			.deliveryDate(orders.getDeliveryDate())
 			.bookPurchaseAmount(orders.getBookPurchaseAmount())
 			.deliveryAddress(orders.getDeliveryAddress())
+			.couponId(orders.getUseCouponId())
+			.usePointAmount(orders.getUsePointAmount())
+			.pointSaveAmount(orders.getPointSaveAmount())
+			.paymentKey(orders.getPayment().getPaymentKey())
 			.receiverName(orders.getReceiverName())
 			.receiverNumber(orders.getReceiverNumber())
 			.createdAt(orders.getCreatedAt())
