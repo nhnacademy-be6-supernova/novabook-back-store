@@ -185,7 +185,7 @@ public class OrdersRabbitServiceImpl {
 			List<OrdersBook> ordersBook = ordersBookRepository.findByOrdersCode(requestPayCancelMessage.getOrderCode());
 
 			for (OrdersBook orders : ordersBook) {
-				Book book = bookRepository.findById(orders.getId())
+				Book book = bookRepository.findById(orders.getBook().getId())
 					.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
 				// 	재고 다시 증가
@@ -245,6 +245,8 @@ public class OrdersRabbitServiceImpl {
 			bookRepository.save(book);
 		}
 
+		orderSagaMessage.setBookAmount(bookPrice);
+
 		validateDeliveryAndWrapping(deliveryId, wrappingPaperId);
 
 		// 포인트 적립금 계산
@@ -289,7 +291,8 @@ public class OrdersRabbitServiceImpl {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_POLICY_NOT_FOUND));
 
 		float pointPercent =
-			(pointPolicy.getBasicPointRate() / 100) + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
+			((float)pointPolicy.getBasicPointRate() / 100) + (
+				(float)memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
 
 		if (pointPercent >= 1) {
 			throw new BadRequestException(ErrorCode.INVALID_POINT_DISCOUNT);

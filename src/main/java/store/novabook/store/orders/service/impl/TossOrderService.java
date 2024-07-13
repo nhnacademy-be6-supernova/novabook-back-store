@@ -60,7 +60,7 @@ public class TossOrderService {
 				throw new BadRequestException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
 			}
 
-			obj.put("orderId", orderSagaMessage.getPaymentRequest().orderCode().toString());
+			obj.put("orderId", orderSagaMessage.getPaymentRequest().orderCode());
 			obj.put(AMOUNT, paymentParam.get(AMOUNT));
 			obj.put(PAYMENT_KEY, paymentParam.get(PAYMENT_KEY));
 
