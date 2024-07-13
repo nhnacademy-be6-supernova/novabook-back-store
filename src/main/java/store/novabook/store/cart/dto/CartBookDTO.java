@@ -1,6 +1,5 @@
 package store.novabook.store.cart.dto;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Builder;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.image.entity.Image;
