@@ -15,8 +15,6 @@ import store.novabook.store.book.repository.LikesRepository;
 import store.novabook.store.book.service.LikesService;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
-import store.novabook.store.common.exception.ErrorCode;
-import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
 
