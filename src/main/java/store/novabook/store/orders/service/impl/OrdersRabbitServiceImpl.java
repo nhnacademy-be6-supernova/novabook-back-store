@@ -232,42 +232,44 @@ public class OrdersRabbitServiceImpl {
 			}
 		}
 
+		long bookPrice = 0;
+
 		for (BookIdAndQuantityDTO bookDTO : books) {
 			Book book = bookCache.get(bookDTO.id());
 			book.decreaseInventory((int)bookDTO.quantity());
 
 			// 순수금액 설정
-			long bookPrice = orderSagaMessage.getCalculateTotalAmount()
-				+ (book.getPrice() - book.getDiscountPrice()) * bookDTO.quantity();
-			orderSagaMessage.setBookAmount(bookPrice);
-
-			validateDeliveryAndWrapping(deliveryId, wrappingPaperId);
-
-			// 포인트 적립금 계산
-			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
-
-			if (memberId != null) {
-				float pointPercent = calculatePointPercent(memberId);
-				float earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
-				orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
-			}
-
-			// 배달피, 포장비를 추가한 금액 산정
-			DeliveryFee deliveryFee = deliveryFeeRepository.findById(deliveryId)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
-			WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
-			orderSagaMessage.setCalculateTotalAmount(bookPrice + deliveryFee.getFee() + wrappingPaper.getPrice());
-
-			if (bookPrice <= 0) {
-				throw new BadRequestException(ErrorCode.DISCOUNTED_PRICE_BELOW_ZERO);
-			}
-
-			log.info("현재 계산 금액 : {}", orderSagaMessage.getCalculateTotalAmount());
+			bookPrice += (book.getDiscountPrice() * bookDTO.quantity());
 
 			updateBookStatus(book);
 			bookRepository.save(book);
 		}
+
+		validateDeliveryAndWrapping(deliveryId, wrappingPaperId);
+
+		// 포인트 적립금 계산
+		Long memberId = orderSagaMessage.getPaymentRequest().memberId();
+
+		if (memberId != null) {
+			float pointPercent = calculatePointPercent(memberId);
+			float earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
+			orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
+		}
+
+		// 배달피, 포장비를 추가한 금액 산정
+		DeliveryFee deliveryFee = deliveryFeeRepository.findById(deliveryId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
+		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
+		orderSagaMessage.setCalculateTotalAmount(bookPrice + deliveryFee.getFee() + wrappingPaper.getPrice());
+
+		if (bookPrice <= 0) {
+			throw new BadRequestException(ErrorCode.DISCOUNTED_PRICE_BELOW_ZERO);
+		}
+
+		log.info("현재 계산 금액 : {}", orderSagaMessage.getCalculateTotalAmount());
+
+
 	}
 
 	private void validateDeliveryAndWrapping(Long deliveryId, Long wrappingPaperId) {
