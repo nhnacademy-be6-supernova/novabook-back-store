@@ -44,12 +44,10 @@ public class DoorayServiceImpl implements DoorayService {
 	}
 
 	@RabbitListener(queues = "nova.coupon.deadletter.queue")
-	public void sendDeadMessage(@Header("x-original-queue") String originQueue) {
+	public void sendDeadMessage() {
 		Map<String, Object> request = new HashMap<>();
 		request.put("botName", "novabook Bot");
-		request.put("text", "쿠폰 처리중 문제가 발생했습니다 \n해당 QUEUE:  " + originQueue);
+		request.put("text", "쿠폰 처리중 문제가 발생했습니다");
 		deadOrdersDoorayHookClient.sendMessage(request);
 	}
-
-
 }
