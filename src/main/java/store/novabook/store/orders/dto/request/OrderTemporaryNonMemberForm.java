@@ -18,7 +18,7 @@ import lombok.Builder;
 public record OrderTemporaryNonMemberForm(
 	@Id
 	@NotNull
-	UUID orderUUID,
+	String orderCode,
 	String cartUUID,
 	@NotNull
 	@Valid

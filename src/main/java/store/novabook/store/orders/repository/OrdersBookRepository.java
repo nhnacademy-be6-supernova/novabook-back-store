@@ -11,5 +11,5 @@ public interface OrdersBookRepository extends JpaRepository<OrdersBook, Long>, O
 
 	List<OrdersBook> getOrderDetailByOrdersId(Long ordersId);
 
-	List<OrdersBook> findByOrdersUuid(String uuid);
+	List<OrdersBook> findByOrdersCode(String code);
 }
