@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.orders.dto.OrderSagaMessage;
 import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.PaymentRequest;
-import store.novabook.store.orders.entity.Orders;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -161,7 +160,11 @@ public class OrdersSagaManagerImpl {
 		}
 	}
 
-	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
+	/**
+	 * 결제 취소 & 환불 비동기처리
+	 * @param payCancelMessage 쿠폰, 포인트, 적립금 정보
+	 */
+	@RabbitListener(queues = "nova.request.pay.cancel.queue")
 	public void requestPayCancel(@Payload RequestPayCancelMessage payCancelMessage) {
 		if(payCancelMessage.getCouponId() != null)
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.request.pay.cancel.routing.key", payCancelMessage);

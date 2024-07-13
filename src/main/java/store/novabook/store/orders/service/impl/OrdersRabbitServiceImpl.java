@@ -28,6 +28,7 @@ import store.novabook.store.member.entity.MemberGradeHistory;
 import store.novabook.store.member.repository.MemberGradeHistoryRepository;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.dto.OrderSagaMessage;
+import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.BookIdAndQuantityDTO;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.orders.dto.request.OrderTemporaryForm;
@@ -129,14 +130,15 @@ public class OrdersRabbitServiceImpl {
 			Orders orders;
 			List<BookIdAndQuantityDTO> books;
 
-			@SuppressWarnings("unchecked")
-			Map<String, Object> paymentParam = (Map<String, Object>)orderSagaMessage.getPaymentRequest()
+			@SuppressWarnings("unchecked") Map<String, Object> paymentParam = (Map<String, Object>)orderSagaMessage.getPaymentRequest()
 				.paymentInfo();
 
-			Payment savePayment = Payment.builder().request(CreatePaymentRequest.builder()
-				.paymentKey((String)paymentParam.get("paymentKey"))
-				.provider("tempProvider")
-				.build()).build();
+			Payment savePayment = Payment.builder()
+				.request(CreatePaymentRequest.builder()
+					.paymentKey((String)paymentParam.get("paymentKey"))
+					.provider("tempProvider")
+					.build())
+				.build();
 			Payment payment = paymentRepository.save(savePayment);
 
 			if (orderSagaMessage.getPaymentRequest().memberId() == null) {
@@ -177,59 +179,23 @@ public class OrdersRabbitServiceImpl {
 	 *
 	 */
 
-	@RabbitListener(queues = "nova.payment.cancel.queue")
-	public void orderCancel(Long orderId, Long memberId) {
+	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
+	public void orderCancel(@Payload RequestPayCancelMessage requestPayCancelMessage) {
 		try {
-			// 주문 DB 정보 상태 변경
-			Orders orders = ordersRepository.findById(orderId)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
+			List<OrdersBook> ordersBook = ordersBookRepository.findByOrdersCode(requestPayCancelMessage.getOrderCode());
 
-			OrdersStatus ordersStatus = ordersStatusRepository.findByName(OrdersStatusEnum.CANCELED.name());
-			orders.setOrdersStatus(ordersStatus);
-			ordersRepository.save(orders);
+			for (OrdersBook orders : ordersBook) {
+				Book book = bookRepository.findById(orders.getId())
+					.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
-			// 결제 취소 요청
-			String paymentKey = orders.getPayment().getPaymentKey();
-			TossPaymentCancelRequest tossPaymentCancel = TossPaymentCancelRequest.builder()
-				.cancelReason("고객 취소 요청")
-				.paymentKey(paymentKey).build();
-
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "payment.cancel.routing.key", tossPaymentCancel);
-
-			// 비회원일 경우
-			if (memberId == null) {
-				OrderTemporaryNonMemberForm orderForm = redisOrderNonMemberRepository.findById(
-						orders.getCode())
-					.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
-
-				PaymentRequest payment = PaymentRequest.builder()
-					.memberId(null)
-					.orderCode(orders.getCode())
-					.build();
-
-				OrderSagaMessage orderSagaMessage = OrderSagaMessage.builder().paymentRequest(payment)
-					.earnPointAmount(orders.getPointSaveAmount())
-					.build();
-
-				if (orderForm.usePointAmount() > 0) {
-					rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key",
-						orderSagaMessage);
-				}
-
-				if (orderForm.couponId() != null) {
-					rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key",
-						orderSagaMessage);
-				}
-
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.orders.form.confirm.routing.key",
-					orderSagaMessage);
+				// 	재고 다시 증가
+				book.increaseInventory(orders.getQuantity());
+				bookRepository.save(book);
 			}
-
 		} catch (Exception e) {
 			log.error("주문서 검증 실패");
 		}
 	}
-
 
 	private void processNonMemberOrder(OrderSagaMessage orderSagaMessage) {
 		// 주문폼 조회
@@ -258,8 +224,8 @@ public class OrdersRabbitServiceImpl {
 		Map<Long, Book> bookCache = new HashMap<>();
 
 		for (BookIdAndQuantityDTO bookDTO : books) {
-			Book book = bookCache.computeIfAbsent(bookDTO.id(), id -> bookRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND)));
+			Book book = bookCache.computeIfAbsent(bookDTO.id(),
+				id -> bookRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND)));
 
 			if (!BookStatusEnum.FOR_SALE.getKoreanValue().equals(book.getBookStatus().getName())) {
 				throw new NotFoundException(ErrorCode.BOOK_NOT_SAIL);
@@ -271,8 +237,8 @@ public class OrdersRabbitServiceImpl {
 			book.decreaseInventory((int)bookDTO.quantity());
 
 			// 순수금액 설정
-			long bookPrice = orderSagaMessage.getCalculateTotalAmount() +
-				(book.getPrice() - book.getDiscountPrice()) * bookDTO.quantity();
+			long bookPrice = orderSagaMessage.getCalculateTotalAmount()
+				+ (book.getPrice() - book.getDiscountPrice()) * bookDTO.quantity();
 			orderSagaMessage.setBookAmount(bookPrice);
 
 			validateDeliveryAndWrapping(deliveryId, wrappingPaperId);
@@ -280,7 +246,7 @@ public class OrdersRabbitServiceImpl {
 			// 포인트 적립금 계산
 			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
 
-			if(memberId != null) {
+			if (memberId != null) {
 				float pointPercent = calculatePointPercent(memberId);
 				float earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
 				orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
@@ -316,11 +282,9 @@ public class OrdersRabbitServiceImpl {
 	 */
 	private float calculatePointPercent(Long memberId) {
 		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(
-				memberId)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_HISTORY_NOT_FOUND));
+			memberId).orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_HISTORY_NOT_FOUND));
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_POLICY_NOT_FOUND));
-
 
 		float pointPercent =
 			(pointPolicy.getBasicPointRate() / 100) + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
@@ -394,8 +358,10 @@ public class OrdersRabbitServiceImpl {
 			.memberId(null)
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
-			.deliveryAddress(orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() +
-				orderForm.orderReceiverInfo().orderAddressInfo().detailAddress())
+			.deliveryAddress(
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+					.orderAddressInfo()
+					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
 			.receiverName(orderForm.orderReceiverInfo().name())
 			.receiverNumber(orderForm.orderReceiverInfo().phone())
@@ -416,8 +382,10 @@ public class OrdersRabbitServiceImpl {
 			.memberId(orderSagaMessage.getPaymentRequest().memberId())
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
-			.deliveryAddress(orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() +
-				orderForm.orderReceiverInfo().orderAddressInfo().detailAddress())
+			.deliveryAddress(
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+					.orderAddressInfo()
+					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
 			.receiverName(orderForm.orderReceiverInfo().name())
 			.receiverNumber(orderForm.orderReceiverInfo().phone())
