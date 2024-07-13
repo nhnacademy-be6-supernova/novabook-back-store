@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.ReviewImageDto;
 import store.novabook.store.book.dto.request.CreateReviewRequest;
 import store.novabook.store.book.dto.request.ReviewImageDTO;
@@ -135,7 +133,7 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 		// 리뷰를 달면 포인트 적립
 		PointHistory pointHistory = PointHistory.of(pointPolicy, member, REVIEW_POINT,
-			pointPolicy.getReviewPointRate());
+			pointPolicy.getReviewPoint());
 		pointHistoryRepository.save(pointHistory);
 		return CreateReviewResponse.from(review);
 	}

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.member.controller.docs.MemberControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
@@ -82,7 +81,10 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@GetMapping("/member/name")
-	public ResponseEntity<GetmemberNameResponse> getmemberName(@CurrentMembers Long memberId) {
+	public ResponseEntity<GetmemberNameResponse> getMemberName(@CurrentMembers(required = false) Long memberId) {
+		if (memberId == null) {
+			return ResponseEntity.ok(new GetmemberNameResponse("비회원"));
+		}
 		return ResponseEntity.ok().body(memberService.getMemberName(memberId));
 	}
 
@@ -139,16 +141,15 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@PostMapping("/payco/link")
-	public ResponseEntity<Void> linkPayco(@RequestBody LinkPaycoMembersRequest linkPaycoMembersRequest) {
+	public ResponseEntity<Void> linkPayco(@Valid @RequestBody LinkPaycoMembersRequest linkPaycoMembersRequest) {
 		memberService.linkPaycoMembers(linkPaycoMembersRequest);
 		return ResponseEntity.ok().build();
 	}
 
-	@CheckRole("ROLE_USER")
 	@PostMapping("/uuid")
 	public ResponseEntity<GetMembersUUIDResponse> findUUID(@RequestHeader("Authorization") String authorization,
 		@RequestBody GetMembersUUIDRequest getMembersUUIDRequest) {
-		GetMembersUUIDResponse membersId = authMembersClient.getMembersId(getMembersUUIDRequest);
+		GetMembersUUIDResponse membersId = authMembersClient.getMembersId(getMembersUUIDRequest).getBody();
 
 		return ResponseEntity.ok(membersId);
 	}

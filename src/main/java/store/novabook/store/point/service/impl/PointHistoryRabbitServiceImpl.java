@@ -107,6 +107,7 @@ public class PointHistoryRabbitServiceImpl {
 		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api2-producer-routing-key", orderSagaMessage);
 	}
 
+
 	@RabbitListener(queues = "nova.point.compensate.decrement.queue")
 	public void compensateDecrementPoint(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
@@ -125,7 +126,7 @@ public class PointHistoryRabbitServiceImpl {
 				.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
 			// 포인트 기록 생성 및 저장 (포인트 복구)
-			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "결제 취소로 인한 주문 포인트 환불",
+			PointHistory pointHistory = PointHistory.of(pointPolicy, member, "주문 실패로 인한 주문 포인트 환불",
 				orderTemporaryForm.usePointAmount());
 			pointHistoryRepository.save(pointHistory);
 
@@ -136,6 +137,25 @@ public class PointHistoryRabbitServiceImpl {
 			handleFailureCompensate(orderSagaMessage);
 		}
 	}
+
+
+	@RabbitListener(queues = "nova.point.request.pay.cancel.queue")
+	public void decrementPoint(@Payload Long memberId, @Payload Long usePointAmount) {
+		// 회원 정보 조회
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+		// 최근 포인트 정책 조회
+		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
+			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
+
+		// 포인트 기록 생성 및 저장 (포인트 복구)
+		PointHistory pointHistory = PointHistory.of(pointPolicy, member, "주문 실패로 인한 주문 포인트 환불",
+			usePointAmount);
+
+		pointHistoryRepository.save(pointHistory);
+	}
+
 
 	private void handleFailureCompensate(OrderSagaMessage orderSagaMessage) {
 		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

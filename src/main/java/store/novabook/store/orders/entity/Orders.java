@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.payment.entity.Payment;
@@ -43,10 +44,11 @@ public class Orders {
 	private WrappingPaper wrappingPaper;
 
 	@NotNull
-	private String uuid;
+	private String code;
 
 	@NotNull
 	@ManyToOne
+	@Setter
 	@JoinColumn(name = "orders_status_id")
 	private OrdersStatus ordersStatus;
 
@@ -65,6 +67,10 @@ public class Orders {
 
 	@NotNull
 	private long bookPurchaseAmount;
+
+	private long usePointAmount;
+
+	private Long useCouponId;
 
 	@NotNull
 	private String deliveryAddress;
@@ -100,21 +106,28 @@ public class Orders {
 		DeliveryFee deliveryFee,
 		WrappingPaper wrappingPaper,
 		OrdersStatus ordersStatus,
+		Payment payment,
 		CreateOrdersRequest request) {
 
 		this.member = member;
 		this.deliveryFee = deliveryFee;
 		this.wrappingPaper = wrappingPaper;
 		this.ordersStatus = ordersStatus;
+		this.payment = payment;
 		this.ordersDate = LocalDateTime.now();
 		this.totalAmount = request.totalAmount();
 		this.deliveryDate = request.deliveryDate();
 		this.bookPurchaseAmount = request.bookPurchaseAmount();
 		this.deliveryAddress = request.deliveryAddress();
+		this.code = request.code();
+		this.senderName = request.senderName();
+		this.senderNumber = request.senderNumber();
 		this.receiverName = request.receiverName();
 		this.receiverNumber = request.receiverNumber();
 		this.pointSaveAmount = request.pointSaveAmount();
 		this.couponDiscountAmount = request.couponDiscountAmount();
+		this.useCouponId = request.useCouponId();
+		this.usePointAmount = request.usePointAmount();
 	}
 
 	public void updateStatus(

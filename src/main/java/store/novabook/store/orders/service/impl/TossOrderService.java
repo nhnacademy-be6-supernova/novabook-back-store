@@ -26,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.orders.dto.OrderSagaMessage;
+import store.novabook.store.orders.dto.RequestPayCancelMessage;
+import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 
 @RequiredArgsConstructor
 @Service
@@ -58,7 +60,7 @@ public class TossOrderService {
 				throw new BadRequestException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
 			}
 
-			obj.put("orderId", orderSagaMessage.getPaymentRequest().orderId().toString());
+			obj.put("orderId", orderSagaMessage.getPaymentRequest().orderCode());
 			obj.put(AMOUNT, paymentParam.get(AMOUNT));
 			obj.put(PAYMENT_KEY, paymentParam.get(PAYMENT_KEY));
 
@@ -84,7 +86,6 @@ public class TossOrderService {
 
 			InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
 
-			// 결제 성공 및 실패 비즈니스 로직을 구현하세요.
 			Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
 			JSONObject jsonObject = (JSONObject)parser.parse(reader);
 			responseStream.close();
@@ -112,9 +113,13 @@ public class TossOrderService {
 		String paymentKey = paymentParam.get(PAYMENT_KEY);
 
 		try {
-			JSONObject response = sendTossCancelRequest(paymentKey, "서버오류 결제 보상 트랜잭션");
+			TossPaymentCancelRequest tossPaymentCancel = TossPaymentCancelRequest.builder()
+				.cancelReason("서버오류 결제 보상 트랜잭션")
+				.paymentKey(paymentKey)
+				.build();
+
+			sendTossCancelRequest(tossPaymentCancel);
 			orderSagaMessage.setStatus("SUCCESS_REFUND_PAYMENT");
-			log.info("환불 응답 내용 : {}", response.toString());
 		} catch (IOException | ParseException e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_REFUND_TOSS_PAYMENT");
@@ -124,18 +129,19 @@ public class TossOrderService {
 		}
 	}
 
-	public JSONObject sendTossCancelRequest(String paymentKey, String cancelReason) throws
+
+	public void sendTossCancelRequest(TossPaymentCancelRequest tossPaymentCancelRequest) throws
 		IOException,
 		ParseException {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = new JSONObject();
-		obj.put("cancelReason", cancelReason);
+		obj.put("cancelReason", tossPaymentCancelRequest.cancelReason());
 
 		Base64.Encoder encoder = Base64.getEncoder();
 		byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
 		String authorizations = "Basic " + new String(encodedBytes);
 
-		URL url = new URL("https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel");
+		URL url = new URL("https://api.tosspayments.com/v1/payments/" + tossPaymentCancelRequest.paymentKey() + "/cancel");
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestProperty("Authorization", authorizations);
 		connection.setRequestProperty("Content-Type", "application/json");
@@ -154,9 +160,22 @@ public class TossOrderService {
 		responseStream.close();
 
 		if (!isSuccess) {
-			throw new RuntimeException("토스 환불 실패");
+			log.error("토스 환불 실패");
 		}
 
-		return jsonObject;
+		log.info("jsonObject");
+	}
+
+	@RabbitListener(queues = "nova.payment.request.pay.cancel.queue")
+	public void paymentRequestPayCancel(@Payload RequestPayCancelMessage message) {
+		try {
+			sendTossCancelRequest(TossPaymentCancelRequest.builder().paymentKey(message.getPaymentKey())
+				.cancelReason("결제 취소 요청").build());
+		} catch (IOException | ParseException e) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			message.setStatus("FAIL_REQUEST_CANCEL_TOSS_PAYMENT");
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+				message);
+		}
 	}
 }

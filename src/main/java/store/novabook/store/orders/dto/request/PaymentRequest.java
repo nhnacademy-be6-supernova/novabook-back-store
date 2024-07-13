@@ -11,6 +11,6 @@ public record PaymentRequest(
 	PaymentType type,
 	Long memberId,
 	@NotNull
-	UUID orderId,
+	String orderCode,
 	Object paymentInfo
 ) implements Serializable {}
