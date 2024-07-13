@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -19,9 +18,8 @@ import jakarta.persistence.PersistenceContext;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.QBook;
 import store.novabook.store.book.entity.QBookStatus;
-import store.novabook.store.cart.dto.CartBookIdDTO;
-import store.novabook.store.cart.dto.request.CreateCartBookRequest;
 import store.novabook.store.cart.dto.CartBookDTO;
+import store.novabook.store.cart.dto.CartBookIdDTO;
 import store.novabook.store.cart.dto.CartBookListDTO;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;

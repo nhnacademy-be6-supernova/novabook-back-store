@@ -4,14 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
-import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
-import store.novabook.store.member.service.AuthMembersClient;
 import store.novabook.store.member.service.DoorayHookClient;
 import store.novabook.store.member.service.DoorayService;
 import store.novabook.store.orders.dto.OrderSagaMessage;
