@@ -29,7 +29,6 @@ public class OrdersController implements OrdersControllerDocs {
 
 	private final OrdersService ordersService;
 
-
 	@GetMapping
 	public ResponseEntity<Page<GetOrdersResponse>> getOrdersAll() {
 		Page<GetOrdersResponse> responses = ordersService.getOrdersResponsesAll();
