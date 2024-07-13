@@ -36,6 +36,9 @@ springdoc:
     disable-swagger-default-url: true
     display-request-duration: true
     operations-sorter: alpha
+  api-docs:
+    path: /api-docs
+
 
 #유레카 활성화
 eureka:
