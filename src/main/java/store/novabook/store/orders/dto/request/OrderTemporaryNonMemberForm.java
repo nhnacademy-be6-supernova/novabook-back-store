@@ -2,7 +2,6 @@ package store.novabook.store.orders.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -18,7 +17,7 @@ import lombok.Builder;
 public record OrderTemporaryNonMemberForm(
 	@Id
 	@NotNull
-	UUID orderUUID,
+	String orderCode,
 	String cartUUID,
 	@NotNull
 	@Valid

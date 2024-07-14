@@ -78,6 +78,7 @@ public class RabbitMQConfig {
 		connectionFactory.setPort(config.port());
 		connectionFactory.setUsername(config.username());
 		connectionFactory.setPassword(config.password());
+
 		return connectionFactory;
 	}
 
@@ -99,7 +100,6 @@ public class RabbitMQConfig {
 			.build();
 	}
 
-
 	@Bean
 	public TopicExchange couponOperationExchange() {
 		return new TopicExchange(couponOperationExchange);
@@ -109,7 +109,6 @@ public class RabbitMQConfig {
 	public DirectExchange deadLetterExchange() {
 		return new DirectExchange(deadLetterExchange);
 	}
-	
 
 	@Bean
 	public Queue couponCreateNormalQueue() {
