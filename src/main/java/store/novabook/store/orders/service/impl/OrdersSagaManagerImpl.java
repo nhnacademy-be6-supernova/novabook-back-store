@@ -50,27 +50,22 @@ public class OrdersSagaManagerImpl {
 			boolean usePoint = !orderSagaMessage.isNoUsePoint();
 			boolean useCoupon = !orderSagaMessage.isNoUseCoupon();
 
-			if (usePoint) {
-				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key", orderSagaMessage);
-			}
-
-			if (useCoupon) {
-				orderSagaMessage.setStatus("PROCEED_APPLY_COUPON");
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.apply.routing.key", orderSagaMessage);
-			}
-
 			if (!usePoint && !useCoupon) {
 				orderSagaMessage.setStatus("PROCEED_APPROVE_PAYMENT");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.approve.payment.routing.key", orderSagaMessage);
+			} else if (!useCoupon) {
+				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key", orderSagaMessage);
+			} else {
+				orderSagaMessage.setStatus("PROCEED_APPLY_COUPON");
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.apply.routing.key", orderSagaMessage);
 			}
 		} else if ("FAIL_CONFIRM_ORDER_FORM".equals(orderSagaMessage.getStatus())) {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
 			log.error("주문서 검증 실패");
-		} else {
-			log.warn("알 수 없는 상태: {}", orderSagaMessage.getStatus());
 		}
 	}
+
 
 
 	/**
