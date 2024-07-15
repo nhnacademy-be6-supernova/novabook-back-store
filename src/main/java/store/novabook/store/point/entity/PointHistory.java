@@ -20,7 +20,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.store.member.entity.Member;
-import store.novabook.store.orders.entity.Orders;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

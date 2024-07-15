@@ -1,18 +1,17 @@
 package store.novabook.store.common.logging;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.AppenderBase;
+import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.AppenderBase;
 import lombok.Setter;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import java.io.IOException;
 
 @Setter
 public class HttpAppender extends AppenderBase<ILoggingEvent> {

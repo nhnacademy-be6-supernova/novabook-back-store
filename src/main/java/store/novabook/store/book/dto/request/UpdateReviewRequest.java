@@ -1,8 +1,5 @@
 package store.novabook.store.book.dto.request;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
