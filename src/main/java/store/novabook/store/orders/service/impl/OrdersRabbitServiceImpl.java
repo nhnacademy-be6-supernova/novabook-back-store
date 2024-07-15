@@ -75,6 +75,7 @@ public class OrdersRabbitServiceImpl {
 	/**
 	 * 가주문서를 검증
 	 * 가격, 수량 체크
+	 *
 	 * @param orderSagaMessage 주문에 필요한 메세지 목록
 	 */
 	@RabbitListener(queues = "nova.orders.form.verify.queue")
@@ -99,6 +100,7 @@ public class OrdersRabbitServiceImpl {
 
 	/**
 	 * 주문 트랜잭션 실패 시, 재고를 다시 증가하는 로직
+	 *
 	 * @param orderSagaMessage 주문에 필요한 메세지 목록
 	 */
 	@RabbitListener(queues = "nova.orders.compensate.form.confirm.queue")
@@ -114,7 +116,7 @@ public class OrdersRabbitServiceImpl {
 	}
 
 	/**
-	 *  DATA BASE 주문정보를 저장하는 Rabbit mq 로직
+	 * DATA BASE 주문정보를 저장하는 Rabbit mq 로직
 	 */
 	@RabbitListener(queues = "nova.orders.save.orders.database.queue")
 	public void saveSagaOrder(@Payload OrderSagaMessage orderSagaMessage) {
@@ -123,7 +125,8 @@ public class OrdersRabbitServiceImpl {
 			Orders orders;
 			List<BookIdAndQuantityDTO> books;
 
-			@SuppressWarnings("unchecked") Map<String, Object> paymentParam = (Map<String, Object>)orderSagaMessage.getPaymentRequest()
+			@SuppressWarnings("unchecked")
+			Map<String, Object> paymentParam = (Map<String, Object>)orderSagaMessage.getPaymentRequest()
 				.paymentInfo();
 
 			Payment savePayment = Payment.builder()
@@ -161,7 +164,6 @@ public class OrdersRabbitServiceImpl {
 				orderSagaMessage);
 		}
 	}
-
 
 	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
 	public void orderCancel(@Payload RequestPayCancelMessage requestPayCancelMessage) {
@@ -240,7 +242,7 @@ public class OrdersRabbitServiceImpl {
 			float earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
 			orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
 
-			if((long)earnPointAmount == 0) {
+			if ((long)earnPointAmount == 0) {
 				orderSagaMessage.setNoEarnPoint(true);
 			}
 		}

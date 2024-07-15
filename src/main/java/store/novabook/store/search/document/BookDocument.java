@@ -20,7 +20,7 @@ import store.novabook.store.image.entity.Image;
 import store.novabook.store.tag.entity.Tag;
 
 @Getter
-// @Document(indexName = "supernova_search")
+@Document(indexName = "supernova_search")
 public class BookDocument {
 	@Id
 	@Field(type = FieldType.Long)
