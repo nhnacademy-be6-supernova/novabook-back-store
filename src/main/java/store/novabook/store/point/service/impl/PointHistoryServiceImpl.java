@@ -35,8 +35,6 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 	private final PointHistoryRepository pointHistoryRepository;
 	private final PointPolicyRepository pointPolicyRepository;
 
-
-
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetPointHistoryResponse> getPointHistoryList(Pageable pageable) {
@@ -45,21 +43,6 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 			throw new NotFoundException(ErrorCode.POINT_HISTORY_NOT_FOUND);
 		}
 		return pointHistoryList.map(GetPointHistoryResponse::of);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public GetPointHistoryListResponse getPointHistory(GetPointHistoryRequest getPointHistoryRequest) {
-		List<GetPointHistoryResponse> pointHistoryResponses = pointHistoryRepository.findByMemberId(
-				getPointHistoryRequest.memberId())
-			.stream()
-			.map(pointHistory -> GetPointHistoryResponse.builder()
-				.pointAmount(pointHistory.getPointAmount())
-				.pointContent(pointHistory.getPointContent())
-				.build())
-			.toList();
-
-		return GetPointHistoryListResponse.builder().pointHistoryResponseList(pointHistoryResponses).build();
 	}
 
 	@Override
@@ -90,6 +73,5 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 			.pointAmount(pointHistoryRepository.findTotalPointAmountByMemberId(memberId))
 			.build();
 	}
-
 
 }

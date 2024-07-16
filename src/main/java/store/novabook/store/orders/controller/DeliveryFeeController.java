@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.orders.controller.docs.DeliveryFeeControllerDocs;
 import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
@@ -29,18 +30,21 @@ public class DeliveryFeeController implements DeliveryFeeControllerDocs {
 
 	private final DeliveryFeeService deliveryFeeService;
 
+	@CheckRole("ROLE_ADMIN")
 	@PostMapping
 	public ResponseEntity<CreateResponse> createDeliveryFee(@Valid @RequestBody CreateDeliveryFeeRequest request) {
 		CreateResponse response = deliveryFeeService.createFee(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping(params = {"page", "size"})
 	public ResponseEntity<Page<GetDeliveryFeeResponse>> getDeliveryAllPage(Pageable pageable) {
 		Page<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFees(pageable);
 		return ResponseEntity.ok().body(deliveryFeeResponses);
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping
 	public ResponseEntity<GetDeliveryFeeListResponse> getDeliveryFeeAllList() {
 		List<GetDeliveryFeeResponse> deliveryFeeResponses = deliveryFeeService.findAllDeliveryFeeList();
@@ -54,7 +58,7 @@ public class DeliveryFeeController implements DeliveryFeeControllerDocs {
 		return ResponseEntity.ok(deliveryFeeService.getRecentDeliveryFee());
 	}
 
-
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping("/{id}")
 	public ResponseEntity<GetDeliveryFeeResponse> getDeliveryFee(@PathVariable Long id) {
 		return ResponseEntity.ok().body(deliveryFeeService.getDeliveryFee(id));

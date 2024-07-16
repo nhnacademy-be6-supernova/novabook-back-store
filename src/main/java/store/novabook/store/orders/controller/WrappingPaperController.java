@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.orders.controller.docs.WrappingPaperControllerDocs;
 import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
 import store.novabook.store.orders.dto.request.UpdateWrappingPaperRequest;
@@ -27,17 +28,20 @@ import store.novabook.store.orders.service.WrappingPaperService;
 public class WrappingPaperController implements WrappingPaperControllerDocs {
 	private final WrappingPaperService wrappingPaperService;
 
+	@CheckRole("ROLE_ADMIN")
 	@PostMapping
 	public ResponseEntity<CreateResponse> createWrappingPaper(@RequestBody CreateWrappingPaperRequest request) {
 		return ResponseEntity.ok(wrappingPaperService.createWrappingPaper(request));
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping(params = {"size","page"})
 	public ResponseEntity<Page<GetWrappingPaperResponse>> getWrappingPaperAll(Pageable pageable) {
 		Page<GetWrappingPaperResponse> response = wrappingPaperService.getWrappingPaperAll(pageable);
 		return ResponseEntity.ok(response);
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping
 	public ResponseEntity<GetWrappingPaperAllResponse> getWrappingPaperAllList() {
 		GetWrappingPaperAllResponse response = GetWrappingPaperAllResponse.builder()
@@ -46,12 +50,14 @@ public class WrappingPaperController implements WrappingPaperControllerDocs {
 		return ResponseEntity.ok(response);
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping("/{id}")
 	public ResponseEntity<GetWrappingPaperResponse> getWrappingPaper(@PathVariable Long id) {
 		GetWrappingPaperResponse response = wrappingPaperService.getWrappingPaperById(id);
 		return ResponseEntity.ok(response);
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> updateWrappingPaper(@PathVariable Long id,
 		@Valid @RequestBody UpdateWrappingPaperRequest request) {
