@@ -39,7 +39,7 @@ public class TossOrderService {
 	private final RabbitTemplate rabbitTemplate;
 	private static final String AMOUNT = "amount";
 	private static final String PAYMENT_KEY = "paymentKey";
-	private static final String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
+	private static final String WIDGET_SECRET_KEY = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
 
 
 
@@ -50,6 +50,7 @@ public class TossOrderService {
 			JSONParser parser = new JSONParser();
 			JSONObject obj = new JSONObject();
 
+			@SuppressWarnings("unchecked")
 			HashMap<String, Object> paymentParam = (HashMap<String, Object>)orderSagaMessage.getPaymentRequest()
 				.paymentInfo();
 
@@ -67,7 +68,7 @@ public class TossOrderService {
 			// 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
 			// 비밀번호가 없다는 것을 알리기 위해 시크릿 키 뒤에 콜론을 추가합니다.
 			Base64.Encoder encoder = Base64.getEncoder();
-			byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+			byte[] encodedBytes = encoder.encode((WIDGET_SECRET_KEY + ":").getBytes(StandardCharsets.UTF_8));
 			String authorizations = "Basic " + new String(encodedBytes);
 
 			URL url = new URL(TOSS_CONFIRM_URL);
@@ -108,6 +109,7 @@ public class TossOrderService {
 	@RabbitListener(queues = "nova.orders.compensate.approve.payment.queue")
 	@Transactional
 	public void cancel(@Payload OrderSagaMessage orderSagaMessage) {
+		@SuppressWarnings("unchecked")
 		HashMap<String, String> paymentParam = (HashMap<String, String>)orderSagaMessage.getPaymentRequest()
 			.paymentInfo();
 		String paymentKey = paymentParam.get(PAYMENT_KEY);
@@ -138,7 +140,7 @@ public class TossOrderService {
 		obj.put("cancelReason", tossPaymentCancelRequest.cancelReason());
 
 		Base64.Encoder encoder = Base64.getEncoder();
-		byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+		byte[] encodedBytes = encoder.encode((WIDGET_SECRET_KEY + ":").getBytes(StandardCharsets.UTF_8));
 		String authorizations = "Basic " + new String(encodedBytes);
 
 		URL url = new URL("https://api.tosspayments.com/v1/payments/" + tossPaymentCancelRequest.paymentKey() + "/cancel");
@@ -160,7 +162,7 @@ public class TossOrderService {
 		responseStream.close();
 
 		if (!isSuccess) {
-			log.error("토스 환불 실패");
+			log.error("토스 환불 실패 {}", jsonObject.toString());
 		}
 
 		log.info("jsonObject");

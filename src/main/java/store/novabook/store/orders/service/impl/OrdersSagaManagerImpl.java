@@ -22,6 +22,7 @@ public class OrdersSagaManagerImpl {
 
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 	public static final String COMPENSATE_ORDERS_FORM_CONFIRM_ROUTING_KEY = "compensate.orders.form.confirm.routing.key";
+	public static final String NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY = "nova.orders.saga.dead.routing.key";
 	private final RabbitTemplate rabbitTemplate;
 
 	/**
@@ -61,7 +62,7 @@ public class OrdersSagaManagerImpl {
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.apply.routing.key", orderSagaMessage);
 			}
 		} else if ("FAIL_CONFIRM_ORDER_FORM".equals(orderSagaMessage.getStatus())) {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY, orderSagaMessage);
 			log.error("주문서 검증 실패");
 		}
 	}
@@ -89,7 +90,7 @@ public class OrdersSagaManagerImpl {
 					orderSagaMessage);
 			}
 		} else if (orderSagaMessage.getStatus().equals("FAIL_APPLY_COUPON")) {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
 				orderSagaMessage);
 			log.error("[주문:쿠폰 적용 실패] 보상 트랜잭션을 시작합니다.");
 
@@ -112,7 +113,7 @@ public class OrdersSagaManagerImpl {
 				orderSagaMessage);
 
 		} else if (orderSagaMessage.getStatus().equals("FAIL_POINT_DECREMENT")) {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
 				orderSagaMessage);
 			log.error("[주문:포인트 감소 실패] 보상 트랜잭션을 시작합니다.");
 
@@ -138,7 +139,7 @@ public class OrdersSagaManagerImpl {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.save.database.routing.key",
 				orderSagaMessage);
 		} else if (orderSagaMessage.getStatus().equals("FAIL_APPROVE_PAYMENT")) {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
 				orderSagaMessage);
 			log.error("[주문:결제 승인 실패] 보상 트랜잭션을 시작합니다.");
 
@@ -165,7 +166,7 @@ public class OrdersSagaManagerImpl {
 			orderSagaMessage.setStatus("PROCEED_EARN_POINT");
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.earn.routing.key", orderSagaMessage);
 		} else if (orderSagaMessage.getStatus().equals("FAIL_SAVE_ORDERS_DATABASE")) {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
 				orderSagaMessage);
 			log.error("[주문:DB 저장 실패] 보상 트랜잭션을 시작합니다.");
 
@@ -195,7 +196,7 @@ public class OrdersSagaManagerImpl {
 			orderSagaMessage.setStatus("SUCCESS_ALL_ORDER_SAGA");
 			log.info("성공적으로 모든 주문 트랜잭션이 완료되었습니다");
 		} else if (orderSagaMessage.getStatus().equals("FAIL_EARN_POINT")) {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
 				orderSagaMessage);
 			log.error("[주문:DB 포인트 저장 실패]");
 		}
