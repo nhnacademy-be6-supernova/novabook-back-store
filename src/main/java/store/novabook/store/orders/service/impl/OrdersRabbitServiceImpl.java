@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -28,17 +27,15 @@ import store.novabook.store.member.entity.MemberGradeHistory;
 import store.novabook.store.member.repository.MemberGradeHistoryRepository;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.dto.OrderSagaMessage;
+import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.BookIdAndQuantityDTO;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
 import store.novabook.store.orders.dto.request.OrderTemporaryForm;
 import store.novabook.store.orders.dto.request.OrderTemporaryNonMemberForm;
-import store.novabook.store.orders.dto.request.PaymentRequest;
-import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 import store.novabook.store.orders.entity.DeliveryFee;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
 import store.novabook.store.orders.entity.OrdersStatus;
-import store.novabook.store.orders.entity.OrdersStatusEnum;
 import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.DeliveryFeeRepository;
 import store.novabook.store.orders.repository.OrdersBookRepository;
@@ -73,14 +70,13 @@ public class OrdersRabbitServiceImpl {
 	private final RabbitTemplate rabbitTemplate;
 	private final MemberGradeHistoryRepository memberGradeHistoryRepository;
 	private final PaymentRepository paymentRepository;
-	private final TossOrderService tossOrderService;
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 
 	/**
 	 * 가주문서를 검증
 	 * 가격, 수량 체크
-	 * @param orderSagaMessage 주문에 필요한 메세지 목록
 	 *
+	 * @param orderSagaMessage 주문에 필요한 메세지 목록
 	 */
 	@RabbitListener(queues = "nova.orders.form.verify.queue")
 	public void confirmOrderForm(@Payload OrderSagaMessage orderSagaMessage) {
@@ -92,7 +88,6 @@ public class OrdersRabbitServiceImpl {
 			} else {
 				processMemberOrder(orderSagaMessage, memberId);
 			}
-
 			orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -105,6 +100,7 @@ public class OrdersRabbitServiceImpl {
 
 	/**
 	 * 주문 트랜잭션 실패 시, 재고를 다시 증가하는 로직
+	 *
 	 * @param orderSagaMessage 주문에 필요한 메세지 목록
 	 */
 	@RabbitListener(queues = "nova.orders.compensate.form.confirm.queue")
@@ -120,7 +116,7 @@ public class OrdersRabbitServiceImpl {
 	}
 
 	/**
-	 *  DATA BASE 주문정보를 저장하는 Rabbit mq 로직
+	 * DATA BASE 주문정보를 저장하는 Rabbit mq 로직
 	 */
 	@RabbitListener(queues = "nova.orders.save.orders.database.queue")
 	public void saveSagaOrder(@Payload OrderSagaMessage orderSagaMessage) {
@@ -133,10 +129,13 @@ public class OrdersRabbitServiceImpl {
 			Map<String, Object> paymentParam = (Map<String, Object>)orderSagaMessage.getPaymentRequest()
 				.paymentInfo();
 
-			Payment savePayment = Payment.builder().request(CreatePaymentRequest.builder()
-				.paymentKey((String)paymentParam.get("paymentKey"))
-				.provider("tempProvider")
-				.build()).build();
+			Payment savePayment = Payment.builder()
+				.request(CreatePaymentRequest.builder()
+					.paymentKey((String)paymentParam.get("paymentKey"))
+					.provider("tempProvider")
+					.build())
+				.build();
+
 			Payment payment = paymentRepository.save(savePayment);
 
 			if (orderSagaMessage.getPaymentRequest().memberId() == null) {
@@ -166,70 +165,22 @@ public class OrdersRabbitServiceImpl {
 		}
 	}
 
-	/**
-	 * 결제 취소 시
-	 * -1. toss 결제 취소 (완)
-	 * 0. db 결제 상태 결제 취소로 변경
-	 * 1. 주문 테이블에 총 적립 포인트량 -> DDL 에 넣어야함
-	 * 2. 포인트는 사용량만큼 감소
-	 * 3. 쿠폰은 비사용 처리
-	 * 4. 뭐하지~
-	 *
-	 */
-
-	@RabbitListener(queues = "nova.payment.cancel.queue")
-	public void orderCancel(Long orderId, Long memberId) {
+	@RabbitListener(queues = "nova.orders.request.pay.cancel.queue")
+	public void orderCancel(@Payload RequestPayCancelMessage requestPayCancelMessage) {
 		try {
-			// 주문 DB 정보 상태 변경
-			Orders orders = ordersRepository.findById(orderId)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
+			List<OrdersBook> ordersBook = ordersBookRepository.findByOrdersCode(requestPayCancelMessage.getOrderCode());
 
-			OrdersStatus ordersStatus = ordersStatusRepository.findByName(OrdersStatusEnum.CANCELED.name());
-			orders.setOrdersStatus(ordersStatus);
-			ordersRepository.save(orders);
-
-			// 결제 취소 요청
-			String paymentKey = orders.getPayment().getPaymentKey();
-			TossPaymentCancelRequest tossPaymentCancel = TossPaymentCancelRequest.builder()
-				.cancelReason("고객 취소 요청")
-				.paymentKey(paymentKey).build();
-
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "payment.cancel.routing.key", tossPaymentCancel);
-
-			// 비회원일 경우
-			if (memberId == null) {
-				OrderTemporaryNonMemberForm orderForm = redisOrderNonMemberRepository.findById(
-						orders.getCode())
-					.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
-
-				PaymentRequest payment = PaymentRequest.builder()
-					.memberId(null)
-					.orderCode(orders.getCode())
-					.build();
-
-				OrderSagaMessage orderSagaMessage = OrderSagaMessage.builder().paymentRequest(payment)
-					.earnPointAmount(orders.getPointSaveAmount())
-					.build();
-
-				if (orderForm.usePointAmount() > 0) {
-					rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key",
-						orderSagaMessage);
-				}
-
-				if (orderForm.couponId() != null) {
-					rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key",
-						orderSagaMessage);
-				}
-
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.orders.form.confirm.routing.key",
-					orderSagaMessage);
+			for (OrdersBook orders : ordersBook) {
+				Book book = bookRepository.findById(orders.getBook().getId())
+					.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
+				// 	재고 다시 증가
+				book.increaseInventory(orders.getQuantity());
+				bookRepository.save(book);
 			}
-
 		} catch (Exception e) {
-			log.error("주문서 검증 실패");
+			log.error("주문서 검증 실패 {} ", e.getMessage());
 		}
 	}
-
 
 	private void processNonMemberOrder(OrderSagaMessage orderSagaMessage) {
 		// 주문폼 조회
@@ -258,50 +209,56 @@ public class OrdersRabbitServiceImpl {
 		Map<Long, Book> bookCache = new HashMap<>();
 
 		for (BookIdAndQuantityDTO bookDTO : books) {
-			Book book = bookCache.computeIfAbsent(bookDTO.id(), id -> bookRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND)));
+			Book book = bookCache.computeIfAbsent(bookDTO.id(),
+				id -> bookRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND)));
 
 			if (!BookStatusEnum.FOR_SALE.getKoreanValue().equals(book.getBookStatus().getName())) {
 				throw new NotFoundException(ErrorCode.BOOK_NOT_SAIL);
 			}
 		}
 
+		long bookPrice = 0;
+
 		for (BookIdAndQuantityDTO bookDTO : books) {
 			Book book = bookCache.get(bookDTO.id());
 			book.decreaseInventory((int)bookDTO.quantity());
 
 			// 순수금액 설정
-			long bookPrice = orderSagaMessage.getCalculateTotalAmount() +
-				(book.getPrice() - book.getDiscountPrice()) * bookDTO.quantity();
-			orderSagaMessage.setBookAmount(bookPrice);
-
-			validateDeliveryAndWrapping(deliveryId, wrappingPaperId);
-
-			// 포인트 적립금 계산
-			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
-
-			if(memberId != null) {
-				float pointPercent = calculatePointPercent(memberId);
-				float earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
-				orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
-			}
-
-			// 배달피, 포장비를 추가한 금액 산정
-			DeliveryFee deliveryFee = deliveryFeeRepository.findById(deliveryId)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
-			WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId)
-				.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
-			orderSagaMessage.setCalculateTotalAmount(bookPrice + deliveryFee.getFee() + wrappingPaper.getPrice());
-
-			if (bookPrice <= 0) {
-				throw new BadRequestException(ErrorCode.DISCOUNTED_PRICE_BELOW_ZERO);
-			}
-
-			log.info("현재 계산 금액 : {}", orderSagaMessage.getCalculateTotalAmount());
+			bookPrice += (book.getDiscountPrice() * bookDTO.quantity());
 
 			updateBookStatus(book);
 			bookRepository.save(book);
 		}
+
+		orderSagaMessage.setBookAmount(bookPrice);
+
+		validateDeliveryAndWrapping(deliveryId, wrappingPaperId);
+
+		// 포인트 적립금 계산
+		Long memberId = orderSagaMessage.getPaymentRequest().memberId();
+
+		if (memberId != null) {
+			float pointPercent = calculatePointPercent(memberId);
+			float earnPointAmount = orderSagaMessage.getBookAmount() * pointPercent;
+			orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
+
+			if ((long)earnPointAmount == 0) {
+				orderSagaMessage.setNoEarnPoint(true);
+			}
+		}
+
+		// 배달피, 포장비를 추가한 금액 산정
+		DeliveryFee deliveryFee = deliveryFeeRepository.findById(deliveryId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
+		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.WRAPPING_PAPER_NOT_FOUND));
+		orderSagaMessage.setCalculateTotalAmount(bookPrice + deliveryFee.getFee() + wrappingPaper.getPrice());
+
+		if (bookPrice <= 0) {
+			throw new BadRequestException(ErrorCode.DISCOUNTED_PRICE_BELOW_ZERO);
+		}
+
+		log.info("현재 계산 금액 : {}", orderSagaMessage.getCalculateTotalAmount());
 	}
 
 	private void validateDeliveryAndWrapping(Long deliveryId, Long wrappingPaperId) {
@@ -316,14 +273,13 @@ public class OrdersRabbitServiceImpl {
 	 */
 	private float calculatePointPercent(Long memberId) {
 		MemberGradeHistory memberGradeHistory = memberGradeHistoryRepository.findFirstByMemberIdOrderByCreatedAtDesc(
-				memberId)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_HISTORY_NOT_FOUND));
+			memberId).orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_HISTORY_NOT_FOUND));
 		PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 			.orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_GRADE_POLICY_NOT_FOUND));
 
-
 		float pointPercent =
-			(pointPolicy.getBasicPointRate() / 100) + (memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
+			((float)pointPolicy.getBasicPointRate() / 100) + (
+				(float)memberGradeHistory.getMemberGradePolicy().getSaveRate() / 100);
 
 		if (pointPercent >= 1) {
 			throw new BadRequestException(ErrorCode.INVALID_POINT_DISCOUNT);
@@ -394,8 +350,10 @@ public class OrdersRabbitServiceImpl {
 			.memberId(null)
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
-			.deliveryAddress(orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() +
-				orderForm.orderReceiverInfo().orderAddressInfo().detailAddress())
+			.deliveryAddress(
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+					.orderAddressInfo()
+					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
 			.receiverName(orderForm.orderReceiverInfo().name())
 			.receiverNumber(orderForm.orderReceiverInfo().phone())
@@ -416,8 +374,10 @@ public class OrdersRabbitServiceImpl {
 			.memberId(orderSagaMessage.getPaymentRequest().memberId())
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
-			.deliveryAddress(orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() +
-				orderForm.orderReceiverInfo().orderAddressInfo().detailAddress())
+			.deliveryAddress(
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+					.orderAddressInfo()
+					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
 			.receiverName(orderForm.orderReceiverInfo().name())
 			.receiverNumber(orderForm.orderReceiverInfo().phone())

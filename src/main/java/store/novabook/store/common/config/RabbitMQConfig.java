@@ -78,10 +78,7 @@ public class RabbitMQConfig {
 		connectionFactory.setPort(config.port());
 		connectionFactory.setUsername(config.username());
 		connectionFactory.setPassword(config.password());
-		// CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
-		// connectionFactory.setPort(5672);
-		// connectionFactory.setUsername("supernova");
-		// connectionFactory.setPassword("1234");
+
 		return connectionFactory;
 	}
 

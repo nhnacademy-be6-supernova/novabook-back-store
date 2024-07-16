@@ -39,7 +39,7 @@ public class TossOrderService {
 	private final RabbitTemplate rabbitTemplate;
 	private static final String AMOUNT = "amount";
 	private static final String PAYMENT_KEY = "paymentKey";
-	private static final String widgetSecretKey = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
+	private static final String WIDGET_SECRET_KEY = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
 
 
 
@@ -50,6 +50,7 @@ public class TossOrderService {
 			JSONParser parser = new JSONParser();
 			JSONObject obj = new JSONObject();
 
+			@SuppressWarnings("unchecked")
 			HashMap<String, Object> paymentParam = (HashMap<String, Object>)orderSagaMessage.getPaymentRequest()
 				.paymentInfo();
 
@@ -60,14 +61,14 @@ public class TossOrderService {
 				throw new BadRequestException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
 			}
 
-			obj.put("orderId", orderSagaMessage.getPaymentRequest().orderCode().toString());
+			obj.put("orderId", orderSagaMessage.getPaymentRequest().orderCode());
 			obj.put(AMOUNT, paymentParam.get(AMOUNT));
 			obj.put(PAYMENT_KEY, paymentParam.get(PAYMENT_KEY));
 
 			// 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
 			// 비밀번호가 없다는 것을 알리기 위해 시크릿 키 뒤에 콜론을 추가합니다.
 			Base64.Encoder encoder = Base64.getEncoder();
-			byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+			byte[] encodedBytes = encoder.encode((WIDGET_SECRET_KEY + ":").getBytes(StandardCharsets.UTF_8));
 			String authorizations = "Basic " + new String(encodedBytes);
 
 			URL url = new URL(TOSS_CONFIRM_URL);
@@ -108,6 +109,7 @@ public class TossOrderService {
 	@RabbitListener(queues = "nova.orders.compensate.approve.payment.queue")
 	@Transactional
 	public void cancel(@Payload OrderSagaMessage orderSagaMessage) {
+		@SuppressWarnings("unchecked")
 		HashMap<String, String> paymentParam = (HashMap<String, String>)orderSagaMessage.getPaymentRequest()
 			.paymentInfo();
 		String paymentKey = paymentParam.get(PAYMENT_KEY);
@@ -118,9 +120,8 @@ public class TossOrderService {
 				.paymentKey(paymentKey)
 				.build();
 
-			JSONObject response = sendTossCancelRequest(tossPaymentCancel);
+			sendTossCancelRequest(tossPaymentCancel);
 			orderSagaMessage.setStatus("SUCCESS_REFUND_PAYMENT");
-			log.info("환불 응답 내용 : {}", response.toString());
 		} catch (IOException | ParseException e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_REFUND_TOSS_PAYMENT");
@@ -131,7 +132,7 @@ public class TossOrderService {
 	}
 
 
-	public JSONObject sendTossCancelRequest(TossPaymentCancelRequest tossPaymentCancelRequest) throws
+	public void sendTossCancelRequest(TossPaymentCancelRequest tossPaymentCancelRequest) throws
 		IOException,
 		ParseException {
 		JSONParser parser = new JSONParser();
@@ -139,7 +140,7 @@ public class TossOrderService {
 		obj.put("cancelReason", tossPaymentCancelRequest.cancelReason());
 
 		Base64.Encoder encoder = Base64.getEncoder();
-		byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+		byte[] encodedBytes = encoder.encode((WIDGET_SECRET_KEY + ":").getBytes(StandardCharsets.UTF_8));
 		String authorizations = "Basic " + new String(encodedBytes);
 
 		URL url = new URL("https://api.tosspayments.com/v1/payments/" + tossPaymentCancelRequest.paymentKey() + "/cancel");
@@ -161,10 +162,10 @@ public class TossOrderService {
 		responseStream.close();
 
 		if (!isSuccess) {
-			throw new RuntimeException("토스 환불 실패");
+			log.error("토스 환불 실패 {}", jsonObject.toString());
 		}
 
-		return jsonObject;
+		log.info("jsonObject");
 	}
 
 	@RabbitListener(queues = "nova.payment.request.pay.cancel.queue")
@@ -173,7 +174,10 @@ public class TossOrderService {
 			sendTossCancelRequest(TossPaymentCancelRequest.builder().paymentKey(message.getPaymentKey())
 				.cancelReason("결제 취소 요청").build());
 		} catch (IOException | ParseException e) {
-			throw new RuntimeException(e);
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			message.setStatus("FAIL_REQUEST_CANCEL_TOSS_PAYMENT");
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+				message);
 		}
 	}
 }

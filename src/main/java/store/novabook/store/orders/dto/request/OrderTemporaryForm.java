@@ -2,9 +2,7 @@ package store.novabook.store.orders.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;

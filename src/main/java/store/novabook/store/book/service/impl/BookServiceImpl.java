@@ -15,7 +15,6 @@ import java.util.Map;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -137,7 +136,7 @@ public class BookServiceImpl implements BookService {
 		Image image = imageRepository.save(new Image(nhnUrl));
 		bookImageRepository.save(BookImage.of(book, image));
 
-		bookSearchRepository.save(BookDocument.of(book, image, tags, categories, 0, 0));
+		bookSearchRepository.save(BookDocument.of(book, image, tags, categories, 0.0, 0));
 
 		return new CreateBookResponse(book.getId());
 	}
