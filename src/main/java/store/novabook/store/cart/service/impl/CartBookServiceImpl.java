@@ -41,6 +41,17 @@ public class CartBookServiceImpl implements CartBookService {
 
 	@Override
 	public CreateCartBookResponse createCartBook(Long memberId, CartBookDTO request) {
+		if(memberId == null) {
+			Book book = bookRepository.findById(request.bookId())
+				.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+			if(book.getInventory() < request.quantity()){
+				throw new BadRequestException(ErrorCode.NOT_UPDATE_CART_QUANTITY);
+			}
+			return new CreateCartBookResponse(book.getId());
+
+		}
+
 		CartBook cartBook = queryRepository.createCartBook(memberId, request);
 		return new CreateCartBookResponse(cartBookRepository.save(cartBook).getId());
 	}
@@ -48,6 +59,7 @@ public class CartBookServiceImpl implements CartBookService {
 	@Override
 	public CreateCartBookListResponse createCartBooks(Long memberId,
 		CartBookListDTO request) {
+
 		// 카트 존재 여부 확인
 		Cart cart = cartRepository.findByMemberId(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.CART_NOT_FOUND));

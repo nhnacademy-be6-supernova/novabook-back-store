@@ -1,5 +1,7 @@
 package store.novabook.store.search.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.search.document.BookDocument;
 import store.novabook.store.search.dto.GetBookSearchResponse;
 import store.novabook.store.search.service.impl.BookSearchServiceImpl;
 
@@ -36,5 +39,10 @@ public class BookSearchController {
 	@GetMapping("/category")
 	public Page<GetBookSearchResponse> searchByCategory(@RequestParam String category, Pageable pageable) {
 		return bookSearchService.searchByCategoryListContaining(category, pageable);
+	}
+
+	@GetMapping()
+	public List<BookDocument> searchByTagsContaining(Pageable pageable) {
+		return bookSearchService.searchByTagsContaining(pageable);
 	}
 }

@@ -136,7 +136,7 @@ public class BookServiceImpl implements BookService {
 		Image image = imageRepository.save(new Image(nhnUrl));
 		bookImageRepository.save(BookImage.of(book, image));
 
-		bookSearchRepository.save(BookDocument.of(book, image, tags, categories, 0, 0));
+		bookSearchRepository.save(BookDocument.of(book, image, tags, categories, 0.0, 0));
 
 		return new CreateBookResponse(book.getId());
 	}
