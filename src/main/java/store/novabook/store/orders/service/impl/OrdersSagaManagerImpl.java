@@ -48,13 +48,13 @@ public class OrdersSagaManagerImpl {
 		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
 
 		if ("SUCCESS_CONFIRM_ORDER_FORM".equals(orderSagaMessage.getStatus())) {
-			boolean usePoint = !orderSagaMessage.isNoUsePoint();
-			boolean useCoupon = !orderSagaMessage.isNoUseCoupon();
+			boolean isNoUsePoint = orderSagaMessage.isNoUsePoint();
+			boolean isNoUseCoupon = orderSagaMessage.isNoUseCoupon();
 
-			if (!usePoint && !useCoupon) {
+			if (isNoUsePoint && isNoUseCoupon) {
 				orderSagaMessage.setStatus("PROCEED_APPROVE_PAYMENT");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.approve.payment.routing.key", orderSagaMessage);
-			} else if (!useCoupon) {
+			} else if (isNoUseCoupon) {
 				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key", orderSagaMessage);
 			} else {
