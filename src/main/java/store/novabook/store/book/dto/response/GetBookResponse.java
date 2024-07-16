@@ -24,7 +24,7 @@ public record GetBookResponse(
 	List<String> tags,
 	List<String> categories,
 	int likes,
-	int score,
+	Double score,
 	String image,
 	Long bookStatusId
 
@@ -34,7 +34,7 @@ public record GetBookResponse(
 		List<String> tags,
 		List<String> categories,
 		int likes,
-		int score,
+		Double score,
 		Image image) {
 		return GetBookResponse.builder()
 			.id(book.getId())

@@ -41,8 +41,9 @@ public class CartController implements CartControllerDocs {
 		return ResponseEntity.ok().body(cartBookService.getCartBookAllByGuest(request));
 	}
 
+
 	@PostMapping("/add")
-	public ResponseEntity<CreateCartBookResponse> addCartBook(@CurrentMembers Long memberId, @Valid @RequestBody CartBookDTO request) {
+	public ResponseEntity<CreateCartBookResponse> addCartBook(@CurrentMembers(required = false) Long memberId, @Valid @RequestBody CartBookDTO request) {
 		return ResponseEntity.status(HttpStatus.OK).body(cartBookService.createCartBook(memberId, request));
 	}
 
