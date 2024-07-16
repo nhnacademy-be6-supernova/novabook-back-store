@@ -15,6 +15,4 @@ public interface PaymentControllerDocs {
 	ResponseEntity<CreatePaymentResponse> createPayment(@Valid @RequestBody CreatePaymentRequest request);
 	//결제 번호로 조회
 	ResponseEntity<GetPaymentResponse> getPayment(@PathVariable Long paymentId);
-	//주문 번호로 조회
-	// ResponseEntity<GetPaymentResponse> getPaymentByOrderId(@PathVariable Long ordersId);
 }

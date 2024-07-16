@@ -14,10 +14,6 @@ import store.novabook.store.orders.dto.response.GetOrdersResponse;
 @Tag(name = "Orders API")
 public interface OrdersControllerDocs {
 
-	//전체 조회
-	@Operation(summary = "주문 전체 조회", description = "주문을 전체 조회합니다.")
-	ResponseEntity<Page<GetOrdersResponse>> getOrdersAll();
-
 	//단건조회
 	@Operation(summary = "주문 조회", description = "해당 ID로 주문을 조회합니다.")
 	ResponseEntity<GetOrdersResponse> getOrders(@PathVariable Long id);

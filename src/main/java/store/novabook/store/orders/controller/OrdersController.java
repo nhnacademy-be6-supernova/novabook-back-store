@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.orders.controller.docs.OrdersControllerDocs;
 import store.novabook.store.orders.dto.request.UpdateOrdersAdminRequest;
 import store.novabook.store.orders.dto.response.GetOrdersAdminResponse;
@@ -25,24 +26,21 @@ public class OrdersController implements OrdersControllerDocs {
 
 	private final OrdersService ordersService;
 
-	@GetMapping
-	public ResponseEntity<Page<GetOrdersResponse>> getOrdersAll() {
-		Page<GetOrdersResponse> responses = ordersService.getOrdersResponsesAll();
-		return ResponseEntity.ok(responses);
-	}
-
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/{id}")
 	public ResponseEntity<GetOrdersResponse> getOrders(@PathVariable Long id) {
 		GetOrdersResponse response = ordersService.getOrdersById(id);
 		return ResponseEntity.ok(response);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody UpdateOrdersAdminRequest request) {
 		ordersService.update(id, request);
 		return ResponseEntity.noContent().build();
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping("/admin")
 	public ResponseEntity<Page<GetOrdersAdminResponse>> getOrdersAdmin(Pageable pageable) {
 		Page<GetOrdersAdminResponse> responses = ordersService.getOrdersAdminResponsesAll(pageable);

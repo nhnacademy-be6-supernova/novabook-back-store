@@ -35,10 +35,4 @@ public class PaymentController implements PaymentControllerDocs {
 		GetPaymentResponse response = paymentService.getPayment(paymentId);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
-	// @GetMapping("/orders/{ordersId}")
-	// public ResponseEntity<GetPaymentResponse> getPaymentByOrderId(@PathVariable Long ordersId) {
-	// 	GetPaymentResponse response = paymentService.getPaymentByOrderId(ordersId);
-	// 	return ResponseEntity.status(HttpStatus.OK).body(response);
-	// }
 }

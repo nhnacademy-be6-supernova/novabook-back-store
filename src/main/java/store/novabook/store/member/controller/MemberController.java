@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.member.controller.docs.MemberControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
@@ -72,6 +73,7 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok(memberService.getMemberAll(pageable));
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/member")
 	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers(required = false) Long memberId) {
 		if (memberId != null) {
@@ -81,6 +83,7 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/member/name")
 	public ResponseEntity<GetmemberNameResponse> getMemberName(@CurrentMembers(required = false) Long memberId) {
 		if (memberId == null) {
@@ -94,6 +97,7 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok().body(memberService.matches(loginMemberRequest));
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/member/update")
 	public ResponseEntity<Void> updateMember(@CurrentMembers Long memberId,
 		@RequestBody UpdateMemberRequest updateMemberRequest) {
@@ -102,6 +106,7 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/member/password")
 	public ResponseEntity<Void> updateMemberPassword(@CurrentMembers Long memberId,
 		@RequestBody @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest) {
@@ -109,12 +114,14 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/member/dormant")
 	public ResponseEntity<Void> updateMemberStatusToDormant(@CurrentMembers Long memberId) {
 		memberService.updateMemberStatusToDormant(memberId);
 		return ResponseEntity.ok().build();
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/member/withdraw")
 	public ResponseEntity<Void> updateMemberStatusToWithdraw(@CurrentMembers Long memberId,
 		@RequestBody DeleteMemberRequest deleteMemberRequest) {
@@ -128,6 +135,7 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok(memberLoginResponse);
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@PostMapping("/find/admin")
 	public ResponseEntity<FindMemberLoginResponse> findAdmin(@Valid @RequestBody FindMemberRequest findMemberRequest) {
 		FindMemberLoginResponse memberLoginResponse = memberService.findMembersLogin(findMemberRequest.loginId());
@@ -141,6 +149,7 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok(getPaycoMembersResponse);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/payco/link")
 	public ResponseEntity<Void> linkPayco(@Valid @RequestBody LinkPaycoMembersRequest linkPaycoMembersRequest) {
 		memberService.linkPaycoMembers(linkPaycoMembersRequest);
