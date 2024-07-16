@@ -17,22 +17,23 @@ import lombok.Getter;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.category.entity.Category;
 import store.novabook.store.image.entity.Image;
+import store.novabook.store.search.dto.GetBookSearchResponse;
 import store.novabook.store.tag.entity.Tag;
 
 @Getter
-// @Document(indexName = "supernova_search")
+@Document(indexName = "supernova_search")
 public class BookDocument {
 	@Id
 	@Field(type = FieldType.Long)
 	private final Long id;
 
-	@Field(type = FieldType.Keyword, analyzer = "korean")
+	@Field(type = FieldType.Text, analyzer = "korean")
 	private final String title;
 
-	@Field(type = FieldType.Keyword, analyzer = "korean")
+	@Field(type = FieldType.Text, analyzer = "korean")
 	private final String author;
 
-	@Field(type = FieldType.Keyword, analyzer = "korean")
+	@Field(type = FieldType.Text, analyzer = "korean")
 	private final String publisher;
 
 	@Field(type = FieldType.Text)
@@ -41,29 +42,29 @@ public class BookDocument {
 	@Field(type = FieldType.Long)
 	private final Long price;
 
-	@Field(type = FieldType.Keyword)
+	@Field(type = FieldType.Long)
 	private final Long discountPrice;
 
-	@Field(type = FieldType.Keyword)
-	private final Integer score;
+	@Field(type = FieldType.Integer)
+	private final Double score;
 
 	@Field(type = FieldType.Boolean)
 	private final Boolean isPackaged;
 
-	@Field(type = FieldType.Keyword)
+	@Field(type = FieldType.Integer)
 	private final Integer review;
 
-	@Field(type = FieldType.Keyword, analyzer = "korean")
+	@Field(type = FieldType.Text, analyzer = "korean")
 	private final List<String> categoryList;
 
-	@Field(type = FieldType.Keyword, analyzer = "korean")
+	@Field(type = FieldType.Text, analyzer = "korean")
 	private final List<String> tagList;
 
 	@Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
 	private final LocalDateTime createdAt;
 
 	@Builder
-	public BookDocument(Long id, String title, String author, String publisher, String image, Long price, Long discountPrice, Integer score, Boolean isPackaged, Integer review, List<String> tagList,
+	public BookDocument(Long id, String title, String author, String publisher, String image, Long price, Long discountPrice, Double score, Boolean isPackaged, Integer review, List<String> tagList,
 		List<String> categoryList) {
 		this.id = id;
 		this.title = title;
@@ -80,7 +81,7 @@ public class BookDocument {
 		this.createdAt = LocalDateTime.now();
 	}
 
-	public static BookDocument of(Book book, Image image, List<Tag> tags, List<Category> categories, Integer score, Integer review) {
+	public static BookDocument of(Book book, Image image, List<Tag> tags, List<Category> categories, Double score, Integer review) {
 		return BookDocument.builder()
 			.id(book.getId())
 			.title(book.getTitle())
@@ -94,6 +95,22 @@ public class BookDocument {
 			.review(review)
 			.tagList(tagNames(tags))
 			.categoryList(categoryNames(categories))
+			.build();
+	}
+	public static BookDocument of(GetBookSearchResponse response, List<String> tags, List<String> categories, Integer review) {
+		return BookDocument.builder()
+			.id(response.id())
+			.title(response.title())
+			.author(response.author())
+			.publisher(response.publisher())
+			.image(response.image())
+			.price(response.price())
+			.discountPrice(response.discountPrice())
+			.score(response.score())
+			.isPackaged(response.isPackaged())
+			.review(review)
+			.tagList(tags)
+			.categoryList(categories)
 			.build();
 	}
 

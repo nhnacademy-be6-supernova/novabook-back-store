@@ -45,7 +45,7 @@ public class CartController implements CartControllerDocs {
 
 	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/add")
-	public ResponseEntity<CreateCartBookResponse> addCartBook(@CurrentMembers Long memberId,
+	public ResponseEntity<CreateCartBookResponse> addCartBook(@CurrentMembers(required = false) Long memberId,
 		@Valid @RequestBody CartBookDTO request) {
 		return ResponseEntity.status(HttpStatus.OK).body(cartBookService.createCartBook(memberId, request));
 	}
