@@ -1,0 +1,85 @@
+{
+  "mappings": {
+    "properties": {
+      "_class": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "author": {
+        "type": "text",
+        "analyzer": "nori_synonym_analyzer"
+      },
+      "categoryList": {
+        "type": "text"
+      },
+      "createdAt": {
+        "type": "date",
+        "format": "yyyy-MM-dd'T'HH:mm:ss"
+      },
+      "discountPrice": {
+        "type": "long"
+      },
+      "id": {
+        "type": "long"
+      },
+      "image": {
+        "type": "text"
+      },
+      "isPackaged": {
+        "type": "boolean"
+      },
+      "price": {
+        "type": "long"
+      },
+      "publisher": {
+        "type": "text",
+        "analyzer": "nori_synonym_analyzer"
+      },
+      "review": {
+        "type": "double"
+      },
+      "score": {
+        "type": "integer"
+      },
+      "title": {
+        "type": "text",
+        "analyzer": "nori_synonym_analyzer"
+
+      }
+    }
+  },
+  "settings": {
+    "index": {
+      "number_of_shards": "1",
+      "number_of_replicas": "1",
+      "analysis": {
+        "tokenizer": {
+          "nori_tokenizer": {
+            "type": "nori_tokenizer"
+          }
+        },
+        "filter": {
+          "synonym_filter": {
+            "type": "synonym",
+            "decompound_mode": "mixed",
+            "synonyms_path": "supernova/similler.txt"
+          }
+        },
+        "analyzer": {
+          "nori_synonym_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer",
+            "filter": [
+              "synonym_filter"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
