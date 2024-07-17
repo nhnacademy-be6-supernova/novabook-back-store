@@ -255,7 +255,6 @@ public class MemberServiceImpl implements MemberService {
 	public GetPaycoMembersResponse getPaycoMembers(GetPaycoMembersRequest getPaycoMembersRequest) {
 		Member member = memberRepository.findByOauthId(getPaycoMembersRequest.paycoId());
 		if (member == null) {
-			// throw new EntityNotFoundException(Member.class);
 			return null;
 		}
 		return new GetPaycoMembersResponse(member.getId());
