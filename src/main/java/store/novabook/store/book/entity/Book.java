@@ -93,8 +93,8 @@ public class Book {
 				String publisher,
 				LocalDateTime publicationDate,
 				int inventory,
-				Long price,
-				Long discountPrice,
+				long price,
+				long discountPrice,
 				boolean isPackaged) {
 		this.bookStatus = bookStatus;
 		this.isbn = isbn;

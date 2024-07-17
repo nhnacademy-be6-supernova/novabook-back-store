@@ -30,12 +30,6 @@ public class OrdersStatusController implements OrdersStatusControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping
-	public ResponseEntity<Page<GetOrdersStatusResponse>> getOrdersStatusAll() {
-		Page<GetOrdersStatusResponse> response = ordersStatusService.getOrdersStatus();
-		return ResponseEntity.ok(response);
-	}
-
 	@GetMapping("/{id}")
 	public ResponseEntity<GetOrdersStatusResponse> getOrdersStatus(@PathVariable Long id) {
 		GetOrdersStatusResponse response = ordersStatusService.getOrdersStatus(id);

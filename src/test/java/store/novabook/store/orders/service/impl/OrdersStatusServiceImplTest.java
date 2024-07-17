@@ -13,7 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
@@ -31,6 +34,9 @@ class OrdersStatusServiceImplTest {
 	@InjectMocks
 	private OrdersStatusServiceImpl ordersStatusService;
 
+	@Spy
+	private OrdersStatus ordersStatusSpy;
+
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
@@ -42,8 +48,8 @@ class OrdersStatusServiceImplTest {
 			.name("Pending")
 			.build();
 
-		OrdersStatus ordersStatus = new OrdersStatus(request);
-		ordersStatus.setId(1L);
+		OrdersStatus ordersStatus = spy(new OrdersStatus(request));
+		doReturn(1L).when(ordersStatus).getId();
 
 		when(ordersStatusRepository.save(any(OrdersStatus.class))).thenReturn(ordersStatus);
 
@@ -54,24 +60,11 @@ class OrdersStatusServiceImplTest {
 		verify(ordersStatusRepository, times(1)).save(any(OrdersStatus.class));
 	}
 
-	@Test
-	void testGetOrdersStatus() {
-		List<OrdersStatus> ordersStatusList = new ArrayList<>();
-		ordersStatusList.add(new OrdersStatus(CreateOrdersStatusRequest.builder().name("Pending").build()));
-
-		when(ordersStatusRepository.findAll()).thenReturn(ordersStatusList);
-
-		Page<GetOrdersStatusResponse> responsePage = ordersStatusService.getOrdersStatus();
-
-		assertNotNull(responsePage);
-		assertEquals(1, responsePage.getTotalElements());
-		verify(ordersStatusRepository, times(1)).findAll();
-	}
 
 	@Test
 	void testGetOrdersStatusById() {
 		Long id = 1L;
-		OrdersStatus ordersStatus = new OrdersStatus(CreateOrdersStatusRequest.builder().name("Pending").build());
+		OrdersStatus ordersStatus = spy(new OrdersStatus(CreateOrdersStatusRequest.builder().name("Pending").build()));
 
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.of(ordersStatus));
 
@@ -99,20 +92,22 @@ class OrdersStatusServiceImplTest {
 	@Test
 	void testSave1() {
 		CreateOrdersStatusRequest request = CreateOrdersStatusRequest.builder().name("Processing").build();
-		OrdersStatus ordersStatus = new OrdersStatus(request);
+		OrdersStatus ordersStatus = spy(new OrdersStatus(request));
+		doReturn(1L).when(ordersStatus).getId();
+
 		when(ordersStatusRepository.save(any(OrdersStatus.class))).thenReturn(ordersStatus);
 
 		CreateResponse response = ordersStatusService.save(request);
 
 		assertNotNull(response);
-		assertEquals(ordersStatus.getId(), response.id());
+		assertEquals(1L, response.id());
 		verify(ordersStatusRepository, times(1)).save(any(OrdersStatus.class));
 	}
 
 	@Test
 	void testGetOrdersStatus1() {
-		OrdersStatus status1 = new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build());
-		OrdersStatus status2 = new OrdersStatus(CreateOrdersStatusRequest.builder().name("Delivered").build());
+		OrdersStatus status1 = spy(new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build()));
+		OrdersStatus status2 = spy(new OrdersStatus(CreateOrdersStatusRequest.builder().name("Delivered").build()));
 		List<OrdersStatus> statusList = Arrays.asList(status1, status2);
 		when(ordersStatusRepository.findAll()).thenReturn(statusList);
 
@@ -128,7 +123,7 @@ class OrdersStatusServiceImplTest {
 	@Test
 	void testGetOrdersStatusById1() {
 		Long id = 1L;
-		OrdersStatus ordersStatus = new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build());
+		OrdersStatus ordersStatus = spy(new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build()));
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.of(ordersStatus));
 
 		GetOrdersStatusResponse response = ordersStatusService.getOrdersStatus(id);

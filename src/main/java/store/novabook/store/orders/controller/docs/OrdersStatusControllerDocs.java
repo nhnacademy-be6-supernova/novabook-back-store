@@ -18,10 +18,6 @@ public interface OrdersStatusControllerDocs {
 	@Operation(summary = "주문상태 생성", description = "주문상태 추가합니다.")
 	ResponseEntity<CreateResponse> createOrdersStatus(@RequestBody CreateOrdersStatusRequest request);
 
-	//전체 조회
-	@Operation(summary = "주문상태 전체 조회", description = "주문상태를 모두 조회합니다.")
-	ResponseEntity<Page<GetOrdersStatusResponse>> getOrdersStatusAll();
-
 	//단건 조회
 	@Operation(summary = "주문상태 단건 조회", description = "주문상태 ID로 조회합니다.")
 	ResponseEntity<GetOrdersStatusResponse> getOrdersStatus(@PathVariable Long id);
