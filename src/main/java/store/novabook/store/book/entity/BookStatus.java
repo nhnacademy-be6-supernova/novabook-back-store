@@ -43,4 +43,9 @@ public class BookStatus {
 		this.updatedAt = updatedAt;
 	}
 
+	public static BookStatus of(String name) {
+		BookStatus bookStatus = new BookStatus();
+		bookStatus.name = name;
+		return bookStatus;
+	}
 }

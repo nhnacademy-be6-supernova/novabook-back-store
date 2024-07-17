@@ -57,7 +57,6 @@ public class Book {
 	@NotNull
 	private String publisher;
 
-
 	@NotNull
 	private LocalDateTime publicationDate;
 
@@ -80,11 +79,11 @@ public class Book {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-
 	public static final int EXTRA_STOCK = 5;
 
 	@Builder
 	public Book(BookStatus bookStatus,
+
 				String isbn,
 				String title,
 				String description,
@@ -93,9 +92,10 @@ public class Book {
 				String publisher,
 				LocalDateTime publicationDate,
 				int inventory,
-				Long price,
-				Long discountPrice,
+				long price,
+				long discountPrice,
 				boolean isPackaged) {
+
 		this.bookStatus = bookStatus;
 		this.isbn = isbn;
 		this.title = title;
@@ -109,9 +109,6 @@ public class Book {
 		this.discountPrice = discountPrice;
 		this.isPackaged = isPackaged;
 	}
-
-
-
 
 	public static Book of(CreateBookRequest request, BookStatus bookStatus) {
 		return Book.builder()

@@ -27,8 +27,7 @@ public class OrdersStatusServiceImpl implements OrdersStatusService {
 	@Override
 	public CreateResponse save(CreateOrdersStatusRequest request) {
 		OrdersStatus ordersStatus = new OrdersStatus(request);
-		ordersStatusRepository.save(ordersStatus);
-		return new CreateResponse(ordersStatus.getId());
+		return new CreateResponse(ordersStatusRepository.save(ordersStatus).getId());
 	}
 
 	@Override
