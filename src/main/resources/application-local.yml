@@ -20,29 +20,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
 
-
-rabbitmq:
-  queue:
-    coupon: nova.coupon.queue
-    dead: nova.dead.queue
-    member-coupon: nova.membercoupon.queue
-  exchange:
-    member: nova.member.exchange
-    coupon: nova.coupon.exchange
-  routing:
-    member: member.registration
-    couponCreated: coupon.created
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://127.0.0.1:8761/eureka
-  instance:
-    prefer-ip-address: true
 
 logging:
   level:
