@@ -6,7 +6,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.transaction.NoTransactionException;
 
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.BookStatus;
@@ -28,8 +31,11 @@ import store.novabook.store.member.entity.MemberGradePolicy;
 import store.novabook.store.member.repository.MemberGradeHistoryRepository;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.orders.dto.OrderSagaMessage;
+import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.BookIdAndQuantityDTO;
 import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
 import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
 import store.novabook.store.orders.dto.request.OrderAddressInfo;
 import store.novabook.store.orders.dto.request.OrderReceiverInfo;
@@ -38,6 +44,9 @@ import store.novabook.store.orders.dto.request.OrderTemporaryForm;
 import store.novabook.store.orders.dto.request.OrderTemporaryNonMemberForm;
 import store.novabook.store.orders.dto.request.PaymentRequest;
 import store.novabook.store.orders.entity.DeliveryFee;
+import store.novabook.store.orders.entity.Orders;
+import store.novabook.store.orders.entity.OrdersBook;
+import store.novabook.store.orders.entity.OrdersStatus;
 import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.DeliveryFeeRepository;
 import store.novabook.store.orders.repository.OrdersBookRepository;
@@ -46,6 +55,8 @@ import store.novabook.store.orders.repository.OrdersStatusRepository;
 import store.novabook.store.orders.repository.RedisOrderNonMemberRepository;
 import store.novabook.store.orders.repository.RedisOrderRepository;
 import store.novabook.store.orders.repository.WrappingPaperRepository;
+import store.novabook.store.payment.dto.request.CreatePaymentRequest;
+import store.novabook.store.payment.entity.Payment;
 import store.novabook.store.payment.repository.PaymentRepository;
 import store.novabook.store.point.entity.PointPolicy;
 import store.novabook.store.point.repository.PointPolicyRepository;
@@ -87,6 +98,7 @@ class OrdersRabbitServiceImplTest {
 
 	private OrderSagaMessage orderSagaMessage;
 	private OrderTemporaryNonMemberForm orderForm;
+
 	private BookStatus bookStatus;
 
 	@BeforeEach
@@ -95,8 +107,13 @@ class OrdersRabbitServiceImplTest {
 	}
 
 	private void setUpCommonOrderForm() {
+
+		Map<String, Object> paymentParam = new HashMap<>();
+		paymentParam.put("paymentKey", "code");
+
 		PaymentRequest testPaymentRequest = PaymentRequest.builder()
 			.orderCode("TESTCODE1")
+			.paymentInfo(paymentParam)
 			.build();
 
 		orderSagaMessage = OrderSagaMessage.builder()
@@ -249,12 +266,84 @@ class OrdersRabbitServiceImplTest {
 	}
 
 	@Test
+	@DisplayName("주문 정보를 저장하는 테스트 코드 - 성공")
 	void saveSagaOrder() {
-		// Implement test logic here
+		mockCommonRepositories();
+		when(bookRepository.findById(anyLong())).thenReturn(Optional.of(Book.builder()
+			.inventory(10).price(5000L).discountPrice(4000L)
+			.bookStatus(bookStatus).build()));
+		when(paymentRepository.save(any(Payment.class))).thenReturn(Payment.builder().request(
+			CreatePaymentRequest.builder().build()).build());
+		when(ordersRepository.save(any(Orders.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(redisOrderNonMemberRepository.findById(any())).thenReturn(Optional.of(orderForm));
+
+		when(ordersStatusRepository.findById(any())).thenReturn(Optional.ofNullable(OrdersStatus.builder().request(
+			CreateOrdersStatusRequest.builder().name("대기").build()).build()));
+
+		ordersRabbitServiceImpl.saveSagaOrder(orderSagaMessage);
+
+		verify(ordersRepository, times(1)).save(any(Orders.class));
+		verify(paymentRepository, times(1)).save(any(Payment.class));
+		verify(rabbitTemplate, times(1)).convertAndSend(anyString(), anyString(), any(OrderSagaMessage.class));
+		assertEquals("SUCCESS_SAVE_ORDERS_DATABASE", orderSagaMessage.getStatus());
 	}
 
 	@Test
-	void orderCancel() {
-		// Implement test logic here
+	@DisplayName("주문 정보를 저장하는 테스트 코드 - 실패")
+	void saveSagaOrder_Fail() {
+		when(paymentRepository.save(any(Payment.class))).thenThrow(new NoTransactionException("Payment save failed"));
+
+		RuntimeException exception = assertThrows(NoTransactionException.class, () -> {
+			ordersRabbitServiceImpl.saveSagaOrder(orderSagaMessage);
+		});
+
+		assertEquals("No transaction aspect-managed TransactionStatus in scope", exception.getMessage());
+
+		verify(paymentRepository, times(1)).save(any(Payment.class));
+		verify(ordersRepository, times(0)).save(any(Orders.class));
+		verify(rabbitTemplate, times(1)).convertAndSend(anyString(), anyString(), any(OrderSagaMessage.class));
+		assertEquals("PROCEED_TEST", orderSagaMessage.getStatus());
 	}
+
+	@Test
+	@DisplayName("주문 취소 테스트 - 성공 로직")
+	void orderCancel() {
+		Book book = spy(Book.builder().inventory(5).build());
+		doReturn(1L).when(book).getId();
+
+		OrdersBook ordersBook = spy(OrdersBook.builder()
+			.book(book)
+			.request(CreateOrdersBookRequest.builder().quantity(10).price(1000L).build())
+			.build());
+
+		List<OrdersBook> ordersBooks = List.of(ordersBook);
+
+		when(ordersBookRepository.findByOrdersCode(anyString())).thenReturn(ordersBooks);
+		when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
+
+		RequestPayCancelMessage cancelMessage = RequestPayCancelMessage.builder()
+			.orderCode("ORDER12345")
+			.build();
+
+		ordersRabbitServiceImpl.orderCancel(cancelMessage);
+
+		verify(bookRepository, times(1)).findById(anyLong());
+		verify(bookRepository, times(1)).save(any(Book.class));
+	}
+
+	@Test
+	@DisplayName("주문 취소 테스트 - 실패 로직")
+	void orderCancel_Fail() {
+		when(ordersBookRepository.findByOrdersCode(anyString())).thenReturn(List.of());
+
+		RequestPayCancelMessage cancelMessage = RequestPayCancelMessage.builder()
+			.orderCode("ORDER12345")
+			.build();
+
+		ordersRabbitServiceImpl.orderCancel(cancelMessage);
+
+		verify(bookRepository, times(0)).findById(anyLong());
+		verify(bookRepository, times(0)).save(any(Book.class));
+	}
+
 }

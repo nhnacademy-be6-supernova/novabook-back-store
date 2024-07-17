@@ -158,6 +158,7 @@ public class OrdersRabbitServiceImpl {
 
 			orderSagaMessage.setStatus("SUCCESS_SAVE_ORDERS_DATABASE");
 		} catch (Exception e) {
+			log.info("",e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_SAVE_ORDERS_DATABASE");
 		} finally {
