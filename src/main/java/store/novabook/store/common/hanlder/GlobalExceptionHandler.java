@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.FeignClientException;
 import store.novabook.store.common.exception.ForbiddenException;
+import store.novabook.store.common.exception.KeyManagerException;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.common.exception.NovaException;
 import store.novabook.store.common.exception.UnauthorizedException;
@@ -71,9 +72,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(NovaException.class)
 	protected ResponseEntity<Object> handleNovaException(NovaException exception, WebRequest request) {
-		log.warn("NovaException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
+		log.error("NovaException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
 		ErrorResponse errorResponse = ErrorResponse.from(exception);
 		return handleExceptionInternal(exception, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+
+	@ExceptionHandler(KeyManagerException.class)
+	protected ResponseEntity<Object> handleKeyManagerException(KeyManagerException exception, WebRequest request) {
+		log.error("KeyManagerException: {} | Location: {}", exception.getMessage(), getLocation(exception), exception);
+		ErrorResponse errorResponse = ErrorResponse.from(exception);
+		return handleExceptionInternal(exception, errorResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR,
+			request);
 	}
 
 	@ExceptionHandler(FeignClientException.class)
