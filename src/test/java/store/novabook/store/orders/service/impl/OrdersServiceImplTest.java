@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,9 +33,6 @@ import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.OrdersRepository;
 import store.novabook.store.orders.repository.OrdersStatusRepository;
 import store.novabook.store.payment.entity.Payment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 class OrdersServiceImplTest {
 
