@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.tag.controller.docs.TagControllerDocs;
 import store.novabook.store.tag.dto.request.CreateTagRequest;
 import store.novabook.store.tag.dto.request.UpdateTagRequest;
@@ -44,17 +45,20 @@ public class TagController implements TagControllerDocs {
 		return ResponseEntity.ok().body(tagService.getTag(id));
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping
 	public ResponseEntity<CreateTagResponse> createTag(@RequestBody @Valid CreateTagRequest createTagRequest) {
 		return ResponseEntity.ok().body(tagService.createTag(createTagRequest));
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> updateTag(@Valid @RequestBody UpdateTagRequest updateTagRequest, @PathVariable Long id) {
 		tagService.updateTag(id, updateTagRequest);
 		return ResponseEntity.ok().build();
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
 		tagService.deleteTag(id);

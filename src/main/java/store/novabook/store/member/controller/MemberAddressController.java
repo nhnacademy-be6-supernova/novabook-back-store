@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.member.controller.docs.MemberAddressControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberAddressRequest;
@@ -32,6 +33,7 @@ public class MemberAddressController implements MemberAddressControllerDocs {
 
 	private final MemberAddressService memberAddressService;
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping
 	public ResponseEntity<CreateMemberAddressResponse> createMemberAddress(
 		@Valid @RequestBody CreateMemberAddressRequest createMemberAddressRequest, @CurrentMembers Long memberId) {
@@ -40,6 +42,7 @@ public class MemberAddressController implements MemberAddressControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping
 	public ResponseEntity<GetMemberAddressListResponse> getMemberAddressAll(@CurrentMembers Long memberId) {
 		List<GetMemberAddressResponse> memberAddressAll = memberAddressService.getMemberAddressAll(memberId);
@@ -49,12 +52,14 @@ public class MemberAddressController implements MemberAddressControllerDocs {
 		return ResponseEntity.ok(getMemberAddressListResponse);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/{memberAddressId}")
 	public ResponseEntity<GetMemberAddressResponse> getMemberAddress(@PathVariable Long memberAddressId) {
 		GetMemberAddressResponse memberAddressResponse = memberAddressService.getMemberAddress(memberAddressId);
 		return ResponseEntity.ok(memberAddressResponse);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/{memberAddressId}")
 	public ResponseEntity<Void> updateMemberAddress(@PathVariable Long memberAddressId,
 		@RequestBody UpdateMemberAddressRequest updateMemberAddressRequest) {
@@ -62,12 +67,14 @@ public class MemberAddressController implements MemberAddressControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@DeleteMapping("/{memberAddressId}")
 	public ResponseEntity<Void> deleteMemberAddress(@PathVariable Long memberAddressId) {
 		memberAddressService.deleteMemberAddress(memberAddressId);
 		return ResponseEntity.ok().build();
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/is-exceed")
 	public ResponseEntity<ExceedResponse> isExceed(@CurrentMembers Long memberId) {
 		ExceedResponse isExceedMemberAddressCount = memberAddressService.isExceed(memberId);

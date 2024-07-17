@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.dto.GetCouponAllResponse;
 import store.novabook.store.common.adatper.dto.GetCouponHistoryResponse;
 import store.novabook.store.common.adatper.dto.GetUsedCouponHistoryResponse;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.member.controller.docs.MemberCouponControllerDocs;
 import store.novabook.store.member.dto.request.CreateMemberCouponRequest;
@@ -34,6 +35,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 
 	private final MemberCouponService memberCouponService;
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping
 	public ResponseEntity<CreateMemberCouponResponse> createMemberCoupon(@CurrentMembers Long memberId,
 		@RequestBody CreateMemberCouponRequest request) {
@@ -41,6 +43,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/register")
 	public ResponseEntity<CreateMemberCouponResponse> registerMemberCoupon(@CurrentMembers Long memberId,
 		@RequestBody RegisterCouponRequest request) {
@@ -48,6 +51,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/history")
 	public ResponseEntity<Page<GetCouponHistoryResponse>> getMemberCouponHistoryByMemberId(
 		@CurrentMembers Long memberId,
@@ -56,6 +60,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 		return ResponseEntity.ok(response);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/history/used")
 	public ResponseEntity<Page<GetUsedCouponHistoryResponse>> getMemberUsedCouponHistoryByMemberId(
 		@CurrentMembers Long memberId,
@@ -65,18 +70,21 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 		return ResponseEntity.ok(response);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/is-valid")
 	public ResponseEntity<GetCouponAllResponse> getMemberCouponByMemberId(@CurrentMembers Long memberId) {
 		GetCouponAllResponse response = memberCouponService.getValidAllByMemberId(memberId);
 		return ResponseEntity.ok(response);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping
 	public ResponseEntity<GetCouponIdsResponse> getMemberCoupon(@CurrentMembers Long memberId) {
 		return ResponseEntity.ok().body(memberCouponService.getMemberCoupon(memberId));
 	}
 
 	// 쿠폰북 페이지 다운로드
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/download")
 	ResponseEntity<CreateMemberCouponResponse> downloadCoupon(@CurrentMembers Long memberId,
 		@RequestBody DownloadCouponRequest request) {
@@ -85,6 +93,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	}
 
 	// 선착순 쿠폰
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/download/limited")
 	ResponseEntity<Void> downloadLimitedCoupon(@RequestHeader(value = "Authorization", required = false) String token,
 		@RequestHeader("Refresh") String refresh, @CurrentMembers Long memberId,

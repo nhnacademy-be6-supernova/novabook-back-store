@@ -19,6 +19,7 @@ import store.novabook.store.book.dto.response.CreateReviewResponse;
 import store.novabook.store.book.dto.response.GetReviewListResponse;
 import store.novabook.store.book.dto.response.GetReviewResponse;
 import store.novabook.store.book.service.ReviewService;
+import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
 
 @RestController
@@ -36,11 +37,11 @@ public class ReviewController implements ReviewControllerDocs {
 
 	@GetMapping("/books/{bookId}")
 	public ResponseEntity<GetReviewListResponse> getReviewByBookId(@PathVariable Long bookId) {
-		//List dto 생성
 		GetReviewListResponse getReviewListResponses = reviewService.bookReviews(bookId);
 		return ResponseEntity.ok(getReviewListResponses);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/{ordersBookId}")
 	public ResponseEntity<CreateReviewResponse> createReviewed(
 		@PathVariable Long ordersBookId,
@@ -50,6 +51,7 @@ public class ReviewController implements ReviewControllerDocs {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createReviewResponse);
 	}
 
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/reviews/{reviewsId}")
 	public ResponseEntity<Void> updateReviewed(@Valid @RequestBody UpdateReviewRequest request,
 		@PathVariable Long reviewsId) {

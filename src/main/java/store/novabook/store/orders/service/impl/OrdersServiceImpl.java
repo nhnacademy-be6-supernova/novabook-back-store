@@ -41,7 +41,6 @@ import store.novabook.store.payment.entity.Payment;
 public class OrdersServiceImpl implements OrdersService {
 
 	private final OrdersRepository ordersRepository;
-	private final OrdersBookRepository ordersBookRepository;
 	private final DeliveryFeeRepository deliveryFeeRepository;
 	private final WrappingPaperRepository wrappingPaperRepository;
 	private final OrdersStatusRepository ordersStatusRepository;
@@ -78,16 +77,6 @@ public class OrdersServiceImpl implements OrdersService {
 		Orders orders = ordersRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.ORDERS_NOT_FOUND));
 		orders.updateStatus(ordersStatus);
-	}
-
-	@Override
-	public Page<GetOrdersResponse> getOrdersResponsesAll() {
-		List<Orders> orders = ordersRepository.findAll();
-		List<GetOrdersResponse> responses = new ArrayList<>();
-		for (Orders order : orders) {
-			responses.add(GetOrdersResponse.form(order));
-		}
-		return new PageImpl<>(responses);
 	}
 
 	@Override
