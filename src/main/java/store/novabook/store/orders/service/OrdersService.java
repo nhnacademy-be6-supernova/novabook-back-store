@@ -12,8 +12,6 @@ import store.novabook.store.payment.entity.Payment;
 
 public interface OrdersService {
 
-	CreateResponse create(CreateOrdersRequest request, Payment payment);
-
 	Page<GetOrdersAdminResponse> getOrdersAdminResponsesAll(Pageable pageable);
 
 	GetOrdersResponse getOrdersById(Long id);
