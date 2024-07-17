@@ -23,6 +23,10 @@ public class OrdersSagaManagerImpl {
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 	public static final String COMPENSATE_ORDERS_FORM_CONFIRM_ROUTING_KEY = "compensate.orders.form.confirm.routing.key";
 	public static final String NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY = "nova.orders.saga.dead.routing.key";
+	public static final String STATUS_LOG_MESSAGE = "트랜잭션 진행 상태: {} ";
+	public static final String PROCEED_APPROVE_PAYMENT = "PROCEED_APPROVE_PAYMENT";
+	public static final String ORDERS_APPROVE_PAYMENT_ROUTING_KEY = "orders.approve.payment.routing.key";
+	public static final String COMPENSATE_COUPON_APPLY_ROUTING_KEY = "compensate.coupon.apply.routing.key";
 	private final RabbitTemplate rabbitTemplate;
 
 	/**
@@ -45,15 +49,15 @@ public class OrdersSagaManagerImpl {
 	 */
 	@RabbitListener(queues = "nova.api1-producer-queue")
 	public void handleApiResponse(@Payload OrderSagaMessage orderSagaMessage) {
-		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
+		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 
 		if ("SUCCESS_CONFIRM_ORDER_FORM".equals(orderSagaMessage.getStatus())) {
 			boolean isNoUsePoint = orderSagaMessage.isNoUsePoint();
 			boolean isNoUseCoupon = orderSagaMessage.isNoUseCoupon();
 
 			if (isNoUsePoint && isNoUseCoupon) {
-				orderSagaMessage.setStatus("PROCEED_APPROVE_PAYMENT");
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.approve.payment.routing.key", orderSagaMessage);
+				orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY, orderSagaMessage);
 			} else if (isNoUseCoupon) {
 				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key", orderSagaMessage);
@@ -75,14 +79,14 @@ public class OrdersSagaManagerImpl {
 	 */
 	@RabbitListener(queues = "nova.api2-producer-queue")
 	public void handleApi2Response(@Payload OrderSagaMessage orderSagaMessage) {
-		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
+		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_APPLY_COUPON")) {
 
 			// 포인트 적용을 하지 않을 경우 -> 바로 결제 진행
 			if (orderSagaMessage.isNoUsePoint()) {
-				orderSagaMessage.setStatus("PROCEED_APPROVE_PAYMENT");
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.approve.payment.routing.key",
+				orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
 					orderSagaMessage);
 			} else {
 				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
@@ -105,11 +109,11 @@ public class OrdersSagaManagerImpl {
 	 */
 	@RabbitListener(queues = "nova.api3-producer-queue")
 	public void handleApi3Response(@Payload OrderSagaMessage orderSagaMessage) {
-		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
+		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_POINT_DECREMENT")) {
-			orderSagaMessage.setStatus("PROCEED_APPROVE_PAYMENT");
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.approve.payment.routing.key",
+			orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
 				orderSagaMessage);
 
 		} else if (orderSagaMessage.getStatus().equals("FAIL_POINT_DECREMENT")) {
@@ -118,7 +122,7 @@ public class OrdersSagaManagerImpl {
 			log.error("[주문:포인트 감소 실패] 보상 트랜잭션을 시작합니다.");
 
 			if (!orderSagaMessage.isNoUseCoupon())
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key",
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_COUPON_APPLY_ROUTING_KEY,
 					orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_ORDERS_FORM_CONFIRM_ROUTING_KEY,
 				orderSagaMessage);
@@ -131,7 +135,7 @@ public class OrdersSagaManagerImpl {
 	 */
 	@RabbitListener(queues = "nova.api4-producer-queue")
 	public void handleApi4Response(@Payload OrderSagaMessage orderSagaMessage) {
-		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
+		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_APPROVE_PAYMENT")) {
 			log.info("성공적으로 결제가 완료되었습니다");
@@ -144,7 +148,7 @@ public class OrdersSagaManagerImpl {
 			log.error("[주문:결제 승인 실패] 보상 트랜잭션을 시작합니다.");
 
 			if (!orderSagaMessage.isNoUseCoupon())
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key",
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_COUPON_APPLY_ROUTING_KEY,
 					orderSagaMessage);
 			if (!orderSagaMessage.isNoUsePoint())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key",
@@ -160,7 +164,7 @@ public class OrdersSagaManagerImpl {
 	 */
 	@RabbitListener(queues = "nova.api5-producer-queue")
 	public void handleApi5Response(@Payload OrderSagaMessage orderSagaMessage) {
-		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
+		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 
 		if (!orderSagaMessage.isNoEarnPoint() && orderSagaMessage.getStatus().equals("SUCCESS_SAVE_ORDERS_DATABASE")) {
 			orderSagaMessage.setStatus("PROCEED_EARN_POINT");
@@ -171,7 +175,7 @@ public class OrdersSagaManagerImpl {
 			log.error("[주문:DB 저장 실패] 보상 트랜잭션을 시작합니다.");
 
 			if (!orderSagaMessage.isNoUseCoupon())
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.coupon.apply.routing.key",
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_COUPON_APPLY_ROUTING_KEY,
 					orderSagaMessage);
 			if (!orderSagaMessage.isNoUsePoint())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key",
@@ -190,7 +194,7 @@ public class OrdersSagaManagerImpl {
 	 */
 	@RabbitListener(queues = "nova.api6-producer-queue")
 	public void handleApi6Response(@Payload OrderSagaMessage orderSagaMessage) {
-		log.info("트랜잭션 진행 상태: {} ", orderSagaMessage.getStatus());
+		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_EARN_POINT")) {
 			orderSagaMessage.setStatus("SUCCESS_ALL_ORDER_SAGA");

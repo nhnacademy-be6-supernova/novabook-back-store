@@ -17,6 +17,7 @@ import store.novabook.store.orders.service.DeadOrdersDoorayHookClient;
 @RequiredArgsConstructor
 public class DoorayServiceImpl implements DoorayService {
 
+	public static final String BOT_NAME = "botName";
 	private final DoorayHookClient doorayHookClient;
 	private final DeadOrdersDoorayHookClient deadOrdersDoorayHookClient;
 
@@ -25,7 +26,7 @@ public class DoorayServiceImpl implements DoorayService {
 	public void sendAuthCode(String uuid, String authCode) {
 
 		Map<String, Object> request = new HashMap<>();
-		request.put("botName", "novabook Bot");
+		request.put(BOT_NAME, "novabook Bot");
 		request.put("text", "휴면 계정 해지를 위한 인증코드: " + authCode);
 
 		doorayHookClient.sendMessage(request);
