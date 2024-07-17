@@ -32,8 +32,14 @@ public class CartBookRabbitServiceImpl {
 	public void deleteCart(@Payload OrderSagaMessage orderSagaMessage) {
 		// 비회원이면
 		if (orderSagaMessage.getPaymentRequest().memberId() == null) {
-			OrderTemporaryNonMemberForm orderForm = redisOrderNonMemberRepository.findById(
-				orderSagaMessage.getPaymentRequest().orderCode()).get();
+			Optional<OrderTemporaryNonMemberForm> optionalOrderForm = redisOrderNonMemberRepository.findById(
+				orderSagaMessage.getPaymentRequest().orderCode());
+
+			if(optionalOrderForm.isEmpty()) {
+				throw new NotFoundException(ErrorCode.ORDERS_NOT_FOUND);
+			}
+
+			OrderTemporaryNonMemberForm orderForm = optionalOrderForm.get();
 			redisCartRepository.deleteById(orderForm.cartUUID());
 		} else {
 			Long memberId = orderSagaMessage.getPaymentRequest().memberId();

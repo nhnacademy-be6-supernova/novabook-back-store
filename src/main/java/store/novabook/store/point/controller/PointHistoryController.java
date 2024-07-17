@@ -5,8 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
 import store.novabook.store.point.controller.docs.PointHistoryControllerDocs;
-import store.novabook.store.point.dto.request.GetPointHistoryRequest;
-import store.novabook.store.point.dto.response.GetPointHistoryListResponse;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.dto.response.GetPointResponse;
 import store.novabook.store.point.service.PointHistoryService;

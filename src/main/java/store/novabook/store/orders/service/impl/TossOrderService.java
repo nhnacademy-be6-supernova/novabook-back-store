@@ -33,15 +33,12 @@ import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 @Service
 @Slf4j
 public class TossOrderService {
-
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
 	private final RabbitTemplate rabbitTemplate;
 	private static final String AMOUNT = "amount";
 	private static final String PAYMENT_KEY = "paymentKey";
 	private static final String WIDGET_SECRET_KEY = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
-
-
 
 	@Transactional
 	@RabbitListener(queues = "nova.orders.approve.payment.queue")

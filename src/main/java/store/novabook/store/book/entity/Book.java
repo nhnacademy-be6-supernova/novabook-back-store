@@ -83,17 +83,19 @@ public class Book {
 
 	@Builder
 	public Book(BookStatus bookStatus,
-		String isbn,
-		String title,
-		String description,
-		String descriptionDetail,
-		String author,
-		String publisher,
-		LocalDateTime publicationDate,
-		int inventory,
-		long price,
-		Long discountPrice,
-		boolean isPackaged) {
+
+				String isbn,
+				String title,
+				String description,
+				String descriptionDetail,
+				String author,
+				String publisher,
+				LocalDateTime publicationDate,
+				int inventory,
+				long price,
+				long discountPrice,
+				boolean isPackaged) {
+
 		this.bookStatus = bookStatus;
 		this.isbn = isbn;
 		this.title = title;

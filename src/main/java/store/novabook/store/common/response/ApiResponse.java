@@ -7,16 +7,31 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Getter;
+
 /**
  * {@code ApiResponse} 클래스는 API 응답을 표준 형식으로 감싸기 위한 클래스입니다.
  * 응답의 헤더와 본문을 포함합니다.
  *
  * @param <T> 응답 본문의 타입
  */
+@Getter
 public class ApiResponse<T> implements Serializable {
 
+	/**
+	 * -- GETTER --
+	 *  응답의 헤더를 반환합니다.
+	 *
+	 * @return 응답 헤더
+	 */
 	private final Map<String, Object> header = new HashMap<>();
-	private final T body;
+	/**
+	 * -- GETTER --
+	 *  응답 본문을 반환합니다.
+	 *
+	 * @return 응답 본문
+	 */
+	private final transient T body;
 
 	/**
 	 * {@code ApiResponse} 생성자는 응답의 헤더와 본문을 초기화합니다.
@@ -56,21 +71,4 @@ public class ApiResponse<T> implements Serializable {
 		return new ApiResponse<>("FAIL", false, body);
 	}
 
-	/**
-	 * 응답의 헤더를 반환합니다.
-	 *
-	 * @return 응답 헤더
-	 */
-	public Map<String, Object> getHeader() {
-		return header;
-	}
-
-	/**
-	 * 응답 본문을 반환합니다.
-	 *
-	 * @return 응답 본문
-	 */
-	public T getBody() {
-		return body;
-	}
 }
