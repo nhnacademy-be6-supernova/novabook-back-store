@@ -1,8 +1,8 @@
 package store.novabook.store.member.dto.response;
 
 public record FindMemberLoginResponse(
-	long id,
+	long membersId,
 	String loginId,
-	String password,
+	String loginPassword,
 	String role) {
 }
