@@ -99,6 +99,22 @@ class OrdersSagaManagerImplTest {
 	}
 
 	@Test
+	void testHandleApiResponse_Fail() {
+		orderSagaMessage.setStatus("FAIL_CONFIRM_ORDER_FORM");
+		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
+
+		ordersSagaManager.handleApiResponse(orderSagaMessage);
+
+		verify(rabbitTemplate).convertAndSend(
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY),
+			orderSagaMessageCaptor.capture()
+		);
+		OrderSagaMessage capturedMessage = orderSagaMessageCaptor.getValue();
+		assertEquals("FAIL_CONFIRM_ORDER_FORM", capturedMessage.getStatus());
+	}
+
+	@Test
 	void testHandleApi2Response() {
 		orderSagaMessage.setStatus("SUCCESS_APPLY_COUPON");
 		orderSagaMessage.setNoUsePoint(true); // 포인트를 사용하지 않음
@@ -114,6 +130,22 @@ class OrdersSagaManagerImplTest {
 		);
 		OrderSagaMessage capturedMessage = orderSagaMessageCaptor.getValue();
 		assertEquals("PROCEED_APPROVE_PAYMENT", capturedMessage.getStatus());
+	}
+
+	@Test
+	void testHandleApi2Response_Fail() {
+		orderSagaMessage.setStatus("FAIL_APPLY_COUPON");
+		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
+
+		ordersSagaManager.handleApi2Response(orderSagaMessage);
+
+		verify(rabbitTemplate).convertAndSend(
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY),
+			orderSagaMessageCaptor.capture()
+		);
+		OrderSagaMessage capturedMessage = orderSagaMessageCaptor.getValue();
+		assertEquals("FAIL_APPLY_COUPON", capturedMessage.getStatus());
 	}
 
 	@Test
@@ -133,6 +165,22 @@ class OrdersSagaManagerImplTest {
 	}
 
 	@Test
+	void testHandleApi3Response_Fail() {
+		orderSagaMessage.setStatus("FAIL_POINT_DECREMENT");
+		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
+
+		ordersSagaManager.handleApi3Response(orderSagaMessage);
+
+		verify(rabbitTemplate).convertAndSend(
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY),
+			orderSagaMessageCaptor.capture()
+		);
+		OrderSagaMessage capturedMessage = orderSagaMessageCaptor.getValue();
+		assertEquals("FAIL_POINT_DECREMENT", capturedMessage.getStatus());
+	}
+
+	@Test
 	void testHandleApi4Response() {
 		orderSagaMessage.setStatus("SUCCESS_APPROVE_PAYMENT");
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
@@ -149,6 +197,22 @@ class OrdersSagaManagerImplTest {
 	}
 
 	@Test
+	void testHandleApi4Response_Fail() {
+		orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
+		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
+
+		ordersSagaManager.handleApi4Response(orderSagaMessage);
+
+		verify(rabbitTemplate).convertAndSend(
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY),
+			orderSagaMessageCaptor.capture()
+		);
+		OrderSagaMessage capturedMessage = orderSagaMessageCaptor.getValue();
+		assertEquals("FAIL_APPROVE_PAYMENT", capturedMessage.getStatus());
+	}
+
+	@Test
 	void testHandleApi5Response() {
 		orderSagaMessage.setStatus("SUCCESS_SAVE_ORDERS_DATABASE");
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
@@ -162,6 +226,22 @@ class OrdersSagaManagerImplTest {
 		);
 		OrderSagaMessage capturedMessage = orderSagaMessageCaptor.getValue();
 		assertEquals("PROCEED_EARN_POINT", capturedMessage.getStatus());
+	}
+
+	@Test
+	void testHandleApi5Response_Fail() {
+		orderSagaMessage.setStatus("FAIL_SAVE_ORDERS_DATABASE");
+		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
+
+		ordersSagaManager.handleApi5Response(orderSagaMessage);
+
+		verify(rabbitTemplate).convertAndSend(
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
+			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY),
+			orderSagaMessageCaptor.capture()
+		);
+		OrderSagaMessage capturedMessage = orderSagaMessageCaptor.getValue();
+		assertEquals("FAIL_SAVE_ORDERS_DATABASE", capturedMessage.getStatus());
 	}
 
 	@Test
@@ -187,6 +267,7 @@ class OrdersSagaManagerImplTest {
 		assertEquals("SUCCESS_ALL_ORDER_SAGA", orderSagaMessage.getStatus());
 		verifyNoMoreInteractions(rabbitTemplate);
 	}
+
 	@Test
 	void testRequestPayCancel() {
 		payCancelMessage.setCouponId(1L);

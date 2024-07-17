@@ -26,6 +26,7 @@ import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.book.entity.BookStatusEnum;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.BookStatusRepository;
+import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberGradeHistory;
 import store.novabook.store.member.entity.MemberGradePolicy;
 import store.novabook.store.member.repository.MemberGradeHistoryRepository;
@@ -287,6 +288,79 @@ class OrdersRabbitServiceImplTest {
 		verify(rabbitTemplate, times(1)).convertAndSend(anyString(), anyString(), any(OrderSagaMessage.class));
 		assertEquals("SUCCESS_SAVE_ORDERS_DATABASE", orderSagaMessage.getStatus());
 	}
+
+	@Test
+	@DisplayName("주문 정보를 저장하는 테스트 코드 - 회원 정보 저장 - 성공")
+	void saveSagaOrderWithMemberInfo() {
+		// Set up a member ID in the PaymentRequest
+		Map<String, Object> paymentParam = new HashMap<>();
+		paymentParam.put("paymentKey", "code");
+
+		PaymentRequest testPaymentRequest = PaymentRequest.builder()
+			.orderCode("TESTCODE1")
+			.memberId(1L)
+			.paymentInfo(paymentParam)
+			.build();
+
+		orderSagaMessage = OrderSagaMessage.builder()
+			.earnPointAmount(1000L)
+			.paymentRequest(testPaymentRequest)
+			.bookAmount(1000L)
+			.calculateTotalAmount(2000L)
+			.couponAmount(1000L)
+			.status("PROCEED_TEST")
+			.build();
+
+		BookIdAndQuantityDTO book1 = new BookIdAndQuantityDTO(1L, 2);
+		BookIdAndQuantityDTO book2 = new BookIdAndQuantityDTO(2L, 1);
+
+		OrderSenderInfo senderInfo = OrderSenderInfo.builder()
+			.name("Sender Name")
+			.phone("123-456-7890")
+			.build();
+
+		OrderReceiverInfo receiverInfo = OrderReceiverInfo.builder()
+			.name("Receiver Name")
+			.phone("098-765-4321")
+			.orderAddressInfo(OrderAddressInfo.builder()
+				.streetAddress("123 Main St")
+				.detailAddress("Apt 4B")
+				.build())
+			.build();
+
+		OrderTemporaryForm orderTemporaryForm = OrderTemporaryForm.builder()
+			.memberId(1L)
+			.orderCode("CODE")
+			.books(List.of(book1, book2))
+			.deliveryDate(LocalDate.now())
+			.couponId(1L)
+			.orderReceiverInfo(receiverInfo)
+			.orderSenderInfo(senderInfo)
+			.build();
+
+		bookStatus = BookStatus.of(BookStatusEnum.FOR_SALE.getKoreanValue());
+
+		mockCommonRepositories();
+
+		when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(Member.builder().build()));
+		when(redisOrderRepository.findById(any())).thenReturn(Optional.of(orderTemporaryForm));
+		when(paymentRepository.save(any(Payment.class))).thenReturn(Payment.builder().request(
+			CreatePaymentRequest.builder().build()).build());
+		when(ordersRepository.save(any(Orders.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		when(ordersStatusRepository.findById(any())).thenReturn(Optional.ofNullable(OrdersStatus.builder().request(
+			CreateOrdersStatusRequest.builder().name("대기").build()).build()));
+
+		ordersRabbitServiceImpl.saveSagaOrder(orderSagaMessage);
+
+		verify(ordersRepository, times(1)).save(any(Orders.class));
+		verify(paymentRepository, times(1)).save(any(Payment.class));
+		verify(rabbitTemplate, times(1)).convertAndSend(anyString(), anyString(), any(OrderSagaMessage.class));
+		assertEquals("SUCCESS_SAVE_ORDERS_DATABASE", orderSagaMessage.getStatus());
+	}
+
+
+
 
 	@Test
 	@DisplayName("주문 정보를 저장하는 테스트 코드 - 실패")
