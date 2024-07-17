@@ -28,20 +28,12 @@ public class BookSearchServiceImpl {
 
 	// 모든 단어 검색
 	public Page<GetBookSearchResponse> searchByKeywordContaining(String keyword, Pageable pageable) {
-
-		Criteria criteria = new Criteria("title").contains(keyword)
-			.or(new Criteria("author").contains(keyword))
-			.or(new Criteria("publisher").contains(keyword))
-			.or(new Criteria("categoryList").contains(keyword))
-			.or(new Criteria("tagList").contains(keyword));
-
-		CriteriaQuery query = new CriteriaQuery(criteria).setPageable(pageable);
-		SearchHits<BookDocument> searchHits = elasticsearchOperations.search(query, BookDocument.class);
-		List<GetBookSearchResponse> searchResults = searchHits.getSearchHits().stream()
-			.map(hit -> GetBookSearchResponse.of(hit.getContent()))
-			.toList();
-
-		return new PageImpl<>(searchResults, pageable, searchHits.getTotalHits());
+		try{
+			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByKeywordIgnoreCase(keyword, pageable);
+			return bookDocuments.map(GetBookSearchResponse::of);
+		} catch (Exception e){
+			throw new InternalServerException(ErrorCode.INVALID_REQUEST_ARGUMENT);
+		}
 	}
 
 	// 저자에 특정 단어가 포함된 문서 검색
