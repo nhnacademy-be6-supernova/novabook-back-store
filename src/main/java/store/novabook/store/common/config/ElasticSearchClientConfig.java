@@ -1,8 +1,9 @@
 package store.novabook.store.common.config;
 
-import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.message.BasicHeader;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,15 +28,15 @@ public class ElasticSearchClientConfig {
 	public ElasticsearchClient getRestClient() {
 		ElasticSearchConfigDto config = KeyManagerUtil.getElasticSearchConfig(environment);
 
-		// Create the low-level client
-		RestClient restClient = RestClient.builder(HttpHost.create(config.uris()))
-			.setDefaultHeaders(new Header[] {new BasicHeader("Authorization", "ApiKey " + config.apiKey())})
-			.build();
+		BasicCredentialsProvider redsProv = new BasicCredentialsProvider();
+		redsProv.setCredentials(
+			AuthScope.ANY, new UsernamePasswordCredentials(config.id(), config.password())
+		);
 
-		// Create the transport with a Jackson mapper
+		RestClient restClient = RestClient.builder(HttpHost.create(config.uris())).build();
+
+		// Create the transport and the API client
 		ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
-
-		// And create the API client
 		return new ElasticsearchClient(transport);
 	}
 

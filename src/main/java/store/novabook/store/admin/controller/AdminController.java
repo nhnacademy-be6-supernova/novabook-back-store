@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.common.security.aop.CheckRole;
 
 @RestController
 @RequiredArgsConstructor
@@ -13,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 
 	// 임시 비활성화(개발편의)
-	// @CheckRole("ROLE_ADMIN")
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping()
 	public ResponseEntity<Void> admin() {
 		return ResponseEntity.ok().build();
