@@ -111,6 +111,7 @@ public class BookServiceImpl implements BookService {
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 		String outputFilePath = "/" + imageManagerDto.localStorage() + fileName;
+		// String outputFilePath = "src/main/resources/image/" + fileName;
 
 		Path imagePath = Paths.get(outputFilePath);
 

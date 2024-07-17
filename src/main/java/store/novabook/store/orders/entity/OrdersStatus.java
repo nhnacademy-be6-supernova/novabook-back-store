@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
 
 @Getter
@@ -23,6 +24,7 @@ import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class OrdersStatus {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

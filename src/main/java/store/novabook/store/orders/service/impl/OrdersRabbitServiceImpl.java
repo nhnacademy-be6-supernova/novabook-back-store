@@ -90,6 +90,7 @@ public class OrdersRabbitServiceImpl {
 			}
 			orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
 		} catch (Exception e) {
+			log.error("",e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_CONFIRM_ORDER_FORM");
 		} finally {
@@ -313,7 +314,6 @@ public class OrdersRabbitServiceImpl {
 				.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 			book.increaseInventory((int)bookDTO.quantity());
 			updateBookStatusForCompensation(book);
-			bookRepository.save(book);
 		}
 	}
 

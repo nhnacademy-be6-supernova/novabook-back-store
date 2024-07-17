@@ -20,6 +20,7 @@ import store.novabook.store.category.dto.response.GetCategoryIdsByBookIdResponse
 import store.novabook.store.category.dto.response.GetCategoryListResponse;
 import store.novabook.store.category.dto.response.GetCategoryResponse;
 import store.novabook.store.category.service.CategoryService;
+import store.novabook.store.common.security.aop.CheckRole;
 
 @RestController
 @RequestMapping("/api/v1/store/categories")
@@ -27,6 +28,7 @@ import store.novabook.store.category.service.CategoryService;
 public class CategoryController implements CategoryControllerDocs {
 	private final CategoryService categoryService;
 
+	@CheckRole("ROLE_ADMIN")
 	@PostMapping
 	public ResponseEntity<CreateCategoryResponse> createCategory(@Valid @RequestBody CreateCategoryRequest category) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.create(category));
@@ -47,6 +49,7 @@ public class CategoryController implements CategoryControllerDocs {
 		return ResponseEntity.ok().body(categoryService.getCategoryIdsByBookId(bookId));
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<DeleteResponse> delete(@PathVariable Long id) {
 		DeleteResponse response = categoryService.delete(id);

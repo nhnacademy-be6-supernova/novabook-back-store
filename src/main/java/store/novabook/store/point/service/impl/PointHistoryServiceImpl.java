@@ -1,7 +1,5 @@
 package store.novabook.store.point.service.impl;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +14,6 @@ import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.point.dto.request.CreatePointHistoryRequest;
-import store.novabook.store.point.dto.request.GetPointHistoryRequest;
-import store.novabook.store.point.dto.response.GetPointHistoryListResponse;
 import store.novabook.store.point.dto.response.GetPointHistoryResponse;
 import store.novabook.store.point.dto.response.GetPointResponse;
 import store.novabook.store.point.entity.PointHistory;
@@ -35,8 +31,6 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 	private final PointHistoryRepository pointHistoryRepository;
 	private final PointPolicyRepository pointPolicyRepository;
 
-
-
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetPointHistoryResponse> getPointHistoryList(Pageable pageable) {
@@ -45,21 +39,6 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 			throw new NotFoundException(ErrorCode.POINT_HISTORY_NOT_FOUND);
 		}
 		return pointHistoryList.map(GetPointHistoryResponse::of);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public GetPointHistoryListResponse getPointHistory(GetPointHistoryRequest getPointHistoryRequest) {
-		List<GetPointHistoryResponse> pointHistoryResponses = pointHistoryRepository.findByMemberId(
-				getPointHistoryRequest.memberId())
-			.stream()
-			.map(pointHistory -> GetPointHistoryResponse.builder()
-				.pointAmount(pointHistory.getPointAmount())
-				.pointContent(pointHistory.getPointContent())
-				.build())
-			.toList();
-
-		return GetPointHistoryListResponse.builder().pointHistoryResponseList(pointHistoryResponses).build();
 	}
 
 	@Override
@@ -90,6 +69,5 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 			.pointAmount(pointHistoryRepository.findTotalPointAmountByMemberId(memberId))
 			.build();
 	}
-
 
 }

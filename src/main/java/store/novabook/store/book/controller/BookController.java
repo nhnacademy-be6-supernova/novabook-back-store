@@ -22,6 +22,7 @@ import store.novabook.store.book.dto.response.CreateBookResponse;
 import store.novabook.store.book.dto.response.GetBookAllResponse;
 import store.novabook.store.book.dto.response.GetBookResponse;
 import store.novabook.store.book.service.BookService;
+import store.novabook.store.common.security.aop.CheckRole;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class BookController implements BookControllerDocs {
 		return ResponseEntity.ok().body(bookService.getBook(id));
 	}
 
+	@CheckRole("ROLE_ADMIN")
 	@GetMapping
 	public ResponseEntity<Page<GetBookAllResponse>> getBookAll(Pageable pageable) {
 		return ResponseEntity.ok().body(bookService.getBookAll(pageable));
