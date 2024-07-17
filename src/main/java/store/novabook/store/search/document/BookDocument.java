@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import jakarta.persistence.Id;
 import lombok.Builder;
@@ -21,19 +22,19 @@ import store.novabook.store.search.dto.GetBookSearchResponse;
 import store.novabook.store.tag.entity.Tag;
 
 @Getter
-@Document(indexName = "supernova_search")
+@Document(indexName = "supernova")
 public class BookDocument {
 	@Id
 	@Field(type = FieldType.Long)
 	private final Long id;
 
-	@Field(type = FieldType.Text, analyzer = "korean")
+	@Field(type = FieldType.Text)
 	private final String title;
 
-	@Field(type = FieldType.Text, analyzer = "korean")
+	@Field(type = FieldType.Text)
 	private final String author;
 
-	@Field(type = FieldType.Text, analyzer = "korean")
+	@Field(type = FieldType.Text)
 	private final String publisher;
 
 	@Field(type = FieldType.Text)
@@ -54,10 +55,10 @@ public class BookDocument {
 	@Field(type = FieldType.Integer)
 	private final Integer review;
 
-	@Field(type = FieldType.Text, analyzer = "korean")
+	@Field(type = FieldType.Text)
 	private final List<String> categoryList;
 
-	@Field(type = FieldType.Text, analyzer = "korean")
+	@Field(type = FieldType.Text)
 	private final List<String> tagList;
 
 	@Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)

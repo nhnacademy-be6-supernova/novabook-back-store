@@ -94,7 +94,7 @@ public class KeyManagerUtil {
 
 	public static ElasticSearchConfigDto getElasticSearchConfig(Environment environment) {
 		try {
-			String keyid = environment.getProperty("nhn.cloud.keyManager.elasticSearchKey");
+			String keyid = environment.getProperty("nhn.cloud.keyManager.elasticSearchUser");
 			return objectMapper.readValue(getDataSource(environment, keyid), ElasticSearchConfigDto.class);
 		} catch (JsonProcessingException e) {
 			log.error("ElasticSearchConfig{}", FAILED_CONVERSION.getMessage());
