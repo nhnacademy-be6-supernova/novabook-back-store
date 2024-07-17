@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +34,15 @@ public class BookStatus {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+	@Builder
+	public BookStatus(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		this.id = id;
+		this.name = name;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+
 	public static BookStatus of(String name) {
 		BookStatus bookStatus = new BookStatus();
 		bookStatus.name = name;
