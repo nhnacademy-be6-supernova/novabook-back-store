@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.BadRequestException;
@@ -35,6 +37,7 @@ import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 public class TossOrderService {
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
+
 	private final RabbitTemplate rabbitTemplate;
 	private static final String AMOUNT = "amount";
 	private static final String PAYMENT_KEY = "paymentKey";
@@ -95,6 +98,7 @@ public class TossOrderService {
 			}
 
 		} catch (Exception e) {
+			log.error("",e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
 		} finally {
@@ -177,4 +181,5 @@ public class TossOrderService {
 				message);
 		}
 	}
+
 }

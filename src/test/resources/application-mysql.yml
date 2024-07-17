@@ -19,3 +19,30 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+---
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          doorayHookClient:
+            url: https://hook.dooray.com/services/3204376758577275363/3841573584705463142/XgrMG9YtRw65XfNFuTYFDg
+          deadOrdersQueueDoorayHookClient:
+            url: https://hook.dooray.com/services/3204376758577275363/3846032559099339784/uuota3uCT5mPjX2v1oG2JQ
+---
+rabbitmq:
+  queue:
+    couponCreateNormal: nova.coupon.create.normal.queue
+    couponCreateHighTraffic: nova.coupon.create.hightraffic.queue
+    couponRegisterNormal: nova.coupon.register.normal.queue
+    couponRegisterHighTraffic: nova.coupon.register.hightraffic.queue
+    deadLetter: nova.coupon.deadletter.queue
+  exchange:
+    couponOperation: nova.coupon.operation.exchange
+    deadLetter: nova.coupon.deadletter.exchange
+  routing:
+    couponCreateNormal: coupon.create.normal
+    couponCreateHighTraffic: coupon.create.hightraffic
+    couponRegisterNormal: coupon.register.normal
+    couponRegisterHighTraffic: coupon.register.hightraffic
