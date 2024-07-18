@@ -26,19 +26,23 @@ public class CurrentMembersArgumentResolver implements HandlerMethodArgumentReso
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		@NotNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+		@NotNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 		CurrentMembers currentMembers = parameter.getParameterAnnotation(CurrentMembers.class);
 		if (currentMembers == null) {
+			log.info("CurrentMembersArgumentResolver resolveArgument currentMembers is null");
 			return null;
 		}
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		log.info("CurrentMembersArgumentResolver resolveArgument authentication: {}", authentication);
 
 		if (authentication == null || "anonymousUser".equals(authentication.getName())) {
 			handleUnauthenticatedUser(currentMembers.required());
+			log.info("CurrentMembersArgumentResolver resolveArgument anonymousUser");
 			return null;
 		}
 		CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
+		log.info("CurrentMembersArgumentResolver resolveArgument principal: {}", principal);
 		return principal.getMembersId();
 	}
 
