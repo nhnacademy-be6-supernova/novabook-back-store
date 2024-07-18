@@ -39,14 +39,6 @@ class TossOrderServiceTest {
 	}
 
 
-	// Additional utility classes for mocking
-	private static class ByteArrayOutputStreamMock extends java.io.ByteArrayOutputStream {
-		@Override
-		public void write(byte[] b) throws IOException {
-			// No-op
-		}
-	}
-
 	@Test
 	void testCreate_PaymentAmountMismatch() throws Exception {
 		// Given

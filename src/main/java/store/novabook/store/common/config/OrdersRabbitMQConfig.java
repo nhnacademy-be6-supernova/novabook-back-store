@@ -29,7 +29,6 @@ public class OrdersRabbitMQConfig {
 	}
 
 	// QUEUES
-
 	@Bean
 	public Queue ordersVerifyFormQueue() {
 		return QueueBuilder.durable("nova.orders.form.verify.queue").build();
