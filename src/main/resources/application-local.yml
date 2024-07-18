@@ -20,29 +20,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
 
-
-rabbitmq:
-  queue:
-    coupon: nova.coupon.queue
-    dead: nova.dead.queue
-    member-coupon: nova.membercoupon.queue
-  exchange:
-    member: nova.member.exchange
-    coupon: nova.coupon.exchange
-  routing:
-    member: member.registration
-    couponCreated: coupon.created
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://127.0.0.1:8761/eureka
-  instance:
-    prefer-ip-address: true
 
 logging:
   level:
@@ -55,10 +34,13 @@ nhn:
     keyManager:
       appkey: 2SxwmBzUfnqJaA2A
       redisKey: 60427297022b4bdb9650789537e4b945
+      storeKey: e0a81fc89a1d4c5196df53d3fdab0f64
       imageManagerKey: f1a359544d624274b58cac169b00d774
-      rabbitMQKey: 57e5b5f62b404b58b7a7cc79352d5d82
+      rabbitMQKey: 5070b197613e4db6a73e9db96c54789f
       elasticSearchKey: 74649bffcfbb40a9bcae7204e6863d05
+      elasticSearchUser: dd75e1de58f24239b6d249cdc1faff0c
       userAccessKey: J9VxQFQEsmerR1n7FeJ6
       secretAccessKey: zZEVopUHt6dxgRMt
+
 
 
