@@ -84,7 +84,6 @@ public enum ErrorCode {
 	PROBLEM_DETAIL("문제 발생!"),
 	FAILED_CONVERSION("Dto로 변환 하는데 실패했습니다."),
 	RESPONSE_BODY_IS_NULL("키매니저의 response body가 null입니다."),
-	UNEXPECTED_RESPONSE_BODY_TYPE("키매니저의 response body가 예상치못한 값입니다."),
 	MISSING_BODY_KEY("응답 본문에 \"body\" 키가 누락되었습니다."),
 	MISSING_SECRET_KEY("응답 본문에 \"secret\" 키가 누락되었습니다."),
 

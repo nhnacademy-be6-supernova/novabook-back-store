@@ -32,13 +32,12 @@ public class KeyManagerUtil {
 	private KeyManagerUtil() {
 	}
 
-	private static String getDataSource(Environment environment, String keyid) {
+	public static String getDataSource(Environment environment, String keyid, RestTemplate restTemplate) {
 
 		String appkey = environment.getProperty("nhn.cloud.keyManager.appkey");
 		String userId = environment.getProperty("nhn.cloud.keyManager.userAccessKey");
 		String secretKey = environment.getProperty("nhn.cloud.keyManager.secretAccessKey");
 
-		RestTemplate restTemplate = new RestTemplate();
 		String baseUrl = "https://api-keymanager.nhncloudservice.com/keymanager/v1.2/appkey/{appkey}/secrets/{keyid}";
 		String url = baseUrl.replace("{appkey}", Objects.requireNonNull(appkey)).replace("{keyid}", keyid);
 		HttpHeaders headers = new HttpHeaders();
@@ -55,20 +54,11 @@ public class KeyManagerUtil {
 			}
 		);
 
-		var body = getStringObjectMap(response);
-
-		String result = (String)body.get("secret");
-		if (result.isEmpty()) {
-			log.error("\"secret\" key is missing in responsxcle body");
-			log.error("{}", body);
-			throw new KeyManagerException(MISSING_BODY_KEY);
-		}
-
-		return result;
+		return getStringObjectMap(response);
 	}
 
-	private static @NotNull Map<String, Object> getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
-		if (response.getBody() == null) {
+	private static @NotNull String getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
+		if (response == null || response.getBody() == null) {
 			throw new KeyManagerException(RESPONSE_BODY_IS_NULL);
 		}
 		Object bodyObj = response.getBody().get("body");
@@ -82,18 +72,18 @@ public class KeyManagerUtil {
 
 		String result = (String)body.get("secret");
 		if (result == null || result.isEmpty()) {
-			log.error("\"secret\" key is missing or empty in response body");
+			log.error("\"secret\" key is missing in responsxcle body");
 			log.error("{}", body);
-			throw new KeyManagerException(MISSING_SECRET_KEY);
+			throw new KeyManagerException(MISSING_BODY_KEY);
 		}
 
-		return body;
+		return result;
 	}
 
-	public static RedisConfigDto getRedisConfig(Environment environment) {
+	public static RedisConfigDto getRedisConfig(Environment environment, RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.redisKey");
-			return objectMapper.readValue(getDataSource(environment, keyid), RedisConfigDto.class);
+			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), RedisConfigDto.class);
 		} catch (JsonProcessingException e) {
 			//오류처리
 			log.error("RedisConfig{}", FAILED_CONVERSION.getMessage());
@@ -101,40 +91,41 @@ public class KeyManagerUtil {
 		}
 	}
 
-	public static ElasticSearchConfigDto getElasticSearchConfig(Environment environment) {
+	public static ElasticSearchConfigDto getElasticSearchConfig(Environment environment, RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.elasticSearchUser");
-			return objectMapper.readValue(getDataSource(environment, keyid), ElasticSearchConfigDto.class);
+			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate),
+				ElasticSearchConfigDto.class);
 		} catch (JsonProcessingException e) {
 			log.error("ElasticSearchConfig{}", FAILED_CONVERSION.getMessage());
 			throw new KeyManagerException(FAILED_CONVERSION);
 		}
 	}
 
-	public static ImageManagerDto getImageManager(Environment environment) {
+	public static ImageManagerDto getImageManager(Environment environment, RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.imageManagerKey");
-			return objectMapper.readValue(getDataSource(environment, keyid), ImageManagerDto.class);
+			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), ImageManagerDto.class);
 		} catch (JsonProcessingException e) {
 			log.error("ImageManager{}", FAILED_CONVERSION.getMessage());
 			throw new KeyManagerException(FAILED_CONVERSION);
 		}
 	}
 
-	public static RabbitMQConfigDto getRabbitMQConfig(Environment environment) {
+	public static RabbitMQConfigDto getRabbitMQConfig(Environment environment, RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.rabbitMQKey");
-			return objectMapper.readValue(getDataSource(environment, keyid), RabbitMQConfigDto.class);
+			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), RabbitMQConfigDto.class);
 		} catch (JsonProcessingException e) {
 			log.error("RabbitMQConfig{}", FAILED_CONVERSION.getMessage());
 			throw new KeyManagerException(FAILED_CONVERSION);
 		}
 	}
 
-	public static DatabaseConfigDto getDatabaseConfig(Environment environment) {
+	public static DatabaseConfigDto getDatabaseConfig(Environment environment, RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.storeKey");
-			return objectMapper.readValue(getDataSource(environment, keyid), DatabaseConfigDto.class);
+			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), DatabaseConfigDto.class);
 		} catch (JsonProcessingException e) {
 			log.error("DatabaseConfig{}", FAILED_CONVERSION.getMessage());
 			throw new KeyManagerException(FAILED_CONVERSION);

@@ -83,7 +83,6 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok().build();
 	}
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/member/name")
 	public ResponseEntity<GetmemberNameResponse> getMemberName(@CurrentMembers(required = false) Long memberId) {
 		if (memberId == null) {
@@ -131,13 +130,6 @@ public class MemberController implements MemberControllerDocs {
 
 	@PostMapping("/find")
 	public ResponseEntity<FindMemberLoginResponse> find(@Valid @RequestBody FindMemberRequest findMemberRequest) {
-		FindMemberLoginResponse memberLoginResponse = memberService.findMembersLogin(findMemberRequest.loginId());
-		return ResponseEntity.ok(memberLoginResponse);
-	}
-
-	@CheckRole("ROLE_ADMIN")
-	@PostMapping("/find/admin")
-	public ResponseEntity<FindMemberLoginResponse> findAdmin(@Valid @RequestBody FindMemberRequest findMemberRequest) {
 		FindMemberLoginResponse memberLoginResponse = memberService.findMembersLogin(findMemberRequest.loginId());
 		return ResponseEntity.ok(memberLoginResponse);
 	}

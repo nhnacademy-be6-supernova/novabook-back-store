@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.retry.interceptor.RetryOperationsInterceptor;
+import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.util.KeyManagerUtil;
@@ -37,6 +38,7 @@ import store.novabook.store.common.util.dto.RabbitMQConfigDto;
 public class RabbitMQConfig {
 
 	private final Environment environment;
+	private final RestTemplate restTemplate;
 
 	@Value("${rabbitmq.queue.couponCreateNormal}")
 	private String couponCreateNormalQueue;
@@ -73,7 +75,7 @@ public class RabbitMQConfig {
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
-		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment);
+		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment, restTemplate);
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
 		connectionFactory.setPort(config.port());
 		connectionFactory.setUsername(config.username());
