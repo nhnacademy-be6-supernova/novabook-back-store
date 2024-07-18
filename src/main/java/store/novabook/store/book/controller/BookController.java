@@ -21,6 +21,8 @@ import store.novabook.store.book.dto.request.UpdateBookRequest;
 import store.novabook.store.book.dto.response.CreateBookResponse;
 import store.novabook.store.book.dto.response.GetBookAllResponse;
 import store.novabook.store.book.dto.response.GetBookResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponseMap;
 import store.novabook.store.book.service.BookService;
 import store.novabook.store.common.security.aop.CheckRole;
 
@@ -33,6 +35,11 @@ public class BookController implements BookControllerDocs {
 	@GetMapping("/{id}")
 	public ResponseEntity<GetBookResponse> getBook(@PathVariable Long id) {
 		return ResponseEntity.ok().body(bookService.getBook(id));
+	}
+
+	@GetMapping("/main")
+	public ResponseEntity<GetBookToMainResponseMap> getBookToMainPage() {
+		return ResponseEntity.ok().body(bookService.getBookToMainPage());
 	}
 
 	@CheckRole("ROLE_ADMIN")
@@ -58,4 +65,6 @@ public class BookController implements BookControllerDocs {
 		bookService.delete(id);
 		return ResponseEntity.ok().build();
 	}
+
+
 }

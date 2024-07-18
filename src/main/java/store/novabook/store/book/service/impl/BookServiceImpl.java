@@ -29,6 +29,8 @@ import store.novabook.store.book.dto.request.UpdateBookRequest;
 import store.novabook.store.book.dto.response.CreateBookResponse;
 import store.novabook.store.book.dto.response.GetBookAllResponse;
 import store.novabook.store.book.dto.response.GetBookResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponseMap;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.book.repository.BookQueryRepository;
@@ -194,5 +196,11 @@ public class BookServiceImpl implements BookService {
 			log.error("Failed to nhnCloud : {}", e.getMessage());
 			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
 		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetBookToMainResponseMap getBookToMainPage() {
+		return queryRepository.getBookToMainPage();
 	}
 }
