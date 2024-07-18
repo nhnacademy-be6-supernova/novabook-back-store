@@ -35,13 +35,6 @@ public class WrappingPaperController implements WrappingPaperControllerDocs {
 	}
 
 	@CheckRole("ROLE_ADMIN")
-	@GetMapping(params = {"size","page"})
-	public ResponseEntity<Page<GetWrappingPaperResponse>> getWrappingPaperAll(Pageable pageable) {
-		Page<GetWrappingPaperResponse> response = wrappingPaperService.getWrappingPaperAll(pageable);
-		return ResponseEntity.ok(response);
-	}
-
-	@CheckRole("ROLE_ADMIN")
 	@GetMapping
 	public ResponseEntity<GetWrappingPaperAllResponse> getWrappingPaperAllList() {
 		GetWrappingPaperAllResponse response = GetWrappingPaperAllResponse.builder()

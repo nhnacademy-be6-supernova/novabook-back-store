@@ -29,7 +29,7 @@ import store.novabook.store.point.service.impl.PointHistoryServiceImpl;
 @WebMvcTest(PointHistoryController.class)
 @ContextConfiguration(classes = {PointHistoryServiceImpl.class})
 @EnableSpringDataWebSupport
-public class PointHistoryControllerTest {
+class PointHistoryControllerTest {
 
 	@Autowired
 	protected MockMvc mockMvc;
@@ -66,18 +66,5 @@ public class PointHistoryControllerTest {
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
-
-	// @Test
-	// void createPointPolicyTest() throws Exception {
-	// 	CreatePointHistoryRequest createPointHistoryRequest = CreatePointHistoryRequest.builder()
-	// 		.pointPolicyId(1L)
-	// 		.pointContent("pointContent")
-	// 		.pointAmount(1000)
-	// 		.build();
-	//
-	// 	mockMvc.perform(post("/point/histories")
-	// 			.flashAttr("createPointHistoryRequest", createPointHistoryRequest))
-	// 		.andExpect(status().isCreated());
-	// }
 
 }

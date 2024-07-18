@@ -27,7 +27,7 @@ import store.novabook.store.tag.service.impl.TagServiceImpl;
 @WebMvcTest(TagController.class)
 @ContextConfiguration(classes = {TagServiceImpl.class})
 @EnableSpringDataWebSupport
-public class TagControllerTest {
+class TagControllerTest {
 	@MockBean
 	private TagServiceImpl tagServiceImpl;
 
@@ -37,7 +37,7 @@ public class TagControllerTest {
 	private ObjectMapper objectMapper;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		TagController tagController = new TagController(tagServiceImpl);
 		objectMapper = new ObjectMapper();
 		PageableHandlerMethodArgumentResolver pageableArgumentResolver = new PageableHandlerMethodArgumentResolver();
@@ -47,8 +47,8 @@ public class TagControllerTest {
 	}
 
 	@Test
-	public void testGetTag() throws Exception {
-		GetTagResponse response = new GetTagResponse( 1L,"Tag1");
+	void testGetTag() throws Exception {
+		GetTagResponse response = new GetTagResponse(1L, "Tag1");
 		when(tagServiceImpl.getTag(1L)).thenReturn(response);
 
 		mockMvc.perform(get("/api/v1/store/tags/1")
@@ -59,7 +59,7 @@ public class TagControllerTest {
 	}
 
 	@Test
-	public void testCreateTag() throws Exception {
+	void testCreateTag() throws Exception {
 		CreateTagRequest request = new CreateTagRequest("Tag1");
 		CreateTagResponse response = new CreateTagResponse(1L);
 		when(tagServiceImpl.createTag(any(CreateTagRequest.class))).thenReturn(response);
@@ -72,7 +72,7 @@ public class TagControllerTest {
 	}
 
 	@Test
-	public void testDeleteTag() throws Exception {
+	void testDeleteTag() throws Exception {
 		doNothing().when(tagServiceImpl).deleteTag(1L);
 
 		mockMvc.perform(delete("/api/v1/store/tags/1")

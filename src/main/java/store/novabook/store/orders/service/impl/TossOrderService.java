@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.BadRequestException;
@@ -35,6 +37,7 @@ import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 public class TossOrderService {
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
+
 	private final RabbitTemplate rabbitTemplate;
 	private static final String AMOUNT = "amount";
 	private static final String PAYMENT_KEY = "paymentKey";
@@ -48,10 +51,9 @@ public class TossOrderService {
 			JSONObject obj = new JSONObject();
 
 			@SuppressWarnings("unchecked")
-			HashMap<String, Object> paymentParam = (HashMap<String, Object>)orderSagaMessage.getPaymentRequest()
-				.paymentInfo();
+			HashMap<String, Object> paymentParam = (HashMap<String, Object>) orderSagaMessage.getPaymentRequest().paymentInfo();
 
-			Integer tossAmountInt = (Integer)paymentParam.get(AMOUNT);
+			Integer tossAmountInt = (Integer) paymentParam.get(AMOUNT);
 			long tossAmount = tossAmountInt.longValue();
 
 			if (tossAmount != orderSagaMessage.getCalculateTotalAmount()) {
@@ -69,34 +71,35 @@ public class TossOrderService {
 			String authorizations = "Basic " + new String(encodedBytes);
 
 			URL url = new URL(TOSS_CONFIRM_URL);
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestProperty("Authorization", authorizations);
 			connection.setRequestProperty("Content-Type", "application/json");
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
 
-			OutputStream outputStream = connection.getOutputStream();
-			outputStream.write(obj.toString().getBytes(StandardCharsets.UTF_8));
+			try (OutputStream outputStream = connection.getOutputStream()) {
+				outputStream.write(obj.toString().getBytes(StandardCharsets.UTF_8));
+			}
 
-			// 결제를 승인하면 결제수단에서 금액이 차감돼요.
 			int code = connection.getResponseCode();
 			boolean isSuccess = code == 200;
 
-			InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
+			try (InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
+				 Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
 
-			Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
-			JSONObject jsonObject = (JSONObject)parser.parse(reader);
-			responseStream.close();
+				JSONObject jsonObject = (JSONObject) parser.parse(reader);
 
-			if (isSuccess) {
-				orderSagaMessage.setStatus("SUCCESS_APPROVE_PAYMENT");
-			} else {
-				orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
+				if (isSuccess) {
+					orderSagaMessage.setStatus("SUCCESS_APPROVE_PAYMENT");
+				} else {
+					orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
+				}
+				log.info("결제 응답 내용 : {}", jsonObject.toString());
 			}
-			log.info("결제 응답 내용 : {}", jsonObject.toString());
+
 		} catch (Exception e) {
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		} finally {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api4-producer-routing-key",
 				orderSagaMessage);
@@ -120,8 +123,8 @@ public class TossOrderService {
 			sendTossCancelRequest(tossPaymentCancel);
 			orderSagaMessage.setStatus("SUCCESS_REFUND_PAYMENT");
 		} catch (IOException | ParseException e) {
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_REFUND_TOSS_PAYMENT");
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
 				orderSagaMessage);
 			throw new RuntimeException(e);
@@ -177,4 +180,5 @@ public class TossOrderService {
 				message);
 		}
 	}
+
 }

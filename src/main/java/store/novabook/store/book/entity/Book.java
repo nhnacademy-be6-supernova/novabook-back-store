@@ -83,7 +83,6 @@ public class Book {
 
 	@Builder
 	public Book(BookStatus bookStatus,
-
 				String isbn,
 				String title,
 				String description,
@@ -110,6 +109,7 @@ public class Book {
 		this.isPackaged = isPackaged;
 	}
 
+	@Builder
 	public static Book of(CreateBookRequest request, BookStatus bookStatus) {
 		return Book.builder()
 			.bookStatus(bookStatus)
