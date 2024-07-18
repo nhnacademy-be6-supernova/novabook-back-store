@@ -67,8 +67,11 @@ public class BookSearchServiceImpl {
 		}
 	}
 
-	public List<BookDocument> searchByTagsContaining(Pageable pageable) {
-		return bookQueryRepository.getBookDocuments(pageable);
+
+	public List<BookDocument> searchByTagsContaining(Pageable pageable){
+		List<BookDocument> bookDocuments = bookQueryRepository.getBookDocuments(pageable);
+		bookSearchRepository.saveAll(bookDocuments);
+		return bookDocuments;
 	}
 
 
