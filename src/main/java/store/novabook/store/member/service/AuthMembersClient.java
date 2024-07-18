@@ -11,7 +11,7 @@ import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.response.GetDormantMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 
-@FeignClient(name = "authMembersClient", url = "http://localhost:9777/auth/members/uuid")
+@FeignClient(name = "gateway-service", path = "/auth/members/uuid", contextId = "authMembersClient")
 public interface AuthMembersClient {
 	@PostMapping
 	ApiResponse<GetMembersUUIDResponse> getMembersId(@Valid @RequestBody GetMembersUUIDRequest getMembersUUIDRequest);
