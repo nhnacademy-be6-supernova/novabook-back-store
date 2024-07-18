@@ -98,9 +98,8 @@ public class TossOrderService {
 			}
 
 		} catch (Exception e) {
-			log.error("",e);
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		} finally {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api4-producer-routing-key",
 				orderSagaMessage);
@@ -124,8 +123,8 @@ public class TossOrderService {
 			sendTossCancelRequest(tossPaymentCancel);
 			orderSagaMessage.setStatus("SUCCESS_REFUND_PAYMENT");
 		} catch (IOException | ParseException e) {
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_REFUND_TOSS_PAYMENT");
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
 				orderSagaMessage);
 			throw new RuntimeException(e);

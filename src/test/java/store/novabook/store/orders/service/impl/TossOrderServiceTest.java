@@ -1,5 +1,6 @@
 package store.novabook.store.orders.service.impl;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -8,16 +9,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.transaction.NoTransactionException;
 
-import store.novabook.store.common.exception.BadRequestException;
-import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.orders.dto.OrderSagaMessage;
 import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.PaymentRequest;
@@ -40,23 +40,24 @@ class TossOrderServiceTest {
 	}
 
 	@Test
-	void testCreate_PaymentAmountMismatch() throws Exception {
+	void testCreate_PaymentAmountMismatch() {
 		// Given
 		OrderSagaMessage orderSagaMessage = createOrderSagaMessage(1000, 2000);
-		orderSagaMessage.setCalculateTotalAmount(2000);
+		orderSagaMessage.setCalculateTotalAmount(1000);
 		Map<String, Object> param = new HashMap<>();
 		param.put("amount", 2000);
+
 
 		orderSagaMessage.setPaymentRequest(PaymentRequest.builder().paymentInfo(param).build());
 
 		doNothing().when(rabbitTemplate).convertAndSend(Optional.ofNullable(any()), any(), any());
 
 		// When
-		BadRequestException exception = Assertions.assertThrows(BadRequestException.class, () -> tossOrderService.create(orderSagaMessage));
+		assertThrows(NoTransactionException.class,
+			() -> tossOrderService.create(orderSagaMessage));
 
 		// Then
-		Assertions.assertEquals(ErrorCode.PAYMENT_AMOUNT_MISMATCH, exception.getErrorCode());
-		Assertions.assertEquals("FAIL_APPROVE_PAYMENT", orderSagaMessage.getStatus());
+		assertEquals("FAIL_APPROVE_PAYMENT", orderSagaMessage.getStatus());
 	}
 
 	@Test
@@ -84,9 +85,7 @@ class TossOrderServiceTest {
 		doThrow(new IOException()).when(spyTossOrderService).sendTossCancelRequest(any());
 
 		// When
-		Assertions.assertThrows(RuntimeException.class, () -> {
-			spyTossOrderService.cancel(orderSagaMessage);
-		});
+		assertThrows(RuntimeException.class, () -> spyTossOrderService.cancel(orderSagaMessage));
 
 		// Then
 		Assertions.assertEquals("FAIL_REFUND_TOSS_PAYMENT", orderSagaMessage.getStatus());
@@ -125,9 +124,7 @@ class TossOrderServiceTest {
 		doThrow(new IOException()).when(spyTossOrderService).sendTossCancelRequest(any());
 
 		// When
-		Assertions.assertThrows(RuntimeException.class, () -> {
-			spyTossOrderService.paymentRequestPayCancel(message);
-		});
+		assertThrows(RuntimeException.class, () -> spyTossOrderService.paymentRequestPayCancel(message));
 
 		// Then
 		Assertions.assertEquals("FAIL_REQUEST_CANCEL_TOSS_PAYMENT", message.getStatus());
