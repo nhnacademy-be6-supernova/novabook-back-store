@@ -38,8 +38,12 @@ public class CurrentMembersArgumentResolver implements HandlerMethodArgumentReso
 			handleUnauthenticatedUser(currentMembers.required());
 			return null;
 		}
-		CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
-		return principal.getMembersId();
+
+		if(authentication.getAuthorities() instanceof  CustomUserDetails) {
+			CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
+			return principal.getMembersId();
+		}
+		return null;
 	}
 
 	private void handleUnauthenticatedUser(boolean required) {

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.DoorayAuthRequest;
 import store.novabook.store.member.service.DoorayService;
@@ -20,7 +19,6 @@ public class DoorayHookController {
 	private final MemberService memberService;
 	private final DoorayService doorayService;
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/send-auth-code")
 	public ResponseEntity<Void> sendMessage(@RequestBody DoorayAuthRequest request) {
 		String authCode = memberService.createAndSaveAuthCode(request.uuid());
@@ -29,7 +27,6 @@ public class DoorayHookController {
 		return ResponseEntity.ok().build();
 	}
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/confirm")
 	public ResponseEntity<Void> confirmDormantMember(@RequestBody DoorayAuthCodeRequest request) {
 		memberService.updateMemberStatusToActive(request);
