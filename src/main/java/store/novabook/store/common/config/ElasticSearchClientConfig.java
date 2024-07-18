@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.web.client.RestTemplate;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
@@ -23,10 +24,11 @@ import store.novabook.store.common.util.dto.ElasticSearchConfigDto;
 @RequiredArgsConstructor
 public class ElasticSearchClientConfig {
 	private final Environment environment;
+	private final RestTemplate restTemplate;
 
 	@Bean
 	public ElasticsearchClient getRestClient() {
-		ElasticSearchConfigDto config = KeyManagerUtil.getElasticSearchConfig(environment);
+		ElasticSearchConfigDto config = KeyManagerUtil.getElasticSearchConfig(environment, restTemplate);
 
 		BasicCredentialsProvider redsProv = new BasicCredentialsProvider();
 		redsProv.setCredentials(

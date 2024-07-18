@@ -112,7 +112,7 @@ public class CartBookServiceImpl implements CartBookService {
 		cartBookRepository.saveAll(cartBooksToSave);
 
 		return new CreateCartBookListResponse(
-			cartBooksToSave.stream().map(CartBook::getId).collect(Collectors.toList()));
+			cartBooksToSave.stream().map(CartBook::getId).toList());
 	}
 
 	@Override

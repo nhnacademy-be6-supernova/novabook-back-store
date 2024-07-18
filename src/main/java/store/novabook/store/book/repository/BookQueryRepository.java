@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -14,12 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import store.novabook.store.book.dto.response.GetBookResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponseMap;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.QBook;
 import store.novabook.store.book.entity.QBookStatus;
@@ -186,6 +190,47 @@ public class BookQueryRepository extends QuerydslRepositorySupport {
 
 		return bookDocumentList;
 	}
+	public GetBookToMainResponseMap getBookToMainPage() {
+		List<GetBookToMainResponse> newBooks = new JPAQuery<>(entityManager)
+			.select(Projections.constructor(GetBookToMainResponse.class,
+				qBook.id,
+				qBook.title,
+				qImage.source.as("image"),
+				Expressions.numberTemplate(Integer.class, "{0}", qBook.price).as("price"),
+				Expressions.numberTemplate(Integer.class, "{0}", qBook.discountPrice).as("discountPrice")
+			))
+			.from(qBook)
+			.leftJoin(qBookImage).on(qBook.id.eq(qBookImage.book.id))
+			.leftJoin(qImage).on(qBookImage.image.id.eq(qImage.id))
+			.where(qBook.bookStatus.id.ne(4L))
+			.orderBy(qBook.createdAt.desc())
+			.limit(8)
+			.fetch();
 
+		List<GetBookToMainResponse> popularBooks = new JPAQuery<>(entityManager)
+			.select(Projections.constructor(GetBookToMainResponse.class,
+				qBook.id,
+				qBook.title,
+				qImage.source.as("image"),
+				Expressions.numberTemplate(Integer.class, "{0}", qBook.price).as("price"),
+				Expressions.numberTemplate(Integer.class, "{0}", qBook.discountPrice).as("discountPrice")
+			))
+			.from(qBook)
+			.leftJoin(qBookImage).on(qBook.id.eq(qBookImage.book.id))
+			.leftJoin(qImage).on(qBookImage.image.id.eq(qImage.id))
+			.leftJoin(qLikes).on(qBook.id.eq(qLikes.book.id))
+			.where(qBook.bookStatus.id.ne(4L))
+			.orderBy(qLikes.count().desc())
+			.groupBy(qBook.id, qBook.title, qImage.source, qBook.price, qBook.discountPrice)
+			.limit(8)
+			.fetch();
+
+		Map<String, List<GetBookToMainResponse>> mainBookData = new HashMap<>();
+		mainBookData.put("newBooks", newBooks);
+		mainBookData.put("popularBooks", popularBooks);
+
+		return new GetBookToMainResponseMap(mainBookData);
+
+	}
 
 }

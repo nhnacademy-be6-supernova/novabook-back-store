@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.util.KeyManagerUtil;
@@ -20,11 +21,13 @@ public class DataSourceConfig {
 
 	private final Environment environment;
 
+	private final RestTemplate restTemplate;
+
 	@Bean
 	@Profile({"dev", "prod"})
 	public DataSource storeDataSource() {
 
-		DatabaseConfigDto config = KeyManagerUtil.getDatabaseConfig(environment);
+		DatabaseConfigDto config = KeyManagerUtil.getDatabaseConfig(environment, restTemplate);
 
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setDriverClassName(environment.getProperty("spring.datasource.store.driver-class-name"));

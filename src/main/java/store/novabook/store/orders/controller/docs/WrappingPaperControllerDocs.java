@@ -21,9 +21,6 @@ public interface WrappingPaperControllerDocs {
 	@Operation(summary = "포장지 생성", description = "포장지를 추가 합니다.")
 	ResponseEntity<CreateResponse> createWrappingPaper(@RequestBody CreateWrappingPaperRequest request);
 
-	@Operation(summary = "포장지 전체 조회", description = "포장지 페이지 조회합니다.")
-	ResponseEntity<Page<GetWrappingPaperResponse>> getWrappingPaperAll(Pageable pageable);
-
 	//List 전체조회
 	@Operation(summary = "포장지 전체 조회", description = "포장지 모두 조회합니다.")
 	ResponseEntity<GetWrappingPaperAllResponse> getWrappingPaperAllList();

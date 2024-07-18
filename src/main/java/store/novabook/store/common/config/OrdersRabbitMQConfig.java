@@ -9,7 +9,6 @@ import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +29,6 @@ public class OrdersRabbitMQConfig {
 	}
 
 	// QUEUES
-
 	@Bean
 	public Queue ordersVerifyFormQueue() {
 		return QueueBuilder.durable("nova.orders.form.verify.queue").build();

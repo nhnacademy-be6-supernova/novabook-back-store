@@ -1,13 +1,13 @@
 package store.novabook.store.orders.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.*;
 
-import java.util.Optional;
-import java.util.List;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,26 +20,26 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
+import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrderDetailResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
+import store.novabook.store.orders.entity.DeliveryFee;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
 import store.novabook.store.orders.entity.OrdersStatus;
-import store.novabook.store.orders.entity.DeliveryFee;
 import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.OrdersBookRepository;
 import store.novabook.store.orders.repository.OrdersRepository;
-import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
-import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
-import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class OrdersBookServiceImplTest {

@@ -31,7 +31,7 @@ import store.novabook.store.point.repository.PointHistoryRepository;
 import store.novabook.store.point.repository.PointPolicyRepository;
 import store.novabook.store.point.service.impl.PointHistoryServiceImpl;
 
-public class PointHistoryServiceImplTests {
+class PointHistoryServiceImplTests {
 
 	@InjectMocks
 	private PointHistoryServiceImpl pointHistoryServiceImpl;
@@ -101,15 +101,17 @@ public class PointHistoryServiceImplTests {
 
 		assertNotNull(result);
 		assertEquals(1, result.getTotalElements());
-		assertEquals("pointContent", result.getContent().get(0).pointContent());
+		assertEquals("pointContent", result.getContent().getFirst().pointContent());
 	}
 
 	@Test
 	void getPointHistoryListTest_EntityNotFoundException() {
 		when(pointHistoryRepository.findAll(any(Pageable.class))).thenReturn(Page.empty());
+		assertThrows(NotFoundException.class, this::callGetPointHistoryList);
+	}
 
-		assertThrows(NotFoundException.class, () -> {
-			pointHistoryServiceImpl.getPointHistoryList(PageRequest.of(0, 10));
-		});
+	private void callGetPointHistoryList() {
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		pointHistoryServiceImpl.getPointHistoryList(pageRequest);
 	}
 }
