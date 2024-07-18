@@ -37,9 +37,6 @@ class KeyManagerUtilTest {
 	@Mock
 	private RestTemplate restTemplate;
 
-	@Mock
-	private org.slf4j.Logger log;
-
 	private static final String APPKEY = "testAppkey";
 	private static final String USER_ACCESS_KEY = "testUserAccessKey";
 	private static final String SECRET_ACCESS_KEY = "testSecretAccessKey";
@@ -337,7 +334,7 @@ class KeyManagerUtilTest {
 		given(environment.getProperty("nhn.cloud.keyManager.secretAccessKey")).willReturn("testSecretAccessKey");
 
 		Map<String, Object> bodyMap = new HashMap<>();
-		bodyMap.put("body", Map.of("invalidKey", "invalidValue"));
+		bodyMap.put("body", Map.of("secret", ""));
 
 		ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(bodyMap, HttpStatus.OK);
 		given(restTemplate.exchange(any(String.class), eq(HttpMethod.GET), any(HttpEntity.class),
@@ -358,12 +355,6 @@ class KeyManagerUtilTest {
 	private Map<String, Object> getMockResponseBody() {
 		Map<String, Object> bodyMap = new HashMap<>();
 		bodyMap.put("body", Map.of("secret", "{\"invalid\":\"invalid\"}"));
-		return bodyMap;
-	}
-
-	private Map<String, Object> getMockResponseBodyEmpty() {
-		Map<String, Object> bodyMap = new HashMap<>();
-		bodyMap.put("body", Map.of("secret", ""));
 		return bodyMap;
 	}
 }
