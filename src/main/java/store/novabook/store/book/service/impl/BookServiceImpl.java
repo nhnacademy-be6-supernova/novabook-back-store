@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -76,7 +77,7 @@ public class BookServiceImpl implements BookService {
 		BookTagRepository bookTagRepository, CategoryRepository categoryRepository, TagRepository tagRepository,
 		BookCategoryRepository bookCategoryRepository, BookQueryRepository queryRepository,
 		ImageRepository imageRepository, BookImageRepository bookImageRepository, NHNCloudClient nhnCloudClient,
-		BookSearchRepository bookSearchRepository, Environment environment) {
+		BookSearchRepository bookSearchRepository, Environment environment, RestTemplate restTemplate) {
 
 		this.bookRepository = bookRepository;
 		this.bookStatusRepository = bookStatusRepository;
@@ -89,7 +90,7 @@ public class BookServiceImpl implements BookService {
 		this.bookImageRepository = bookImageRepository;
 		this.nhnCloudClient = nhnCloudClient;
 		this.bookSearchRepository = bookSearchRepository;
-		this.imageManagerDto = KeyManagerUtil.getImageManager(environment);
+		this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
 	}
 
 	public CreateBookResponse create(CreateBookRequest request) {
@@ -111,7 +112,6 @@ public class BookServiceImpl implements BookService {
 		String imageUrl = request.image();
 		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 		String outputFilePath = "/" + imageManagerDto.localStorage() + fileName;
-		// String outputFilePath = "src/main/resources/image/" + fileName;
 
 		Path imagePath = Paths.get(outputFilePath);
 

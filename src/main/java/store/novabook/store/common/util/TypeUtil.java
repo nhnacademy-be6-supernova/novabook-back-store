@@ -6,6 +6,7 @@ import java.util.Map;
 public class TypeUtil {
 	private TypeUtil() {
 	}
+
 	public static <K, V> Map<K, V> castMap(Object obj, Class<K> keyClass, Class<V> valueClass) {
 		if (obj instanceof Map<?, ?> rawMap) {
 			Map<K, V> resultMap = new HashMap<>();

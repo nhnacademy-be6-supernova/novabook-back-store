@@ -11,9 +11,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,8 +29,6 @@ import store.novabook.store.book.repository.ReviewRepository;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.common.image.NHNCloudMutilpartClient;
-import store.novabook.store.common.util.KeyManagerUtil;
-import store.novabook.store.common.util.dto.ImageManagerDto;
 import store.novabook.store.image.entity.Image;
 import store.novabook.store.image.entity.ReviewImage;
 import store.novabook.store.image.repository.ImageRepository;
@@ -46,6 +48,7 @@ class ReviewServiceImplTest {
 
 	@Mock
 	private ReviewRepository reviewRepository;
+
 	@Mock
 	private OrdersBookRepository ordersBookRepository;
 	@Mock
@@ -54,39 +57,23 @@ class ReviewServiceImplTest {
 	private ImageRepository imageRepository;
 	@Mock
 	private ReviewImageRepository reviewImageRepository;
-
 	@Mock
 	private PointHistoryRepository pointHistoryRepository;
-
 	@Mock
 	private PointPolicyRepository pointPolicyRepository;
-
 	@Mock
 	private MemberRepository memberRepository;
 
 	@Mock
 	private Environment environment;
 
-	@Mock
+	@InjectMocks
 	private ReviewServiceImpl reviewService;
 
 	@BeforeEach
 	void setUp() {
-		when(environment.getProperty("nhn.cloud.keyManager.appkey")).thenReturn("test");
-		when(environment.getProperty("nhn.cloud.keyManager.userAccessKey")).thenReturn("test");
-		when(environment.getProperty("nhn.cloud.keyManager.secretAccessKey")).thenReturn("test");
-		mockKeyManagerUtil();
+		MockitoAnnotations.openMocks(this);
 	}
-
-	private void mockKeyManagerUtil() {
-			ImageManagerDto imageManagerDto = ImageManagerDto.builder()
-				.accessKey("accessKey")
-				.secretKey("secretKey")
-				.bucketName("bucketName")
-				.build();
-			when(KeyManagerUtil.getImageManager(environment)).thenReturn(imageManagerDto);
-	}
-
 
 	@Test
 	void testCreateReview_Success() {
@@ -153,9 +140,9 @@ class ReviewServiceImplTest {
 		CreateReviewRequest request = mock(CreateReviewRequest.class);
 		OrdersBook ordersBook = mock(OrdersBook.class);
 
-		when(reviewRepository.existsByOrdersBookId(ordersBookId)).thenReturn(false);
-		when(ordersBookRepository.findById(ordersBookId)).thenReturn(Optional.of(ordersBook));
-		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+		when(reviewRepository.existsByOrdersBookId(anyLong())).thenReturn(false);
+		when(ordersBookRepository.findById(anyLong())).thenReturn(Optional.of(ordersBook));
+		when(memberRepository.findById(anyLong())).thenReturn(Optional.empty());
 
 		// when & then
 		assertThrows(NotFoundException.class, () -> reviewService.createReview(ordersBookId, request, memberId));

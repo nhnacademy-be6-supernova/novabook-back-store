@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -64,7 +65,7 @@ public class ReviewServiceImpl implements ReviewService {
 	public ReviewServiceImpl(ReviewRepository reviewRepository, OrdersBookRepository ordersBookRepository,
 		NHNCloudMutilpartClient nhnCloudClient, ImageRepository imageRepository,
 		ReviewImageRepository reviewImageRepository, PointHistoryRepository pointHistoryRepository,
-		PointPolicyRepository pointPolicyRepository, MemberRepository memberRepository, Environment environment) {
+		PointPolicyRepository pointPolicyRepository, MemberRepository memberRepository, Environment environment, RestTemplate restTemplate) {
 		this.reviewRepository = reviewRepository;
 		this.ordersBookRepository = ordersBookRepository;
 		this.nhnCloudClient = nhnCloudClient;
@@ -73,7 +74,7 @@ public class ReviewServiceImpl implements ReviewService {
 		this.pointHistoryRepository = pointHistoryRepository;
 		this.pointPolicyRepository = pointPolicyRepository;
 		this.memberRepository = memberRepository;
-		this.imageManagerDto = KeyManagerUtil.getImageManager(environment);
+		this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
 	}
 
 	/**
