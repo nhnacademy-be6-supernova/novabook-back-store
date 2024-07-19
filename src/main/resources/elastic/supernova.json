@@ -67,7 +67,7 @@
           "synonym_filter": {
             "type": "synonym",
             "decompound_mode": "mixed",
-            "synonyms_path": "supernova/similler.txt"
+            "synonyms_path": "similler.txt"
           }
         },
         "analyzer": {

@@ -204,14 +204,14 @@ public class CartBookServiceImplTest {
 		when(cartRepository.findByMemberId(memberId)).thenReturn(Optional.of(cart));
 
 		// Stubbing cartBookRepository.findByCartIdAndBookIdAndIsExposed
-		when(cartBookRepository.findByCartIdAndBookIdAndIsExposed(eq(cart.getId()), eq(bookId), eq(true)))
+		when(cartBookRepository.findByCartIdAndBookIdAndIsExposedTrue(eq(cart.getId()), eq(bookId)))
 			.thenReturn(Optional.of(cartBook));
 
 		// When
 		cartBookService.deleteCartBook(memberId, bookId);
 
 		// Then
-		verify(cartBookRepository).findByCartIdAndBookIdAndIsExposed(eq(cart.getId()), eq(bookId), eq(true));
+		verify(cartBookRepository).findByCartIdAndBookIdAndIsExposedTrue(eq(cart.getId()), eq(bookId));
 		assertFalse(cartBook.isExposed());
 	}
 

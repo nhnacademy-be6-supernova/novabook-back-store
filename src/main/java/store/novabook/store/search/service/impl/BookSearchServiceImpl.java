@@ -4,11 +4,9 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.store.book.repository.BookQueryRepository;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.InternalServerException;
 import store.novabook.store.search.document.BookDocument;
@@ -19,8 +17,6 @@ import store.novabook.store.search.repository.BookSearchRepository;
 @RequiredArgsConstructor
 public class BookSearchServiceImpl {
 	private final BookSearchRepository bookSearchRepository;
-	private final ElasticsearchOperations elasticsearchOperations;
-	private final BookQueryRepository bookQueryRepository;
 
 	// 모든 단어 검색
 	public Page<GetBookSearchResponse> searchByKeywordContaining(String keyword, Pageable pageable) {
@@ -56,18 +52,11 @@ public class BookSearchServiceImpl {
 	// 카테고리 특정 단어가 포함된 문서 검색
 	public Page<GetBookSearchResponse> searchByCategoryListContaining(String category, Pageable pageable) {
 		try{
-			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByCategoryListMatches(category, pageable);
+			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByCategoryListMatches(List.of(category), pageable);
 			return bookDocuments.map(GetBookSearchResponse::of);
 		} catch (Exception e){
 			throw new InternalServerException(ErrorCode.INVALID_REQUEST_ARGUMENT);
 		}
-	}
-
-
-	public List<BookDocument> searchByTagsContaining(Pageable pageable){
-		List<BookDocument> bookDocuments = bookQueryRepository.getBookDocuments(pageable);
-		bookSearchRepository.saveAll(bookDocuments);
-		return bookDocuments;
 	}
 
 
