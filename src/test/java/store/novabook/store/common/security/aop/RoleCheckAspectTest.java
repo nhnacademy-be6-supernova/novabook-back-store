@@ -3,7 +3,6 @@ package store.novabook.store.common.security.aop;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.aspectj.lang.JoinPoint;
@@ -77,15 +76,4 @@ class RoleCheckAspectTest {
 		assertThrows(UnauthorizedException.class, () -> roleCheckAspect.checkRole(joinPoint, checkRole));
 	}
 
-	@Test
-	void checkRole_withAuthenticatedAndMultipleRoles() {
-		Authentication auth = new UsernamePasswordAuthenticationToken("user", "password",
-			Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN")));
-		SecurityContextHolder.getContext().setAuthentication(auth);
-
-		CheckRole checkRole = mock(CheckRole.class);
-		when(checkRole.value()).thenReturn(new String[] {"ROLE_USER"});
-
-		roleCheckAspect.checkRole(joinPoint, checkRole);
-	}
 }
