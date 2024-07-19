@@ -94,7 +94,6 @@ public class Orders {
 
 	private Long couponDiscountAmount;
 
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 

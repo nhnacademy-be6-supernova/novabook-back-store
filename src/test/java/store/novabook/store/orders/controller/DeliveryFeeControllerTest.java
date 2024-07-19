@@ -44,7 +44,7 @@ class DeliveryFeeControllerTest {
 	@MockBean
 	private DeliveryFeeService deliveryFeeService;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@BeforeEach
 	void setUp() {
@@ -83,7 +83,8 @@ class DeliveryFeeControllerTest {
 			.updatedAt(LocalDateTime.now())
 			.build();
 
-		Page<GetDeliveryFeeResponse> page = new PageImpl<>(Collections.singletonList(deliveryFeeResponse), PageRequest.of(0, 10), 1);
+		Page<GetDeliveryFeeResponse> page = new PageImpl<>(Collections.singletonList(deliveryFeeResponse),
+			PageRequest.of(0, 10), 1);
 		when(deliveryFeeService.findAllDeliveryFees(any(PageRequest.class))).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/orders/delivery-fee")

@@ -1,6 +1,7 @@
 package store.novabook.store.common.config;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,8 +26,16 @@ public class JWTFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
 		@NonNull FilterChain filterChain) throws ServletException, IOException {
 
+		Enumeration<String> headerNames = request.getHeaderNames();
+		headerNames.asIterator().forEachRemaining(headerName -> {
+			log.error("headerName: {}", headerName);
+			log.error("headerValue: {}", request.getHeader(headerName));
+		});
+
 		String membersId = request.getHeader("X-USER-ID");
+		log.error("membersId: {}", membersId);
 		String role = request.getHeader("X-USER-ROLE");
+		log.error("role {}: ", role);
 
 		if (membersId == null || role == null) {
 			log.error("username or role is null");

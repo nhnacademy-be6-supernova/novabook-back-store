@@ -2,14 +2,15 @@ package store.novabook.store.common.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.web.multipart.MultipartFile;
-import store.novabook.store.book.dto.request.ReviewImageDTO;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.web.multipart.MultipartFile;
+
+import store.novabook.store.book.dto.request.ReviewImageDTO;
 
 class FileConverterTest {
 
