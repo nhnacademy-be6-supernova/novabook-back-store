@@ -39,8 +39,7 @@ public class CurrentMembersArgumentResolver implements HandlerMethodArgumentReso
 			return null;
 		}
 
-		if(authentication.getAuthorities() instanceof  CustomUserDetails) {
-			CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
+		if (authentication.getPrincipal() instanceof CustomUserDetails principal) {
 			return principal.getMembersId();
 		}
 		return null;

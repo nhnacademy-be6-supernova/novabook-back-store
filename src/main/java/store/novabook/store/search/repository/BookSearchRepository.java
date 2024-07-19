@@ -1,5 +1,7 @@
 package store.novabook.store.search.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
@@ -27,6 +29,6 @@ public interface BookSearchRepository extends ElasticsearchRepository<BookDocume
 	Page<BookDocument> findAllByPublishIgnoreCase(String author, Pageable pageable);
 
 
-	Page<BookDocument> findAllByCategoryListMatches(String category, Pageable pageable);
+	Page<BookDocument> findAllByCategoryListMatches(List<String> categoryList, Pageable pageable);
 
 }

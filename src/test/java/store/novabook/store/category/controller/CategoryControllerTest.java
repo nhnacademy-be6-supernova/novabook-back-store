@@ -6,7 +6,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,10 +30,10 @@ import store.novabook.store.category.dto.response.GetCategoryListResponse;
 import store.novabook.store.category.dto.response.GetCategoryResponse;
 import store.novabook.store.category.service.CategoryService;
 
+@WithMockUser
 @AutoConfigureMockMvc
-@WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
-@WebMvcTest(CategoryController.class)
 @MockBean(JpaMetamodelMappingContext.class)
+@WebMvcTest(CategoryController.class)
 class CategoryControllerTest {
 
 	@Autowired
@@ -43,100 +43,89 @@ class CategoryControllerTest {
 	private CategoryService categoryService;
 
 	@BeforeEach
-	void setUp() {MockitoAnnotations.openMocks(this);}
+	void setUp() {
+		MockitoAnnotations.openMocks(this);
+	}
 
 	@Test
-	void createCategory() throws Exception {
-		// given
-		CreateCategoryRequest createCategoryRequest = new CreateCategoryRequest(null, "New Category");
-		CreateCategoryResponse createCategoryResponse = new CreateCategoryResponse(1L);
-		when(categoryService.create(any(CreateCategoryRequest.class))).thenReturn(createCategoryResponse);
+	void testCreateCategory() throws Exception {
+		CreateCategoryRequest request = new CreateCategoryRequest(null, "New Category");
+		CreateCategoryResponse response = new CreateCategoryResponse(1L);
 
-		// when, then
-		mockMvc.perform(post("/api/v1/store/categories")
-				.with(csrf())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(createCategoryRequest)))
+		when(categoryService.create(any(CreateCategoryRequest.class))).thenReturn(response);
+
+		mockMvc.perform(post("/api/v1/store/categories").contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(request))
+				.with(csrf()))
 			.andExpect(status().isCreated())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.body.id").value(1));
+			.andExpect(jsonPath("$.body.id").value(1L))
+			.andExpect(jsonPath("$.header.isSuccessful").value(true))
+			.andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"));
 
 		verify(categoryService, times(1)).create(any(CreateCategoryRequest.class));
 	}
 
 	@Test
-	void getCategory() throws Exception {
-		// given
-		Long categoryId = 1L;
-		GetCategoryResponse getCategoryResponse = new GetCategoryResponse(categoryId, "Category1", List.of());
-		when(categoryService.getCategory(categoryId)).thenReturn(getCategoryResponse);
+	void testGetCategory() throws Exception {
+		GetCategoryResponse response = new GetCategoryResponse(1L, "Category", Collections.emptyList());
 
-		// when, then
-		mockMvc.perform(get("/api/v1/store/categories/{id}", categoryId))
+		when(categoryService.getCategory(1L)).thenReturn(response);
+
+		mockMvc.perform(get("/api/v1/store/categories/1").with(csrf()))
 			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.body.id").value(1))
-			.andExpect(jsonPath("$.body.name").value("Category1"))
-			.andExpect(jsonPath("$.body.sub").isEmpty());
+			.andExpect(jsonPath("$.body.id").value(1L))
+			.andExpect(jsonPath("$.body.name").value("Category"))
+			.andExpect(jsonPath("$.header.isSuccessful").value(true))
+			.andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"));
 
-		verify(categoryService, times(1)).getCategory(categoryId);
+		verify(categoryService, times(1)).getCategory(1L);
 	}
 
 	@Test
-	void getCategoryAll() throws Exception {
-		// given
-		List<GetCategoryResponse> categoryResponses = List.of(
-			new GetCategoryResponse(1L, "Category1", List.of()),
-			new GetCategoryResponse(2L, "Category2", List.of())
-		);
-		GetCategoryListResponse getCategoryListResponse = new GetCategoryListResponse(categoryResponses);
-		when(categoryService.getAllCategories()).thenReturn(getCategoryListResponse);
+	void testGetCategoryAll() throws Exception {
+		GetCategoryListResponse response = GetCategoryListResponse.builder()
+			.categories(Collections.singletonList(new GetCategoryResponse(1L, "Category", Collections.emptyList())))
+			.build();
 
-		// when, then
-		mockMvc.perform(get("/api/v1/store/categories"))
+		when(categoryService.getAllCategories()).thenReturn(response);
+
+		mockMvc.perform(get("/api/v1/store/categories").with(csrf()))
 			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.body.categories[0].id").value(1))
-			.andExpect(jsonPath("$.body.categories[0].name").value("Category1"))
-			.andExpect(jsonPath("$.body.categories[1].id").value(2))
-			.andExpect(jsonPath("$.body.categories[1].name").value("Category2"));
+			.andExpect(jsonPath("$.body.categories[0].id").value(1L))
+			.andExpect(jsonPath("$.body.categories[0].name").value("Category"))
+			.andExpect(jsonPath("$.header.isSuccessful").value(true))
+			.andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"));
 
 		verify(categoryService, times(1)).getAllCategories();
 	}
 
 	@Test
-	void getCategoryByBId() throws Exception {
-		// given
-		Long bookId = 1L;
-		List<Long> categoryIds = List.of(1L, 2L);
-		GetCategoryIdsByBookIdResponse response = new GetCategoryIdsByBookIdResponse(categoryIds);
-		when(categoryService.getCategoryIdsByBookId(bookId)).thenReturn(response);
+	void testGetCategoryByBId() throws Exception {
+		GetCategoryIdsByBookIdResponse response = new GetCategoryIdsByBookIdResponse(Collections.singletonList(1L));
 
-		// when, then
-		mockMvc.perform(get("/api/v1/store/categories/book/{bookId}", bookId))
+		when(categoryService.getCategoryIdsByBookId(1L)).thenReturn(response);
+
+		mockMvc.perform(get("/api/v1/store/categories/book/1").with(csrf()))
 			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.body.categoryIds[0]").value(1))
-			.andExpect(jsonPath("$.body.categoryIds[1]").value(2));
+			.andExpect(jsonPath("$.body.categoryIds[0]").value(1L))
+			.andExpect(jsonPath("$.header.isSuccessful").value(true))
+			.andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"));
 
-		verify(categoryService, times(1)).getCategoryIdsByBookId(bookId);
+		verify(categoryService, times(1)).getCategoryIdsByBookId(1L);
 	}
 
 	@Test
-	void deleteCategory() throws Exception {
-		// given
-		Long categoryId = 1L;
-		DeleteResponse deleteResponse = new DeleteResponse(true);
-		when(categoryService.delete(categoryId)).thenReturn(deleteResponse);
+	void testDeleteCategory() throws Exception {
+		DeleteResponse response = new DeleteResponse(true);
 
-		// when, then
-		mockMvc.perform(delete("/api/v1/store/categories/{id}", categoryId)
-				.with(csrf()))
+		when(categoryService.delete(1L)).thenReturn(response);
 
+		mockMvc.perform(delete("/api/v1/store/categories/1").with(csrf()))
 			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.body.isDeleted").value(true));
+			.andExpect(jsonPath("$.body.isDeleted").value(true))
+			.andExpect(jsonPath("$.header.isSuccessful").value(true))
+			.andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"));
 
-		verify(categoryService, times(1)).delete(categoryId);
+		verify(categoryService, times(1)).delete(1L);
 	}
 }

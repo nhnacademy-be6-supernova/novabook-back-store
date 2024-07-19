@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import store.novabook.store.book.dto.request.UpdateBookRequest;
 import store.novabook.store.book.dto.response.CreateBookResponse;
 import store.novabook.store.book.dto.response.GetBookAllResponse;
 import store.novabook.store.book.dto.response.GetBookResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponseMap;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.book.repository.BookQueryRepository;
@@ -171,6 +173,7 @@ public class BookServiceImpl implements BookService {
 		book.updateBookStatus(bookStatus);
 	}
 
+	// 기존 코드 부분
 	public String uploadImage(String appKey, String secretKey, String path, boolean overwrite, String localFilePath) {
 
 		try {
@@ -183,16 +186,22 @@ public class BookServiceImpl implements BookService {
 
 			// JSON 응답을 파싱하여 URL 필드를 추출
 			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, new TypeReference<>() {});
 
-			Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, Map.class);
+			@SuppressWarnings("unchecked")
+			HashMap<String, Object> fileMap = (HashMap<String, Object>) responseMap.get("file");
 
-			HashMap<String, Object> map = (HashMap<String, Object>)responseMap.get("file");
-
-			return (String)map.get("url");
+			return (String) fileMap.get("url");
 
 		} catch (Exception e) {
 			log.error("Failed to nhnCloud : {}", e.getMessage());
 			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
 		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetBookToMainResponseMap getBookToMainPage() {
+		return queryRepository.getBookToMainPage();
 	}
 }

@@ -43,7 +43,6 @@ public class CartController implements CartControllerDocs {
 		return ResponseEntity.ok().body(cartBookService.getCartBookAllByGuest(request));
 	}
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/add")
 	public ResponseEntity<CreateCartBookResponse> addCartBook(@CurrentMembers(required = false) Long memberId,
 		@Valid @RequestBody CartBookDTO request) {
