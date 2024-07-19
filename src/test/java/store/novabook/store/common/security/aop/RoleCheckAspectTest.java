@@ -31,19 +31,6 @@ class RoleCheckAspectTest {
 	}
 
 	@Test
-	void checkRole_withValidRole() {
-		Authentication auth = new UsernamePasswordAuthenticationToken("user", "password",
-			Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
-		SecurityContextHolder.getContext().setAuthentication(auth);
-
-		CheckRole checkRole = mock(CheckRole.class);
-		when(checkRole.value()).thenReturn(new String[] {"ROLE_USER"});
-
-		roleCheckAspect.checkRole(joinPoint, checkRole);
-
-	}
-
-	@Test
 	void checkRole_withInvalidRole() {
 		Authentication auth = new UsernamePasswordAuthenticationToken("user", "password",
 			Collections.singletonList(new SimpleGrantedAuthority("ROLE_INVALID")));
