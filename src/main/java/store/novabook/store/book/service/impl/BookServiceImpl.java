@@ -1,28 +1,11 @@
 package store.novabook.store.book.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,18 +26,8 @@ import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
 import store.novabook.store.common.exception.ErrorCode;
-import store.novabook.store.common.exception.InternalServerException;
 import store.novabook.store.common.exception.NotFoundException;
-import store.novabook.store.common.image.NHNCloudClient;
-import store.novabook.store.common.util.KeyManagerUtil;
-import store.novabook.store.common.util.dto.ImageManagerDto;
-import store.novabook.store.image.entity.BookImage;
-import store.novabook.store.image.entity.Image;
-import store.novabook.store.image.repository.BookImageRepository;
-import store.novabook.store.image.repository.ImageRepository;
 import store.novabook.store.image.service.ImageService;
-import store.novabook.store.search.document.BookDocument;
-import store.novabook.store.search.repository.BookSearchRepository;
 import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.BookTagRepository;
@@ -73,10 +46,6 @@ public class BookServiceImpl implements BookService {
 	private final BookCategoryRepository bookCategoryRepository;
 	private final BookQueryRepository queryRepository;
 	private final ImageService imageService;
-
-	private final ImageRepository imageRepository;
-	private final BookImageRepository bookImageRepository;
-	private final NHNCloudClient nhnCloudClient;
 
 
 
