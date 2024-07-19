@@ -5,7 +5,9 @@ import static org.mockito.Mockito.*;
 import static store.novabook.store.member.service.impl.MemberServiceImpl.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,18 +18,27 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.common.exception.UnauthorizedException;
 import store.novabook.store.common.messaging.CouponSender;
 import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
+import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
+import store.novabook.store.member.dto.request.GetDormantMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LinkPaycoMembersRequest;
@@ -36,7 +47,9 @@ import store.novabook.store.member.dto.request.UpdateMemberPasswordRequest;
 import store.novabook.store.member.dto.request.UpdateMemberRequest;
 import store.novabook.store.member.dto.response.CreateMemberResponse;
 import store.novabook.store.member.dto.response.DuplicateResponse;
+import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetDormantMembersResponse;
+import store.novabook.store.member.dto.response.GetDormantMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
 import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
@@ -92,15 +105,19 @@ class MemberServiceImplTest {
 	@InjectMocks
 	private MemberServiceImpl memberService;
 
+	private MemberStatus activeStatus;
+	private MemberStatus dormantStatus;
+	private MemberStatus withdrawStatus;
+
 	@Spy
-	private Member testMember = new Member("testLoginId", "encodedPassword", "OldName", "OldNumber",
-		"testEmail", LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, new MemberStatus("활동"),
-		"ROLE_MEMBERS");
+	private Member testMember = new Member("testLoginId", "encodedPassword", "OldName", "OldNumber", "testEmail",
+		LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, new MemberStatus("활동"), "ROLE_MEMBERS");
+
+	private Cache cache;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-
 		MemberStatus memberStatus = new MemberStatus("활동");
 		when(memberStatusRepository.findByName("활동")).thenReturn(Optional.of(memberStatus));
 
@@ -112,10 +129,10 @@ class MemberServiceImplTest {
 
 		when(bCryptPasswordEncoder.encode(any())).thenReturn("encodedPassword");
 
-		testMember = new Member("testLoginId", "encodedPassword", "testName", "testNumber",
-			"testEmail", LocalDateTime.of(1990, 1, 1, 0, 0),
-			LocalDateTime.now(), 1, memberStatus, "ROLE_MEMBERS");
+		testMember = new Member("testLoginId", "encodedPassword", "testName", "testNumber", "testEmail",
+			LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, memberStatus, "ROLE_MEMBERS");
 
+		cache = mock(Cache.class);
 		when(memberRepository.existsByLoginId("testLoginId")).thenReturn(false);
 		when(memberRepository.save(any(Member.class))).thenReturn(testMember);
 
@@ -124,14 +141,18 @@ class MemberServiceImplTest {
 		when(cacheManager.getCache("GetMemberResponse")).thenReturn(mockCache);
 		when(cacheManager.getCache("GetMemberName")).thenReturn(mockCache);
 
+		activeStatus = new MemberStatus("활동");
+		dormantStatus = new MemberStatus("휴면");
+		withdrawStatus = new MemberStatus("탈퇴");
+
+
 	}
 
 	@Test
 	@DisplayName("회원 가입 - 성공")
 	void createMemberSuccess() {
-		CreateMemberRequest request = new CreateMemberRequest(
-			"testLoginId", "testPassword", "testPassword", "testName", "testNumber",
-			"testEmail", "testDomain", 1990, 1, 1, "testAddress");
+		CreateMemberRequest request = new CreateMemberRequest("testLoginId", "testPassword", "testPassword", "testName",
+			"testNumber", "testEmail", "testDomain", 1990, 1, 1, "testAddress");
 
 		CreateMemberResponse response = memberService.createMember(request);
 
@@ -167,15 +188,32 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("회원 전체 조회 - 성공")
 	void getMemberAllSuccess() {
+		Member testMember1 = new Member("testLoginId1", "encodedPassword1", "OldName1", "OldNumber1", "testEmail1",
+			LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, new MemberStatus("활동"), "ROLE_MEMBERS");
+		Member testMember2 = new Member("testLoginId2", "encodedPassword2", "OldName2", "OldNumber2", "testEmail2",
+			LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, new MemberStatus("활동"), "ROLE_MEMBERS");
+
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Member> memberPage = new PageImpl<>(Arrays.asList(testMember1, testMember2), pageable, 2);
+
+		when(memberRepository.findAll(any(Pageable.class))).thenReturn(memberPage);
+
+		Page<GetMemberResponse> result = memberService.getMemberAll(pageable);
+
+		assertEquals(2, result.getTotalElements());
+		assertEquals(1, result.getTotalPages());
+		assertEquals("OldName1", result.getContent().get(0).name());
+		assertEquals("OldName2", result.getContent().get(1).name());
+
+		verify(memberRepository, times(1)).findAll(any(Pageable.class));
 	}
 
 	@Test
 	@DisplayName("회원 단건 조회 - 성공")
 	void getMember() {
 		Long memberId = 1L;
-		Member member = new Member("testLoginId", "encodedPassword", "testName", "testNumber",
-			"testEmail", LocalDateTime.of(1990, 1, 1, 0, 0),
-			LocalDateTime.now(), 1, new MemberStatus("활동"), "ROLE_MEMBERS");
+		Member member = new Member("testLoginId", "encodedPassword", "testName", "testNumber", "testEmail",
+			LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, new MemberStatus("활동"), "ROLE_MEMBERS");
 		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 
 		GetMemberResponse response = memberService.getMember(memberId);
@@ -203,16 +241,41 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("회원 이름 변경 - 성공")
 	void updateMemberNameSuccess() {
+		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
+		UpdateMemberRequest request = new UpdateMemberRequest("New Name", null);
+		memberService.updateMemberNumberOrName(1L, request);
+
+		assertEquals("New Name", testMember.getName());
+		verify(memberRepository, times(1)).findById(anyLong());
+		verify(memberRepository, times(1)).save(any(Member.class));
+		verify(cacheManager, times(2)).getCache(anyString());
 	}
 
 	@Test
 	@DisplayName("회원 번호 변경 - 성공")
 	void updateMemberNumberSuccess() {
+		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
+		UpdateMemberRequest request = new UpdateMemberRequest(null, "New Number");
+		memberService.updateMemberNumberOrName(1L, request);
+
+		assertEquals("New Number", testMember.getNumber());
+		verify(memberRepository, times(1)).findById(anyLong());
+		verify(memberRepository, times(1)).save(any(Member.class));
+		verify(cacheManager, times(2)).getCache(anyString());
 	}
 
 	@Test
 	@DisplayName("회원 이름과 번호 모두 변경 - 성공")
 	void updateMemberNameAndNumberSuccess() {
+		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
+		UpdateMemberRequest request = new UpdateMemberRequest("New Name", "New Number");
+		memberService.updateMemberNumberOrName(1L, request);
+
+		assertEquals("New Name", testMember.getName());
+		assertEquals("New Number", testMember.getNumber());
+		verify(memberRepository, times(1)).findById(anyLong());
+		verify(memberRepository, times(1)).save(any(Member.class));
+		verify(cacheManager, times(2)).getCache(anyString());
 	}
 
 	@Test
@@ -240,14 +303,12 @@ class MemberServiceImplTest {
 	@DisplayName("회원 비밀번호 변경 - 성공")
 	void updateMemberPasswordSuccess() {
 		Long memberId = 1L;
-		Member member = new Member("testLoginId", "encodedPassword", "testName", "testNumber",
-			"testEmail", LocalDateTime.of(1990, 1, 1, 0, 0),
-			LocalDateTime.now(), 1, new MemberStatus("활동"), "ROLE_MEMBERS");
+		Member member = new Member("testLoginId", "encodedPassword", "testName", "testNumber", "testEmail",
+			LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, new MemberStatus("활동"), "ROLE_MEMBERS");
 		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 		when(bCryptPasswordEncoder.matches(any(), any())).thenReturn(true);
 
-		UpdateMemberPasswordRequest request = new UpdateMemberPasswordRequest(
-			"newPassword", "newPassword");
+		UpdateMemberPasswordRequest request = new UpdateMemberPasswordRequest("newPassword", "newPassword");
 
 		memberService.updateMemberPassword(memberId, request);
 
@@ -261,8 +322,7 @@ class MemberServiceImplTest {
 		Long memberId = 1L;
 		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
-		UpdateMemberPasswordRequest request = new UpdateMemberPasswordRequest(
-			"newPassword", "newPassword");
+		UpdateMemberPasswordRequest request = new UpdateMemberPasswordRequest("newPassword", "newPassword");
 
 		NotFoundException exception = assertThrows(NotFoundException.class, () -> {
 			memberService.updateMemberPassword(memberId, request);
@@ -275,8 +335,7 @@ class MemberServiceImplTest {
 	@DisplayName("회원 비밀번호 변경 - 실패 - 새 비밀번호 불일치")
 	void updateMemberPassword_passwordMismatch() {
 		Long memberId = 1L;
-		UpdateMemberPasswordRequest request = new UpdateMemberPasswordRequest(
-			"newPassword", "newPasswordDifferent");
+		UpdateMemberPasswordRequest request = new UpdateMemberPasswordRequest("newPassword", "newPasswordDifferent");
 
 		BadCredentialsException exception = assertThrows(BadCredentialsException.class, () -> {
 			memberService.updateMemberPassword(memberId, request);
@@ -291,9 +350,6 @@ class MemberServiceImplTest {
 		Long memberId = 1L;
 		DeleteMemberRequest deleteRequest = new DeleteMemberRequest("password");
 
-		MemberStatus activeStatus = new MemberStatus("활동");
-		MemberStatus withdrawStatus = new MemberStatus("탈퇴");
-
 		when(memberStatusRepository.findByName("활동")).thenReturn(Optional.of(activeStatus));
 		when(memberStatusRepository.findByName("탈퇴")).thenReturn(Optional.of(withdrawStatus));
 
@@ -304,7 +360,6 @@ class MemberServiceImplTest {
 
 		when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-		Cache cache = mock(Cache.class);
 		when(cacheManager.getCache("GetMemberResponse")).thenReturn(cache);
 		when(cacheManager.getCache("GetMemberName")).thenReturn(cache);
 
@@ -313,8 +368,7 @@ class MemberServiceImplTest {
 		assertEquals("탈퇴", testMember.getMemberStatus().getName());
 		verify(memberRepository, times(1)).findById(memberId);
 		verify(memberRepository, times(1)).save(testMember);
-		verify(cacheManager.getCache("GetMemberResponse"), times(1)).evict(
-			memberId);
+		verify(cacheManager.getCache("GetMemberResponse"), times(1)).evict(memberId);
 		verify(cacheManager.getCache("GetMemberName"), times(1)).evict(memberId);
 	}
 
@@ -338,16 +392,12 @@ class MemberServiceImplTest {
 	void updateMemberStatusToDormantSuccess() {
 		Long memberId = 1L;
 
-		MemberStatus activeStatus = new MemberStatus("활동");
-		MemberStatus dormantStatus = new MemberStatus("휴면");
-
 		when(memberStatusRepository.findByName("활동")).thenReturn(Optional.of(activeStatus));
 		when(memberStatusRepository.findByName("휴면")).thenReturn(Optional.of(dormantStatus));
 
 		when(memberRepository.findById(memberId)).thenReturn(Optional.of(testMember));
 		when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-		Cache cache = mock(Cache.class);
 		when(cacheManager.getCache("GetMemberResponse")).thenReturn(cache);
 		when(cacheManager.getCache("GetMemberName")).thenReturn(cache);
 
@@ -363,30 +413,109 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("휴면 회원 해지 인증 및 상태 변경 - 성공")
 	void updateMemberStatusToActive_Success() {
+		String uuid = "test-uuid";
+		String authCode = "123456";
+		DoorayAuthCodeRequest request = new DoorayAuthCodeRequest(uuid, authCode);
 
+		GetDormantMembersUUIDResponse uuidResponse = new GetDormantMembersUUIDResponse(1L);
+		ApiResponse<GetDormantMembersUUIDResponse> apiResponse = ApiResponse.success(uuidResponse);
+
+		when(authMembersClient.getDormantMembersId(any(GetDormantMembersUUIDRequest.class))).thenReturn(apiResponse);
+		when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
+		when(memberStatusRepository.findByName("활동")).thenReturn(Optional.of(activeStatus));
+
+		ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
+		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+		when(valueOperations.get("authCode:" + uuid)).thenReturn(authCode);
+		when(redisTemplate.delete("authCode:" + uuid)).thenReturn(true);
+
+		memberService.updateMemberStatusToActive(request);
+
+		verify(memberRepository, times(1)).findById(1L);
+		verify(memberStatusRepository, times(1)).findByName("활동");
+		verify(redisTemplate, times(1)).delete("authCode:" + uuid);
+		assertEquals(activeStatus, testMember.getMemberStatus());
 	}
 
 	@Test
 	@DisplayName("휴면 회원 해지 인증 및 상태 변경 - 인증 코드 불일치")
 	void updateMemberStatusToActive_Unauthorized() {
+		String uuid = "test-uuid";
+		String authCode = "123456";
+		DoorayAuthCodeRequest request = new DoorayAuthCodeRequest(uuid, authCode);
 
+		GetDormantMembersUUIDResponse uuidResponse = new GetDormantMembersUUIDResponse(1L);
+		ApiResponse<GetDormantMembersUUIDResponse> apiResponse = ApiResponse.success(uuidResponse);
+
+		when(authMembersClient.getDormantMembersId(any(GetDormantMembersUUIDRequest.class))).thenReturn(apiResponse);
+		when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
+
+		ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
+		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+		when(valueOperations.get("authCode:" + uuid)).thenReturn("wrong-code");
+
+		UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+			memberService.updateMemberStatusToActive(request);
+		});
+
+		assertEquals(ErrorCode.UNAUTHORIZED_CODE, exception.getErrorCode());
+		verify(redisTemplate, times(1)).opsForValue();
+		verify(valueOperations, times(1)).get("authCode:" + uuid);
 	}
 
 	@Test
 	@DisplayName("휴면 회원 해지 인증 및 상태 변경 - 회원을 찾을 수 없음")
 	void updateMemberStatusToActive_MemberNotFound() {
+		String uuid = "test-uuid";
+		String authCode = "123456";
+		DoorayAuthCodeRequest request = new DoorayAuthCodeRequest(uuid, authCode);
 
+		GetDormantMembersUUIDResponse uuidResponse = new GetDormantMembersUUIDResponse(1L);
+		ApiResponse<GetDormantMembersUUIDResponse> apiResponse = ApiResponse.success(uuidResponse);
+
+		when(authMembersClient.getDormantMembersId(any(GetDormantMembersUUIDRequest.class))).thenReturn(apiResponse);
+		when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+
+		NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+			memberService.updateMemberStatusToActive(request);
+		});
+
+		assertEquals(ErrorCode.MEMBER_NOT_FOUND, exception.getErrorCode());
+		verify(memberRepository, times(1)).findById(1L);
 	}
 
 	@Test
 	@DisplayName("휴면 회원 해지 인증 및 상태 변경 - 회원 상태를 찾을 수 없음")
 	void updateMemberStatusToActive_StatusNotFound() {
+		String uuid = "test-uuid";
+		String authCode = "123456";
+		DoorayAuthCodeRequest request = new DoorayAuthCodeRequest(uuid, authCode);
 
+		GetDormantMembersUUIDResponse uuidResponse = new GetDormantMembersUUIDResponse(1L);
+		ApiResponse<GetDormantMembersUUIDResponse> apiResponse = ApiResponse.success(uuidResponse);
+
+		when(authMembersClient.getDormantMembersId(any(GetDormantMembersUUIDRequest.class))).thenReturn(apiResponse);
+		when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
+		when(memberStatusRepository.findByName("활동")).thenReturn(Optional.empty());
+
+		NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+			memberService.updateMemberStatusToActive(request);
+		});
+
+		assertEquals(ErrorCode.MEMBER_STATUS_NOT_FOUND, exception.getErrorCode());
+		verify(memberStatusRepository, times(1)).findByName("활동");
 	}
 
 	@Test
 	@DisplayName("인증 코드 생성 및 저장 - 성공")
 	void createAndSaveAuthCode_Success() {
+		String uuid = "test-uuid";
+		ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
+		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+
+		memberService.createAndSaveAuthCode(uuid);
+
+		verify(valueOperations, times(1)).set(eq("authCode:" + uuid), anyString(), eq(3L), eq(TimeUnit.MINUTES));
 	}
 
 	@Test
@@ -428,6 +557,18 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("멤버 로그인 정보 조회 - 존재하는 로그인 ID")
 	void findMembersLoginExist() {
+		String loginId = "testLoginId";
+		ReflectionTestUtils.setField(testMember, "id", 1L);
+		when(memberRepository.findByLoginId(anyString())).thenReturn(testMember);
+		FindMemberLoginResponse response = memberService.findMembersLogin(loginId);
+
+		assertNotNull(response);
+		assertEquals(1L, response.membersId());
+		assertEquals(testMember.getLoginId(), response.loginId());
+		assertEquals(testMember.getLoginPassword(), response.loginPassword());
+		assertEquals(testMember.getRole(), response.role());
+
+		verify(memberRepository, times(1)).findByLoginId(loginId);
 	}
 
 	@Test
@@ -445,8 +586,21 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("Payco 멤버 정보 조회 - 존재하는 Payco ID")
 	void getPaycoMembersExist() {
+		ReflectionTestUtils.setField(testMember, "id", 1L);
+		String paycoId = "testPaycoId";
+		GetPaycoMembersRequest request = new GetPaycoMembersRequest(paycoId);
 
+		when(memberRepository.findByOauthId(paycoId)).thenReturn(testMember);
+
+		GetPaycoMembersResponse response = memberService.getPaycoMembers(request);
+
+		assertNotNull(response);
+		assertEquals(1L, response.id());
+
+		verify(memberRepository, times(1)).findByOauthId(paycoId);
 	}
+
+
 
 	@Test
 	@DisplayName("Payco 멤버 정보 조회 - 존재하지 않는 Payco ID")
@@ -485,7 +639,6 @@ class MemberServiceImplTest {
 	@DisplayName("휴면 멤버 상태 조회")
 	void getDormantMembers() {
 		Long memberId = 1L;
-		MemberStatus dormantStatus = new MemberStatus("휴면");
 
 		when(memberRepository.findById(memberId)).thenReturn(Optional.of(testMember));
 
@@ -501,36 +654,27 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("멤버 ID 조회 - 성공")
 	void findMembersId_Success() {
-		// Given
 		String uuid = "testUUID";
 		GetMembersUUIDRequest request = new GetMembersUUIDRequest(uuid);
 		GetMembersUUIDResponse expectedResponse = new GetMembersUUIDResponse(1L, "ROLE_MEMBER");
 		ApiResponse<GetMembersUUIDResponse> apiResponse = new ApiResponse<>("Success", true, expectedResponse);
 
-		// Mocking behavior of authMembersClient
-		when(authMembersClient.getMembersId(any()))
-			.thenReturn(apiResponse);
+		when(authMembersClient.getMembersId(any())).thenReturn(apiResponse);
 
-		// When
 		GetMembersUUIDResponse actualResponse = memberService.findMembersId(request);
 
-		// Then
 		assertEquals(expectedResponse, actualResponse);
 	}
 
 	@Test
 	@DisplayName("중복 로그인 ID 확인 - 중복 없음")
 	void isDuplicateLoginId_NoDuplicate() {
-		// Given
 		String loginId = "testLoginId";
 
-		// Mocking memberRepository.existsByLoginId(...)
 		when(memberRepository.existsByLoginId(loginId)).thenReturn(false);
 
-		// When
 		DuplicateResponse response = memberService.isDuplicateLoginId(loginId);
 
-		// Then
 		assertFalse(response.isDuplicate());
 		verify(memberRepository, times(1)).existsByLoginId(loginId);
 	}
@@ -538,16 +682,12 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("중복 로그인 ID 확인 - 중복 있음")
 	void isDuplicateLoginId_WithDuplicate() {
-		// Given
 		String loginId = "existingLoginId";
 
-		// Mocking memberRepository.existsByLoginId(...)
 		when(memberRepository.existsByLoginId(loginId)).thenReturn(true);
 
-		// When
 		DuplicateResponse response = memberService.isDuplicateLoginId(loginId);
 
-		// Then
 		assertTrue(response.isDuplicate());
 		verify(memberRepository, times(1)).existsByLoginId(loginId);
 	}
@@ -555,16 +695,12 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("중복 이메일 확인 - 중복 없음")
 	void isDuplicateEmail_NoDuplicate() {
-		// Given
 		String email = "test@example.com";
 
-		// Mocking memberRepository.existsByEmail(...)
 		when(memberRepository.existsByEmail(email)).thenReturn(false);
 
-		// When
 		DuplicateResponse response = memberService.isDuplicateEmail(email);
 
-		// Then
 		assertFalse(response.isDuplicate());
 		verify(memberRepository, times(1)).existsByEmail(email);
 	}
@@ -572,16 +708,12 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("중복 이메일 확인 - 중복 있음")
 	void isDuplicateEmail_WithDuplicate() {
-		// Given
 		String email = "existing@example.com";
 
-		// Mocking memberRepository.existsByEmail(...)
 		when(memberRepository.existsByEmail(email)).thenReturn(true);
 
-		// When
 		DuplicateResponse response = memberService.isDuplicateEmail(email);
 
-		// Then
 		assertTrue(response.isDuplicate());
 		verify(memberRepository, times(1)).existsByEmail(email);
 	}
@@ -591,18 +723,14 @@ class MemberServiceImplTest {
 	void isDormantMember_ExistingMember() {
 		// Given
 		Long memberId = 1L;
-		Member dormantMember = new Member("testLoginId", "encodedPassword", "testName", "testNumber",
-			"testEmail", LocalDateTime.of(1990, 1, 1, 0, 0),
-			LocalDateTime.now(), 1, new MemberStatus(STATUS_DORMANT), "ROLE_MEMBERS");
+		Member dormantMember = new Member("testLoginId", "encodedPassword", "testName", "testNumber", "testEmail",
+			LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, new MemberStatus(STATUS_DORMANT),
+			"ROLE_MEMBERS");
 
-		// Mocking memberRepository behavior
-		when(memberRepository.findById(memberId))
-			.thenReturn(Optional.of(dormantMember));
+		when(memberRepository.findById(memberId)).thenReturn(Optional.of(dormantMember));
 
-		// When
 		boolean result = memberService.isDormantMember(memberId);
 
-		// Then
 		assertTrue(result);
 		verify(memberRepository, times(1)).findById(memberId);
 	}
@@ -610,14 +738,10 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("휴면 회원 여부 확인 - 존재하지 않는 회원")
 	void isDormantMember_NonExistingMember() {
-		// Given
 		Long memberId = 999L;
 
-		// Mocking memberRepository behavior
-		when(memberRepository.findById(memberId))
-			.thenReturn(Optional.empty());
+		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
-		// When & Then
 		assertThrows(NotFoundException.class, () -> memberService.isDormantMember(memberId));
 		verify(memberRepository, times(1)).findById(memberId);
 	}
@@ -625,21 +749,16 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("회원 이름 조회 - 존재하는 회원")
 	void getMemberName_ExistingMember() {
-		// Given
 		Long memberId = 1L;
 		String memberName = "testName";
-		Member member = new Member("testLoginId", "encodedPassword", memberName, "testNumber",
-			"testEmail", LocalDateTime.of(1990, 1, 1, 0, 0),
-			LocalDateTime.now(), 1, new MemberStatus(STATUS_ACTIVE), "ROLE_MEMBERS");
+		Member member = new Member("testLoginId", "encodedPassword", memberName, "testNumber", "testEmail",
+			LocalDateTime.of(1990, 1, 1, 0, 0), LocalDateTime.now(), 1, new MemberStatus(STATUS_ACTIVE),
+			"ROLE_MEMBERS");
 
-		// Mocking memberRepository behavior
-		when(memberRepository.findById(memberId))
-			.thenReturn(Optional.of(member));
+		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 
-		// When
 		GetmemberNameResponse response = memberService.getMemberName(memberId);
 
-		// Then
 		assertNotNull(response);
 		assertEquals(memberName, response.memberName());
 		verify(memberRepository, times(1)).findById(memberId);
@@ -648,14 +767,10 @@ class MemberServiceImplTest {
 	@Test
 	@DisplayName("회원 이름 조회 - 존재하지 않는 회원")
 	void getMemberName_NonExistingMember() {
-		// Given
 		Long memberId = 999L;
 
-		// Mocking memberRepository behavior
-		when(memberRepository.findById(memberId))
-			.thenReturn(Optional.empty());
+		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
-		// When & Then
 		assertThrows(NotFoundException.class, () -> memberService.getMemberName(memberId));
 		verify(memberRepository, times(1)).findById(memberId);
 	}
