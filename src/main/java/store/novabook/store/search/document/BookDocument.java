@@ -98,7 +98,7 @@ public class BookDocument {
 			.categoryList(categoryNames(categories))
 			.build();
 	}
-	public static BookDocument of(GetBookSearchResponse response, List<String> tags, List<String> categories, Integer review) {
+	public static BookDocument of(GetBookSearchResponse response, List<String> tags, List<String> categories) {
 		return BookDocument.builder()
 			.id(response.id())
 			.title(response.title())
@@ -109,7 +109,7 @@ public class BookDocument {
 			.discountPrice(response.discountPrice())
 			.score(response.score())
 			.isPackaged(response.isPackaged())
-			.review(review)
+			.review(response.review())
 			.tagList(tags)
 			.categoryList(categories)
 			.build();

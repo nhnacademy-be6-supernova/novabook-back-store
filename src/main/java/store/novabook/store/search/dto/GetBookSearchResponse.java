@@ -10,12 +10,12 @@ public record GetBookSearchResponse(
 	String title,
 	String author,
 	String publisher,
-	// LocalDateTime publication_date,
 	String image,
 	Long price,
 	Long discountPrice,
 	Double score,
-	Boolean isPackaged
+	Boolean isPackaged,
+	Integer review
 ) {
 	public static GetBookSearchResponse of(BookDocument bookDocument, Book book, Integer score) {
 		return GetBookSearchResponse.builder()
@@ -40,8 +40,9 @@ public record GetBookSearchResponse(
 			.price(bookDocument.getPrice())
 			.discountPrice(bookDocument.getDiscountPrice())
 			.image(bookDocument.getImage())
-			.score(Double.valueOf(bookDocument.getScore()))
+			.score(bookDocument.getScore())
 			.isPackaged(bookDocument.getIsPackaged())
+			.review(bookDocument.getReview())
 			.build();
 	}
 }
