@@ -35,7 +35,7 @@ import store.novabook.store.cart.service.CartBookService;
 @WebMvcTest(CartController.class)
 @ContextConfiguration(classes = {CartBookService.class})
 @EnableSpringDataWebSupport
-public class CartControllerTest {
+class CartControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -61,7 +61,6 @@ public class CartControllerTest {
 		cartBookDTO = new CartBookDTO(1L, "Test Book", "image.jpg", 1000L, 900L, 1, false, 1L);
 
 	}
-
 
 	@Test
 	@WithMockUser(roles = {"ADMIN", "MEMBERS"})
@@ -95,7 +94,6 @@ public class CartControllerTest {
 	@Test
 	@WithMockUser(roles = {"ADMIN", "MEMBERS"})
 	void addCartBooks_shouldReturnOk() throws Exception {
-		// CartBookListDTO request = new CartBookListDTO(List.of(new CartBookDTO(1L, 1L, 1)));
 		CartBookListDTO request = new CartBookListDTO(List.of(cartBookDTO));
 
 		when(cartBookService.createCartBooks(any(Long.class), any(CartBookListDTO.class)))
@@ -112,7 +110,8 @@ public class CartControllerTest {
 	void updateCartBook_shouldReturnOk() throws Exception {
 		UpdateCartBookQuantityRequest request = new UpdateCartBookQuantityRequest(1L, 1);
 
-		doNothing().when(cartBookService).updateCartBookQuantity(any(Long.class), any(UpdateCartBookQuantityRequest.class));
+		doNothing().when(cartBookService)
+			.updateCartBookQuantity(any(Long.class), any(UpdateCartBookQuantityRequest.class));
 
 		mockMvc.perform(put("/api/v1/store/carts/update")
 				.contentType(MediaType.APPLICATION_JSON)

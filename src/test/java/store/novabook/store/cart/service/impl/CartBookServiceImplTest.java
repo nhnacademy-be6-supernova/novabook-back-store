@@ -37,7 +37,7 @@ import store.novabook.store.member.entity.Member;
 import store.novabook.store.member.entity.MemberStatus;
 
 @ExtendWith(MockitoExtension.class)
-public class CartBookServiceImplTest {
+class CartBookServiceImplTest {
 
 	@Mock
 	private CartRepository cartRepository;
@@ -72,7 +72,6 @@ public class CartBookServiceImplTest {
 		cart = Cart.builder()
 			.member(member)
 			.build();
-
 
 		book = Book.builder()
 			.bookStatus(bookStatus)
@@ -196,58 +195,48 @@ public class CartBookServiceImplTest {
 
 	@Test
 	void deleteCartBook() {
-		// Given
 		Long memberId = 1L;
 		Long bookId = book.getId();
 
-		// Stubbing cartRepository.findByMemberId
 		when(cartRepository.findByMemberId(memberId)).thenReturn(Optional.of(cart));
-
-		// Stubbing cartBookRepository.findByCartIdAndBookIdAndIsExposed
-		when(cartBookRepository.findByCartIdAndBookIdAndIsExposedTrue(eq(cart.getId()), eq(bookId)))
+		when(cartBookRepository.findByCartIdAndBookIdAndIsExposedTrue(cart.getId(), bookId))
 			.thenReturn(Optional.of(cartBook));
 
-		// When
 		cartBookService.deleteCartBook(memberId, bookId);
 
-		// Then
-		verify(cartBookRepository).findByCartIdAndBookIdAndIsExposedTrue(eq(cart.getId()), eq(bookId));
+		verify(cartBookRepository).findByCartIdAndBookIdAndIsExposedTrue(cart.getId(), bookId);
 		assertFalse(cartBook.isExposed());
 	}
 
 	@Test
 	void deleteCartBooks() {
-		// Given
 		Long memberId = 1L;
 		List<Long> bookIds = Collections.singletonList(book.getId());
 		DeleteCartBookListRequest request = new DeleteCartBookListRequest(bookIds);
 
-		// Stubbing cartRepository.findByMemberId
 		when(cartRepository.findByMemberId(memberId)).thenReturn(Optional.of(cart));
-
-		// Stubbing cartBookRepository.findAllByCartAndBookIdInAndIsExposedTrue
 		when(cartBookRepository.findAllByCartAndBookIdInAndIsExposedTrue(eq(cart), anyList()))
 			.thenReturn(Collections.singletonList(cartBook));
 
-		// When
 		cartBookService.deleteCartBooks(memberId, request);
 
-		// Then
 		verify(cartBookRepository).findAllByCartAndBookIdInAndIsExposedTrue(eq(cart), anyList());
 		assertFalse(cartBook.isExposed());
 	}
 
-	@Test
+/*	@Test
 	void updateCartBookQuantity() {
 
 	}
+ */
 
 	@Test
 	void getCartBookAllByGuest() {
 		Map<Long, Integer> bookIdsAndQuantity = new HashMap<>();
 		bookIdsAndQuantity.put(1L, 1);
 		CartBookIdDTO request = new CartBookIdDTO(bookIdsAndQuantity);
-		when(queryRepository.getCartBookAllGuest(any(CartBookIdDTO.class))).thenReturn(new CartBookListDTO(List.of(cartBookDTO)));
+		when(queryRepository.getCartBookAllGuest(any(CartBookIdDTO.class))).thenReturn(
+			new CartBookListDTO(List.of(cartBookDTO)));
 
 		CartBookListDTO response = cartBookService.getCartBookAllByGuest(request);
 

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import store.novabook.store.book.entity.Book;
 
-public class CartBookTest {
+class CartBookTest {
 
 	@Test
 	void testCartBook() {

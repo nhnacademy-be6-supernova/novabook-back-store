@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -48,10 +50,10 @@ public class TossOrderService {
 			JSONParser parser = new JSONParser();
 			JSONObject obj = new JSONObject();
 
-			@SuppressWarnings("unchecked")
-			HashMap<String, Object> paymentParam = (HashMap<String, Object>) orderSagaMessage.getPaymentRequest().paymentInfo();
+			@SuppressWarnings("unchecked") HashMap<String, Object> paymentParam = (HashMap<String, Object>)orderSagaMessage.getPaymentRequest()
+				.paymentInfo();
 
-			Integer tossAmountInt = (Integer) paymentParam.get(AMOUNT);
+			Integer tossAmountInt = (Integer)paymentParam.get(AMOUNT);
 			long tossAmount = tossAmountInt.longValue();
 
 			if (tossAmount != orderSagaMessage.getCalculateTotalAmount()) {
@@ -68,8 +70,8 @@ public class TossOrderService {
 			byte[] encodedBytes = encoder.encode((WIDGET_SECRET_KEY + ":").getBytes(StandardCharsets.UTF_8));
 			String authorizations = "Basic " + new String(encodedBytes);
 
-			URL url = new URL(TOSS_CONFIRM_URL);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			URL url = new URI(TOSS_CONFIRM_URL).toURL();
+			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestProperty("Authorization", authorizations);
 			connection.setRequestProperty("Content-Type", "application/json");
 			connection.setRequestMethod("POST");
@@ -82,10 +84,11 @@ public class TossOrderService {
 			int code = connection.getResponseCode();
 			boolean isSuccess = code == 200;
 
-			try (InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
-				 Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
+			try (InputStream responseStream = isSuccess ? connection.getInputStream() :
+				connection.getErrorStream(); Reader reader = new InputStreamReader(responseStream,
+				StandardCharsets.UTF_8)) {
 
-				JSONObject jsonObject = (JSONObject) parser.parse(reader);
+				JSONObject jsonObject = (JSONObject)parser.parse(reader);
 
 				if (isSuccess) {
 					orderSagaMessage.setStatus("SUCCESS_APPROVE_PAYMENT");
@@ -107,8 +110,7 @@ public class TossOrderService {
 	@RabbitListener(queues = "nova.orders.compensate.approve.payment.queue")
 	@Transactional
 	public void cancel(@Payload OrderSagaMessage orderSagaMessage) {
-		@SuppressWarnings("unchecked")
-		HashMap<String, String> paymentParam = (HashMap<String, String>)orderSagaMessage.getPaymentRequest()
+		@SuppressWarnings("unchecked") HashMap<String, String> paymentParam = (HashMap<String, String>)orderSagaMessage.getPaymentRequest()
 			.paymentInfo();
 		String paymentKey = paymentParam.get(PAYMENT_KEY);
 
@@ -120,19 +122,18 @@ public class TossOrderService {
 
 			sendTossCancelRequest(tossPaymentCancel);
 			orderSagaMessage.setStatus("SUCCESS_REFUND_PAYMENT");
-		} catch (IOException | ParseException e) {
+		} catch (IOException | URISyntaxException | ParseException e) {
 			orderSagaMessage.setStatus("FAIL_REFUND_TOSS_PAYMENT");
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
 				orderSagaMessage);
-			throw new RuntimeException(e);
 		}
 	}
 
-
 	public void sendTossCancelRequest(TossPaymentCancelRequest tossPaymentCancelRequest) throws
 		IOException,
-		ParseException {
+		ParseException,
+		URISyntaxException {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = new JSONObject();
 		obj.put("cancelReason", tossPaymentCancelRequest.cancelReason());
@@ -141,7 +142,8 @@ public class TossOrderService {
 		byte[] encodedBytes = encoder.encode((WIDGET_SECRET_KEY + ":").getBytes(StandardCharsets.UTF_8));
 		String authorizations = "Basic " + new String(encodedBytes);
 
-		URL url = new URL("https://api.tosspayments.com/v1/payments/" + tossPaymentCancelRequest.paymentKey() + "/cancel");
+		URL url = new URI(
+			"https://api.tosspayments.com/v1/payments/" + tossPaymentCancelRequest.paymentKey() + "/cancel").toURL();
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestProperty("Authorization", authorizations);
 		connection.setRequestProperty("Content-Type", "application/json");
@@ -169,13 +171,14 @@ public class TossOrderService {
 	@RabbitListener(queues = "nova.payment.request.pay.cancel.queue")
 	public void paymentRequestPayCancel(@Payload RequestPayCancelMessage message) {
 		try {
-			sendTossCancelRequest(TossPaymentCancelRequest.builder().paymentKey(message.getPaymentKey())
-				.cancelReason("결제 취소 요청").build());
-		} catch (IOException | ParseException e) {
+			sendTossCancelRequest(TossPaymentCancelRequest.builder()
+				.paymentKey(message.getPaymentKey())
+				.cancelReason("결제 취소 요청")
+				.build());
+		} catch (IOException | ParseException | URISyntaxException e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			message.setStatus("FAIL_REQUEST_CANCEL_TOSS_PAYMENT");
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
-				message);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", message);
 		}
 	}
 
