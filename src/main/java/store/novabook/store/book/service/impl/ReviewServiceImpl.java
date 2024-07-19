@@ -88,7 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
 		if (!(request.reviewImageDTOs().getFirst().fileName().isEmpty() && request.reviewImageDTOs().size() == 1)) {
-			imageService.createReviewImageDtos(review, request.reviewImageDTOs());
+			imageService.createReviewImage(review, request.reviewImageDTOs());
 		}
 		// 리뷰를 달면 포인트 적립
 		PointHistory pointHistory = PointHistory.of(pointPolicy, member, REVIEW_POINT,

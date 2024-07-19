@@ -46,6 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 
 		Category savedCategory = categoryRepository.save(newCategory);
+		Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict("allCategories");
 		return new CreateCategoryResponse(savedCategory.getId());
 	}
 
@@ -92,12 +93,12 @@ public class CategoryServiceImpl implements CategoryService {
 	public DeleteResponse delete(Long id) {
 		if (bookCategoryRepository.existsByCategoryId(id)) {
 			Objects.requireNonNull(cacheManager.getCache("categoryCache")).evict(id);
-			Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict(id);
+			Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict("allCategories");
 			return new DeleteResponse(false);
 		} else {
 
 			Objects.requireNonNull(cacheManager.getCache("categoryCache")).evict(id);
-			Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict(id);
+			Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict("allCategories");
 			categoryRepository.deleteById(id);
 			return new DeleteResponse(true);
 		}

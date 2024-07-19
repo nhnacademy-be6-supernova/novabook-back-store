@@ -24,7 +24,5 @@ public interface BookService {
 
 	void delete(Long id);
 
-	String uploadImage(String appKey, String secretKey, String path, boolean overwrite, String localFilePath);
-
 	GetBookToMainResponseMap getBookToMainPage();
 }
