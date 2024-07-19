@@ -14,7 +14,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -43,6 +44,7 @@ import store.novabook.store.book.service.BookService;
 @WithMockUser
 @AutoConfigureMockMvc
 @MockBean(JpaMetamodelMappingContext.class)
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(BookController.class)
 class BookControllerTest {
 
@@ -158,8 +160,6 @@ class BookControllerTest {
 		);
 		getBookToMainResponseMap = new GetBookToMainResponseMap(exampleData);
 		bookAllResponsePage = new PageImpl<>(Collections.singletonList(exampleBookResponse));
-
-		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
