@@ -273,29 +273,33 @@ class OrdersSagaManagerImplTest {
 		payCancelMessage.setCouponId(1L);
 		payCancelMessage.setUsePointAmount(100L);
 
+		// 모든 호출에 대해 doNothing()을 설정
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
 
+		// 메서드 호출
 		ordersSagaManager.requestPayCancel(payCancelMessage);
 
+		// verify 호출
 		verify(rabbitTemplate).convertAndSend(
-			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
-			eq("coupon.request.pay.cancel.routing.key"),
-			eq(payCancelMessage)
+			OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE,
+			"coupon.request.pay.cancel.routing.key",
+			payCancelMessage
 		);
 		verify(rabbitTemplate).convertAndSend(
-			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
-			eq("point.request.pay.cancel.routing.key"),
-			eq(payCancelMessage)
+			OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE,
+			"point.request.pay.cancel.routing.key",
+			payCancelMessage
 		);
 		verify(rabbitTemplate).convertAndSend(
-			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
-			eq("payment.pay.cancel.routing.key"),
-			eq(payCancelMessage)
+			OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE,
+			"payment.pay.cancel.routing.key",
+			payCancelMessage
 		);
 		verify(rabbitTemplate).convertAndSend(
-			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
-			eq("orders.request.pay.cancel.routing.key"),
-			eq(payCancelMessage)
+			OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE,
+			"orders.request.pay.cancel.routing.key",
+			payCancelMessage
 		);
 	}
+
 }

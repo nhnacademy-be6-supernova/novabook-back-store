@@ -1,6 +1,5 @@
 package store.novabook.store.member.service.impl;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
@@ -44,7 +43,7 @@ class DoorayServiceImplTest {
 		expectedRequest.put("botName", "novabook Bot");
 		expectedRequest.put("text", "휴면 계정 해지를 위한 인증코드: " + authCode);
 
-		verify(doorayHookClient, times(1)).sendMessage(eq(expectedRequest));
+		verify(doorayHookClient, times(1)).sendMessage(expectedRequest);
 	}
 
 	@Test
@@ -66,7 +65,7 @@ class DoorayServiceImplTest {
 		expectedRequest.put("botName", "novabook Bot");
 		expectedRequest.put("text", "주문 처리중 문제가 발생했습니다 \n상태:  " + orderSagaMessage.getStatus());
 
-		verify(deadOrdersDoorayHookClient, times(1)).sendMessage(eq(expectedRequest));
+		verify(deadOrdersDoorayHookClient, times(1)).sendMessage(expectedRequest);
 	}
 
 	@Test
@@ -77,6 +76,6 @@ class DoorayServiceImplTest {
 		expectedRequest.put("botName", "novabook Bot");
 		expectedRequest.put("text", "쿠폰 처리중 문제가 발생했습니다");
 
-		verify(deadOrdersDoorayHookClient, times(1)).sendMessage(eq(expectedRequest));
+		verify(deadOrdersDoorayHookClient, times(1)).sendMessage(expectedRequest);
 	}
 }

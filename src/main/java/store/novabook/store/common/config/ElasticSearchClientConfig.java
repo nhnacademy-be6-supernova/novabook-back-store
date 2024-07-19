@@ -2,6 +2,7 @@ package store.novabook.store.common.config;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -18,6 +19,13 @@ import lombok.RequiredArgsConstructor;
 @EnableElasticsearchRepositories(basePackages = "store.novabook.store.search")
 @RequiredArgsConstructor
 public class ElasticSearchClientConfig {
+
+	@Value("${elasticsearch.host}")
+	private String host;
+
+	@Value("${elasticsearch.port}")
+	private int port;
+
 	private final Environment environment;
 	private final RestTemplate restTemplate;
 
@@ -32,11 +40,11 @@ public class ElasticSearchClientConfig {
 		// );
 
 		// RestClient restClient = RestClient.builder(HttpHost.create(config.uris())).build();
-		RestClient restClient = RestClient.builder(HttpHost.create("125.6.36.57:9200")).build();
+		RestClient restClient = RestClient.builder(HttpHost.create(host + ":" + port)).build();
 
 		// Create the transport and the API client
 		ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
-		return  new ElasticsearchClient(transport);
+		return new ElasticsearchClient(transport);
 	}
 
 }
