@@ -40,7 +40,7 @@ public class ElasticSearchClientConfig {
 		// );
 
 		// RestClient restClient = RestClient.builder(HttpHost.create(config.uris())).build();
-		RestClient restClient = RestClient.builder(HttpHost.create(host + port)).build();
+		RestClient restClient = RestClient.builder(HttpHost.create(host + ":" + port)).build();
 
 		// Create the transport and the API client
 		ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
