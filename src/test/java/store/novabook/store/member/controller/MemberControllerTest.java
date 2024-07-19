@@ -1,5 +1,6 @@
 package store.novabook.store.member.controller;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import store.novabook.store.common.response.ApiResponse;
 import store.novabook.store.common.security.aop.CurrentMembersArgumentResolver;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
@@ -26,6 +28,7 @@ import store.novabook.store.member.dto.request.DuplicateEmailRequest;
 import store.novabook.store.member.dto.request.DuplicateLoginIdRequest;
 import store.novabook.store.member.dto.request.FindMemberRequest;
 import store.novabook.store.member.dto.request.GetDormantMembersRequest;
+import store.novabook.store.member.dto.request.GetMembersUUIDRequest;
 import store.novabook.store.member.dto.request.GetPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LinkPaycoMembersRequest;
 import store.novabook.store.member.dto.request.LoginMemberRequest;
@@ -36,6 +39,7 @@ import store.novabook.store.member.dto.response.DuplicateResponse;
 import store.novabook.store.member.dto.response.FindMemberLoginResponse;
 import store.novabook.store.member.dto.response.GetDormantMembersResponse;
 import store.novabook.store.member.dto.response.GetMemberResponse;
+import store.novabook.store.member.dto.response.GetMembersUUIDResponse;
 import store.novabook.store.member.dto.response.GetPaycoMembersResponse;
 import store.novabook.store.member.dto.response.GetmemberNameResponse;
 import store.novabook.store.member.dto.response.LoginMemberResponse;
@@ -87,6 +91,8 @@ class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.body.id").value(1L));
+
+		verify(memberService).createMember(any(CreateMemberRequest.class));
 	}
 
 	@Test
@@ -102,6 +108,8 @@ class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.body.isDuplicate").value(true));
+
+		verify(memberService).isDuplicateLoginId(anyString());
 	}
 
 	@Test
@@ -117,6 +125,8 @@ class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.body.isDuplicate").value(true));
+
+		verify(memberService).isDuplicateEmail(anyString());
 	}
 
 	@Test
@@ -132,6 +142,8 @@ class MemberControllerTest {
 				.header("X-Current-Member", "1"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.body.id").exists());
+
+		verify(memberService).getMember(anyLong());
 	}
 
 	@Test
@@ -146,6 +158,8 @@ class MemberControllerTest {
 				.header("X-Current-Member", "1"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.body.memberName").value("username"));
+
+		verify(memberService).getMemberName(anyLong());
 	}
 
 	@Test
@@ -163,6 +177,8 @@ class MemberControllerTest {
 			.andExpect(jsonPath("$.body.success").value(true))
 			.andExpect(jsonPath("$.body.memberId").value(1L))
 			.andExpect(jsonPath("$.body.name").value("testName"));
+
+		verify(memberService).matches(any(LoginMemberRequest.class));
 	}
 
 	@Test
@@ -177,6 +193,8 @@ class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request))
 				.header("X-Current-Member", "1"))
 			.andExpect(status().isOk());
+
+		verify(memberService).updateMemberNumberOrName(anyLong(), any(UpdateMemberRequest.class));
 	}
 
 	@Test
@@ -191,6 +209,8 @@ class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request))
 				.header("X-Current-Member", "1"))
 			.andExpect(status().isOk());
+
+		verify(memberService).updateMemberPassword(anyLong(), any(UpdateMemberPasswordRequest.class));
 	}
 
 	@Test
@@ -202,20 +222,27 @@ class MemberControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("X-Current-Member", "1"))
 			.andExpect(status().isOk());
+
+		verify(memberService).updateMemberStatusToDormant(anyLong());
 	}
 
 	@Test
 	void updateMemberStatusToWithdraw() throws Exception {
 		DeleteMemberRequest request = new DeleteMemberRequest("testPassword");
 
-		doNothing().when(memberService).updateMemberStatusToWithdraw(anyLong(), any(DeleteMemberRequest.class));
+		doNothing().when(memberService).updateMemberStatusToWithdraw(any(), any(DeleteMemberRequest.class));
 
 		mockMvc.perform(put("/api/v1/store/members/member/withdraw")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 				.header("X-Current-Member", "1"))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.header.isSuccessful").value(true))
+			.andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
+		;
+
+		verify(memberService).updateMemberStatusToWithdraw(anyLong(), any(DeleteMemberRequest.class));
 	}
 
 	@Test
@@ -232,6 +259,8 @@ class MemberControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.body.membersId").value(1L))
 			.andExpect(jsonPath("$.body.loginId").value("testLoginId"));
+
+		verify(memberService).findMembersLogin(anyString());
 	}
 
 	@Test
@@ -247,6 +276,8 @@ class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.body.id").value(1L));
+
+		verify(memberService).getPaycoMembers(any(GetPaycoMembersRequest.class));
 	}
 
 	@Test
@@ -261,6 +292,8 @@ class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request))
 				.header("X-Current-Member", "1"))
 			.andExpect(status().isOk());
+
+		verify(memberService).linkPaycoMembers(any(LinkPaycoMembersRequest.class));
 	}
 
 	@Test
@@ -276,5 +309,27 @@ class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.body.memberStatusId").value(1L));
+
+		verify(memberService).getDormantMembers(any(GetDormantMembersRequest.class));
+	}
+
+	@Test
+	void findUUID() throws Exception {
+		GetMembersUUIDRequest request = new GetMembersUUIDRequest("uuid");
+		GetMembersUUIDResponse response = new GetMembersUUIDResponse(1L, "ROLE_USER");
+
+		ApiResponse<GetMembersUUIDResponse> apiResponse = ApiResponse.success(response);
+		doReturn(apiResponse).when(authMembersClient).getMembersId(any(GetMembersUUIDRequest.class));
+
+		mockMvc.perform(post("/api/v1/store/members/uuid")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer token")
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.body.membersId").value(1L))
+			.andExpect(jsonPath("$.body.role").value("ROLE_USER"));
+
+		verify(authMembersClient).getMembersId(any(GetMembersUUIDRequest.class));
 	}
 }
