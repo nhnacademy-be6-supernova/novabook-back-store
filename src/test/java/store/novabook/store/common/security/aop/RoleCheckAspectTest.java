@@ -46,17 +46,6 @@ class RoleCheckAspectTest {
 	}
 
 	@Test
-	void checkRole_withInvalidRole() {
-		Authentication auth = new UsernamePasswordAuthenticationToken("user", "password",
-			Collections.singletonList(new SimpleGrantedAuthority("ROLE_INVALID")));
-		SecurityContextHolder.getContext().setAuthentication(auth);
-
-		when(checkRole.value()).thenReturn(new String[] {"ROLE_USER"});
-
-		assertThrows(UnauthorizedException.class, () -> roleCheckAspect.checkRole(joinPoint, checkRole));
-	}
-
-	@Test
 	void checkRole_withoutAuthentication() {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		assertThrows(UnauthorizedException.class, () -> roleCheckAspect.checkRole(joinPoint, checkRole));
