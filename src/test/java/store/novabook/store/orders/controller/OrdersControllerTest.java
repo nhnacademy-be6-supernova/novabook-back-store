@@ -47,7 +47,7 @@ class OrdersControllerTest {
 	@MockBean
 	private OrdersService ordersService;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@TestConfiguration
 	static class TestSecurityConfig {

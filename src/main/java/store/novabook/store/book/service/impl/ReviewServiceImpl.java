@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.ReviewImageDto;
 import store.novabook.store.book.dto.request.CreateReviewRequest;
 import store.novabook.store.book.dto.request.ReviewImageDTO;
@@ -49,6 +50,7 @@ import store.novabook.store.point.repository.PointPolicyRepository;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final OrdersBookRepository ordersBookRepository;
@@ -58,24 +60,11 @@ public class ReviewServiceImpl implements ReviewService {
 	private final PointHistoryRepository pointHistoryRepository;
 	private final PointPolicyRepository pointPolicyRepository;
 	private final MemberRepository memberRepository;
-	private final ImageManagerDto imageManagerDto;
+	private final Environment environment;
+	private final RestTemplate restTemplate;
+	private ImageManagerDto imageManagerDto;
 
 	private static final String REVIEW_POINT = "리뷰 작성 포인트";
-
-	public ReviewServiceImpl(ReviewRepository reviewRepository, OrdersBookRepository ordersBookRepository,
-		NHNCloudMutilpartClient nhnCloudClient, ImageRepository imageRepository,
-		ReviewImageRepository reviewImageRepository, PointHistoryRepository pointHistoryRepository,
-		PointPolicyRepository pointPolicyRepository, MemberRepository memberRepository, Environment environment, RestTemplate restTemplate) {
-		this.reviewRepository = reviewRepository;
-		this.ordersBookRepository = ordersBookRepository;
-		this.nhnCloudClient = nhnCloudClient;
-		this.imageRepository = imageRepository;
-		this.reviewImageRepository = reviewImageRepository;
-		this.pointHistoryRepository = pointHistoryRepository;
-		this.pointPolicyRepository = pointPolicyRepository;
-		this.memberRepository = memberRepository;
-		this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
-	}
 
 	/**
 	 * 주어진 책 ID와 관련된 모든 리뷰를 읽기 전용으로 조회합니다.
@@ -120,12 +109,16 @@ public class ReviewServiceImpl implements ReviewService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
 		if (!(request.reviewImageDTOs().getFirst().fileName().isEmpty() && request.reviewImageDTOs().size() == 1)) {
+			if (imageManagerDto == null) {
+				this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
+			}
 			//리뷰 이미지를 저장
 			String basepath = imageManagerDto.bucketName() + "review";
 			//NHN클라우드 설정
 			String paramsJson = "{\"basepath\": \"" + basepath + "\", \"overwrite\": true, \"autorename\": \"true\"}";
 
-			List<String> imageList = uploadImage(imageManagerDto.accessKey(), paramsJson, imageManagerDto.secretKey(), request.reviewImageDTOs());
+			List<String> imageList = uploadImage(imageManagerDto.accessKey(), paramsJson, imageManagerDto.secretKey(),
+				request.reviewImageDTOs());
 
 			imageList.forEach(imageUrl -> {
 				Image image1 = imageRepository.save(new Image(imageUrl));
