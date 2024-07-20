@@ -54,7 +54,7 @@ public class PointHistory {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public PointHistory(PointPolicy pointPolicy, Member member, String pointContent, long pointAmount){
+	public PointHistory(PointPolicy pointPolicy, Member member, String pointContent, long pointAmount) {
 		this.pointPolicy = pointPolicy;
 		this.member = member;
 		this.pointContent = pointContent;

@@ -57,7 +57,6 @@ class OrdersStatusServiceImplTest {
 		verify(ordersStatusRepository, times(1)).save(any(OrdersStatus.class));
 	}
 
-
 	@Test
 	void testGetOrdersStatusById() {
 		Long id = 1L;
@@ -120,7 +119,8 @@ class OrdersStatusServiceImplTest {
 	@Test
 	void testGetOrdersStatusById1() {
 		Long id = 1L;
-		OrdersStatus ordersStatus = spy(new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build()));
+		OrdersStatus ordersStatus = spy(
+			new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build()));
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.of(ordersStatus));
 
 		GetOrdersStatusResponse response = ordersStatusService.getOrdersStatus(id);

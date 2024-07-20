@@ -71,6 +71,7 @@ public class CartBook {
 	public void updateIsExposed(boolean isExposed) {
 		this.isExposed = isExposed;
 	}
+
 	public void updateQuantity(int quantity) {
 		this.quantity = quantity;
 	}

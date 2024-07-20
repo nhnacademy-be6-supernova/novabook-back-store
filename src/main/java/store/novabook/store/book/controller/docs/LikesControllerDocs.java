@@ -31,7 +31,7 @@ public interface LikesControllerDocs {
 	 * 좋아요 생성
 	 *
 	 * @param memberId 좋아요를 누른 사용자의 ID
-	 * @param bookId 좋아요를 누를 책의 ID
+	 * @param bookId   좋아요를 누를 책의 ID
 	 * @return 생성된 좋아요 정보
 	 */
 	@Operation(summary = "좋아요 생성", description = "해당 도서에 좋아요 생성합니다")
@@ -40,7 +40,7 @@ public interface LikesControllerDocs {
 	/**
 	 * 좋아요 삭제
 	 *
-	 * @param bookId 책 ID로 좋아요 상태 확인
+	 * @param bookId   책 ID로 좋아요 상태 확인
 	 * @param memberId 사용자 ID로 좋아요 상태 확인
 	 * @return 좋아요 상태 유무
 	 */

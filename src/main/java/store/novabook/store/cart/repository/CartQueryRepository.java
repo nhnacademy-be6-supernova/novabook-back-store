@@ -47,13 +47,11 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 	QMember qMember = QMember.member;
 	QBookStatus qBookStatus = QBookStatus.bookStatus;
 
-
 	public CartQueryRepository(EntityManager entityManager) {
 		super(Cart.class);
 		this.entityManager = entityManager;
 		this.queryFactory = new JPAQueryFactory(entityManager);
 	}
-
 
 	public CartBookListDTO getCartBookAll(Long cartId) {
 		List<CartBookDTO> cartBookResponses = queryFactory
@@ -86,10 +84,10 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 	public CartBookListDTO getCartBookAllByMemberId(Long memberId) {
 		// 장바구니 ID 조회
 		Long cartId = queryFactory
-					.select(qCart.id)
-					.from(qCart)
-					.where(qCart.member.id.eq(memberId))
-					.fetchOne();
+			.select(qCart.id)
+			.from(qCart)
+			.where(qCart.member.id.eq(memberId))
+			.fetchOne();
 
 		if (cartId == null) {
 			Member member = entityManager.getReference(Member.class, memberId);
@@ -125,14 +123,12 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 				.and(qCartBook.isExposed.eq(true)))
 			.fetch();
 
-
 		// 결과값이 없으면 빈 리스트 반환
 		if (cartBookResponses == null || cartBookResponses.isEmpty()) {
 			return new CartBookListDTO(Collections.emptyList());
 		}
 
 		return new CartBookListDTO(cartBookResponses);
-
 
 	}
 
@@ -149,7 +145,7 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 			entityManager.persist(newCart);
 			entityManager.flush();
 
-			cart= newCart;
+			cart = newCart;
 		}
 
 		// Book 조회

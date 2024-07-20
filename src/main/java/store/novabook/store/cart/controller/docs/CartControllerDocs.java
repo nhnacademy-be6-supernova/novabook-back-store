@@ -37,13 +37,15 @@ public interface CartControllerDocs {
 	@Parameter(name = "memberId", description = "회원 ID", required = true)
 	@Parameter(name = "CreateCartBookListRequest", description = "bookId와 수량을 포함한 List 입니다.", required = true)
 	@PostMapping("/adds")
-	ResponseEntity<CreateCartBookListResponse> addCartBooks(@CurrentMembers Long memberId, @RequestBody CartBookListDTO request);
+	ResponseEntity<CreateCartBookListResponse> addCartBooks(@CurrentMembers Long memberId,
+		@RequestBody CartBookListDTO request);
 
 	@Operation(summary = "장바구니 도서 업데이트", description = "장바구니에 도서 수량을 업데이트 합니다.")
 	@Parameter(name = "memberId", description = "회원 ID", required = true)
 	@Parameter(name = "UpdateCartBookQuantityRequest", description = "bookId와 수량을 포함합니다.", required = true)
 	@PutMapping("/update")
-	ResponseEntity<Void> updateCartBook(@CurrentMembers Long memberId, @RequestBody UpdateCartBookQuantityRequest request);
+	ResponseEntity<Void> updateCartBook(@CurrentMembers Long memberId,
+		@RequestBody UpdateCartBookQuantityRequest request);
 
 	@Operation(summary = "장바구니 도서 삭제", description = "장바구니에 도서를 노출여부를 false로 변경합니다.")
 	@Parameter(name = "memberId", description = "회원 ID", required = true)

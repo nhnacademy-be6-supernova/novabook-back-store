@@ -158,7 +158,7 @@ class MemberAddressServiceImplTest {
 		assertEquals(streetAddressId, response.streetAddressId());
 		assertEquals(testMember.getId(), response.memberId());
 		assertEquals("12345", response.zipcode());
-		assertEquals("123 Main St", response.streetAddress());
+		assertEquals("123 Main St", response.streetAddresses());
 		assertEquals("Apt 101", response.memberAddressDetail());
 		assertEquals("Home", response.nickname());
 	}

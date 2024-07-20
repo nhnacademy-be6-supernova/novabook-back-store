@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import store.novabook.store.common.security.entity.AuthenticationMembers;
 
-
 public class CustomUserDetails implements UserDetails {
 
 	private final transient AuthenticationMembers authenticationMembers;

@@ -16,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -47,7 +46,6 @@ public class Admin {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
-
 
 	public void update(String loginId, String loginPassword, String name, String number, String email) {
 		this.loginId = loginId;

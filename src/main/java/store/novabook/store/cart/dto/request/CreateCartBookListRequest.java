@@ -9,4 +9,5 @@ import lombok.Builder;
 public record CreateCartBookListRequest(
 	@NotNull(message = "cartBookList가 null 값 입니다.")
 	List<CreateCartBookRequest> cartBookList
-) {}
+) {
+}
