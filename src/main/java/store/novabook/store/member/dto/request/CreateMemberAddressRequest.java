@@ -8,7 +8,7 @@ public record CreateMemberAddressRequest(
 	String zipcode,
 
 	@NotBlank
-	String streetAddress,
+	String streetAddresses,
 
 	@NotBlank
 	String nickname,

@@ -73,7 +73,6 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok(memberService.getMemberAll(pageable));
 	}
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/member")
 	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers(required = false) Long memberId) {
 		if (memberId != null) {
