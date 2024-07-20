@@ -6,7 +6,7 @@ public record GetMemberAddressResponse(
 	Long memberId,
 	String zipcode,
 	String nickname,
-	String streetAddress,
+	String streetAddresses,
 	String memberAddressDetail
 ) {
 }

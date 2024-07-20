@@ -49,7 +49,6 @@
       "title": {
         "type": "text",
         "analyzer": "nori_synonym_analyzer"
-
       }
     }
   },

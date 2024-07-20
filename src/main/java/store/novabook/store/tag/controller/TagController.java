@@ -53,7 +53,8 @@ public class TagController implements TagControllerDocs {
 
 	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/{id}")
-	public ResponseEntity<Void> updateTag(@Valid @RequestBody UpdateTagRequest updateTagRequest, @PathVariable Long id) {
+	public ResponseEntity<Void> updateTag(@Valid @RequestBody UpdateTagRequest updateTagRequest,
+		@PathVariable Long id) {
 		tagService.updateTag(id, updateTagRequest);
 		return ResponseEntity.ok().build();
 	}

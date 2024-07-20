@@ -19,6 +19,7 @@ public class OrdersSagaController {
 
 	/**
 	 * 주문 트랜잭션을 시작하는 Manager
+	 *
 	 * @param paymentRequest 결제 시스템에서 넘어온 데이터
 	 */
 	@PostMapping

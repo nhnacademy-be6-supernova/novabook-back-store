@@ -359,9 +359,6 @@ class OrdersRabbitServiceImplTest {
 		assertEquals("SUCCESS_SAVE_ORDERS_DATABASE", orderSagaMessage.getStatus());
 	}
 
-
-
-
 	@Test
 	@DisplayName("주문 정보를 저장하는 테스트 코드 - 실패")
 	void saveSagaOrder_Fail() {

@@ -36,4 +36,5 @@ public record OrderTemporaryNonMemberForm(
 	@Valid
 	@NotNull
 	OrderReceiverInfo orderReceiverInfo
-) {}
+) {
+}

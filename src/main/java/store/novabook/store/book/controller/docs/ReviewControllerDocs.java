@@ -31,6 +31,7 @@ public interface ReviewControllerDocs {
 
 	/**
 	 * 특정 책에 대한 모든 리뷰를 페이지네이션으로 반환합니다.
+	 *
 	 * @param bookId 책 ID
 	 * @return 리뷰 정보
 	 */
@@ -39,9 +40,10 @@ public interface ReviewControllerDocs {
 
 	/**
 	 * 새로운 리뷰를 작성합니다.
+	 *
 	 * @param ordersBookId 주문 도서 ID
-	 * @param request 리뷰 생성 요청 데이터
-	 * @param memberId 현재 사용자 ID
+	 * @param request      리뷰 생성 요청 데이터
+	 * @param memberId     현재 사용자 ID
 	 * @return 생성된 리뷰의 응답 데이터
 	 */
 	@Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.")
@@ -52,7 +54,8 @@ public interface ReviewControllerDocs {
 
 	/**
 	 * 특정 리뷰를 업데이트합니다.
-	 * @param request 리뷰 업데이트 요청 데이터
+	 *
+	 * @param request   리뷰 업데이트 요청 데이터
 	 * @param reviewsId 수정할 리뷰의 ID
 	 * @return 응답 상태 코드
 	 */

@@ -85,7 +85,8 @@ class OrdersBookControllerTest {
 			.createdAt(LocalDateTime.now())
 			.build();
 
-		Page<GetOrdersBookResponse> page = new PageImpl<>(Collections.singletonList(ordersBookResponse), PageRequest.of(0, 10), 1);
+		Page<GetOrdersBookResponse> page = new PageImpl<>(Collections.singletonList(ordersBookResponse),
+			PageRequest.of(0, 10), 1);
 		when(ordersBookService.getOrdersBookByMemberId(any(), any())).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/orders/book/member/orders")
@@ -134,7 +135,8 @@ class OrdersBookControllerTest {
 			.reviewId(1L)
 			.build();
 
-		Page<GetOrdersBookReviewIdResponse> page = new PageImpl<>(Collections.singletonList(reviewIdResponse), PageRequest.of(0, 10), 1);
+		Page<GetOrdersBookReviewIdResponse> page = new PageImpl<>(Collections.singletonList(reviewIdResponse),
+			PageRequest.of(0, 10), 1);
 		when(ordersBookService.getOrdersBookReviewByMemberId(any(), any())).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/orders/book/members").with(csrf())
