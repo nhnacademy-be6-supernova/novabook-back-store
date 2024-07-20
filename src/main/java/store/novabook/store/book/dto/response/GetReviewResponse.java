@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Builder;
 import store.novabook.store.book.dto.ReviewImageDto;
-
+@Builder
 public record GetReviewResponse(
 	String nickName,
 	Long reviewId,
