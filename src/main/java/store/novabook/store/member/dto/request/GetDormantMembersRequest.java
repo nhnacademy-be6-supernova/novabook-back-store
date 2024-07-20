@@ -1,8 +1,8 @@
 package store.novabook.store.member.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record GetDormantMembersRequest(
-	@NotBlank
+	@NotNull
 	Long membersId) {
 }
