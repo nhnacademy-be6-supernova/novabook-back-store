@@ -58,7 +58,8 @@ class BookSearchControllerTest {
 
 	@Test
 	void searchByAuthor() throws Exception {
-		given(bookSearchService.searchByAuthorContaining(eq("Test Author"), any(Pageable.class))).willReturn(responsePage);
+		given(bookSearchService.searchByAuthorContaining(eq("Test Author"), any(Pageable.class))).willReturn(
+			responsePage);
 
 		mockMvc.perform(get("/api/v1/store/search/author")
 				.param("author", "Test Author")
@@ -70,7 +71,8 @@ class BookSearchControllerTest {
 
 	@Test
 	void searchByPublish() throws Exception {
-		given(bookSearchService.searchByPublishContaining(eq("Test Publisher"), any(Pageable.class))).willReturn(responsePage);
+		given(bookSearchService.searchByPublishContaining(eq("Test Publisher"), any(Pageable.class))).willReturn(
+			responsePage);
 
 		mockMvc.perform(get("/api/v1/store/search/publish")
 				.param("publish", "Test Publisher")
@@ -82,7 +84,8 @@ class BookSearchControllerTest {
 
 	@Test
 	void searchByCategory() throws Exception {
-		given(bookSearchService.searchByCategoryListContaining(eq("Test Category"), any(Pageable.class))).willReturn(responsePage);
+		given(bookSearchService.searchByCategoryListContaining(eq("Test Category"), any(Pageable.class))).willReturn(
+			responsePage);
 
 		mockMvc.perform(get("/api/v1/store/search/category")
 				.param("category", "Test Category")

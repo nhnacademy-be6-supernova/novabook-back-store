@@ -33,7 +33,6 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
 		@Nullable Class<? extends HttpMessageConverter<?>> selectedConverterType, @Nullable ServerHttpRequest request,
 		@Nullable ServerHttpResponse response) {
 
-
 		if (body instanceof ValidErrorResponse validErrorResponse) {
 			return ApiResponse.error(ErrorResponse.from(validErrorResponse));
 		}

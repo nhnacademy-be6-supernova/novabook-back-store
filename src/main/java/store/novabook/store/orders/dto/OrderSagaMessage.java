@@ -22,6 +22,7 @@ public class OrderSagaMessage {
 	boolean noUseCoupon;
 	String status;
 	PaymentRequest paymentRequest;
+
 	@JsonPOJOBuilder(withPrefix = "")
 	public static class OrderSagaMessageBuilder {
 	}

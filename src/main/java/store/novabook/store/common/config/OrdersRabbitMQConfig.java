@@ -64,7 +64,6 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.cart.delete.queue").build();
 	}
 
-
 	//TOSS PAYMENT 결제 취소 QUEUE
 	@Bean
 	public Queue paymentCancelQueue() {
@@ -83,14 +82,11 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.request.pay.cancel.queue").build();
 	}
 
-
 	// 결제 취소 재고처리하는 QUEUE
 	@Bean
 	public Queue ordersRequestPayCancelQueue() {
 		return QueueBuilder.durable("nova.orders.request.pay.cancel.queue").build();
 	}
-
-
 
 	/*보상 트랜잭션 큐*/
 	@Bean
@@ -219,7 +215,6 @@ public class OrdersRabbitMQConfig {
 			.noargs();
 	}
 
-
 	// dead queue
 	@Bean
 	public Binding deadOrdersSagaBinding() {
@@ -315,6 +310,5 @@ public class OrdersRabbitMQConfig {
 			.with("nova.api6-producer-routing-key")
 			.noargs();
 	}
-
 
 }

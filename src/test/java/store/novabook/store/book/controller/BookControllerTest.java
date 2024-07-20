@@ -40,7 +40,6 @@ import store.novabook.store.book.dto.response.GetBookToMainResponse;
 import store.novabook.store.book.dto.response.GetBookToMainResponseMap;
 import store.novabook.store.book.service.BookService;
 
-
 @WithMockUser
 @AutoConfigureMockMvc
 @MockBean(JpaMetamodelMappingContext.class)

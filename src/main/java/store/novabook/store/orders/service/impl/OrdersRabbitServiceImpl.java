@@ -90,7 +90,7 @@ public class OrdersRabbitServiceImpl {
 			}
 			orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
 		} catch (Exception e) {
-			log.error("",e);
+			log.error("", e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_CONFIRM_ORDER_FORM");
 		} finally {
@@ -158,7 +158,7 @@ public class OrdersRabbitServiceImpl {
 
 			orderSagaMessage.setStatus("SUCCESS_SAVE_ORDERS_DATABASE");
 		} catch (Exception e) {
-			log.info("",e);
+			log.info("", e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_SAVE_ORDERS_DATABASE");
 		} finally {

@@ -91,7 +91,6 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			CreateCouponNotifyMessage.from(memberId, couponList, request));
 	}
 
-
 	@Override
 	public CreateMemberCouponResponse registerMemberCoupon(Long memberId, RegisterCouponRequest request) {
 		Member member = memberRepository.findById(memberId)

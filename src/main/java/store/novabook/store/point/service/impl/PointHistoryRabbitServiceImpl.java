@@ -52,11 +52,13 @@ public class PointHistoryRabbitServiceImpl {
 			PointPolicy pointPolicy = pointPolicyRepository.findTopByOrderByCreatedAtDesc()
 				.orElseThrow(() -> new NotFoundException(ErrorCode.POINT_POLICY_NOT_FOUND));
 
-			pointHistoryRepository.save(PointHistory.of(pointPolicy, member, "주문으로 인한 포인트 적립", orderSagaMessage.getEarnPointAmount()));
+			pointHistoryRepository.save(
+				PointHistory.of(pointPolicy, member, "주문으로 인한 포인트 적립", orderSagaMessage.getEarnPointAmount()));
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_POINT_DECREMENT");
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+				orderSagaMessage);
 		}
 	}
 
@@ -107,7 +109,6 @@ public class PointHistoryRabbitServiceImpl {
 		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api2-producer-routing-key", orderSagaMessage);
 	}
 
-
 	@RabbitListener(queues = "nova.point.compensate.decrement.queue")
 	public void compensateDecrementPoint(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
@@ -138,7 +139,6 @@ public class PointHistoryRabbitServiceImpl {
 		}
 	}
 
-
 	@RabbitListener(queues = "nova.point.request.pay.cancel.queue")
 	public void decrementPoint(@Payload Long memberId, @Payload Long usePointAmount) {
 		// 회원 정보 조회
@@ -155,7 +155,6 @@ public class PointHistoryRabbitServiceImpl {
 
 		pointHistoryRepository.save(pointHistory);
 	}
-
 
 	private void handleFailureCompensate(OrderSagaMessage orderSagaMessage) {
 		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
