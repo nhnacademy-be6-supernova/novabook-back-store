@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
+import store.novabook.store.orders.controller.docs.OrdersBookControllerDocs;
 import store.novabook.store.orders.dto.response.GetOrderDetailResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
 import store.novabook.store.orders.service.OrdersBookService;
@@ -19,7 +20,7 @@ import store.novabook.store.orders.service.OrdersBookService;
 @RestController
 @RequestMapping("/api/v1/store/orders/book")
 @RequiredArgsConstructor
-public class OrdersBookController {
+public class OrdersBookController implements OrdersBookControllerDocs {
 
 	private final OrdersBookService ordersBookService;
 
