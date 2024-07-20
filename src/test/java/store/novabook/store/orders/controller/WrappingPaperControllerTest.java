@@ -66,7 +66,11 @@ class WrappingPaperControllerTest {
 
 	@Test
 	void testCreateWrappingPaper() throws Exception {
-		CreateWrappingPaperRequest request = CreateWrappingPaperRequest.builder().price(1000L).name("테스트").build();
+		CreateWrappingPaperRequest request = CreateWrappingPaperRequest.builder()
+			.price(1000L)
+			.status("test")
+			.name("테스트")
+			.build();
 		// 필요한 필드를 request에 설정
 
 		CreateResponse response = new CreateResponse(1L);

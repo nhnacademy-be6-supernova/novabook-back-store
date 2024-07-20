@@ -158,7 +158,7 @@ public class MemberController implements MemberControllerDocs {
 
 	@PostMapping("/status")
 	public ResponseEntity<GetDormantMembersResponse> getMemberDormantStatus(
-		@RequestBody GetDormantMembersRequest getDormantMembersRequest) {
+		@Valid @RequestBody GetDormantMembersRequest getDormantMembersRequest) {
 		GetDormantMembersResponse getDormantMembersResponse = memberService.getDormantMembers(getDormantMembersRequest);
 		return ResponseEntity.ok(getDormantMembersResponse);
 	}
