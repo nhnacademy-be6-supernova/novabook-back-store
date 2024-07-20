@@ -5,8 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -135,27 +133,25 @@ class BookSearchServiceImplTest {
 	@Test
 	void searchByCategoryListContaining() {
 		String category = "category";
-		when(bookSearchRepository.findAllByCategoryListMatches(List.of(category), pageable)).thenReturn(
-			bookDocumentPage);
+		when(bookSearchRepository.findAllByCategoryListMatches(category, pageable)).thenReturn(bookDocumentPage);
 
 		Page<GetBookSearchResponse> result = bookSearchService.searchByCategoryListContaining(category, pageable);
 
 		assertNotNull(result);
 		assertEquals(1, result.getTotalElements());
-		verify(bookSearchRepository).findAllByCategoryListMatches(List.of(category), pageable);
+		verify(bookSearchRepository).findAllByCategoryListMatches(category, pageable);
 	}
 
 	@Test
 	void searchByCategoryListContaining_throwsInternalServerException() {
 		String category = "category";
-		when(bookSearchRepository.findAllByCategoryListMatches(List.of(category), pageable)).thenThrow(
-			new RuntimeException());
+		when(bookSearchRepository.findAllByCategoryListMatches(category, pageable)).thenThrow(new RuntimeException());
 
 		InternalServerException exception = assertThrows(InternalServerException.class, () -> {
 			bookSearchService.searchByCategoryListContaining(category, pageable);
 		});
 
 		assertEquals(ErrorCode.INVALID_REQUEST_ARGUMENT, exception.getErrorCode());
-		verify(bookSearchRepository).findAllByCategoryListMatches(List.of(category), pageable);
+		verify(bookSearchRepository).findAllByCategoryListMatches(category, pageable);
 	}
 }
