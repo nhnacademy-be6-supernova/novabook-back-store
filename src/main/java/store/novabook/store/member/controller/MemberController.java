@@ -140,7 +140,6 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok(getPaycoMembersResponse);
 	}
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/payco/link")
 	public ResponseEntity<Void> linkPayco(@Valid @RequestBody LinkPaycoMembersRequest linkPaycoMembersRequest) {
 		memberService.linkPaycoMembers(linkPaycoMembersRequest);
