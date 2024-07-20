@@ -21,14 +21,13 @@ class BookSearchRepositoryTest {
 	@Mock
 	private BookSearchRepository bookSearchRepository;
 
-	private BookDocument bookDocument;
 	private Page<BookDocument> bookPage;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
 
-		bookDocument = BookDocument.builder()
+		BookDocument bookDocument = BookDocument.builder()
 			.id(1L)
 			.title("Test Book")
 			.author("Test Author")
@@ -78,9 +77,9 @@ class BookSearchRepositoryTest {
 
 	@Test
 	void testFindAllByCategoryListMatches() {
-		given(bookSearchRepository.findAllByCategoryListMatches(eq(Collections.singletonList("Test Category")), any(Pageable.class))).willReturn(bookPage);
+		given(bookSearchRepository.findAllByCategoryListMatches(eq("Test Category"), any(Pageable.class))).willReturn(bookPage);
 
-		Page<BookDocument> result = bookSearchRepository.findAllByCategoryListMatches(Collections.singletonList("Test Category"), PageRequest.of(0, 10));
+		Page<BookDocument> result = bookSearchRepository.findAllByCategoryListMatches("Test Category", PageRequest.of(0, 10));
 
 		assertEquals(1, result.getTotalElements());
 		assertEquals("Test Category", result.getContent().get(0).getCategoryList().get(0));
