@@ -3,6 +3,7 @@ package store.novabook.store.common.util;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
+import static store.novabook.store.common.exception.ErrorCode.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,9 +36,6 @@ class KeyManagerUtilTest {
 
 	@Mock
 	private RestTemplate restTemplate;
-
-	@Mock
-	private org.slf4j.Logger log;
 
 	private static final String APPKEY = "testAppkey";
 	private static final String USER_ACCESS_KEY = "testUserAccessKey";
@@ -328,7 +326,32 @@ class KeyManagerUtilTest {
 		assertThrows(KeyManagerException.class, () -> KeyManagerUtil.getDatabaseConfig(environment, restTemplate));
 	}
 
+	@Test
+	void getStringObjectMap_resultEmpty_throwsKeyManagerException() {
 
+		given(environment.getProperty("nhn.cloud.keyManager.appkey")).willReturn("testAppkey");
+		given(environment.getProperty("nhn.cloud.keyManager.userAccessKey")).willReturn("testUserAccessKey");
+		given(environment.getProperty("nhn.cloud.keyManager.secretAccessKey")).willReturn("testSecretAccessKey");
+
+		Map<String, Object> bodyMap = new HashMap<>();
+		bodyMap.put("body", Map.of("secret", ""));
+
+		ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(bodyMap, HttpStatus.OK);
+		given(restTemplate.exchange(any(String.class), eq(HttpMethod.GET), any(HttpEntity.class),
+			eq(new ParameterizedTypeReference<Map<String, Object>>() {
+			})))
+			.willReturn(responseEntity);
+
+		// when, then
+		assertThrows(KeyManagerException.class,
+			() -> KeyManagerUtil.getDataSource(environment, "testKeyId", restTemplate));
+		// give
+
+		// when, then
+		KeyManagerException exception = assertThrows(KeyManagerException.class,
+			() -> KeyManagerUtil.getStringObjectMap(responseEntity));
+		assertEquals(MISSING_BODY_KEY, exception.getErrorCode());
+	}
 
 	private Map<String, Object> getMockResponseBody() {
 		Map<String, Object> bodyMap = new HashMap<>();

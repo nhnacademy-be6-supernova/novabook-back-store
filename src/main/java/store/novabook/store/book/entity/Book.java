@@ -83,18 +83,17 @@ public class Book {
 
 	@Builder
 	public Book(BookStatus bookStatus,
-
-				String isbn,
-				String title,
-				String description,
-				String descriptionDetail,
-				String author,
-				String publisher,
-				LocalDateTime publicationDate,
-				int inventory,
-				long price,
-				long discountPrice,
-				boolean isPackaged) {
+		String isbn,
+		String title,
+		String description,
+		String descriptionDetail,
+		String author,
+		String publisher,
+		LocalDateTime publicationDate,
+		int inventory,
+		long price,
+		long discountPrice,
+		boolean isPackaged) {
 
 		this.bookStatus = bookStatus;
 		this.isbn = isbn;
@@ -110,6 +109,7 @@ public class Book {
 		this.isPackaged = isPackaged;
 	}
 
+	@Builder
 	public static Book of(CreateBookRequest request, BookStatus bookStatus) {
 		return Book.builder()
 			.bookStatus(bookStatus)
@@ -137,9 +137,8 @@ public class Book {
 	}
 
 	/**
-	 * @param amount
-	 * 재고 감소 메서드
-	 * setter 대신 사용
+	 * @param amount 재고 감소 메서드
+	 *               setter 대신 사용
 	 */
 	public void decreaseInventory(int amount) {
 		if (amount > inventory - EXTRA_STOCK) {

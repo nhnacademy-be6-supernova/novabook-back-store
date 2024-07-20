@@ -41,11 +41,11 @@ public class CartBookServiceImpl implements CartBookService {
 
 	@Override
 	public CreateCartBookResponse createCartBook(Long memberId, CartBookDTO request) {
-		if(memberId == null) {
+		if (memberId == null) {
 			Book book = bookRepository.findById(request.bookId())
 				.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
-			if(book.getInventory() < request.quantity()){
+			if (book.getInventory() < request.quantity()) {
 				throw new BadRequestException(ErrorCode.NOT_UPDATE_CART_QUANTITY);
 			}
 			return new CreateCartBookResponse(book.getId());
@@ -75,7 +75,8 @@ public class CartBookServiceImpl implements CartBookService {
 		Map<Long, Book> bookMap = books.stream().collect(Collectors.toMap(Book::getId, book -> book));
 
 		// 기존 카트북 조회
-		List<CartBook> existingCartBooks = cartBookRepository.findByCartIdAndBookIdInAndIsExposedTrue(cart.getId(), bookIds);
+		List<CartBook> existingCartBooks = cartBookRepository.findByCartIdAndBookIdInAndIsExposedTrue(cart.getId(),
+			bookIds);
 		Map<Long, CartBook> existingCartBookMap = existingCartBooks.stream()
 			.collect(Collectors.toMap(cartBook -> cartBook.getBook().getId(), cartBook -> cartBook));
 
@@ -112,15 +113,15 @@ public class CartBookServiceImpl implements CartBookService {
 		cartBookRepository.saveAll(cartBooksToSave);
 
 		return new CreateCartBookListResponse(
-			cartBooksToSave.stream().map(CartBook::getId).collect(Collectors.toList()));
+			cartBooksToSave.stream().map(CartBook::getId).toList());
 	}
 
 	@Override
 	public void deleteCartBook(Long memberId, Long bookId) {
 		Optional<Cart> cart = cartRepository.findByMemberId(memberId);
 		if (cart.isPresent()) {
-			Optional<CartBook> cartBook = cartBookRepository.findByCartIdAndBookIdAndIsExposed(cart.get().getId(),
-				bookId, true);
+			Optional<CartBook> cartBook = cartBookRepository.findByCartIdAndBookIdAndIsExposedTrue(cart.get().getId(),
+				bookId);
 			cartBook.ifPresent(book -> book.updateIsExposed(false));
 		}
 	}
@@ -134,7 +135,8 @@ public class CartBookServiceImpl implements CartBookService {
 			Cart cart = optionalCart.get();
 
 			// 요청된 도서 ID 리스트로 해당하는 CartBook 엔티티들 조회
-			List<CartBook> cartBooksToDelete = cartBookRepository.findAllByCartAndBookIdInAndIsExposedTrue(cart, request.bookIds());
+			List<CartBook> cartBooksToDelete = cartBookRepository.findAllByCartAndBookIdInAndIsExposedTrue(cart,
+				request.bookIds());
 
 			// 삭제 처리: 각 CartBook 엔티티의 isExposed를 false로 설정하고 저장
 			cartBooksToDelete.forEach(cartBook -> cartBook.updateIsExposed(false));
@@ -153,7 +155,8 @@ public class CartBookServiceImpl implements CartBookService {
 			CartBook cartBook = cartBookRepository.findByCartAndBookIdAndIsExposedTrue(cart, request.bookId());
 
 			// Book의 inventory 및 상태 조회
-			Book book = bookRepository.findById(request.bookId()).orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
+			Book book = bookRepository.findById(request.bookId())
+				.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
 			// 요청된 수량이 inventory보다 작거나 같고, BookStatus가 1인 경우에만 업데이트
 			if (request.quantity() <= book.getInventory() && book.getBookStatus().getId() == 1) {
@@ -173,7 +176,5 @@ public class CartBookServiceImpl implements CartBookService {
 	public CartBookListDTO getCartBookAllByMemberId(Long memberId) {
 		return queryRepository.getCartBookAllByMemberId(memberId);
 	}
-
-
 
 }

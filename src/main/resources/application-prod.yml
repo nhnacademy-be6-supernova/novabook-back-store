@@ -26,8 +26,7 @@ spring:
           multiplier: 2.0 # 이전 interval * multiplier = 다음 interval
 
 
-#절대 변경 금지
-
+  #절대 변경 금지
   jpa:
     hibernate:
       ddl-auto: validate
@@ -75,3 +74,6 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
+
+
+

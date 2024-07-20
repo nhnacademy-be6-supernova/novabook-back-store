@@ -23,6 +23,7 @@ public class RedisCartHash {
 		this.cartId = cartId;
 		this.cartBookList = cartBookList;
 	}
+
 	public static RedisCartHash of(Object cartId) {
 		return RedisCartHash.builder()
 			.cartId(cartId)
@@ -45,7 +46,7 @@ public class RedisCartHash {
 
 	}
 
-	public void update(List<CartBookDTO> newCartBookList){
+	public void update(List<CartBookDTO> newCartBookList) {
 		this.cartBookList = newCartBookList;
 	}
 

@@ -9,6 +9,7 @@ import store.novabook.store.book.dto.request.UpdateBookRequest;
 import store.novabook.store.book.dto.response.CreateBookResponse;
 import store.novabook.store.book.dto.response.GetBookAllResponse;
 import store.novabook.store.book.dto.response.GetBookResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponseMap;
 
 public interface BookService {
 	CreateBookResponse create(CreateBookRequest request);
@@ -23,5 +24,5 @@ public interface BookService {
 
 	void delete(Long id);
 
-	String uploadImage(String appKey, String secretKey, String path, boolean overwrite, String localFilePath);
+	GetBookToMainResponseMap getBookToMainPage();
 }

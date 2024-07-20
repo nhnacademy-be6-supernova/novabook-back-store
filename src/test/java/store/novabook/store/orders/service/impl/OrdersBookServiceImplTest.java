@@ -1,13 +1,13 @@
 package store.novabook.store.orders.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.*;
 
-import java.util.Optional;
-import java.util.List;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,29 +20,29 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
 import store.novabook.store.orders.dto.request.CreateOrdersBookRequest;
 import store.novabook.store.orders.dto.request.CreateOrdersRequest;
+import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
+import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
 import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetOrderDetailResponse;
 import store.novabook.store.orders.dto.response.GetOrdersBookResponse;
+import store.novabook.store.orders.entity.DeliveryFee;
 import store.novabook.store.orders.entity.Orders;
 import store.novabook.store.orders.entity.OrdersBook;
 import store.novabook.store.orders.entity.OrdersStatus;
-import store.novabook.store.orders.entity.DeliveryFee;
 import store.novabook.store.orders.entity.WrappingPaper;
 import store.novabook.store.orders.repository.OrdersBookRepository;
 import store.novabook.store.orders.repository.OrdersRepository;
-import store.novabook.store.book.dto.response.GetOrdersBookReviewIdResponse;
-import store.novabook.store.orders.dto.request.CreateOrdersStatusRequest;
-import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
-import store.novabook.store.orders.dto.request.CreateWrappingPaperRequest;
 
 @ExtendWith(MockitoExtension.class)
-public class OrdersBookServiceImplTest {
+class OrdersBookServiceImplTest {
 
 	@InjectMocks
 	private OrdersBookServiceImpl ordersBookService;
@@ -74,7 +74,7 @@ public class OrdersBookServiceImplTest {
 			.build();
 
 		wrappingPaper = WrappingPaper.builder()
-			.request(new CreateWrappingPaperRequest(300L,"Standard", "Available"))
+			.request(new CreateWrappingPaperRequest(300L, "Standard", "Available"))
 			.build();
 
 		orders = Orders.builder()
@@ -83,7 +83,9 @@ public class OrdersBookServiceImplTest {
 			.wrappingPaper(wrappingPaper)
 			.ordersStatus(ordersStatus)
 			.payment(null) // 필요한 경우 Payment 객체로 초기화
-			.request(new CreateOrdersRequest(1L, 1L, 1L, 1L, null, LocalDateTime.now(), "code", 1000L, LocalDateTime.now(), 500L, "address", "sender", "010-1234-5678", "receiver", "010-9876-5432", 100L, 50L, null, 0L))
+			.request(
+				new CreateOrdersRequest(1L, 1L, 1L, 1L, null, LocalDateTime.now(), "code", 1000L, LocalDateTime.now(),
+					500L, "address", "sender", "010-1234-5678", "receiver", "010-9876-5432", 100L, 50L, null, 0L))
 			.build();
 
 		book = Book.builder()
@@ -101,7 +103,8 @@ public class OrdersBookServiceImplTest {
 			.isPackaged(false)
 			.build();
 
-		ordersBook = new OrdersBook(orders, book, new CreateOrdersBookRequest(1L, 1L, 1, 1000L)); // 필요에 따라 OrdersBook 객체 초기화
+		ordersBook = new OrdersBook(orders, book,
+			new CreateOrdersBookRequest(1L, 1L, 1, 1000L)); // 필요에 따라 OrdersBook 객체 초기화
 	}
 
 	@Test
@@ -165,11 +168,13 @@ public class OrdersBookServiceImplTest {
 	void getOrdersBookReviewByMemberId_ValidMemberId_ReturnsPage() {
 		Long memberId = 1L;
 		Pageable pageable = PageRequest.of(0, 10);
-		List<GetOrdersBookReviewIdResponse> responses = List.of(new GetOrdersBookReviewIdResponse(1L, 1L, 1L, 1L, "Test Book", LocalDateTime.now()));
+		List<GetOrdersBookReviewIdResponse> responses = List.of(
+			new GetOrdersBookReviewIdResponse(1L, 1L, 1L, 1L, "Test Book", LocalDateTime.now()));
 		Page<GetOrdersBookReviewIdResponse> page = new PageImpl<>(responses);
 		when(ordersBookRepository.getOrdersBookReviewIdByMemberId(memberId, pageable)).thenReturn(page);
 
-		Page<GetOrdersBookReviewIdResponse> result = ordersBookService.getOrdersBookReviewByMemberId(memberId, pageable);
+		Page<GetOrdersBookReviewIdResponse> result = ordersBookService.getOrdersBookReviewByMemberId(memberId,
+			pageable);
 
 		assertThat(result).isEqualTo(page);
 		verify(ordersBookRepository).getOrdersBookReviewIdByMemberId(memberId, pageable);
@@ -179,7 +184,8 @@ public class OrdersBookServiceImplTest {
 	void getOrdersBookByMemberId_ValidMemberId_ReturnsPage() {
 		Long memberId = 1L;
 		Pageable pageable = PageRequest.of(0, 10);
-		List<GetOrdersBookResponse> responses = List.of(new GetOrdersBookResponse(1L, "title", 1L, 1000L, "status", LocalDateTime.now()));
+		List<GetOrdersBookResponse> responses = List.of(
+			new GetOrdersBookResponse(1L, "title", 1L, 1000L, "status", LocalDateTime.now()));
 		Page<GetOrdersBookResponse> page = new PageImpl<>(responses);
 		when(ordersBookRepository.getOrdersBookByMemberId(memberId, pageable)).thenReturn(page);
 

@@ -1,12 +1,10 @@
 package store.novabook.store.orders.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -46,7 +44,7 @@ class DeliveryFeeControllerTest {
 	@MockBean
 	private DeliveryFeeService deliveryFeeService;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@BeforeEach
 	void setUp() {
@@ -85,10 +83,12 @@ class DeliveryFeeControllerTest {
 			.updatedAt(LocalDateTime.now())
 			.build();
 
-		Page<GetDeliveryFeeResponse> page = new PageImpl<>(Collections.singletonList(deliveryFeeResponse), PageRequest.of(0, 10), 1);
+		Page<GetDeliveryFeeResponse> page = new PageImpl<>(Collections.singletonList(deliveryFeeResponse),
+			PageRequest.of(0, 10), 1);
 		when(deliveryFeeService.findAllDeliveryFees(any(PageRequest.class))).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/orders/delivery-fee")
+				.with(csrf())
 				.header("X-USER-ID", "testUser")
 				.header("X-USER-ROLE", "admin")
 				.param("page", "0")
@@ -117,6 +117,7 @@ class DeliveryFeeControllerTest {
 		when(deliveryFeeService.findAllDeliveryFeeList()).thenReturn(list);
 
 		mockMvc.perform(get("/api/v1/store/orders/delivery-fee")
+				.with(csrf())
 				.header("X-USER-ID", "testUser")
 				.header("X-USER-ROLE", "admin"))
 			.andExpect(status().isOk())
@@ -138,6 +139,7 @@ class DeliveryFeeControllerTest {
 		when(deliveryFeeService.getRecentDeliveryFee()).thenReturn(deliveryFeeResponse);
 
 		mockMvc.perform(get("/api/v1/store/orders/delivery-fee/recent")
+				.with(csrf())
 				.header("X-USER-ID", "testUser")
 				.header("X-USER-ROLE", "admin"))
 			.andExpect(status().isOk())
@@ -161,6 +163,7 @@ class DeliveryFeeControllerTest {
 		when(deliveryFeeService.getDeliveryFee(1L)).thenReturn(deliveryFeeResponse);
 
 		mockMvc.perform(get("/api/v1/store/orders/delivery-fee/1")
+				.with(csrf())
 				.header("X-USER-ID", "testUser")
 				.header("X-USER-ROLE", "admin"))
 			.andExpect(status().isOk())

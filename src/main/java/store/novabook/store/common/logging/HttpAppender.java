@@ -17,7 +17,8 @@ import okhttp3.Response;
 public class HttpAppender extends AppenderBase<ILoggingEvent> {
 
 	private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-	private final OkHttpClient client = new OkHttpClient();
+	@Setter
+	private OkHttpClient client = new OkHttpClient();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	private String url;
@@ -30,7 +31,6 @@ public class HttpAppender extends AppenderBase<ILoggingEvent> {
 	private String secretKey;
 	private String logLevel;
 	private String platform;
-
 
 	@Override
 	protected void append(ILoggingEvent eventObject) {

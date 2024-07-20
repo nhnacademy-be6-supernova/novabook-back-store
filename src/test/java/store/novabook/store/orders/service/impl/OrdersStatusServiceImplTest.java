@@ -3,7 +3,6 @@ package store.novabook.store.orders.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
@@ -59,7 +56,6 @@ class OrdersStatusServiceImplTest {
 		assertEquals(1L, response.id());
 		verify(ordersStatusRepository, times(1)).save(any(OrdersStatus.class));
 	}
-
 
 	@Test
 	void testGetOrdersStatusById() {
@@ -123,7 +119,8 @@ class OrdersStatusServiceImplTest {
 	@Test
 	void testGetOrdersStatusById1() {
 		Long id = 1L;
-		OrdersStatus ordersStatus = spy(new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build()));
+		OrdersStatus ordersStatus = spy(
+			new OrdersStatus(CreateOrdersStatusRequest.builder().name("Processing").build()));
 		when(ordersStatusRepository.findById(id)).thenReturn(Optional.of(ordersStatus));
 
 		GetOrdersStatusResponse response = ordersStatusService.getOrdersStatus(id);

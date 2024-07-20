@@ -30,6 +30,8 @@ import store.novabook.store.common.exception.NotFoundException;
 @Transactional
 public class CategoryServiceImpl implements CategoryService {
 
+	public static final String GET_CATEGORY_LIST_RESPONSE = "getCategoryListResponse";
+	public static final String ALL_CATEGORIES = "allCategories";
 	private final CategoryRepository categoryRepository;
 	private final BookCategoryRepository bookCategoryRepository;
 	private final CacheManager cacheManager;
@@ -46,6 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 
 		Category savedCategory = categoryRepository.save(newCategory);
+		Objects.requireNonNull(cacheManager.getCache(GET_CATEGORY_LIST_RESPONSE)).evict(ALL_CATEGORIES);
 		return new CreateCategoryResponse(savedCategory.getId());
 	}
 
@@ -92,12 +95,12 @@ public class CategoryServiceImpl implements CategoryService {
 	public DeleteResponse delete(Long id) {
 		if (bookCategoryRepository.existsByCategoryId(id)) {
 			Objects.requireNonNull(cacheManager.getCache("categoryCache")).evict(id);
-			Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict(id);
+			Objects.requireNonNull(cacheManager.getCache(GET_CATEGORY_LIST_RESPONSE)).evict(ALL_CATEGORIES);
 			return new DeleteResponse(false);
 		} else {
 
 			Objects.requireNonNull(cacheManager.getCache("categoryCache")).evict(id);
-			Objects.requireNonNull(cacheManager.getCache("getCategoryListResponse")).evict(id);
+			Objects.requireNonNull(cacheManager.getCache(GET_CATEGORY_LIST_RESPONSE)).evict(ALL_CATEGORIES);
 			categoryRepository.deleteById(id);
 			return new DeleteResponse(true);
 		}

@@ -57,7 +57,7 @@ public class KeyManagerUtil {
 		return getStringObjectMap(response);
 	}
 
-	private static @NotNull String getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
+	static @NotNull String getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
 		if (response == null || response.getBody() == null) {
 			throw new KeyManagerException(RESPONSE_BODY_IS_NULL);
 		}

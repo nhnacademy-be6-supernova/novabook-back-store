@@ -9,7 +9,6 @@ import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +29,6 @@ public class OrdersRabbitMQConfig {
 	}
 
 	// QUEUES
-
 	@Bean
 	public Queue ordersVerifyFormQueue() {
 		return QueueBuilder.durable("nova.orders.form.verify.queue").build();
@@ -66,7 +64,6 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.cart.delete.queue").build();
 	}
 
-
 	//TOSS PAYMENT 결제 취소 QUEUE
 	@Bean
 	public Queue paymentCancelQueue() {
@@ -85,14 +82,11 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.request.pay.cancel.queue").build();
 	}
 
-
 	// 결제 취소 재고처리하는 QUEUE
 	@Bean
 	public Queue ordersRequestPayCancelQueue() {
 		return QueueBuilder.durable("nova.orders.request.pay.cancel.queue").build();
 	}
-
-
 
 	/*보상 트랜잭션 큐*/
 	@Bean
@@ -221,7 +215,6 @@ public class OrdersRabbitMQConfig {
 			.noargs();
 	}
 
-
 	// dead queue
 	@Bean
 	public Binding deadOrdersSagaBinding() {
@@ -317,6 +310,5 @@ public class OrdersRabbitMQConfig {
 			.with("nova.api6-producer-routing-key")
 			.noargs();
 	}
-
 
 }

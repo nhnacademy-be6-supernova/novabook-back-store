@@ -37,12 +37,9 @@ public enum ErrorCode {
 	NOT_EXIST_BOOK_STATUS("존재하지 않은 도서상태 입니다"),
 	DISCOUNTED_PRICE_BELOW_ZERO("할인이 적용된 가격이 0원보다 낮습니다."),
 
-
 	// 401 로그인 안됨
 	UNAUTHORIZED("인증되지 않은 사용자입니다."),
 	UNAUTHORIZED_CODE("유효하지 않은 코드입니다."),
-
-
 
 	// 403
 	NOT_ENOUGH_PERMISSION("해당 권한이 없습니다."),
@@ -73,7 +70,6 @@ public enum ErrorCode {
 	ORDERS_BOOK_NOT_FOUND("주문건에 해당 도서가 존재하지 않습니다"),
 	ORDERS_STATUS_NOT_FOUND("주문상태가 존재하지 않습니다"),
 	TAG_NOT_FOUND("해당 태그가 존재하지 않습니다"),
-
 
 	// 409
 	DUPLICATED_VALUE("중복된 값입니다."),

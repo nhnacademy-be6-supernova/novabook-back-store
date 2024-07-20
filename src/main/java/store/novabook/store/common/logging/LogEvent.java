@@ -2,11 +2,9 @@ package store.novabook.store.common.logging;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @AllArgsConstructor
 @Getter
-@Setter
 public class LogEvent {
 	private String projectName;
 	private String projectVersion;

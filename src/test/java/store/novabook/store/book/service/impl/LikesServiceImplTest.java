@@ -1,7 +1,7 @@
 package store.novabook.store.book.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -22,10 +22,10 @@ import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.Likes;
 import store.novabook.store.book.repository.BookRepository;
 import store.novabook.store.book.repository.LikesRepository;
-import store.novabook.store.member.entity.Member;
-import store.novabook.store.member.repository.MemberRepository;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
+import store.novabook.store.member.entity.Member;
+import store.novabook.store.member.repository.MemberRepository;
 
 class LikesServiceImplTest {
 

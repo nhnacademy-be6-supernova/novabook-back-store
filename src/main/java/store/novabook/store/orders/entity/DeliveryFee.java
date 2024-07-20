@@ -42,6 +42,4 @@ public class DeliveryFee {
 		this.fee = createDeliveryFeeRequest.fee();
 	}
 
-
-
 }

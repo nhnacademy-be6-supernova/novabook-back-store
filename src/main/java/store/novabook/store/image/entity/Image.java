@@ -39,4 +39,5 @@ public class Image {
 	public Image(String fileName) {
 		this.source = fileName;
 	}
+
 }

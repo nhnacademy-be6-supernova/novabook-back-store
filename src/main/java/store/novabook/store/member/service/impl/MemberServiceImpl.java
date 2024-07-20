@@ -75,6 +75,7 @@ public class MemberServiceImpl implements MemberService {
 	public static final String LOGIN_FAIL_MESSAGE = "비밀번호가 일치하지 않습니다.";
 	public static final long AUTH_CODE_EXPIRATION = 3;
 	public static final String AUTH_CODE = "authCode:";
+	public static final String GET_MEMBER_RESPONSE = "GetMemberResponse";
 
 	private final MemberRepository memberRepository;
 	private final PointHistoryRepository pointHistoryRepository;
@@ -164,7 +165,7 @@ public class MemberServiceImpl implements MemberService {
 			member.updateNumber(updateMemberRequest.number());
 		}
 		memberRepository.save(member);
-		Objects.requireNonNull(cacheManager.getCache("GetMemberResponse")).evict(member.getId());
+		Objects.requireNonNull(cacheManager.getCache(GET_MEMBER_RESPONSE)).evict(member.getId());
 		Objects.requireNonNull(cacheManager.getCache("GetMemberName")).evict(member.getId());
 	}
 
@@ -191,7 +192,7 @@ public class MemberServiceImpl implements MemberService {
 		member.updateMemberStatus(newMemberStatus);
 		memberRepository.save(member);
 
-		Objects.requireNonNull(cacheManager.getCache("GetMemberResponse")).evict(memberId);
+		Objects.requireNonNull(cacheManager.getCache(GET_MEMBER_RESPONSE)).evict(memberId);
 	}
 
 	@Override
@@ -208,7 +209,7 @@ public class MemberServiceImpl implements MemberService {
 
 		member.updateMemberStatus(newMemberStatus);
 		memberRepository.save(member);
-		Objects.requireNonNull(cacheManager.getCache("GetMemberResponse")).evict(memberId);
+		Objects.requireNonNull(cacheManager.getCache(GET_MEMBER_RESPONSE)).evict(memberId);
 	}
 
 	// 휴면 회원 해지 인증

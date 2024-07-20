@@ -1,34 +1,20 @@
 package store.novabook.store.book.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.book.dto.request.CreateBookRequest;
 import store.novabook.store.book.dto.request.UpdateBookRequest;
 import store.novabook.store.book.dto.response.CreateBookResponse;
 import store.novabook.store.book.dto.response.GetBookAllResponse;
 import store.novabook.store.book.dto.response.GetBookResponse;
+import store.novabook.store.book.dto.response.GetBookToMainResponseMap;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.BookStatus;
 import store.novabook.store.book.repository.BookQueryRepository;
@@ -40,17 +26,8 @@ import store.novabook.store.category.entity.Category;
 import store.novabook.store.category.repository.BookCategoryRepository;
 import store.novabook.store.category.repository.CategoryRepository;
 import store.novabook.store.common.exception.ErrorCode;
-import store.novabook.store.common.exception.InternalServerException;
 import store.novabook.store.common.exception.NotFoundException;
-import store.novabook.store.common.image.NHNCloudClient;
-import store.novabook.store.common.util.KeyManagerUtil;
-import store.novabook.store.common.util.dto.ImageManagerDto;
-import store.novabook.store.image.entity.BookImage;
-import store.novabook.store.image.entity.Image;
-import store.novabook.store.image.repository.BookImageRepository;
-import store.novabook.store.image.repository.ImageRepository;
-import store.novabook.store.search.document.BookDocument;
-import store.novabook.store.search.repository.BookSearchRepository;
+import store.novabook.store.image.service.ImageService;
 import store.novabook.store.tag.entity.BookTag;
 import store.novabook.store.tag.entity.Tag;
 import store.novabook.store.tag.repository.BookTagRepository;
@@ -59,6 +36,7 @@ import store.novabook.store.tag.repository.TagRepository;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 	private final BookRepository bookRepository;
 	private final BookStatusRepository bookStatusRepository;
@@ -67,31 +45,7 @@ public class BookServiceImpl implements BookService {
 	private final TagRepository tagRepository;
 	private final BookCategoryRepository bookCategoryRepository;
 	private final BookQueryRepository queryRepository;
-	private final ImageRepository imageRepository;
-	private final BookImageRepository bookImageRepository;
-	private final NHNCloudClient nhnCloudClient;
-	private final BookSearchRepository bookSearchRepository;
-	private final ImageManagerDto imageManagerDto;
-
-	public BookServiceImpl(BookRepository bookRepository, BookStatusRepository bookStatusRepository,
-		BookTagRepository bookTagRepository, CategoryRepository categoryRepository, TagRepository tagRepository,
-		BookCategoryRepository bookCategoryRepository, BookQueryRepository queryRepository,
-		ImageRepository imageRepository, BookImageRepository bookImageRepository, NHNCloudClient nhnCloudClient,
-		BookSearchRepository bookSearchRepository, Environment environment, RestTemplate restTemplate) {
-
-		this.bookRepository = bookRepository;
-		this.bookStatusRepository = bookStatusRepository;
-		this.bookTagRepository = bookTagRepository;
-		this.categoryRepository = categoryRepository;
-		this.tagRepository = tagRepository;
-		this.bookCategoryRepository = bookCategoryRepository;
-		this.queryRepository = queryRepository;
-		this.imageRepository = imageRepository;
-		this.bookImageRepository = bookImageRepository;
-		this.nhnCloudClient = nhnCloudClient;
-		this.bookSearchRepository = bookSearchRepository;
-		this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
-	}
+	private final ImageService imageService;
 
 	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
@@ -108,36 +62,7 @@ public class BookServiceImpl implements BookService {
 			.map(category -> new BookCategory(book, category))
 			.toList();
 		bookCategoryRepository.saveAll(bookCategories);
-
-		String imageUrl = request.image();
-		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-		String outputFilePath = "/" + imageManagerDto.localStorage() + fileName;
-
-		Path imagePath = Paths.get(outputFilePath);
-
-		try (InputStream in = new URI(imageUrl).toURL().openStream()) {
-			Files.copy(in, imagePath);
-		} catch (IOException | URISyntaxException e) {
-			log.error("Failed to download file: {}. Error: {}", imageUrl, e.getMessage(), e);
-
-			// 파일이 존재하는 경우에만 삭제 시도
-			if (Files.exists(imagePath)) {
-				try {
-					Files.delete(imagePath);
-					log.info("Successfully deleted file: {}", outputFilePath);
-				} catch (IOException ex) {
-					log.error("Failed to delete file: {}. Error: {}", outputFilePath, ex.getMessage(), ex);
-				}
-			}
-		}
-
-		String nhnUrl = uploadImage(imageManagerDto.accessKey(), imageManagerDto.secretKey(),
-			imageManagerDto.bucketName() + fileName, false, outputFilePath);
-
-		Image image = imageRepository.save(new Image(nhnUrl));
-		bookImageRepository.save(BookImage.of(book, image));
-
-		bookSearchRepository.save(BookDocument.of(book, image, tags, categories, 0.0, 0));
+		imageService.createBookImage(book, request.image());
 
 		return new CreateBookResponse(book.getId());
 	}
@@ -171,28 +96,9 @@ public class BookServiceImpl implements BookService {
 		book.updateBookStatus(bookStatus);
 	}
 
-	public String uploadImage(String appKey, String secretKey, String path, boolean overwrite, String localFilePath) {
-
-		try {
-			File file = new File(localFilePath);
-			FileSystemResource resource = new FileSystemResource(file);
-
-			ResponseEntity<String> response = nhnCloudClient.uploadImage(appKey, path, overwrite, secretKey, true,
-				resource);
-			String jsonResponse = response.getBody();
-
-			// JSON 응답을 파싱하여 URL 필드를 추출
-			ObjectMapper objectMapper = new ObjectMapper();
-
-			Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, Map.class);
-
-			HashMap<String, Object> map = (HashMap<String, Object>)responseMap.get("file");
-
-			return (String)map.get("url");
-
-		} catch (Exception e) {
-			log.error("Failed to nhnCloud : {}", e.getMessage());
-			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
-		}
+	@Override
+	@Transactional(readOnly = true)
+	public GetBookToMainResponseMap getBookToMainPage() {
+		return queryRepository.getBookToMainPage();
 	}
 }

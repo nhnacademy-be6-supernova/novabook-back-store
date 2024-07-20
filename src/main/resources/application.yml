@@ -15,6 +15,9 @@ logging:
   level:
     org.springframework.amqp: DEBUG
 
+elasticsearch:
+  host: 125.6.36.57
+  port: 9200
 
 #공통 설정 내용
 management:

@@ -1,7 +1,5 @@
 package store.novabook.store.orders.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,13 +30,6 @@ public class WrappingPaperController implements WrappingPaperControllerDocs {
 	@PostMapping
 	public ResponseEntity<CreateResponse> createWrappingPaper(@RequestBody CreateWrappingPaperRequest request) {
 		return ResponseEntity.ok(wrappingPaperService.createWrappingPaper(request));
-	}
-
-	@CheckRole("ROLE_ADMIN")
-	@GetMapping(params = {"size","page"})
-	public ResponseEntity<Page<GetWrappingPaperResponse>> getWrappingPaperAll(Pageable pageable) {
-		Page<GetWrappingPaperResponse> response = wrappingPaperService.getWrappingPaperAll(pageable);
-		return ResponseEntity.ok(response);
 	}
 
 	@CheckRole("ROLE_ADMIN")

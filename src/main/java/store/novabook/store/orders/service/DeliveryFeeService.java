@@ -11,6 +11,7 @@ import store.novabook.store.orders.dto.response.GetDeliveryFeeResponse;
 
 public interface DeliveryFeeService {
 	CreateResponse createFee(CreateDeliveryFeeRequest request);
+
 	Page<GetDeliveryFeeResponse> findAllDeliveryFees(Pageable pageable);
 
 	List<GetDeliveryFeeResponse> findAllDeliveryFeeList();
