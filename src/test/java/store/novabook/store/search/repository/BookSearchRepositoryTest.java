@@ -58,9 +58,11 @@ class BookSearchRepositoryTest {
 
 	@Test
 	void testFindAllByAuthorIgnoreCase() {
-		given(bookSearchRepository.findAllByAuthorIgnoreCase(eq("Test Author"), any(Pageable.class))).willReturn(bookPage);
+		given(bookSearchRepository.findAllByAuthorIgnoreCase(eq("Test Author"), any(Pageable.class))).willReturn(
+			bookPage);
 
-		Page<BookDocument> result = bookSearchRepository.findAllByAuthorIgnoreCase("Test Author", PageRequest.of(0, 10));
+		Page<BookDocument> result = bookSearchRepository.findAllByAuthorIgnoreCase("Test Author",
+			PageRequest.of(0, 10));
 
 		assertEquals(1, result.getTotalElements());
 		assertEquals("Test Author", result.getContent().get(0).getAuthor());
@@ -68,9 +70,11 @@ class BookSearchRepositoryTest {
 
 	@Test
 	void testFindAllByPublishIgnoreCase() {
-		given(bookSearchRepository.findAllByPublishIgnoreCase(eq("Test Publisher"), any(Pageable.class))).willReturn(bookPage);
+		given(bookSearchRepository.findAllByPublishIgnoreCase(eq("Test Publisher"), any(Pageable.class))).willReturn(
+			bookPage);
 
-		Page<BookDocument> result = bookSearchRepository.findAllByPublishIgnoreCase("Test Publisher", PageRequest.of(0, 10));
+		Page<BookDocument> result = bookSearchRepository.findAllByPublishIgnoreCase("Test Publisher",
+			PageRequest.of(0, 10));
 
 		assertEquals(1, result.getTotalElements());
 		assertEquals("Test Publisher", result.getContent().get(0).getPublisher());
@@ -78,9 +82,11 @@ class BookSearchRepositoryTest {
 
 	@Test
 	void testFindAllByCategoryListMatches() {
-		given(bookSearchRepository.findAllByCategoryListMatches(eq(Collections.singletonList("Test Category")), any(Pageable.class))).willReturn(bookPage);
+		given(bookSearchRepository.findAllByCategoryListMatches(eq(Collections.singletonList("Test Category")),
+			any(Pageable.class))).willReturn(bookPage);
 
-		Page<BookDocument> result = bookSearchRepository.findAllByCategoryListMatches(Collections.singletonList("Test Category"), PageRequest.of(0, 10));
+		Page<BookDocument> result = bookSearchRepository.findAllByCategoryListMatches(
+			Collections.singletonList("Test Category"), PageRequest.of(0, 10));
 
 		assertEquals(1, result.getTotalElements());
 		assertEquals("Test Category", result.getContent().get(0).getCategoryList().get(0));

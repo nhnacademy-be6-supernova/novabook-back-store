@@ -32,22 +32,30 @@ import store.novabook.store.orders.entity.OrdersBook;
 @EntityListeners(AuditingEntityListener.class)
 public class Review {
 
-	/** 리뷰의 고유 ID. */
+	/**
+	 * 리뷰의 고유 ID.
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	/** 리뷰가 참조하는 주문 객체. */
+	/**
+	 * 리뷰가 참조하는 주문 객체.
+	 */
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "orders_book_id")
 	OrdersBook ordersBook;
 
-	/** 리뷰 내용. */
+	/**
+	 * 리뷰 내용.
+	 */
 	@NotNull
 	private String content;
 
-	/** 리뷰 점수. */
+	/**
+	 * 리뷰 점수.
+	 */
 	@NotNull
 	private int score;
 
@@ -58,14 +66,16 @@ public class Review {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public Review( OrdersBook ordersBook, String content, int score) {
+	public Review(OrdersBook ordersBook, String content, int score) {
 		this.ordersBook = ordersBook;
 		this.content = content;
 		this.score = score;
 	}
+
 	/**
 	 * CreateReviewRequest 객체로부터 Review 엔티티를 생성.
-	 * @param request 리뷰 생성 요청 데이터.
+	 *
+	 * @param request    리뷰 생성 요청 데이터.
 	 * @param ordersBook 관련 주문.
 	 * @return 생성된 Review 객체.
 	 */
@@ -80,6 +90,7 @@ public class Review {
 
 	/**
 	 * Review 엔티티를 주어진 UpdateReviewRequest 데이터로 업데이트.
+	 *
 	 * @param request 리뷰 업데이트 요청 데이터.
 	 */
 	public void update(UpdateReviewRequest request) {

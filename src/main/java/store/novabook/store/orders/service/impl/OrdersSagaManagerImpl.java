@@ -31,6 +31,7 @@ public class OrdersSagaManagerImpl {
 
 	/**
 	 * 첫번째 로직 (가주문 검증, 비동기처리 전송)
+	 *
 	 * @param paymentRequest 결제 요청 정보
 	 */
 	public void orderInvoke(PaymentRequest paymentRequest) {
@@ -45,6 +46,7 @@ public class OrdersSagaManagerImpl {
 
 	/**
 	 * 두번째 로직 (쿠폰 적용)
+	 *
 	 * @param orderSagaMessage 주문 사가 메시지
 	 */
 	@RabbitListener(queues = "nova.api1-producer-queue")
@@ -57,24 +59,26 @@ public class OrdersSagaManagerImpl {
 
 			if (isNoUsePoint && isNoUseCoupon) {
 				orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY, orderSagaMessage);
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
+					orderSagaMessage);
 			} else if (isNoUseCoupon) {
 				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key", orderSagaMessage);
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key",
+					orderSagaMessage);
 			} else {
 				orderSagaMessage.setStatus("PROCEED_APPLY_COUPON");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "coupon.apply.routing.key", orderSagaMessage);
 			}
 		} else if ("FAIL_CONFIRM_ORDER_FORM".equals(orderSagaMessage.getStatus())) {
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY, orderSagaMessage);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
+				orderSagaMessage);
 			log.error("주문서 검증 실패");
 		}
 	}
 
-
-
 	/**
 	 * 세번째 로직 (포인트 감소 진행)
+	 *
 	 * @param orderSagaMessage 주문 사가 메시지
 	 */
 	@RabbitListener(queues = "nova.api2-producer-queue")
@@ -105,6 +109,7 @@ public class OrdersSagaManagerImpl {
 
 	/**
 	 * 네번째 로직 (포인트 적용)
+	 *
 	 * @param orderSagaMessage 주문 사가 메시지
 	 */
 	@RabbitListener(queues = "nova.api3-producer-queue")
@@ -131,6 +136,7 @@ public class OrdersSagaManagerImpl {
 
 	/**
 	 * 네번째 로직 (결제 승인)
+	 *
 	 * @param orderSagaMessage 주문 사가 메시지
 	 */
 	@RabbitListener(queues = "nova.api4-producer-queue")
@@ -160,6 +166,7 @@ public class OrdersSagaManagerImpl {
 
 	/**
 	 * 다섯번째 로직 (성공 & DB 저장)
+	 *
 	 * @param orderSagaMessage 주문 사가 메시지
 	 */
 	@RabbitListener(queues = "nova.api5-producer-queue")
@@ -190,6 +197,7 @@ public class OrdersSagaManagerImpl {
 
 	/**
 	 * 포인트 적립 시작
+	 *
 	 * @param orderSagaMessage 주문 사가 메시지
 	 */
 	@RabbitListener(queues = "nova.api6-producer-queue")
@@ -208,6 +216,7 @@ public class OrdersSagaManagerImpl {
 
 	/**
 	 * 결제 취소 & 환불 비동기처리
+	 *
 	 * @param payCancelMessage 쿠폰, 포인트, 적립금 정보
 	 */
 	@RabbitListener(queues = "nova.request.pay.cancel.queue")

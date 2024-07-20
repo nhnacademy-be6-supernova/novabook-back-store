@@ -8,5 +8,6 @@ import store.novabook.store.category.entity.BookCategory;
 
 public interface BookCategoryRepository extends JpaRepository<BookCategory, Long> {
 	boolean existsByCategoryId(Long categoryId);
+
 	List<BookCategory> findAllByBookId(Long bookId);
 }

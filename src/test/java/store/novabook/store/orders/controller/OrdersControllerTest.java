@@ -105,7 +105,8 @@ class OrdersControllerTest {
 			.ordersStatusId(1L)
 			.build();
 
-		Page<GetOrdersAdminResponse> page = new PageImpl<>(Collections.singletonList(ordersAdminResponse), PageRequest.of(0, 10), 1);
+		Page<GetOrdersAdminResponse> page = new PageImpl<>(Collections.singletonList(ordersAdminResponse),
+			PageRequest.of(0, 10), 1);
 		when(ordersService.getOrdersAdminResponsesAll(any(PageRequest.class))).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/orders/admin")

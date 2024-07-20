@@ -8,6 +8,7 @@ import java.util.Map;
 
 import lombok.Builder;
 import store.novabook.store.book.dto.ReviewImageDto;
+
 @Builder
 public record GetReviewResponse(
 	String nickName,

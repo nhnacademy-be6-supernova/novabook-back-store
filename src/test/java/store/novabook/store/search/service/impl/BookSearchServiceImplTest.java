@@ -135,7 +135,8 @@ class BookSearchServiceImplTest {
 	@Test
 	void searchByCategoryListContaining() {
 		String category = "category";
-		when(bookSearchRepository.findAllByCategoryListMatches(List.of(category), pageable)).thenReturn(bookDocumentPage);
+		when(bookSearchRepository.findAllByCategoryListMatches(List.of(category), pageable)).thenReturn(
+			bookDocumentPage);
 
 		Page<GetBookSearchResponse> result = bookSearchService.searchByCategoryListContaining(category, pageable);
 
@@ -147,7 +148,8 @@ class BookSearchServiceImplTest {
 	@Test
 	void searchByCategoryListContaining_throwsInternalServerException() {
 		String category = "category";
-		when(bookSearchRepository.findAllByCategoryListMatches(List.of(category), pageable)).thenThrow(new RuntimeException());
+		when(bookSearchRepository.findAllByCategoryListMatches(List.of(category), pageable)).thenThrow(
+			new RuntimeException());
 
 		InternalServerException exception = assertThrows(InternalServerException.class, () -> {
 			bookSearchService.searchByCategoryListContaining(category, pageable);

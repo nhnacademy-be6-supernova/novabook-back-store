@@ -348,7 +348,8 @@ class KeyManagerUtilTest {
 		// give
 
 		// when, then
-		KeyManagerException exception = assertThrows(KeyManagerException.class, () -> KeyManagerUtil.getStringObjectMap(responseEntity));
+		KeyManagerException exception = assertThrows(KeyManagerException.class,
+			() -> KeyManagerUtil.getStringObjectMap(responseEntity));
 		assertEquals(MISSING_BODY_KEY, exception.getErrorCode());
 	}
 

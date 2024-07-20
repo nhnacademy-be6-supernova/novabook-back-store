@@ -22,7 +22,7 @@ public abstract class NovaException extends RuntimeException {
 	 * 주어진 오류 코드와 원인으로 {@code NovaException}을 생성합니다.
 	 *
 	 * @param errorCode 예외와 연관된 오류 코드
-	 * @param cause 예외의 원인
+	 * @param cause     예외의 원인
 	 */
 	protected NovaException(ErrorCode errorCode, Throwable cause) {
 		super(errorCode.getMessage(), cause);
@@ -33,7 +33,7 @@ public abstract class NovaException extends RuntimeException {
 	 * 주어진 오류 코드와 메시지로 {@code NovaException}을 생성합니다.
 	 *
 	 * @param errorCode 예외와 연관된 오류 코드
-	 * @param message 예외 메시지
+	 * @param message   예외 메시지
 	 */
 	protected NovaException(ErrorCode errorCode, String message) {
 		super(message);

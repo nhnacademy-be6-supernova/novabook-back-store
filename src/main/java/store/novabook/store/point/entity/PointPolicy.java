@@ -42,7 +42,6 @@ public class PointPolicy {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-
 	@Builder
 	public PointPolicy(long reviewPoint, long basicPointRate, long registerPoint) {
 		this.reviewPoint = reviewPoint;
@@ -52,7 +51,11 @@ public class PointPolicy {
 	}
 
 	public static PointPolicy of(long reviewPointRate, long basicPoint, long registerPoint) {
-		return PointPolicy.builder().reviewPoint(reviewPointRate).basicPointRate(basicPoint).registerPoint(registerPoint).build();
+		return PointPolicy.builder()
+			.reviewPoint(reviewPointRate)
+			.basicPointRate(basicPoint)
+			.registerPoint(registerPoint)
+			.build();
 	}
 
 }

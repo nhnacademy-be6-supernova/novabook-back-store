@@ -35,7 +35,7 @@ public class CartBookRabbitServiceImpl {
 			Optional<OrderTemporaryNonMemberForm> optionalOrderForm = redisOrderNonMemberRepository.findById(
 				orderSagaMessage.getPaymentRequest().orderCode());
 
-			if(optionalOrderForm.isEmpty()) {
+			if (optionalOrderForm.isEmpty()) {
 				throw new NotFoundException(ErrorCode.ORDERS_NOT_FOUND);
 			}
 

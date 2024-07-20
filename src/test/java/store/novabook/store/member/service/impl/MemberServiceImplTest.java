@@ -145,7 +145,6 @@ class MemberServiceImplTest {
 		dormantStatus = new MemberStatus("휴면");
 		withdrawStatus = new MemberStatus("탈퇴");
 
-
 	}
 
 	@Test
@@ -599,8 +598,6 @@ class MemberServiceImplTest {
 
 		verify(memberRepository, times(1)).findByOauthId(paycoId);
 	}
-
-
 
 	@Test
 	@DisplayName("Payco 멤버 정보 조회 - 존재하지 않는 Payco ID")

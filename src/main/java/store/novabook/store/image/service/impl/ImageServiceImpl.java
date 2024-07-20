@@ -66,7 +66,8 @@ public class ImageServiceImpl implements ImageService {
 			this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
 		}
 		String fileName = requestImage.substring(requestImage.lastIndexOf("/") + 1);
-		String outputFilePath = "/%s%s".formatted(imageManagerDto.localStorage(), fileName);
+		String outputFilePath = "/%s%s".formatted("Users/isehui/develop/novabook-back-store/src/main/resources/image/",
+			fileName);
 
 		Path imagePath = Paths.get(outputFilePath);
 

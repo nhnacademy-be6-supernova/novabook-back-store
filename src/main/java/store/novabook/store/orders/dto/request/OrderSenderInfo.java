@@ -12,4 +12,5 @@ public record OrderSenderInfo(
 	String name,
 	@Pattern(regexp = "^01[016-9](\\d{3,4})(\\d{4})$", message = "핸드폰 양식에 맞지 않습니다.")
 	String phone
-) {}
+) {
+}
