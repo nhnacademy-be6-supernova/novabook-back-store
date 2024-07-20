@@ -31,15 +31,6 @@ public class ElasticSearchClientConfig {
 
 	@Bean
 	public ElasticsearchClient getRestClient() {
-		//TODO 나중에 엘라스틱 서치 비번 설정하면 써야됨
-		// ElasticSearchConfigDto config = KeyManagerUtil.getElasticSearchConfig(environment);
-
-		// BasicCredentialsProvider redsProv = new BasicCredentialsProvider();
-		// redsProv.setCredentials(
-		// 	AuthScope.ANY, new UsernamePasswordCredentials(config.id(), config.password())
-		// );
-
-		// RestClient restClient = RestClient.builder(HttpHost.create(config.uris())).build();
 		RestClient restClient = RestClient.builder(HttpHost.create(host + ":" + port)).build();
 
 		// Create the transport and the API client
