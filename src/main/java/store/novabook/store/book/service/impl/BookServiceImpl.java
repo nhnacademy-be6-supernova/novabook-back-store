@@ -47,8 +47,6 @@ public class BookServiceImpl implements BookService {
 	private final BookQueryRepository queryRepository;
 	private final ImageService imageService;
 
-
-
 	public CreateBookResponse create(CreateBookRequest request) {
 		BookStatus bookStatus = bookStatusRepository.findById(request.bookStatusId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_STATUS_NOT_FOUND));
@@ -97,7 +95,6 @@ public class BookServiceImpl implements BookService {
 		Book book = bookRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_NOT_FOUND));
 		book.updateBookStatus(bookStatus);
 	}
-
 
 	@Override
 	@Transactional(readOnly = true)

@@ -16,7 +16,7 @@ public record GetBookAllResponse(
 	public static GetBookAllResponse fromEntity(Book book) {
 		return GetBookAllResponse.builder()
 			.id(book.getId())
-			.bookStatusId(book.getBookStatus().getId())
+			.bookStatusId(book.getBookStatus() != null ? book.getBookStatus().getId() : null)
 			.title(book.getTitle())
 			.inventory(book.getInventory())
 			.price(book.getPrice())
