@@ -1,7 +1,5 @@
 package store.novabook.store.search.service.impl;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,20 +18,20 @@ public class BookSearchServiceImpl {
 
 	// 모든 단어 검색
 	public Page<GetBookSearchResponse> searchByKeywordContaining(String keyword, Pageable pageable) {
-		try {
+		try{
 			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByKeywordIgnoreCase(keyword, pageable);
 			return bookDocuments.map(GetBookSearchResponse::of);
-		} catch (Exception e) {
+		} catch (Exception e){
 			throw new InternalServerException(ErrorCode.INVALID_REQUEST_ARGUMENT);
 		}
 	}
 
 	// 저자에 특정 단어가 포함된 문서 검색
 	public Page<GetBookSearchResponse> searchByAuthorContaining(String author, Pageable pageable) {
-		try {
+		try{
 			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByAuthorIgnoreCase(author, pageable);
 			return bookDocuments.map(GetBookSearchResponse::of);
-		} catch (Exception e) {
+		} catch (Exception e){
 			throw new InternalServerException(ErrorCode.INVALID_REQUEST_ARGUMENT);
 		}
 
@@ -41,23 +39,23 @@ public class BookSearchServiceImpl {
 
 	// 출판사에 특정 단어가 포함된 문서 검색
 	public Page<GetBookSearchResponse> searchByPublishContaining(String author, Pageable pageable) {
-		try {
+		try{
 			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByPublishIgnoreCase(author, pageable);
 			return bookDocuments.map(GetBookSearchResponse::of);
-		} catch (Exception e) {
+		} catch (Exception e){
 			throw new InternalServerException(ErrorCode.INVALID_REQUEST_ARGUMENT);
 		}
 	}
 
 	// 카테고리 특정 단어가 포함된 문서 검색
 	public Page<GetBookSearchResponse> searchByCategoryListContaining(String category, Pageable pageable) {
-		try {
-			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByCategoryListMatches(List.of(category),
-				pageable);
+		try{
+			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByCategoryListMatches(category, pageable);
 			return bookDocuments.map(GetBookSearchResponse::of);
-		} catch (Exception e) {
+		} catch (Exception e){
 			throw new InternalServerException(ErrorCode.INVALID_REQUEST_ARGUMENT);
 		}
 	}
+
 
 }
