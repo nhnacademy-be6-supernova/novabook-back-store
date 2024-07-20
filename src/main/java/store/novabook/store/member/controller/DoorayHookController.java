@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.store.member.controller.docs.DoorayHookControllerDocs;
 import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
 import store.novabook.store.member.dto.request.DoorayAuthRequest;
 import store.novabook.store.member.service.DoorayService;
@@ -15,7 +16,7 @@ import store.novabook.store.member.service.MemberService;
 @RestController
 @RequestMapping("/api/v1/store/dooray")
 @RequiredArgsConstructor
-public class DoorayHookController {
+public class DoorayHookController implements DoorayHookControllerDocs {
 	private final MemberService memberService;
 	private final DoorayService doorayService;
 
