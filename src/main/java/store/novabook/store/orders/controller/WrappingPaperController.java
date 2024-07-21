@@ -32,7 +32,6 @@ public class WrappingPaperController implements WrappingPaperControllerDocs {
 		return ResponseEntity.ok(wrappingPaperService.createWrappingPaper(request));
 	}
 
-	@CheckRole("ROLE_ADMIN")
 	@GetMapping
 	public ResponseEntity<GetWrappingPaperAllResponse> getWrappingPaperAllList() {
 		GetWrappingPaperAllResponse response = GetWrappingPaperAllResponse.builder()

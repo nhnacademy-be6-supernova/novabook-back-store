@@ -64,7 +64,8 @@ public class BookDocument {
 	private final LocalDateTime createdAt;
 
 	@Builder
-	public BookDocument(Long id, String title, String author, String publisher, String image, Long price, Long discountPrice, Double score, Boolean isPackaged, Integer review, List<String> tagList,
+	public BookDocument(Long id, String title, String author, String publisher, String image, Long price,
+		Long discountPrice, Double score, Boolean isPackaged, Integer review, List<String> tagList,
 		List<String> categoryList) {
 		this.id = id;
 		this.title = title;
@@ -81,7 +82,8 @@ public class BookDocument {
 		this.createdAt = LocalDateTime.now();
 	}
 
-	public static BookDocument of(Book book, Image image, List<Tag> tags, List<Category> categories, Double score, Integer review) {
+	public static BookDocument of(Book book, Image image, List<Tag> tags, List<Category> categories, Double score,
+		Integer review) {
 		return BookDocument.builder()
 			.id(book.getId())
 			.title(book.getTitle())
@@ -97,6 +99,7 @@ public class BookDocument {
 			.categoryList(categoryNames(categories))
 			.build();
 	}
+
 	public static BookDocument of(GetBookSearchResponse response, List<String> tags, List<String> categories) {
 		return BookDocument.builder()
 			.id(response.id())

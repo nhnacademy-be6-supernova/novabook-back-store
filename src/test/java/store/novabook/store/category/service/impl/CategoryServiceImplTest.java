@@ -155,7 +155,6 @@ class CategoryServiceImplTest {
 		assertEquals("SubCategory", response.sub().get(0).name());
 	}
 
-
 	@Test
 	void testDeleteCategoryWithBookCategory() {
 		when(bookCategoryRepository.existsByCategoryId(1L)).thenReturn(true);

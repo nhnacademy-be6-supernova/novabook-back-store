@@ -25,7 +25,6 @@ public interface PointHistoryControllerDocs {
 	@Operation(summary = "포인트 내역 조회", description = "포인트 내역을 조회합니다.")
 	ResponseEntity<Page<GetPointHistoryResponse>> getPointHistoryList(Pageable pageable);
 
-
 	/**
 	 * 특정 회원의 포인트 총합을 조회합니다.
 	 *
@@ -43,6 +42,6 @@ public interface PointHistoryControllerDocs {
 	 * @return 회원의 포인트 내역 페이지
 	 */
 	@Operation(summary = "회원 포인트 내역 조회", description = "특정 회원의 포인트 내역을 조회합니다.")
-	ResponseEntity<Page<GetPointHistoryResponse>> getPointHistoryByMemberIdPage(
-		@CurrentMembers Long memberId, Pageable pageable);
+	ResponseEntity<Page<GetPointHistoryResponse>> getPointHistoryByMemberIdPage(@CurrentMembers Long memberId,
+		Pageable pageable);
 }

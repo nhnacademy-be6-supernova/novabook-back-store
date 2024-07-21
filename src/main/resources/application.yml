@@ -18,7 +18,7 @@ logging:
 elasticsearch:
   host: 125.6.36.57
   port: 9200
-  
+
 #공통 설정 내용
 management:
   health:
@@ -27,7 +27,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, pause, resume
+        include: health, info, shutdown
+  endpoint:
+    shutdown:
+      enabled: true
 
 #swagger 설정
 springdoc:
