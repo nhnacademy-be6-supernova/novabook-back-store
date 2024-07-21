@@ -27,7 +27,6 @@ import store.novabook.store.orders.repository.OrdersBookQueryRepository;
 @Transactional(readOnly = true)
 public class OrdersBookQueryRepositoryImpl extends QuerydslRepositorySupport implements OrdersBookQueryRepository {
 
-	/* TODO query 생성자 일단 지워놨으니까 나중에 관련해서 배포하고 돌려보고 안되면 브랜치 비교해서 삭제 or 잘되면 주석 삭제해주세요 */
 	public OrdersBookQueryRepositoryImpl() {
 		super(OrdersBook.class);
 	}

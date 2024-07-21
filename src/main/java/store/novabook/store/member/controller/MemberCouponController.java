@@ -86,7 +86,7 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	// 쿠폰북 페이지 다운로드
 	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/download")
-	ResponseEntity<CreateMemberCouponResponse> downloadCoupon(@CurrentMembers Long memberId,
+	public ResponseEntity<CreateMemberCouponResponse> downloadCoupon(@CurrentMembers Long memberId,
 		@RequestBody DownloadCouponRequest request) {
 		CreateMemberCouponResponse response = memberCouponService.downloadCoupon(memberId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -95,7 +95,8 @@ public class MemberCouponController implements MemberCouponControllerDocs {
 	// 선착순 쿠폰
 	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PostMapping("/download/limited")
-	ResponseEntity<Void> downloadLimitedCoupon(@RequestHeader(value = "Authorization", required = false) String token,
+	public ResponseEntity<Void> downloadLimitedCoupon(
+		@RequestHeader(value = "Authorization", required = false) String token,
 		@RequestHeader("Refresh") String refresh, @CurrentMembers Long memberId,
 		@RequestBody DownloadCouponMessageRequest request) {
 		memberCouponService.downloadLimitedCoupon(token, refresh, memberId, request);

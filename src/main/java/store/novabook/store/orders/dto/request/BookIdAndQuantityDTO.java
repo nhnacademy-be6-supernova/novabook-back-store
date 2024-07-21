@@ -9,4 +9,5 @@ public record BookIdAndQuantityDTO(
 	Long id,
 	@Range(min = 1, max = 100_000, message = "도서 수량은 최대 100000 까지입니다.")
 	long quantity
-) {}
+) {
+}

@@ -94,7 +94,8 @@ class ReturnPolicyControllerTest {
 			.content("테스트")
 			.build();
 
-		Page<GetReturnPolicyResponse> page = new PageImpl<>(Collections.singletonList(returnPolicyResponse), PageRequest.of(0, 10), 1);
+		Page<GetReturnPolicyResponse> page = new PageImpl<>(Collections.singletonList(returnPolicyResponse),
+			PageRequest.of(0, 10), 1);
 		when(returnPolicyService.getReturnPolicies()).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/store/orders/return/policy")
@@ -107,7 +108,6 @@ class ReturnPolicyControllerTest {
 			.andExpect(jsonPath("$.header.isSuccessful").value(true))
 			.andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"));
 	}
-
 
 	@Test
 	void testGetReturnPolicy() throws Exception {

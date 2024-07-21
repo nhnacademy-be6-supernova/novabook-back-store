@@ -46,7 +46,6 @@ class LikesControllerTest {
 		MockitoAnnotations.openMocks(this);
 	}
 
-
 	@Test
 	void testGetLikes() throws Exception {
 		Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());

@@ -47,7 +47,6 @@ class TossOrderServiceTest {
 		Map<String, Object> param = new HashMap<>();
 		param.put("amount", 2000);
 
-
 		orderSagaMessage.setPaymentRequest(PaymentRequest.builder().paymentInfo(param).build());
 
 		doNothing().when(rabbitTemplate).convertAndSend(Optional.ofNullable(any()), any(), any());

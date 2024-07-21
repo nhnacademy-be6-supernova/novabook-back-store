@@ -41,11 +41,11 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 		validateMemberAddress(member);
 
 		StreetAddress streetAddress = streetAddressRepository.findByZipcodeAndStreetAddress(
-			createMemberAddressRequest.zipcode(), createMemberAddressRequest.streetAddress());
+			createMemberAddressRequest.zipcode(), createMemberAddressRequest.streetAddresses());
 		if (streetAddress == null) {
 			streetAddress = StreetAddress.builder()
 				.zipcode(createMemberAddressRequest.zipcode())
-				.streetAddress(createMemberAddressRequest.streetAddress())
+				.streetAddress(createMemberAddressRequest.streetAddresses())
 				.build();
 			streetAddressRepository.save(streetAddress);
 		}

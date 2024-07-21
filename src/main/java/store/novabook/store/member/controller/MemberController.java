@@ -73,7 +73,6 @@ public class MemberController implements MemberControllerDocs {
 		return ResponseEntity.ok(memberService.getMemberAll(pageable));
 	}
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/member")
 	public ResponseEntity<GetMemberResponse> getMember(@CurrentMembers(required = false) Long memberId) {
 		if (memberId != null) {
@@ -158,7 +157,7 @@ public class MemberController implements MemberControllerDocs {
 
 	@PostMapping("/status")
 	public ResponseEntity<GetDormantMembersResponse> getMemberDormantStatus(
-		@RequestBody GetDormantMembersRequest getDormantMembersRequest) {
+		@Valid @RequestBody GetDormantMembersRequest getDormantMembersRequest) {
 		GetDormantMembersResponse getDormantMembersResponse = memberService.getDormantMembers(getDormantMembersRequest);
 		return ResponseEntity.ok(getDormantMembersResponse);
 	}

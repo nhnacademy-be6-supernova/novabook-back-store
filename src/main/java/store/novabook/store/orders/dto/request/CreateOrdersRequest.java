@@ -38,7 +38,7 @@ public record CreateOrdersRequest(
 	String receiverName,
 	@NotBlank(message = "recieverNumber 값은 필수 입니다")
 	String receiverNumber,
- 	Long pointSaveAmount ,
+	Long pointSaveAmount,
 	Long couponDiscountAmount,
 	Long useCouponId,
 	long usePointAmount

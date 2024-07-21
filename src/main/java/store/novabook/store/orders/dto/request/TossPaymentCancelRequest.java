@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record TossPaymentCancelRequest(
-	 String paymentKey,
-	 String cancelReason
+	String paymentKey,
+	String cancelReason
 ) {
 }

@@ -11,5 +11,7 @@ public class CartBookListDTO {
 	public CartBookListDTO(List<CartBookDTO> cartBookList) {
 		this.cartBookList = cartBookList;
 	}
-	public CartBookListDTO() {}
+
+	public CartBookListDTO() {
+	}
 }

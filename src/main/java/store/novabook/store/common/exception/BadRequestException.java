@@ -12,7 +12,7 @@ package store.novabook.store.common.exception;
  *     }
  * </pre>
  * </p>
- *
+ * <p>
  * 이 예외는 글로벌 예외 처리기에서 받아서 클라이언트에게 적절한 HTTP 상태 코드와 메시지를 반환하는 데 사용됩니다.
  *
  * @see NovaException
