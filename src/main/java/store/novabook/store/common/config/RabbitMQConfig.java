@@ -38,7 +38,6 @@ import store.novabook.store.common.util.dto.RabbitMQConfigDto;
 public class RabbitMQConfig {
 
 	private final Environment environment;
-	private final RestTemplate restTemplate;
 
 	@Value("${rabbitmq.queue.couponCreateNormal}")
 	private String couponCreateNormalQueue;
@@ -75,6 +74,7 @@ public class RabbitMQConfig {
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
+		RestTemplate restTemplate = new RestTemplate();
 		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment, restTemplate);
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
 		connectionFactory.setPort(config.port());

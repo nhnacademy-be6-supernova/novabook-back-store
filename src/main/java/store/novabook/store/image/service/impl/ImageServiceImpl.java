@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
@@ -50,21 +51,23 @@ import store.novabook.store.image.service.ImageService;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class ImageServiceImpl implements ImageService {
+public class ImageServiceImpl implements ImageService, InitializingBean {
 	private final ImageRepository imageRepository;
 	private final ReviewImageRepository reviewImageRepository;
 	private final BookImageRepository bookImageRepository;
 	private final NHNCloudMutilpartClient nhnCloudMutilpartClient;
 	private final NHNCloudClient nhnCloudClient;
-
 	private final Environment environment;
+
 	private ImageManagerDto imageManagerDto;
 
+	@Override
+	public void afterPropertiesSet() {
+		RestTemplate restTemplate = new RestTemplate();
+		this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
+	}
+
 	public void createBookImage(Book book, String requestImage) {
-		if (imageManagerDto == null) {
-			RestTemplate restTemplate = new RestTemplate();
-			this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
-		}
 		String fileName = requestImage.substring(requestImage.lastIndexOf("/") + 1);
 		String outputFilePath = "/%s%s".formatted(imageManagerDto.localStorage(), fileName);
 
@@ -100,10 +103,6 @@ public class ImageServiceImpl implements ImageService {
 
 	//review 를 사용
 	public void createReviewImage(Review review, List<ReviewImageDTO> reviewImageDTOs) {
-		if (imageManagerDto == null) {
-			RestTemplate restTemplate = new RestTemplate();
-			this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
-		}
 		//리뷰 이미지를 저장
 		String basepath = imageManagerDto.bucketName() + "review";
 		//NHN클라우드 설정
@@ -176,4 +175,5 @@ public class ImageServiceImpl implements ImageService {
 			throw new InternalServerException(ErrorCode.FAILED_CREATE_BOOK);
 		}
 	}
+
 }

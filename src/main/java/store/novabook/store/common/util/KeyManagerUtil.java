@@ -32,14 +32,14 @@ public class KeyManagerUtil {
 	private KeyManagerUtil() {
 	}
 
-	public static String getDataSource(Environment environment, String keyid, RestTemplate restTemplate) {
+	public static String getDataSource(Environment environment, String keyId, RestTemplate restTemplate) {
 
 		String appkey = environment.getProperty("nhn.cloud.keyManager.appkey");
 		String userId = environment.getProperty("nhn.cloud.keyManager.userAccessKey");
 		String secretKey = environment.getProperty("nhn.cloud.keyManager.secretAccessKey");
 
 		String baseUrl = "https://api-keymanager.nhncloudservice.com/keymanager/v1.2/appkey/{appkey}/secrets/{keyid}";
-		String url = baseUrl.replace("{appkey}", Objects.requireNonNull(appkey)).replace("{keyid}", keyid);
+		String url = baseUrl.replace("{appkey}", Objects.requireNonNull(appkey)).replace("{keyid}", keyId);
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("X-TC-AUTHENTICATION-ID", userId);
 		headers.set("X-TC-AUTHENTICATION-SECRET", secretKey);
