@@ -29,6 +29,7 @@ public class ElasticSearchClientConfig {
 
 	@Bean
 	public ElasticsearchClient getRestClient() {
+
 		RestClient restClient = RestClient.builder(HttpHost.create(host + ":" + port)).build();
 
 		// Create the transport and the API client
