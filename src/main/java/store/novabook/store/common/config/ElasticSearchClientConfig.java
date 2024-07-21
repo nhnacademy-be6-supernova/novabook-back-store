@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
-import org.springframework.web.client.RestTemplate;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
@@ -27,10 +26,10 @@ public class ElasticSearchClientConfig {
 	private int port;
 
 	private final Environment environment;
-	private final RestTemplate restTemplate;
 
 	@Bean
 	public ElasticsearchClient getRestClient() {
+
 		RestClient restClient = RestClient.builder(HttpHost.create(host + ":" + port)).build();
 
 		// Create the transport and the API client

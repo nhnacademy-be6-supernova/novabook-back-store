@@ -23,10 +23,11 @@ import store.novabook.store.common.util.dto.RedisConfigDto;
 public class RedisConfig {
 	private final Environment environment;
 
-	private final RestTemplate restTemplate;
+
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
+		RestTemplate restTemplate = new RestTemplate();
 
 		RedisConfigDto redisConfig = KeyManagerUtil.getRedisConfig(environment, restTemplate);
 

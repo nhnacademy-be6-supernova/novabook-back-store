@@ -48,7 +48,7 @@ class FileConverterTest {
 	}
 
 	@Test
-	void testConvertToMultipartFileWithEmptyList() throws IOException {
+	void testConvertToMultipartFileWithEmptyList(){
 		// Given
 		List<ReviewImageDTO> reviewImageDTOList = new ArrayList<>();
 

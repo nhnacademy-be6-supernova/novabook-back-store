@@ -21,11 +21,11 @@ public class DataSourceConfig {
 
 	private final Environment environment;
 
-	private final RestTemplate restTemplate;
 
 	@Bean
 	@Profile({"dev", "prod"})
 	public DataSource storeDataSource() {
+		RestTemplate restTemplate = new RestTemplate();
 
 		DatabaseConfigDto config = KeyManagerUtil.getDatabaseConfig(environment, restTemplate);
 
