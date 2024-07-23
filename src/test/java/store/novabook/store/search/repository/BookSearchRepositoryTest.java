@@ -46,10 +46,10 @@ class BookSearchRepositoryTest {
 	}
 
 	@Test
-	void testFindAllByKeywordIgnoreCase() {
-		given(bookSearchRepository.findAllByKeywordIgnoreCase(eq("Test"), any(Pageable.class))).willReturn(bookPage);
+	void testFindAll() {
+		given(bookSearchRepository.findAll(eq("Test"), any(Pageable.class))).willReturn(bookPage);
 
-		Page<BookDocument> result = bookSearchRepository.findAllByKeywordIgnoreCase("Test", PageRequest.of(0, 10));
+		Page<BookDocument> result = bookSearchRepository.findAll("Test", PageRequest.of(0, 10));
 
 		assertEquals(1, result.getTotalElements());
 		assertEquals("Test Book", result.getContent().get(0).getTitle());
