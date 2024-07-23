@@ -27,6 +27,8 @@ public class OrdersSagaManagerImpl {
 	public static final String PROCEED_APPROVE_PAYMENT = "PROCEED_APPROVE_PAYMENT";
 	public static final String ORDERS_APPROVE_PAYMENT_ROUTING_KEY = "orders.approve.payment.routing.key";
 	public static final String COMPENSATE_COUPON_APPLY_ROUTING_KEY = "compensate.coupon.apply.routing.key";
+	public static final String PROCEED_SAVE_ORDERS_DATABASE = "PROCEED_SAVE_ORDERS_DATABASE";
+	public static final String ORDERS_SAVE_DATABASE_ROUTING_KEY = "orders.save.database.routing.key";
 	private final RabbitTemplate rabbitTemplate;
 
 	/**
@@ -58,9 +60,16 @@ public class OrdersSagaManagerImpl {
 			boolean isNoUseCoupon = orderSagaMessage.isNoUseCoupon();
 
 			if (isNoUsePoint && isNoUseCoupon) {
-				orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
-					orderSagaMessage);
+				// 결제금액이 없을 경우
+				if (orderSagaMessage.getCalculateTotalAmount() == 0) {
+					orderSagaMessage.setStatus(PROCEED_SAVE_ORDERS_DATABASE);
+					rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_SAVE_DATABASE_ROUTING_KEY,
+						orderSagaMessage);
+				}else {
+					orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
+					rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
+						orderSagaMessage);
+				}
 			} else if (isNoUseCoupon) {
 				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key",
@@ -89,9 +98,16 @@ public class OrdersSagaManagerImpl {
 
 			// 포인트 적용을 하지 않을 경우 -> 바로 결제 진행
 			if (orderSagaMessage.isNoUsePoint()) {
-				orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
-				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
-					orderSagaMessage);
+				// 결제금액이 없을 경우
+				if (orderSagaMessage.getCalculateTotalAmount() == 0) {
+					orderSagaMessage.setStatus(PROCEED_SAVE_ORDERS_DATABASE);
+					rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_SAVE_DATABASE_ROUTING_KEY,
+						orderSagaMessage);
+				} else {
+					orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
+					rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
+						orderSagaMessage);
+				}
 			} else {
 				orderSagaMessage.setStatus("PROCEED_POINT_DECREMENT");
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.decrement.routing.key",
@@ -117,10 +133,16 @@ public class OrdersSagaManagerImpl {
 		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_POINT_DECREMENT")) {
-			orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
-				orderSagaMessage);
-
+			// 결제금액이 없을 경우
+			if (orderSagaMessage.getCalculateTotalAmount() == 0) {
+				orderSagaMessage.setStatus(PROCEED_SAVE_ORDERS_DATABASE);
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_SAVE_DATABASE_ROUTING_KEY,
+					orderSagaMessage);
+			} else {
+				orderSagaMessage.setStatus(PROCEED_APPROVE_PAYMENT);
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_APPROVE_PAYMENT_ROUTING_KEY,
+					orderSagaMessage);
+			}
 		} else if (orderSagaMessage.getStatus().equals("FAIL_POINT_DECREMENT")) {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
 				orderSagaMessage);
@@ -145,8 +167,8 @@ public class OrdersSagaManagerImpl {
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_APPROVE_PAYMENT")) {
 			log.info("성공적으로 결제가 완료되었습니다");
-			orderSagaMessage.setStatus("PROCEED_SAVE_ORDERS_DATABASE");
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.save.database.routing.key",
+			orderSagaMessage.setStatus(PROCEED_SAVE_ORDERS_DATABASE);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, ORDERS_SAVE_DATABASE_ROUTING_KEY,
 				orderSagaMessage);
 		} else if (orderSagaMessage.getStatus().equals("FAIL_APPROVE_PAYMENT")) {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
@@ -187,9 +209,9 @@ public class OrdersSagaManagerImpl {
 			if (!orderSagaMessage.isNoUsePoint())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key",
 					orderSagaMessage);
-
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.approve.payment.routing.key",
-				orderSagaMessage);
+			if(orderSagaMessage.getCalculateTotalAmount() != 0)
+				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.approve.payment.routing.key",
+					orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_ORDERS_FORM_CONFIRM_ROUTING_KEY,
 				orderSagaMessage);
 		}
@@ -227,8 +249,9 @@ public class OrdersSagaManagerImpl {
 		if (payCancelMessage.getUsePointAmount() > 0)
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.request.pay.cancel.routing.key",
 				payCancelMessage);
+		if(payCancelMessage.getTotalAmount() != 0)
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "payment.pay.cancel.routing.key", payCancelMessage);
 
-		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "payment.pay.cancel.routing.key", payCancelMessage);
 		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.request.pay.cancel.routing.key",
 			payCancelMessage);
 	}
