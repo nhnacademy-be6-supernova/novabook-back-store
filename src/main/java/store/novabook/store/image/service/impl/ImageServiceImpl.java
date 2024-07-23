@@ -73,7 +73,7 @@ public class ImageServiceImpl implements ImageService, InitializingBean {
 			this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
 		}
 		String fileName = requestImage.substring(requestImage.lastIndexOf("/") + 1);
-		String outputFilePath = "/%s%s".formatted("src/main/resources/image", fileName);
+		String outputFilePath = "/%s%s".formatted(imageManagerDto.localStorage(), fileName);
 
 		Path imagePath = Paths.get(outputFilePath);
 
