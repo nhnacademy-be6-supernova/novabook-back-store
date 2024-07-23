@@ -33,8 +33,8 @@ public class OrdersBookQueryRepositoryImpl extends QuerydslRepositorySupport imp
 
 	public Page<GetOrdersBookReviewIdResponse> getOrdersBookReviewIdByMemberId(Long memberId, Pageable pageable) {
 		List<GetOrdersBookReviewIdResponse> responses = from(ordersBook).select(
-				Projections.constructor(GetOrdersBookReviewIdResponse.class, ordersBook.id, review.id, orders.id, book.id,
-					book.title, orders.createdAt))
+				Projections.constructor(GetOrdersBookReviewIdResponse.class, ordersBook.id, review.id, orders.id,
+					book.id, book.title, orders.createdAt))
 			.innerJoin(book)
 			.on(ordersBook.book.id.eq(book.id))
 			.innerJoin(orders)
@@ -42,6 +42,9 @@ public class OrdersBookQueryRepositoryImpl extends QuerydslRepositorySupport imp
 			.leftJoin(review)
 			.on(ordersBook.id.eq(review.ordersBook.id))
 			.where(orders.member.id.eq(memberId))
+			.orderBy(orders.createdAt.desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
 			.fetch();
 		return new PageImpl<>(responses, pageable, responses.size());
 	}
