@@ -1,7 +1,9 @@
 package store.novabook.store.book.service.impl;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,8 @@ public class LikesServiceImpl implements LikesService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetLikeBookResponse> myLikes(Long memberId, Pageable pageable) {
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 		Page<Likes> likesList = likesRepository.findAllByMemberId(memberId, pageable);
 		return likesList.map(GetLikeBookResponse::from);
 	}

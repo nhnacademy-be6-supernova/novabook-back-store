@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.orders.dto.request.CreateDeliveryFeeRequest;
@@ -59,7 +60,8 @@ class DeliveryFeeServiceImplTest {
 		DeliveryFee fee2 = new DeliveryFee(CreateDeliveryFeeRequest.builder().fee(2000L).build());
 		List<DeliveryFee> deliveryFees = Arrays.asList(fee1, fee2);
 		Page<DeliveryFee> page = new PageImpl<>(deliveryFees, PageRequest.of(0, 10), deliveryFees.size());
-		Pageable pageable = PageRequest.of(0, 10);
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		Pageable pageable = PageRequest.of(0, 10, sort);
 
 		when(deliveryFeeRepository.findAll(pageable)).thenReturn(page);
 

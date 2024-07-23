@@ -8,7 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import store.novabook.store.common.exception.NotFoundException;
 import store.novabook.store.tag.dto.request.CreateTagRequest;
@@ -47,7 +49,8 @@ class TagServiceImplTest {
 	void getTagAll_success() {
 		// given
 		List<Tag> tags = List.of(tag1, tag2);
-		Pageable pageable = Pageable.unpaged();
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		Pageable pageable = PageRequest.of(0, 10, sort);
 		Page<Tag> page = new PageImpl<>(tags);
 
 		when(tagRepository.findAll(pageable)).thenReturn(page);
