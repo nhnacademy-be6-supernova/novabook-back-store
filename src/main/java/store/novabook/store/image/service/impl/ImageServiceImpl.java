@@ -68,9 +68,12 @@ public class ImageServiceImpl implements ImageService, InitializingBean {
 	}
 
 	public void createBookImage(Book book, String requestImage) {
+		if (imageManagerDto == null) {
+			RestTemplate restTemplate = new RestTemplate();
+			this.imageManagerDto = KeyManagerUtil.getImageManager(environment, restTemplate);
+		}
 		String fileName = requestImage.substring(requestImage.lastIndexOf("/") + 1);
-		String outputFilePath = "/%s%s".formatted("Users/isehui/develop/novabook-back-store/src/main/resources/image/",
-			fileName);
+		String outputFilePath = "/%s%s".formatted("src/main/resources/image", fileName);
 
 		Path imagePath = Paths.get(outputFilePath);
 
