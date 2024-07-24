@@ -76,4 +76,12 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
 
-
+# 프로메테우스
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  endpoint:
+    prometheus:
+      enabled: true
