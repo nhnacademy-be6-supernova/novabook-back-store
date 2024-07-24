@@ -82,7 +82,7 @@ class OrdersSagaManagerImplTest {
 	@Test
 	void testHandleApiResponse() {
 		orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
-
+		orderSagaMessage.setCalculateTotalAmount(1000L);
 		orderSagaMessage.setNoUseCoupon(true);
 		orderSagaMessage.setNoUsePoint(true);
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
@@ -121,7 +121,9 @@ class OrdersSagaManagerImplTest {
 
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
 
+		orderSagaMessage.setCalculateTotalAmount(1000L);
 		ordersSagaManager.handleApi2Response(orderSagaMessage);
+
 
 		verify(rabbitTemplate).convertAndSend(
 			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
@@ -151,6 +153,7 @@ class OrdersSagaManagerImplTest {
 	@Test
 	void testHandleApi3Response() {
 		orderSagaMessage.setStatus("SUCCESS_POINT_DECREMENT");
+		orderSagaMessage.setCalculateTotalAmount(1000L);
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
 
 		ordersSagaManager.handleApi3Response(orderSagaMessage);
@@ -272,6 +275,8 @@ class OrdersSagaManagerImplTest {
 	void testRequestPayCancel() {
 		payCancelMessage.setCouponId(1L);
 		payCancelMessage.setUsePointAmount(100L);
+		payCancelMessage.setTotalAmount(1000L);
+
 
 		// 모든 호출에 대해 doNothing()을 설정
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
