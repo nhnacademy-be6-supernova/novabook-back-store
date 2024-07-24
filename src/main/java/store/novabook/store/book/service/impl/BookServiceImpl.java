@@ -3,7 +3,9 @@ package store.novabook.store.book.service.impl;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +76,8 @@ public class BookServiceImpl implements BookService {
 
 	@Transactional(readOnly = true)
 	public Page<GetBookAllResponse> getBookAll(Pageable pageable) {
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 		Page<Book> books = bookRepository.findAll(pageable);
 		return books.map(GetBookAllResponse::fromEntity);
 	}

@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +33,10 @@ public class TagServiceImpl implements TagService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetTagResponse> getTagAll(Pageable pageable) {
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 		Page<Tag> tags = tagRepository.findAll(pageable);
 		Page<GetTagResponse> tagAllResponses = tags.map(GetTagResponse::fromEntity);
-
 		return new PageImpl<>(tagAllResponses.getContent(), pageable, tags.getTotalElements());
 	}
 

@@ -15,6 +15,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import store.novabook.store.book.dto.response.GetLikeBookResponse;
 import store.novabook.store.book.dto.response.LikeBookResponse;
@@ -49,7 +51,8 @@ class LikesServiceImplTest {
 	@Test
 	void testMyLikes() {
 		Long memberId = 1L;
-		PageRequest pageable = PageRequest.of(0, 10);
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		Pageable pageable = PageRequest.of(0, 10, sort);
 		Likes like = Likes.builder()
 			.book(Book.builder().title("Title").author("Author").publisher("Publisher").build())
 			.member(Member.builder().build())

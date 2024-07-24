@@ -58,26 +58,26 @@ class BookSearchServiceImplTest {
 	@Test
 	void searchByKeywordContaining() {
 		String keyword = "test";
-		when(bookSearchRepository.findAllByKeywordIgnoreCase(keyword, pageable)).thenReturn(bookDocumentPage);
+		when(bookSearchRepository.findAll(keyword, pageable)).thenReturn(bookDocumentPage);
 
 		Page<GetBookSearchResponse> result = bookSearchService.searchByKeywordContaining(keyword, pageable);
 
 		assertNotNull(result);
 		assertEquals(1, result.getTotalElements());
-		verify(bookSearchRepository).findAllByKeywordIgnoreCase(keyword, pageable);
+		verify(bookSearchRepository).findAll(keyword, pageable);
 	}
 
 	@Test
 	void searchByKeywordContaining_throwsInternalServerException() {
 		String keyword = "test";
-		when(bookSearchRepository.findAllByKeywordIgnoreCase(keyword, pageable)).thenThrow(new RuntimeException());
+		when(bookSearchRepository.findAll(keyword, pageable)).thenThrow(new RuntimeException());
 
 		InternalServerException exception = assertThrows(InternalServerException.class, () -> {
 			bookSearchService.searchByKeywordContaining(keyword, pageable);
 		});
 
 		assertEquals(ErrorCode.INVALID_REQUEST_ARGUMENT, exception.getErrorCode());
-		verify(bookSearchRepository).findAllByKeywordIgnoreCase(keyword, pageable);
+		verify(bookSearchRepository).findAll(keyword, pageable);
 	}
 
 	@Test

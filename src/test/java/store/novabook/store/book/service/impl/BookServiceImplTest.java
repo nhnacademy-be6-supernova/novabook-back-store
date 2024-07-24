@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import store.novabook.store.book.dto.request.CreateBookRequest;
 import store.novabook.store.book.dto.request.UpdateBookRequest;
@@ -118,13 +119,21 @@ class BookServiceImplTest {
 
 	@Test
 	void testGetBookAll() {
-		Pageable pageable = PageRequest.of(0, 10);
+		// Pageable 객체 생성 (페이지 번호: 0, 페이지 크기: 10, 정렬: createdAt 내림차순)
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		Pageable pageable = PageRequest.of(0, 10, sort);
+
+		// Book 객체를 모킹하고 페이지 객체를 생성
 		Book book = mock(Book.class);
 		Page<Book> bookPage = new PageImpl<>(Collections.singletonList(book));
-		when(bookRepository.findAll(pageable)).thenReturn(bookPage);
 
+		// bookRepository.findAll 메서드가 pageable을 인자로 받을 때 bookPage를 반환하도록 설정
+		when(bookRepository.findAll(eq(pageable))).thenReturn(bookPage);
+
+		// 서비스 메서드 호출
 		Page<GetBookAllResponse> response = bookService.getBookAll(pageable);
 
+		// 응답 검증
 		assertThat(response).isNotNull();
 		assertThat(response.getTotalElements()).isEqualTo(1);
 	}
