@@ -19,7 +19,7 @@ public class BookSearchServiceImpl {
 	// 모든 단어 검색
 	public Page<GetBookSearchResponse> searchByKeywordContaining(String keyword, Pageable pageable) {
 		try{
-			Page<BookDocument> bookDocuments = bookSearchRepository.findAllByKeywordIgnoreCase(keyword, pageable);
+			Page<BookDocument> bookDocuments = bookSearchRepository.findAll(keyword, pageable);
 			return bookDocuments.map(GetBookSearchResponse::of);
 		} catch (Exception e){
 			throw new InternalServerException(ErrorCode.INVALID_REQUEST_ARGUMENT);
