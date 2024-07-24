@@ -23,6 +23,7 @@ import store.novabook.store.payment.service.PaymentService;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+	public static final String NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY = "nova.orders.saga.dead.routing.key";
 	private final RabbitTemplate rabbitTemplate;
 	private final PaymentFactory paymentFactory;
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
@@ -33,10 +34,13 @@ public class PaymentServiceImpl implements PaymentService {
 		try {
 			Payment payment = paymentFactory.getPaymentStrategy(orderSagaMessage.getPaymentRequest().type());
 			payment.createOrder(orderSagaMessage);
+			orderSagaMessage.setStatus("SUCCESS_APPROVE_PAYMENT");
 		} catch (Exception e) {
 			log.error("", e);
 			orderSagaMessage.setStatus("FAIL_APPROVE_PAYMENT");
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
+				orderSagaMessage);
 		} finally {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api4-producer-routing-key",
 				orderSagaMessage);
@@ -52,21 +56,22 @@ public class PaymentServiceImpl implements PaymentService {
 		} catch (Exception e) {
 			orderSagaMessage.setStatus("FAIL_REFUND_TOSS_PAYMENT");
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY,
 				orderSagaMessage);
 		}
 	}
 
 	@Override
 	@RabbitListener(queues = "nova.payment.request.pay.cancel.queue")
-	public void cancelOrder(@Payload RequestPayCancelMessage message, RabbitTemplate rabbitTemplate) {
+	public void cancelOrder(@Payload RequestPayCancelMessage message) {
 		try {
 			Payment payment = paymentFactory.getPaymentStrategy(message.getPaymentType());
 			payment.cancelOrder(message);
 		} catch (Exception e) {
+			log.error("",e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			message.setStatus("FAIL_REQUEST_CANCEL_TOSS_PAYMENT");
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", message);
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, NOVA_ORDERS_SAGA_DEAD_ROUTING_KEY, message);
 		}
 	}
 }

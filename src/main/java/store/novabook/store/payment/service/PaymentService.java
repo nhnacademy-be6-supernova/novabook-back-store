@@ -15,5 +15,5 @@ public interface PaymentService {
 	void compensateCancelOrder(@Payload OrderSagaMessage orderSagaMessage);
 
 	@RabbitListener(queues = "nova.payment.request.pay.cancel.queue")
-	void cancelOrder(@Payload RequestPayCancelMessage message, RabbitTemplate rabbitTemplate);
+	void cancelOrder(@Payload RequestPayCancelMessage message);
 }

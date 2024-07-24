@@ -93,7 +93,7 @@ public class TossPayment implements Payment {
 			ResponseEntity.ok();
 		} else {
 			log.error("결제 응답 내용 : {}", response.toString());
-			ResponseEntity.internalServerError();
+			throw new IllegalArgumentException("결제가 실패되었습니다");
 		}
 	}
 
