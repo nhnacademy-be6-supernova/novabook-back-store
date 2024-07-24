@@ -354,7 +354,7 @@ public class OrdersRabbitServiceImpl {
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
 			.deliveryAddress(
-				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddresses() + orderForm.orderReceiverInfo()
 					.orderAddressInfo()
 					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
@@ -378,7 +378,7 @@ public class OrdersRabbitServiceImpl {
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
 			.deliveryAddress(
-				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddresses() + orderForm.orderReceiverInfo()
 					.orderAddressInfo()
 					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))

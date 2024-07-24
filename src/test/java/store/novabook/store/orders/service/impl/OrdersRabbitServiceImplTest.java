@@ -138,7 +138,7 @@ class OrdersRabbitServiceImplTest {
 			.name("Receiver Name")
 			.phone("098-765-4321")
 			.orderAddressInfo(OrderAddressInfo.builder()
-				.streetAddress("123 Main St")
+				.streetAddresses("123 Main St")
 				.detailAddress("Apt 4B")
 				.build())
 			.build();
@@ -202,7 +202,7 @@ class OrdersRabbitServiceImplTest {
 			.name("Receiver Name")
 			.phone("098-765-4321")
 			.orderAddressInfo(OrderAddressInfo.builder()
-				.streetAddress("123 Main St")
+				.streetAddresses("123 Main St")
 				.detailAddress("Apt 4B")
 				.build())
 			.build();
@@ -323,7 +323,7 @@ class OrdersRabbitServiceImplTest {
 			.name("Receiver Name")
 			.phone("098-765-4321")
 			.orderAddressInfo(OrderAddressInfo.builder()
-				.streetAddress("123 Main St")
+				.streetAddresses("123 Main St")
 				.detailAddress("Apt 4B")
 				.build())
 			.build();
