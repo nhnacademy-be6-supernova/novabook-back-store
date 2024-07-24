@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import store.novabook.store.member.dto.request.CreateMemberRequest;
 import store.novabook.store.member.dto.request.DeleteMemberRequest;
 import store.novabook.store.member.dto.request.DoorayAuthCodeRequest;
@@ -66,4 +67,6 @@ public interface MemberService {
 
 	// 인증 코드 생성하고 저장하기
 	String createAndSaveAuthCode(String authCode);
+
+	void bindTo(MeterRegistry meterRegistry);
 }
