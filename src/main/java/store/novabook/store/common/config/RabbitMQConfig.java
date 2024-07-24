@@ -76,10 +76,18 @@ public class RabbitMQConfig {
 	public ConnectionFactory connectionFactory() {
 		RestTemplate restTemplate = new RestTemplate();
 		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(environment, restTemplate);
-		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
-		connectionFactory.setPort(config.port());
-		connectionFactory.setUsername(config.username());
-		connectionFactory.setPassword(config.password());
+		// CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
+		//
+		// connectionFactory.setPort(config.port());
+		// connectionFactory.setUsername(config.username());
+		// connectionFactory.setPassword(config.password());
+
+		CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
+		connectionFactory.setPort(5672);
+		connectionFactory.setUsername("supernova");
+		connectionFactory.setPassword("1234");
+
+
 
 		return connectionFactory;
 	}

@@ -1,4 +1,4 @@
-package store.novabook.store.orders.service.impl;
+package store.novabook.store.payment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,14 +16,11 @@ import java.util.HashMap;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
@@ -31,21 +28,17 @@ import store.novabook.store.orders.dto.OrderSagaMessage;
 import store.novabook.store.orders.dto.RequestPayCancelMessage;
 import store.novabook.store.orders.dto.request.TossPaymentCancelRequest;
 
-@RequiredArgsConstructor
-@Service
 @Slf4j
-public class TossOrderService {
+public class TossPayment implements Payment {
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
-
-	private final RabbitTemplate rabbitTemplate;
 	private static final String AMOUNT = "amount";
 	private static final String PAYMENT_KEY = "paymentKey";
 	private static final String WIDGET_SECRET_KEY = "test_sk_LkKEypNArWLkZabM1Rbz8lmeaxYG";
 
+	@Override
 	@Transactional
-	@RabbitListener(queues = "nova.orders.approve.payment.queue")
-	public void create(@Payload OrderSagaMessage orderSagaMessage) {
+	public void createOrder(@Payload OrderSagaMessage orderSagaMessage, RabbitTemplate  rabbitTemplate) {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONObject obj = new JSONObject();
@@ -107,9 +100,10 @@ public class TossOrderService {
 		}
 	}
 
-	@RabbitListener(queues = "nova.orders.compensate.approve.payment.queue")
+
+	@Override
 	@Transactional
-	public void cancel(@Payload OrderSagaMessage orderSagaMessage) {
+	public void compensateCancelOrder(@Payload OrderSagaMessage orderSagaMessage, RabbitTemplate rabbitTemplate) {
 		@SuppressWarnings("unchecked") HashMap<String, String> paymentParam = (HashMap<String, String>)orderSagaMessage.getPaymentRequest()
 			.paymentInfo();
 		String paymentKey = paymentParam.get(PAYMENT_KEY);
@@ -168,8 +162,9 @@ public class TossOrderService {
 		log.info("jsonObject");
 	}
 
-	@RabbitListener(queues = "nova.payment.request.pay.cancel.queue")
-	public void paymentRequestPayCancel(@Payload RequestPayCancelMessage message) {
+
+	@Override
+	public void cancelOrder(@Payload RequestPayCancelMessage message, RabbitTemplate rabbitTemplate) {
 		try {
 			sendTossCancelRequest(TossPaymentCancelRequest.builder()
 				.paymentKey(message.getPaymentKey())
