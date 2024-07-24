@@ -10,7 +10,7 @@ services:
       SPRING_DATASOURCE_USERNAME: "be6_supernova"
       SPRING_DATASOURCE_PASSWORD: "Hv-]JRIyCw[[9O18"
     ports:
-      - "8080:8080"
+      - "8090:8090"
     restart: always
     depends_on:
       - db
