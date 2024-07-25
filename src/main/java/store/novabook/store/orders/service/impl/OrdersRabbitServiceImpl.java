@@ -205,9 +205,9 @@ public class OrdersRabbitServiceImpl {
 	}
 
 	private void setOrderSagaMessageFlags(OrderSagaMessage orderSagaMessage, long usePointAmount, Long couponId) {
-		orderSagaMessage.setNoEarnPoint(orderSagaMessage.getPaymentRequest().memberId() == null);
-		orderSagaMessage.setNoUsePoint(usePointAmount == 0);
-		orderSagaMessage.setNoUseCoupon(couponId == null);
+		orderSagaMessage.setIsNoEarnPoint(orderSagaMessage.getPaymentRequest().memberId() == null);
+		orderSagaMessage.setIsNoUsePoint(usePointAmount == 0);
+		orderSagaMessage.setIsNoUseCoupon(couponId == null);
 	}
 
 	private void processBooksConfirm(List<BookIdAndQuantityDTO> books, OrderSagaMessage orderSagaMessage,
@@ -249,7 +249,7 @@ public class OrdersRabbitServiceImpl {
 			orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
 
 			if ((long)earnPointAmount == 0) {
-				orderSagaMessage.setNoEarnPoint(true);
+				orderSagaMessage.setIsNoEarnPoint(true);
 			}
 		}
 

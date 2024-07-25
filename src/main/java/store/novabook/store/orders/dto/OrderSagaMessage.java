@@ -19,9 +19,9 @@ public class OrderSagaMessage {
 	long calculateTotalAmount;  //총 결제금액
 	long couponAmount; //쿠폰 사용 금액
 	long earnPointAmount; //적립금액
-	boolean isNoEarnPoint;
-	boolean isNoUsePoint;
-	boolean isNoUseCoupon;
+	Boolean isNoEarnPoint;
+	Boolean isNoUsePoint;
+	Boolean isNoUseCoupon;
 	String status;
 	PaymentRequest paymentRequest;
 
