@@ -246,7 +246,7 @@ public class OrdersSagaManagerImpl {
 			if (!orderSagaMessage.isNoUsePoint())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key",
 					orderSagaMessage);
-			if(orderSagaMessage.getCalculateTotalAmount() != 0)
+			if (orderSagaMessage.getCalculateTotalAmount() != 0)
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.approve.payment.routing.key",
 					orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_ORDERS_FORM_CONFIRM_ROUTING_KEY,
@@ -287,8 +287,9 @@ public class OrdersSagaManagerImpl {
 		if (payCancelMessage.getUsePointAmount() > 0)
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.request.pay.cancel.routing.key",
 				payCancelMessage);
-		if(payCancelMessage.getTotalAmount() != 0)
-			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "payment.pay.cancel.routing.key", payCancelMessage);
+		if (payCancelMessage.getTotalAmount() != 0)
+			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "payment.pay.cancel.routing.key",
+				payCancelMessage);
 
 		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "orders.request.pay.cancel.routing.key",
 			payCancelMessage);

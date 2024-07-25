@@ -28,6 +28,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import store.novabook.store.common.exception.BadRequestException;
 import store.novabook.store.common.exception.ErrorCode;
 import store.novabook.store.common.exception.NotFoundException;
@@ -102,6 +104,12 @@ class MemberServiceImplTest {
 	@Mock
 	private AuthMembersClient authMembersClient;
 
+	@Mock
+	private MeterRegistry meterRegistry;
+
+	@Mock
+	private Counter newSignUpCounter;
+
 	@InjectMocks
 	private MemberServiceImpl memberService;
 
@@ -145,6 +153,8 @@ class MemberServiceImplTest {
 		dormantStatus = new MemberStatus("휴면");
 		withdrawStatus = new MemberStatus("탈퇴");
 
+		when(meterRegistry.counter("members_new_signups")).thenReturn(newSignUpCounter);
+		memberService.bindTo(meterRegistry);
 	}
 
 	@Test
@@ -157,6 +167,8 @@ class MemberServiceImplTest {
 
 		assertNotNull(response);
 		assertEquals(testMember.getId(), response.id());
+
+		verify(newSignUpCounter, times(1)).increment();
 	}
 
 	@Test
