@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import store.novabook.store.orders.dto.request.PaymentRequest;
 
+@ToString
 @Setter
 @Getter
 @Builder

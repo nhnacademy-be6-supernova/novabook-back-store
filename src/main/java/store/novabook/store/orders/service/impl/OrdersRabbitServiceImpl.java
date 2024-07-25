@@ -94,6 +94,7 @@ public class OrdersRabbitServiceImpl {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_CONFIRM_ORDER_FORM");
 		} finally {
+			log.info("[after Orders verify queue message] {}", orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api1-producer-routing-key",
 				orderSagaMessage);
 		}
@@ -130,7 +131,7 @@ public class OrdersRabbitServiceImpl {
 
 			if (paymentInfo instanceof Map) {
 				@SuppressWarnings("unchecked")
-				Map<String, Object> paymentParam = (Map<String, Object>) paymentInfo;
+				Map<String, Object> paymentParam = (Map<String, Object>)paymentInfo;
 
 				Payment savePayment = Payment.builder()
 					.request(CreatePaymentRequest.builder()
@@ -164,6 +165,7 @@ public class OrdersRabbitServiceImpl {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_SAVE_ORDERS_DATABASE");
 		} finally {
+			log.info("[after Orders verify queue message] {}", orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api5-producer-routing-key",
 				orderSagaMessage);
 		}
