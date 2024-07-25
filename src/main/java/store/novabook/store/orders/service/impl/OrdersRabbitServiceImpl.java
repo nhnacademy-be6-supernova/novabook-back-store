@@ -111,6 +111,7 @@ public class OrdersRabbitServiceImpl {
 			List<BookIdAndQuantityDTO> books = getOrderBooks(orderSagaMessage);
 			compensateBooks(books);
 		} catch (Exception e) {
+			log.error("", e);
 			orderSagaMessage.setStatus("FAIL_COMPENSATE_CONFIRM_ORDER_FORM");
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
 				orderSagaMessage);

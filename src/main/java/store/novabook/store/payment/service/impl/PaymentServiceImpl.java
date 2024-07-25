@@ -17,6 +17,7 @@ import store.novabook.store.payment.service.PaymentService;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
@@ -26,7 +27,6 @@ public class PaymentServiceImpl implements PaymentService {
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 
 	@Override
-	@Transactional
 	@RabbitListener(queues = "nova.orders.approve.payment.queue")
 	public void createOrder(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
@@ -46,7 +46,6 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	@Transactional
 	@RabbitListener(queues = "nova.orders.compensate.approve.payment.queue")
 	public void compensateCancelOrder(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
@@ -74,3 +73,4 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 	}
 }
+
