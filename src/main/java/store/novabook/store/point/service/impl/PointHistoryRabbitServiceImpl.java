@@ -99,6 +99,7 @@ public class PointHistoryRabbitServiceImpl {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api3-producer-routing-key",
 				orderSagaMessage);
 		} catch (Exception e) {
+			log.error("",e);
 			handleFailure(orderSagaMessage);
 		}
 	}
