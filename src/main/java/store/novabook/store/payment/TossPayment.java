@@ -68,7 +68,6 @@ public class TossPayment implements Payment {
 	}
 
 	@Override
-	@Transactional
 	public void createOrder(@Payload OrderSagaMessage orderSagaMessage) throws URISyntaxException, IOException, ParseException {
 		@SuppressWarnings("unchecked")
 		HashMap<String, Object> paymentParam = (HashMap<String, Object>) orderSagaMessage.getPaymentRequest().paymentInfo();
@@ -98,7 +97,6 @@ public class TossPayment implements Payment {
 	}
 
 	@Override
-	@Transactional
 	public void compensateCancelOrder(@Payload OrderSagaMessage orderSagaMessage) throws IOException, ParseException, URISyntaxException {
 		@SuppressWarnings("unchecked")
 		HashMap<String, String> paymentParam = (HashMap<String, String>) orderSagaMessage.getPaymentRequest().paymentInfo();

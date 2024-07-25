@@ -4,6 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import store.novabook.store.payment.service.PaymentService;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
@@ -71,3 +73,4 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 	}
 }
+
