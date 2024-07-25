@@ -27,14 +27,12 @@ public class JWTFilter extends OncePerRequestFilter {
 		@NonNull FilterChain filterChain) throws ServletException, IOException {
 
 		Enumeration<String> headerNames = request.getHeaderNames();
-		headerNames.asIterator().forEachRemaining(headerName -> {
-		});
+		headerNames.asIterator().forEachRemaining(headerName -> {});
 
 		String membersId = request.getHeader("X-USER-ID");
 		String role = request.getHeader("X-USER-ROLE");
 
 		if (membersId == null || role == null) {
-			log.error("username or role is null");
 			filterChain.doFilter(request, response);
 			return;
 		}

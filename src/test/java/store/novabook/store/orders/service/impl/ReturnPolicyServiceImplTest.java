@@ -1,4 +1,4 @@
-package store.novabook.store.orders.service;
+package store.novabook.store.orders.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -20,7 +20,6 @@ import store.novabook.store.orders.dto.response.CreateResponse;
 import store.novabook.store.orders.dto.response.GetReturnPolicyResponse;
 import store.novabook.store.orders.entity.ReturnPolicy;
 import store.novabook.store.orders.repository.ReturnPolicyRepository;
-import store.novabook.store.orders.service.impl.ReturnPolicyServiceImpl;
 
 class ReturnPolicyServiceImplTest {
 	@Mock

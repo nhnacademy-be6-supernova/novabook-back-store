@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class RequestPayCancelMessage {
+	PaymentType paymentType;
+	long totalAmount;
 	String orderCode;
 	Long couponId;
 	Long usePointAmount;
