@@ -1,9 +1,5 @@
 package store.novabook.store.payment.service.impl;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import org.json.simple.parser.ParseException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
