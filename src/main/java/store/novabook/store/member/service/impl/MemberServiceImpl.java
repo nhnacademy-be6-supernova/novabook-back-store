@@ -144,7 +144,10 @@ public class MemberServiceImpl implements MemberService {
 		couponSender.sendToNormalQueue(
 			CreateCouponMessage.fromEntity(newMember.getId(), new ArrayList<>(), CouponType.WELCOME, null));
 
-		newSignUpCounter.increment(); // 카운터 증가
+		if (newSignUpCounter != null) {
+			newSignUpCounter.increment(); // 카운터 증가
+		}
+
 		return CreateMemberResponse.fromEntity(newMember);
 	}
 
