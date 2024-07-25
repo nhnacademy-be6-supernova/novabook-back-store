@@ -125,19 +125,21 @@ public class OrdersRabbitServiceImpl {
 			CreateOrdersRequest request;
 			Orders orders;
 			List<BookIdAndQuantityDTO> books;
+			Payment payment = null;
+			Object paymentInfo = orderSagaMessage.getPaymentRequest().paymentInfo();
 
-			@SuppressWarnings("unchecked")
-			Map<String, Object> paymentParam = (Map<String, Object>)orderSagaMessage.getPaymentRequest()
-				.paymentInfo();
+			if (paymentInfo instanceof Map) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> paymentParam = (Map<String, Object>) paymentInfo;
 
-			Payment savePayment = Payment.builder()
-				.request(CreatePaymentRequest.builder()
-					.paymentKey((String)paymentParam.get("paymentKey"))
-					.provider("tempProvider")
-					.build())
-				.build();
-
-			Payment payment = paymentRepository.save(savePayment);
+				Payment savePayment = Payment.builder()
+					.request(CreatePaymentRequest.builder()
+						.paymentKey((String)paymentParam.get("paymentKey"))
+						.provider("tempProvider")
+						.build())
+					.build();
+				payment = paymentRepository.save(savePayment);
+			}
 
 			if (orderSagaMessage.getPaymentRequest().memberId() == null) {
 				OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(
@@ -158,7 +160,7 @@ public class OrdersRabbitServiceImpl {
 
 			orderSagaMessage.setStatus("SUCCESS_SAVE_ORDERS_DATABASE");
 		} catch (Exception e) {
-			log.info("", e);
+			log.error("", e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_SAVE_ORDERS_DATABASE");
 		} finally {
@@ -352,7 +354,7 @@ public class OrdersRabbitServiceImpl {
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
 			.deliveryAddress(
-				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddresses() + orderForm.orderReceiverInfo()
 					.orderAddressInfo()
 					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
@@ -376,7 +378,7 @@ public class OrdersRabbitServiceImpl {
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
 			.deliveryAddress(
-				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddresses() + orderForm.orderReceiverInfo()
 					.orderAddressInfo()
 					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
