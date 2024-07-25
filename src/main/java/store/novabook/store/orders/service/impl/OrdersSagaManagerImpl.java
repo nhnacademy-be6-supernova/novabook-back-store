@@ -81,6 +81,7 @@ public class OrdersSagaManagerImpl {
 	@RabbitListener(queues = "nova.api1-producer-queue")
 	public void handleApiResponse(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
+		log.info("api1-producer message {}", orderSagaMessage);
 
 		try {
 			if ("SUCCESS_CONFIRM_ORDER_FORM".equals(orderSagaMessage.getStatus())) {
@@ -126,6 +127,7 @@ public class OrdersSagaManagerImpl {
 	@RabbitListener(queues = "nova.api2-producer-queue")
 	public void handleApi2Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
+		log.info("api2-producer message {}", orderSagaMessage);
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_APPLY_COUPON")) {
 
@@ -165,6 +167,7 @@ public class OrdersSagaManagerImpl {
 	@RabbitListener(queues = "nova.api3-producer-queue")
 	public void handleApi3Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
+		log.info("api3-producer message {}", orderSagaMessage);
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_POINT_DECREMENT")) {
 			// 결제금액이 없을 경우
@@ -199,6 +202,7 @@ public class OrdersSagaManagerImpl {
 	@RabbitListener(queues = "nova.api4-producer-queue")
 	public void handleApi4Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
+		log.info("api4-producer message {}", orderSagaMessage);
 
 		if (orderSagaMessage.getStatus().equals("SUCCESS_APPROVE_PAYMENT")) {
 			log.info("성공적으로 결제가 완료되었습니다");
@@ -230,6 +234,7 @@ public class OrdersSagaManagerImpl {
 	@RabbitListener(queues = "nova.api5-producer-queue")
 	public void handleApi5Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
+		log.info("api5-producer message {}", orderSagaMessage);
 
 		log.info("isNoEarn 상태: {}", orderSagaMessage.isNoEarnPoint());
 
