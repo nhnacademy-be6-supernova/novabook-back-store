@@ -231,6 +231,8 @@ public class OrdersSagaManagerImpl {
 	public void handleApi5Response(@Payload OrderSagaMessage orderSagaMessage) {
 		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 
+		log.info("isNoEarn 상태: {}", orderSagaMessage.isNoEarnPoint());
+
 		if (!orderSagaMessage.isNoEarnPoint() && orderSagaMessage.getStatus().equals("SUCCESS_SAVE_ORDERS_DATABASE")) {
 			orderSagaMessage.setStatus("PROCEED_EARN_POINT");
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.earn.routing.key", orderSagaMessage);
