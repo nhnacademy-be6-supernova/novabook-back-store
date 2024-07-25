@@ -85,8 +85,8 @@ public class OrdersSagaManagerImpl {
 
 		try {
 			if ("SUCCESS_CONFIRM_ORDER_FORM".equals(orderSagaMessage.getStatus())) {
-				boolean isNoUsePoint = orderSagaMessage.isNoUsePoint();
-				boolean isNoUseCoupon = orderSagaMessage.isNoUseCoupon();
+				boolean isNoUsePoint = orderSagaMessage.getIsNoUsePoint();
+				boolean isNoUseCoupon = orderSagaMessage.getIsNoUseCoupon();
 
 				if (isNoUsePoint && isNoUseCoupon) {
 					// 결제금액이 없을 경우
@@ -132,7 +132,7 @@ public class OrdersSagaManagerImpl {
 		if (orderSagaMessage.getStatus().equals("SUCCESS_APPLY_COUPON")) {
 
 			// 포인트 적용을 하지 않을 경우 -> 바로 결제 진행
-			if (orderSagaMessage.isNoUsePoint()) {
+			if (orderSagaMessage.getIsNoUsePoint()) {
 				// 결제금액이 없을 경우
 				if (orderSagaMessage.getCalculateTotalAmount() == 0) {
 					orderSagaMessage.setStatus(PROCEED_SAVE_ORDERS_DATABASE);
@@ -186,7 +186,7 @@ public class OrdersSagaManagerImpl {
 				orderSagaMessage);
 			log.error("[주문:포인트 감소 실패] 보상 트랜잭션을 시작합니다.");
 
-			if (!orderSagaMessage.isNoUseCoupon())
+			if (!orderSagaMessage.getIsNoUseCoupon())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_COUPON_APPLY_ROUTING_KEY,
 					orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_ORDERS_FORM_CONFIRM_ROUTING_KEY,
@@ -215,10 +215,10 @@ public class OrdersSagaManagerImpl {
 				orderSagaMessage);
 			log.error("[주문:결제 승인 실패] 보상 트랜잭션을 시작합니다.");
 
-			if (!orderSagaMessage.isNoUseCoupon())
+			if (!orderSagaMessage.getIsNoUseCoupon())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_COUPON_APPLY_ROUTING_KEY,
 					orderSagaMessage);
-			if (!orderSagaMessage.isNoUsePoint())
+			if (!orderSagaMessage.getIsNoUsePoint())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key",
 					orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_ORDERS_FORM_CONFIRM_ROUTING_KEY,
@@ -236,9 +236,9 @@ public class OrdersSagaManagerImpl {
 		log.info(STATUS_LOG_MESSAGE, orderSagaMessage.getStatus());
 		log.info("api5-producer message {}", orderSagaMessage);
 
-		log.info("isNoEarn 상태: {}", orderSagaMessage.isNoEarnPoint());
+		log.info("isNoEarn 상태: {}", orderSagaMessage.getIsNoEarnPoint());
 
-		if (!orderSagaMessage.isNoEarnPoint() && orderSagaMessage.getStatus().equals("SUCCESS_SAVE_ORDERS_DATABASE")) {
+		if (!orderSagaMessage.getIsNoEarnPoint() && orderSagaMessage.getStatus().equals("SUCCESS_SAVE_ORDERS_DATABASE")) {
 			orderSagaMessage.setStatus("PROCEED_EARN_POINT");
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "point.earn.routing.key", orderSagaMessage);
 		} else if (orderSagaMessage.getStatus().equals("FAIL_SAVE_ORDERS_DATABASE")) {
@@ -247,10 +247,10 @@ public class OrdersSagaManagerImpl {
 				orderSagaMessage);
 			log.error("[주문:DB 저장 실패] 보상 트랜잭션을 시작합니다.");
 
-			if (!orderSagaMessage.isNoUseCoupon())
+			if (!orderSagaMessage.getIsNoUseCoupon())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, COMPENSATE_COUPON_APPLY_ROUTING_KEY,
 					orderSagaMessage);
-			if (!orderSagaMessage.isNoUsePoint())
+			if (!orderSagaMessage.getIsNoUsePoint())
 				rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "compensate.point.decrement.routing.key",
 					orderSagaMessage);
 			if (orderSagaMessage.getCalculateTotalAmount() != 0)
