@@ -4,6 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 
 	@Override
+	@Transactional
 	@RabbitListener(queues = "nova.orders.approve.payment.queue")
 	public void createOrder(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
@@ -44,6 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
+	@Transactional
 	@RabbitListener(queues = "nova.orders.compensate.approve.payment.queue")
 	public void compensateCancelOrder(@Payload OrderSagaMessage orderSagaMessage) {
 		try {
