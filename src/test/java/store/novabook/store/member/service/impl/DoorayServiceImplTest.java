@@ -53,9 +53,9 @@ class DoorayServiceImplTest {
 			.calculateTotalAmount(12000L)
 			.couponAmount(2000L)
 			.earnPointAmount(500L)
-			.noEarnPoint(false)
-			.noUsePoint(false)
-			.noUseCoupon(false)
+			.isNoEarnPoint(false)
+			.isNoUsePoint(false)
+			.isNoUseCoupon(false)
 			.status("ERROR")
 			.build();
 
