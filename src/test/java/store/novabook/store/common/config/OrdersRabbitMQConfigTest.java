@@ -38,5 +38,7 @@ class OrdersRabbitMQConfigTest {
 			.map(
 				beanName -> () -> assertThat(applicationContext.containsBean(beanName)).as("Checking bean: " + beanName)
 					.isTrue()));
+
+		assertThat(applicationContext.containsBean("cacheManager")).isTrue();
 	}
 }

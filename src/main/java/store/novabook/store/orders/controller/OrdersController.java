@@ -26,14 +26,12 @@ public class OrdersController implements OrdersControllerDocs {
 
 	private final OrdersService ordersService;
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@GetMapping("/{id}")
 	public ResponseEntity<GetOrdersResponse> getOrders(@PathVariable Long id) {
 		GetOrdersResponse response = ordersService.getOrdersById(id);
 		return ResponseEntity.ok(response);
 	}
 
-	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody UpdateOrdersAdminRequest request) {
 		ordersService.update(id, request);

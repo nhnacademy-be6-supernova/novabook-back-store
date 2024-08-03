@@ -38,6 +38,7 @@ class OrdersSagaManagerImplTest {
 
 	@Mock
 	private Timer orderProcessingTimer;
+	private Timer.Sample sample;
 
 	@InjectMocks
 	private OrdersSagaManagerImpl ordersSagaManager;
@@ -71,40 +72,16 @@ class OrdersSagaManagerImplTest {
 		when(meterRegistry.counter("orders_total_count")).thenReturn(orderCounter);
 		when(meterRegistry.counter("orders_failure_count")).thenReturn(orderFailureCounter);
 		when(meterRegistry.timer("order_processing_time")).thenReturn(orderProcessingTimer);
+		when(meterRegistry.timer("order_processing_time")).thenReturn(orderProcessingTimer);
 		ordersSagaManager.initMetrics();
 	}
-
-	// @Test
-	// void testOrderInvoke() {
-	// 	doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
-	//
-	// 	ordersSagaManager.orderInvoke(paymentRequest);
-	//
-	// 	verify(rabbitTemplate).convertAndSend(
-	// 		eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
-	// 		eq("orders.form.verify.routing.key"),
-	// 		orderSagaMessageCaptor.capture()
-	// 	);
-	// 	OrderSagaMessage capturedMessage = orderSagaMessageCaptor.getValue();
-	// 	assertEquals("PROCEED_CONFIRM_ORDER_FORM", capturedMessage.getStatus());
-	// 	assertEquals(paymentRequest, capturedMessage.getPaymentRequest());
-	//
-	// 	verify(rabbitTemplate).convertAndSend(
-	// 		eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
-	// 		eq("cart.delete.routing.key"),
-	// 		orderSagaMessageCaptor.capture()
-	// 	);
-	// 	capturedMessage = orderSagaMessageCaptor.getValue();
-	// 	assertEquals("PROCEED_DELETE_CART", capturedMessage.getStatus());
-	// 	assertEquals(paymentRequest, capturedMessage.getPaymentRequest());
-	// }
 
 	@Test
 	void testHandleApiResponse() {
 		orderSagaMessage.setStatus("SUCCESS_CONFIRM_ORDER_FORM");
-
-		orderSagaMessage.setNoUseCoupon(true);
-		orderSagaMessage.setNoUsePoint(true);
+		orderSagaMessage.setCalculateTotalAmount(1000L);
+		orderSagaMessage.setIsNoUseCoupon(true);
+		orderSagaMessage.setIsNoUsePoint(true);
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
 
 		ordersSagaManager.handleApiResponse(orderSagaMessage);
@@ -137,11 +114,13 @@ class OrdersSagaManagerImplTest {
 	@Test
 	void testHandleApi2Response() {
 		orderSagaMessage.setStatus("SUCCESS_APPLY_COUPON");
-		orderSagaMessage.setNoUsePoint(true); // 포인트를 사용하지 않음
+		orderSagaMessage.setIsNoUsePoint(true); // 포인트를 사용하지 않음
 
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
 
+		orderSagaMessage.setCalculateTotalAmount(1000L);
 		ordersSagaManager.handleApi2Response(orderSagaMessage);
+
 
 		verify(rabbitTemplate).convertAndSend(
 			eq(OrdersSagaManagerImpl.NOVA_ORDERS_SAGA_EXCHANGE),
@@ -171,6 +150,7 @@ class OrdersSagaManagerImplTest {
 	@Test
 	void testHandleApi3Response() {
 		orderSagaMessage.setStatus("SUCCESS_POINT_DECREMENT");
+		orderSagaMessage.setCalculateTotalAmount(1000L);
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
 
 		ordersSagaManager.handleApi3Response(orderSagaMessage);
@@ -235,7 +215,9 @@ class OrdersSagaManagerImplTest {
 	@Test
 	void testHandleApi5Response() {
 		orderSagaMessage.setStatus("SUCCESS_SAVE_ORDERS_DATABASE");
+		orderSagaMessage.setIsNoEarnPoint(false);
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
+
 
 		ordersSagaManager.handleApi5Response(orderSagaMessage);
 
@@ -251,7 +233,10 @@ class OrdersSagaManagerImplTest {
 	@Test
 	void testHandleApi5Response_Fail() {
 		orderSagaMessage.setStatus("FAIL_SAVE_ORDERS_DATABASE");
-		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
+		orderSagaMessage.setIsNoUsePoint(false);
+		orderSagaMessage.setIsNoEarnPoint(false);
+		doNothing().when(rabbitTemplate).convertAndSend(any(), any(), any(Object.class));
+
 
 		ordersSagaManager.handleApi5Response(orderSagaMessage);
 
@@ -292,6 +277,8 @@ class OrdersSagaManagerImplTest {
 	void testRequestPayCancel() {
 		payCancelMessage.setCouponId(1L);
 		payCancelMessage.setUsePointAmount(100L);
+		payCancelMessage.setTotalAmount(1000L);
+
 
 		// 모든 호출에 대해 doNothing()을 설정
 		doNothing().when(rabbitTemplate).convertAndSend(any(String.class), any(String.class), any(Object.class));
