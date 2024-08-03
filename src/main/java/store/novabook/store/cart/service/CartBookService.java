@@ -4,9 +4,11 @@ import store.novabook.store.cart.dto.CartBookDTO;
 import store.novabook.store.cart.dto.CartBookIdDTO;
 import store.novabook.store.cart.dto.CartBookListDTO;
 import store.novabook.store.cart.dto.request.DeleteCartBookListRequest;
+import store.novabook.store.cart.dto.request.GetBookInfoRequest;
 import store.novabook.store.cart.dto.request.UpdateCartBookQuantityRequest;
 import store.novabook.store.cart.dto.response.CreateCartBookListResponse;
 import store.novabook.store.cart.dto.response.CreateCartBookResponse;
+import store.novabook.store.cart.dto.response.GetBookInfoResponse;
 
 public interface CartBookService {
 
@@ -23,4 +25,6 @@ public interface CartBookService {
 	void updateCartBookQuantity(Long memberId, UpdateCartBookQuantityRequest request);
 
 	CartBookListDTO getCartBookAllByGuest(CartBookIdDTO request);
+
+	GetBookInfoResponse getBookInfo(GetBookInfoRequest request);
 }

@@ -16,9 +16,11 @@ import store.novabook.store.cart.dto.CartBookDTO;
 import store.novabook.store.cart.dto.CartBookIdDTO;
 import store.novabook.store.cart.dto.CartBookListDTO;
 import store.novabook.store.cart.dto.request.DeleteCartBookListRequest;
+import store.novabook.store.cart.dto.request.GetBookInfoRequest;
 import store.novabook.store.cart.dto.request.UpdateCartBookQuantityRequest;
 import store.novabook.store.cart.dto.response.CreateCartBookListResponse;
 import store.novabook.store.cart.dto.response.CreateCartBookResponse;
+import store.novabook.store.cart.dto.response.GetBookInfoResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
@@ -170,6 +172,11 @@ public class CartBookServiceImpl implements CartBookService {
 	@Override
 	public CartBookListDTO getCartBookAllByGuest(CartBookIdDTO request) {
 		return queryRepository.getCartBookAllGuest(request);
+	}
+
+	@Override
+	public GetBookInfoResponse getBookInfo(GetBookInfoRequest request) {
+		return queryRepository.getBookInfo(request);
 	}
 
 	@Override

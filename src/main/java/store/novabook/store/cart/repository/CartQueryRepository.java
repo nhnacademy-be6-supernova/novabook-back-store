@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import store.novabook.store.book.entity.Book;
@@ -21,6 +20,9 @@ import store.novabook.store.book.entity.QBookStatus;
 import store.novabook.store.cart.dto.CartBookDTO;
 import store.novabook.store.cart.dto.CartBookIdDTO;
 import store.novabook.store.cart.dto.CartBookListDTO;
+import store.novabook.store.cart.dto.request.GetBookInfoRequest;
+import store.novabook.store.cart.dto.response.CartBookInfoDto;
+import store.novabook.store.cart.dto.response.GetBookInfoResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.entity.QCart;
@@ -232,6 +234,19 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 
 		return new CartBookListDTO(adjustedCartBooks);
 
+	}
+
+	public GetBookInfoResponse getBookInfo(GetBookInfoRequest request) {
+		List<CartBookInfoDto> cartBookResponses = queryFactory
+			.select(Projections.constructor(CartBookInfoDto.class,
+				qBook.id,
+				qBook.discountPrice,
+				qBook.bookStatus.id.intValue()))
+			.from(qBook)
+			.where(qBook.id.in(request.bookIds()))
+			.fetch();
+
+		return new GetBookInfoResponse(cartBookResponses);
 	}
 }
 
