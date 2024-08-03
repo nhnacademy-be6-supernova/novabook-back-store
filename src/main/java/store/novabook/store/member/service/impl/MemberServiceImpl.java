@@ -17,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.store.common.adatper.CouponType;
@@ -91,6 +93,15 @@ public class MemberServiceImpl implements MemberService {
 	private final CacheManager cacheManager;
 	private final RedisTemplate<String, String> redisTemplate;
 
+	private Counter newSignUpCounter;
+	private Counter returningUserCounter;
+
+	@Override
+	public void bindTo(MeterRegistry meterRegistry) {
+		this.newSignUpCounter = meterRegistry.counter("members_new_signups");
+		this.returningUserCounter = meterRegistry.counter("members_returning_users");
+	}
+
 	@Override
 	public CreateMemberResponse createMember(@Valid CreateMemberRequest createMemberRequest) {
 		if (!createMemberRequest.loginPassword().equals(createMemberRequest.loginPasswordConfirm())) {
@@ -132,6 +143,11 @@ public class MemberServiceImpl implements MemberService {
 
 		couponSender.sendToNormalQueue(
 			CreateCouponMessage.fromEntity(newMember.getId(), new ArrayList<>(), CouponType.WELCOME, null));
+
+		if (newSignUpCounter != null) {
+			newSignUpCounter.increment(); // 카운터 증가
+		}
+
 		return CreateMemberResponse.fromEntity(newMember);
 	}
 
@@ -236,6 +252,7 @@ public class MemberServiceImpl implements MemberService {
 		Member member = memberRepository.findByLoginIdAndLoginPassword(loginMemberRequest.loginId(),
 			loginMemberRequest.loginPassword());
 		if (member == null) {
+			returningUserCounter.increment();
 			return new LoginMemberResponse(false, null, null);
 		}
 

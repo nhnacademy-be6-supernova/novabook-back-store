@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import store.novabook.store.orders.dto.request.PaymentRequest;
 
+@ToString
 @Setter
 @Getter
 @Builder
@@ -17,9 +19,9 @@ public class OrderSagaMessage {
 	long calculateTotalAmount;  //총 결제금액
 	long couponAmount; //쿠폰 사용 금액
 	long earnPointAmount; //적립금액
-	boolean noEarnPoint;
-	boolean noUsePoint;
-	boolean noUseCoupon;
+	Boolean isNoEarnPoint;
+	Boolean isNoUsePoint;
+	Boolean isNoUseCoupon;
 	String status;
 	PaymentRequest paymentRequest;
 

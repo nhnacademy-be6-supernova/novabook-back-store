@@ -1,0 +1,52 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: novabook-store-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db/be6_supernova
+      SPRING_DATASOURCE_USERNAME: "be6_supernova"
+      SPRING_DATASOURCE_PASSWORD: "Hv-]JRIyCw[[9O18"
+    ports:
+      - "8090:8090"
+    restart: always
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: novabook-db
+    environment:
+      MYSQL_ROOT_PASSWORD: "Hv-]JRIyCw[[9O18"
+      MYSQL_DATABASE: "be6_supernova"
+      MYSQL_USER: "be6_supernova"
+      MYSQL_PASSWORD: "Hv-]JRIyCw[[9O18"
+    ports:
+      - "3306:3306"
+    restart: always
+
+  prometheus:
+    image: prom/prometheus:v2.37.6
+    container_name: prometheus
+    volumes:
+      - ./prometheus/config:/etc/prometheus
+      - ./prometheus/volume:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--web.enable-lifecycle'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    restart: always
+
+  grafana:
+    image: grafana/grafana:9.4.7
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/volume:/var/lib/grafana
+    restart: always

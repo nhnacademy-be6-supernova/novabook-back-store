@@ -80,7 +80,6 @@ public class RabbitMQConfig {
 		connectionFactory.setPort(config.port());
 		connectionFactory.setUsername(config.username());
 		connectionFactory.setPassword(config.password());
-
 		return connectionFactory;
 	}
 

@@ -94,6 +94,7 @@ public class OrdersRabbitServiceImpl {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_CONFIRM_ORDER_FORM");
 		} finally {
+			log.info("[after Orders verify queue message] {}", orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api1-producer-routing-key",
 				orderSagaMessage);
 		}
@@ -110,6 +111,7 @@ public class OrdersRabbitServiceImpl {
 			List<BookIdAndQuantityDTO> books = getOrderBooks(orderSagaMessage);
 			compensateBooks(books);
 		} catch (Exception e) {
+			log.error("", e);
 			orderSagaMessage.setStatus("FAIL_COMPENSATE_CONFIRM_ORDER_FORM");
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
 				orderSagaMessage);
@@ -125,19 +127,21 @@ public class OrdersRabbitServiceImpl {
 			CreateOrdersRequest request;
 			Orders orders;
 			List<BookIdAndQuantityDTO> books;
+			Payment payment = null;
+			Object paymentInfo = orderSagaMessage.getPaymentRequest().paymentInfo();
 
-			@SuppressWarnings("unchecked")
-			Map<String, Object> paymentParam = (Map<String, Object>)orderSagaMessage.getPaymentRequest()
-				.paymentInfo();
+			if (paymentInfo instanceof Map) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> paymentParam = (Map<String, Object>)paymentInfo;
 
-			Payment savePayment = Payment.builder()
-				.request(CreatePaymentRequest.builder()
-					.paymentKey((String)paymentParam.get("paymentKey"))
-					.provider("tempProvider")
-					.build())
-				.build();
-
-			Payment payment = paymentRepository.save(savePayment);
+				Payment savePayment = Payment.builder()
+					.request(CreatePaymentRequest.builder()
+						.paymentKey((String)paymentParam.get("paymentKey"))
+						.provider("tempProvider")
+						.build())
+					.build();
+				payment = paymentRepository.save(savePayment);
+			}
 
 			if (orderSagaMessage.getPaymentRequest().memberId() == null) {
 				OrderTemporaryNonMemberForm orderForm = getOrderTemporaryNonMemberForm(
@@ -158,10 +162,11 @@ public class OrdersRabbitServiceImpl {
 
 			orderSagaMessage.setStatus("SUCCESS_SAVE_ORDERS_DATABASE");
 		} catch (Exception e) {
-			log.info("", e);
+			log.error("", e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_SAVE_ORDERS_DATABASE");
 		} finally {
+			log.info("[after Orders verify queue message] {}", orderSagaMessage);
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api5-producer-routing-key",
 				orderSagaMessage);
 		}
@@ -201,9 +206,9 @@ public class OrdersRabbitServiceImpl {
 	}
 
 	private void setOrderSagaMessageFlags(OrderSagaMessage orderSagaMessage, long usePointAmount, Long couponId) {
-		orderSagaMessage.setNoEarnPoint(orderSagaMessage.getPaymentRequest().memberId() == null);
-		orderSagaMessage.setNoUsePoint(usePointAmount == 0);
-		orderSagaMessage.setNoUseCoupon(couponId == null);
+		orderSagaMessage.setIsNoEarnPoint(orderSagaMessage.getPaymentRequest().memberId() == null);
+		orderSagaMessage.setIsNoUsePoint(usePointAmount == 0);
+		orderSagaMessage.setIsNoUseCoupon(couponId == null);
 	}
 
 	private void processBooksConfirm(List<BookIdAndQuantityDTO> books, OrderSagaMessage orderSagaMessage,
@@ -245,7 +250,7 @@ public class OrdersRabbitServiceImpl {
 			orderSagaMessage.setEarnPointAmount((long)earnPointAmount);
 
 			if ((long)earnPointAmount == 0) {
-				orderSagaMessage.setNoEarnPoint(true);
+				orderSagaMessage.setIsNoEarnPoint(true);
 			}
 		}
 
@@ -352,7 +357,7 @@ public class OrdersRabbitServiceImpl {
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
 			.deliveryAddress(
-				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddresses() + orderForm.orderReceiverInfo()
 					.orderAddressInfo()
 					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))
@@ -376,7 +381,7 @@ public class OrdersRabbitServiceImpl {
 			.totalAmount(orderSagaMessage.getCalculateTotalAmount())
 			.ordersDate(LocalDateTime.now())
 			.deliveryAddress(
-				orderForm.orderReceiverInfo().orderAddressInfo().streetAddress() + orderForm.orderReceiverInfo()
+				orderForm.orderReceiverInfo().orderAddressInfo().streetAddresses() + orderForm.orderReceiverInfo()
 					.orderAddressInfo()
 					.detailAddress())
 			.deliveryDate(orderForm.deliveryDate().atTime(0, 0))

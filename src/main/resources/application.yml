@@ -27,9 +27,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, shutdown
+        include: health, info, shutdown, prometheus
   endpoint:
     shutdown:
+      enabled: true
+    prometheus:
       enabled: true
 
 #swagger 설정

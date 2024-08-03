@@ -56,7 +56,7 @@ public class PointHistoryRabbitServiceImpl {
 				PointHistory.of(pointPolicy, member, "주문으로 인한 포인트 적립", orderSagaMessage.getEarnPointAmount()));
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			orderSagaMessage.setStatus("FAIL_POINT_DECREMENT");
+			orderSagaMessage.setStatus("FAIL_EARN_POINT");
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
 				orderSagaMessage);
 		}
@@ -99,6 +99,7 @@ public class PointHistoryRabbitServiceImpl {
 			rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api3-producer-routing-key",
 				orderSagaMessage);
 		} catch (Exception e) {
+			log.error("",e);
 			handleFailure(orderSagaMessage);
 		}
 	}
