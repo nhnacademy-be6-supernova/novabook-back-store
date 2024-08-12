@@ -18,11 +18,9 @@ import store.novabook.store.cart.dto.CartBookDTO;
 import store.novabook.store.cart.dto.CartBookIdDTO;
 import store.novabook.store.cart.dto.CartBookListDTO;
 import store.novabook.store.cart.dto.request.DeleteCartBookListRequest;
-import store.novabook.store.cart.dto.request.GetBookInfoRequest;
 import store.novabook.store.cart.dto.request.UpdateCartBookQuantityRequest;
 import store.novabook.store.cart.dto.response.CreateCartBookListResponse;
 import store.novabook.store.cart.dto.response.CreateCartBookResponse;
-import store.novabook.store.cart.dto.response.GetBookInfoResponse;
 import store.novabook.store.cart.service.CartBookService;
 import store.novabook.store.common.security.aop.CheckRole;
 import store.novabook.store.common.security.aop.CurrentMembers;
@@ -40,9 +38,10 @@ public class CartController implements CartControllerDocs {
 		return ResponseEntity.ok().body(cartBookService.getCartBookAllByMemberId(memberId));
 	}
 
-	@PostMapping("/info")
-	public ResponseEntity<GetBookInfoResponse> getBookInfo(@RequestBody GetBookInfoRequest request){
-		return ResponseEntity.ok().body(cartBookService.getBookInfo(request));
+	@CheckRole({"ROLE_ADMIN", "ROLE_MEMBERS"})
+	@GetMapping("/count")
+	public ResponseEntity<Integer> getCartCount(@CurrentMembers Long memberId){
+		return ResponseEntity.ok().body(cartBookService.getCartCount(memberId));
 	}
 
 	@PostMapping("/guest")

@@ -17,4 +17,8 @@ public interface CartBookRepository extends JpaRepository<CartBook, Long> {
 	List<CartBook> findAllByCartAndBookIdInAndIsExposedTrue(Cart cart, List<Long> bookIds);
 
 	CartBook findByCartAndBookIdAndIsExposedTrue(Cart cart, Long bookId);
+
+	Integer countByCartIdAndIsExposedTrue(Cart cart);
+
+
 }

@@ -16,11 +16,9 @@ import store.novabook.store.cart.dto.CartBookDTO;
 import store.novabook.store.cart.dto.CartBookIdDTO;
 import store.novabook.store.cart.dto.CartBookListDTO;
 import store.novabook.store.cart.dto.request.DeleteCartBookListRequest;
-import store.novabook.store.cart.dto.request.GetBookInfoRequest;
 import store.novabook.store.cart.dto.request.UpdateCartBookQuantityRequest;
 import store.novabook.store.cart.dto.response.CreateCartBookListResponse;
 import store.novabook.store.cart.dto.response.CreateCartBookResponse;
-import store.novabook.store.cart.dto.response.GetBookInfoResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.repository.CartBookRepository;
@@ -175,8 +173,20 @@ public class CartBookServiceImpl implements CartBookService {
 	}
 
 	@Override
-	public GetBookInfoResponse getBookInfo(GetBookInfoRequest request) {
-		return queryRepository.getBookInfo(request);
+	public Integer getCartCount(Long memberId) {
+		int count = 0;
+
+		Optional<Cart> optionalCart = cartRepository.findByMemberId(memberId);
+
+		if (optionalCart.isPresent()) {
+			Cart cart = optionalCart.get();
+
+			// 요청된 도서 ID로 해당하는 CartBook 엔티티 조회
+			count = cartBookRepository.countByCartIdAndIsExposedTrue(cart);
+
+			return count;
+		}
+		return count;
 	}
 
 	@Override

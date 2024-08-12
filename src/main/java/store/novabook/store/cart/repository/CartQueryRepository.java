@@ -16,13 +16,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.QBook;
-import store.novabook.store.book.entity.QBookStatus;
 import store.novabook.store.cart.dto.CartBookDTO;
 import store.novabook.store.cart.dto.CartBookIdDTO;
 import store.novabook.store.cart.dto.CartBookListDTO;
-import store.novabook.store.cart.dto.request.GetBookInfoRequest;
-import store.novabook.store.cart.dto.response.CartBookInfoDto;
-import store.novabook.store.cart.dto.response.GetBookInfoResponse;
 import store.novabook.store.cart.entity.Cart;
 import store.novabook.store.cart.entity.CartBook;
 import store.novabook.store.cart.entity.QCart;
@@ -47,40 +43,11 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 	QBookImage qBookImage = QBookImage.bookImage;
 	QImage qImage = QImage.image;
 	QMember qMember = QMember.member;
-	QBookStatus qBookStatus = QBookStatus.bookStatus;
 
 	public CartQueryRepository(EntityManager entityManager) {
 		super(Cart.class);
 		this.entityManager = entityManager;
 		this.queryFactory = new JPAQueryFactory(entityManager);
-	}
-
-	public CartBookListDTO getCartBookAll(Long cartId) {
-		List<CartBookDTO> cartBookResponses = queryFactory
-			.select(Projections.constructor(CartBookDTO.class,
-				qBook.id,
-				qBook.title,
-				qImage.source,
-				qBook.price,
-				qBook.discountPrice,
-				qCartBook.quantity))
-			.from(qCart)
-			.join(qMember).on(qCart.member.id.eq(qMember.id))
-			.join(qCartBook).on(qCart.id.eq(qCartBook.cart.id))
-			.join(qBook).on(qCartBook.book.id.eq(qBook.id))
-			.join(qBookImage).on(qBook.id.eq(qBookImage.book.id))
-			.join(qImage).on(qBookImage.image.id.eq(qImage.id))
-			.join(qBookStatus).on(qBookStatus.id.eq(qBook.bookStatus.id))
-			.where(qCart.id.eq(cartId)
-				.and(qBook.bookStatus.id.ne(4L)))
-			.fetch();
-
-		// 결과값이 없으면 빈 리스트 반환
-		if (cartBookResponses == null || cartBookResponses.isEmpty()) {
-			return new CartBookListDTO(Collections.emptyList());
-		}
-
-		return new CartBookListDTO(cartBookResponses);
 	}
 
 	public CartBookListDTO getCartBookAllByMemberId(Long memberId) {
@@ -108,7 +75,6 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 				qImage.source,
 				qBook.price,
 				qBook.discountPrice,
-				// CASE 문을 사용하여 quantity를 설정
 				Expressions.cases()
 					.when(qCartBook.quantity.gt(qBook.inventory))
 					.then(qBook.inventory)
@@ -234,19 +200,6 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 
 		return new CartBookListDTO(adjustedCartBooks);
 
-	}
-
-	public GetBookInfoResponse getBookInfo(GetBookInfoRequest request) {
-		List<CartBookInfoDto> cartBookResponses = queryFactory
-			.select(Projections.constructor(CartBookInfoDto.class,
-				qBook.id,
-				qBook.discountPrice,
-				qBook.bookStatus.id.intValue()))
-			.from(qBook)
-			.where(qBook.id.in(request.bookIds()))
-			.fetch();
-
-		return new GetBookInfoResponse(cartBookResponses);
 	}
 }
 
