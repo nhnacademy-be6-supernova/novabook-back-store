@@ -235,18 +235,5 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 		return new CartBookListDTO(adjustedCartBooks);
 
 	}
-
-	public GetBookInfoResponse getBookInfo(GetBookInfoRequest request) {
-		List<CartBookInfoDto> cartBookResponses = queryFactory
-			.select(Projections.constructor(CartBookInfoDto.class,
-				qBook.id,
-				qBook.discountPrice,
-				qBook.bookStatus.id.intValue()))
-			.from(qBook)
-			.where(qBook.id.in(request.bookIds()))
-			.fetch();
-
-		return new GetBookInfoResponse(cartBookResponses);
-	}
 }
 

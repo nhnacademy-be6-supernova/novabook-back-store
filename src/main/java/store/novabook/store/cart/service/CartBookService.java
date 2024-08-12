@@ -26,5 +26,5 @@ public interface CartBookService {
 
 	CartBookListDTO getCartBookAllByGuest(CartBookIdDTO request);
 
-	GetBookInfoResponse getBookInfo(GetBookInfoRequest request);
+	Integer getCartCount(Long memberId);
 }

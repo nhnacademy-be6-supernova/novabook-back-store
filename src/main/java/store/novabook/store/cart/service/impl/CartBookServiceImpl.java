@@ -175,8 +175,20 @@ public class CartBookServiceImpl implements CartBookService {
 	}
 
 	@Override
-	public GetBookInfoResponse getBookInfo(GetBookInfoRequest request) {
-		return queryRepository.getBookInfo(request);
+	public Integer getCartCount(Long memberId) {
+		int count = 0;
+
+		Optional<Cart> optionalCart = cartRepository.findByMemberId(memberId);
+
+		if (optionalCart.isPresent()) {
+			Cart cart = optionalCart.get();
+
+			// 요청된 도서 ID로 해당하는 CartBook 엔티티 조회
+			count = cartBookRepository.countByCartIdAndIsExposedTrue(cart);
+
+			return count;
+		}
+		return count;
 	}
 
 	@Override
