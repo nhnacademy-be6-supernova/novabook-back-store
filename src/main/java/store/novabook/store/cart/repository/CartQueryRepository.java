@@ -16,7 +16,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import store.novabook.store.book.entity.Book;
 import store.novabook.store.book.entity.QBook;
-import store.novabook.store.book.entity.QBookStatus;
 import store.novabook.store.cart.dto.CartBookDTO;
 import store.novabook.store.cart.dto.CartBookIdDTO;
 import store.novabook.store.cart.dto.CartBookListDTO;
@@ -44,7 +43,6 @@ public class CartQueryRepository extends QuerydslRepositorySupport {
 	QBookImage qBookImage = QBookImage.bookImage;
 	QImage qImage = QImage.image;
 	QMember qMember = QMember.member;
-	QBookStatus qBookStatus = QBookStatus.bookStatus;
 
 	public CartQueryRepository(EntityManager entityManager) {
 		super(Cart.class);
